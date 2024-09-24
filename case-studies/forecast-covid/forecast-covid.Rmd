@@ -384,7 +384,8 @@ epi_pred_cv <- epi_slide(
   new_col_name = "fc"
 )
 
-epi_pred_cv; test
+head(epi_pred_cv %>% select(fc_.pred, fc_target_date))
+head(test %>% select(pred_trailing_cv, time_value))
 ```
 
 # AR model
