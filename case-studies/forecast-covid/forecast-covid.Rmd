@@ -224,7 +224,7 @@ errors <- data.frame("MSE" = training_mse, "MAE"= training_mae,
 errors
 ```
 
-The predictions track the observed death rates quite closely on the training set.
+The predictions on the training set track the observed death rates quite closely.
 
 ```{r plot-train-predictions}
 train %>% 
@@ -238,10 +238,12 @@ train %>%
 ```
 
 
-## Split-sample error (error on the test set)
+## Split-sample error 
 
 Let's compute the MSE, MAE, MAPE, and MASE on the test set.
-As expected, the test errors are much larger than the training errors.
+As expected, the errors on the test set are much larger than the errors on the
+training set.
+
 Notice that the MAPE does not have a finite value because there are some 0s in 
 the denominator.
 
@@ -274,7 +276,7 @@ test %>%
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
-Can we implement the same model using `{epipredict}`?
+Can we perform split-sample using `{epipredict}`?
 
 `arx_forecaster` allows to fit the same model using the training data, but does 
 it provide a way to obtain the training error and the split-sample error?
@@ -286,7 +288,7 @@ arx_forecaster(epi_data = train %>% as_epi_df(),
                outcome = "deaths", 
                predictors = "cases", 
                trainer = linear_reg() %>% set_engine("lm"),
-               args_list = arx_args_list(lags = 25L, ahead = 1L))$predictions
+               args_list = arx_args_list(lags = k-1, ahead = 1L))$predictions
 ```
 
 
@@ -297,10 +299,13 @@ We will now perform time-series cross-validation fitting the model on:
 - all the past data up to the forecasting time
 - a trailing window of data up to the forecasting time
 
+We set the trailing window to have size = 30, 
+and we perform 1-step-ahead predictions.
+
 ```{r time-series-cv}
 n <- nrow(ca)
 pred_all_past = pred_trailing <- rep(NA, length = n - t0)
-w <- 50
+w <- 30 # trailing window size
 
 for (t in (t0+1):n) {
   reg_all_past = lm(deaths ~ lagged_cases, data = ca, 
@@ -335,6 +340,12 @@ errors <- rbind(errors,
 errors
 ```
 
+The cross-validated error obtained when using a trailing window is much smaller 
+than all the other errors previously obtained, under all metrics. 
+This can be explained by the fact that the relationship between the predictor 
+and the outcome changes over time, and therefore using a short recent
+window of data to get linear regression estimates can improve the predictions.
+
 ```{r cv-trailing-error}
 cv_trailing_mse <- mean((test$deaths - pred_trailing)^2)
 cv_trailing_mae <- mean(abs(test$deaths - pred_trailing)) 
@@ -348,6 +359,8 @@ errors <- rbind(errors,
 errors
 ```
 
+We plot the 1-step-ahead predictions obtained by the model fitted on all past 
+data and on trailing windows. The latter tracks the observed deaths quite well.
 
 ```{r plot-cv-predictions}
 test %>% 
@@ -363,30 +376,68 @@ test %>%
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
+The predictions we obtained by manually lagging `cases` and using `lm` within 
+`for` loops can be equivalently obtained via `{epipredict}`. The latter gives
+a more user-friendly and straightforward way to obtain the predictions.
 
-```{r epipredict-cv}
+The approach with trailing window is reported next.
+
+```{r epipredict-cv-trailing}
+# specify the forecast dates
 fc_time_values <- seq(
   from = as.Date("2021-03-01"),
   to = as.Date("2021-12-30"),
   by = "1 day"
 )
 
+# slide an arx_forecaster with appropriate outcome, predictions, lags, 
+# and trailing window
+epi_pred_cv_trailing <- epi_slide(
+  ca, 
+  ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = "cases", 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = k-1, ahead = 1L)
+                   )$predictions,
+  # notice that `before` is not simply equal to w-1. That's because previously, 
+  # when considering a window from t to t+w, we had access to y_t, ..., y_{t+w} 
+  # and also to x_{t-k}, ..., x_{t+w-k}. (That's because of how we structured 
+  # the dataframe after manually lagging x.) So we were cheating by saying that 
+  # the trailing window had length w, as its actual size was w+k! 
+  before = (w+k-1), 
+  ref_time_values = fc_time_values,
+  new_col_name = "fc"
+)
+
+# they match exactly
+head(epi_pred_cv_trailing %>% select(fc_.pred, fc_target_date))
+head(test %>% select(pred_trailing_cv, time_value))
+```
+
+The method fitting on all past data up to the forecasting date can be 
+implemented by changing `before = Inf` in `epi_slide`.
+
+```{r epipredict-cv}
+# slide an arx_forecaster with appropriate outcome, predictions and lags
 epi_pred_cv <- epi_slide(
   ca, 
   ~ arx_forecaster(epi_data = .x,
                    outcome = "deaths", 
                    predictors = "cases", 
                    trainer = linear_reg() %>% set_engine("lm"),
-                   args_list = arx_args_list(lags = 25L, ahead = 1L)
+                   args_list = arx_args_list(lags = k-1, ahead = 1L)
                    )$predictions,
-  before = (w+k-1),
+  before = Inf, 
   ref_time_values = fc_time_values,
   new_col_name = "fc"
 )
 
+# they match exactly
 head(epi_pred_cv %>% select(fc_.pred, fc_target_date))
-head(test %>% select(pred_trailing_cv, time_value))
+head(test %>% select(pred_cv, time_value))
 ```
+
 
 # AR model
 
@@ -423,4 +474,17 @@ Perform linear regression of deaths on lagged deaths using training data.
 reg_ar = lm(deaths ~ deaths_lag_1 + deaths_lag_2 + deaths_lag_3, data = train)
 coef(reg_ar)
 ```
+
+# Next
+
+- Fit AR using epi-slide, check if error goes down
+
+- Fit ARX using epi-slide and including lagged cases and deaths as predictors,
+check if error goes down
+
+- Is there an automatic way to select best lags within epipredict 
+(e.g. using Lasso somehow)?
+
+- Introduce probabilistic forecasters (quantile regression) and appropriate 
+evaluation methods
 
