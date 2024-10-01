@@ -208,18 +208,28 @@ ggplot(train, aes(lagged_cases, deaths)) +
 
 Let's compute the MSE, MAE, MAPE, and MASE on the training set.
 
+```{r error functions}
+MSE <- function(truth, prediction) {
+  mean((truth - prediction)^2)}
+
+MAE <- function(truth, prediction) {
+  mean(abs(truth - prediction))}
+
+MAPE <- function(truth, prediction) {
+  100 * mean(abs(truth - prediction) / truth)}
+
+MASE <- function(truth, prediction) {
+  100 * MAE(truth, prediction) / mean(abs(diff(truth)))}
+```
+
 ```{r training-error}
 pred_train <- predict(reg_lagged)
 train$pred_train <- c(rep(NA, k), pred_train)
 
-training_mse <- mean((train$deaths - train$pred_train)^2, na.rm = T)
-training_mae <- mean(abs(train$deaths - train$pred_train), na.rm = T)
-training_mape <- 100 * mean(abs(train$deaths - train$pred_train) / train$deaths, 
-                     na.rm = T)
-training_mase <- 100 * training_mae / mean(abs(diff(train$deaths[-c(1:k)])))
-
-errors <- data.frame("MSE" = training_mse, "MAE"= training_mae, 
-                     "MAPE" = training_mape, "MASE" = training_mase, 
+errors <- data.frame("MSE" = MSE(train$deaths[-(1:k)], pred_train), 
+                     "MAE"= MAE(train$deaths[-(1:k)], pred_train), 
+                     "MAPE" = MAPE(train$deaths[-(1:k)], pred_train), 
+                     "MASE" = MASE(train$deaths[-(1:k)], pred_train), 
                      row.names = "training")
 errors
 ```
@@ -232,7 +242,7 @@ train %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
-  labs(title = "Observed and predicted Covid-19 deaths on training set (California)", 
+  labs(title = "Regression with a lagged predictor: training", 
        x = "", y = "Covid-19 deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
@@ -249,14 +259,12 @@ the denominator.
 
 ```{r test-error}
 test$pred_test <- predict(reg_lagged, newdata = test)
-test_mse <- mean((test$deaths - test$pred_test)^2)
-test_mae <- mean(abs(test$deaths - test$pred_test)) 
-test_mape <- 100 * mean(abs(test$deaths - test$pred_test) / test$deaths)
-test_mase <- 100 * test_mae / mean(abs(diff(test$deaths)))
 
 errors <- rbind(errors, 
-                data.frame("MSE" = test_mse, "MAE"= test_mae, 
-                           "MAPE" = test_mape, "MASE" = test_mase, 
+                data.frame("MSE" = MSE(test$deaths, test$pred_test), 
+                           "MAE"= MAE(test$deaths, test$pred_test), 
+                           "MAPE" = MAPE(test$deaths, test$pred_test), 
+                           "MASE" = MASE(test$deaths, test$pred_test), 
                            row.names = "split-sample"))
 errors
 ```
@@ -271,26 +279,31 @@ test %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
-  labs(title = "Observed and predicted Covid-19 deaths on test set (California)", 
+  labs(title = "Regression with a lagged predictor: test", 
        x = "", y = "Covid-19 deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
-Can we perform split-sample using `{epipredict}`?
+--------------------------------------------------------------------------------
 
-`arx_forecaster` allows to fit the same model using the training data, but does 
-it provide a way to obtain the training error and the split-sample error?
+AFTERNOON 
+
+We can also perform split-sample using `{epipredict}`.
 
 ```{r epipredict-lagged-reg}
 head(test)
 
-arx_forecaster(epi_data = train %>% as_epi_df(), 
-               outcome = "deaths", 
-               predictors = "cases", 
-               trainer = linear_reg() %>% set_engine("lm"),
-               args_list = arx_args_list(lags = k-1, ahead = 1L))$predictions
+epi_reg_lagged <- arx_forecaster(epi_data = train %>% as_epi_df(), 
+                                 outcome = "deaths", 
+                                 predictors = "cases", 
+                                 trainer = linear_reg() %>% set_engine("lm"),
+                                 args_list = arx_args_list(lags = k-1, 
+                                                           ahead = 1L))
+
+extract_fit_parsnip(epi_reg_lagged$epi_workflow)
 ```
 
+--------------------------------------------------------------------------------
 
 ## Time-series cross-validation
 
@@ -328,14 +341,11 @@ error (under all metrics) is slightly smaller than when using a split-sample
 approach, but is still not as small as when we compute it on the training data.
 
 ```{r cv-error}
-cv_mse <- mean((test$deaths - pred_all_past)^2)
-cv_mae <- mean(abs(test$deaths - pred_all_past)) 
-cv_mape <- 100 * mean(abs(test$deaths - pred_all_past) / test$deaths)
-cv_mase <- 100 * cv_mae / mean(abs(diff(test$deaths)))
-
 errors <- rbind(errors, 
-                data.frame("MSE" = cv_mse, "MAE"= cv_mae, 
-                           "MAPE" = cv_mape, "MASE" = cv_mase, 
+                data.frame("MSE" = MSE(test$deaths, pred_all_past), 
+                           "MAE"= MAE(test$deaths, pred_all_past), 
+                           "MAPE" = MAPE(test$deaths, pred_all_past), 
+                           "MASE" =  MASE(test$deaths, pred_all_past), 
                            row.names = "time series CV"))
 errors
 ```
@@ -346,15 +356,13 @@ This can be explained by the fact that the relationship between the predictor
 and the outcome changes over time, and therefore using a short recent
 window of data to get linear regression estimates can improve the predictions.
 
-```{r cv-trailing-error}
-cv_trailing_mse <- mean((test$deaths - pred_trailing)^2)
-cv_trailing_mae <- mean(abs(test$deaths - pred_trailing)) 
-cv_trailing_mape <- 100 * mean(abs(test$deaths - pred_trailing) / test$deaths)
-cv_trailing_mase <- 100 * cv_trailing_mae / mean(abs(diff(test$deaths)))
 
+```{r cv-trailing-error}
 errors <- rbind(errors, 
-                data.frame("MSE" = cv_trailing_mse, "MAE"= cv_trailing_mae, 
-                           "MAPE" = cv_trailing_mape, "MASE" = cv_trailing_mase, 
+                data.frame("MSE" = MSE(test$deaths, pred_trailing), 
+                           "MAE"= MAE(test$deaths, pred_trailing), 
+                           "MAPE" = MAPE(test$deaths, pred_trailing), 
+                           "MASE" = MASE(test$deaths, pred_trailing), 
                            row.names = "time series CV + trailing"))
 errors
 ```
@@ -371,10 +379,14 @@ test %>%
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
-  labs(title = "Observed and predicted Covid-19 deaths on test set (California)", 
+  labs(title = "Regression with a lagged predictor: time-series cross-validation", 
        x = "", y = "Covid-19 deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
+
+--------------------------------------------------------------------------------
+
+AFTERNOON
 
 The predictions we obtained by manually lagging `cases` and using `lm` within 
 `for` loops can be equivalently obtained via `{epipredict}`. The latter gives
@@ -386,7 +398,7 @@ The approach with trailing window is reported next.
 # specify the forecast dates
 fc_time_values <- seq(
   from = as.Date("2021-03-01"),
-  to = as.Date("2021-12-30"),
+  to = as.Date("2021-12-31"),
   by = "1 day"
 )
 
@@ -438,11 +450,62 @@ head(epi_pred_cv %>% select(fc_.pred, fc_target_date))
 head(test %>% select(pred_cv, time_value))
 ```
 
+**ISSUE**
+
+If we modify the algorithms to predict 7-step ahead, the manual and 
+`{epipredict}` implementations do not match.
+
+```{r epipredict-cv-7ahead}
+n <- nrow(ca)
+pred_all_past <- rep(NA, length = n - t0)
+n_ahead <- 7
+
+for (t in (t0+1):n) {
+    reg_all_past = lm(deaths ~ lagged_cases, data = ca, 
+                      subset = (1:n) <= (t-n_ahead)) 
+    pred_all_past[t-t0] = predict(reg_all_past, newdata = data.frame(ca[t, ]))
+}
+
+test$pred_cv_7 <- pred_all_past
+    
+
+fc_time_values_7 <- seq(
+  from = as.Date("2021-02-23"),
+  to = as.Date("2021-12-25"),
+  by = "1 day"
+)
+
+epi_pred_cv_7 <- epi_slide(
+  ca, 
+  ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = "cases", 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = k-1, ahead = n_ahead)
+                   )$predictions,
+  before = Inf, 
+  ref_time_values = fc_time_values_7,
+  new_col_name = "fc"
+)
+
+# they do not match
+head(epi_pred_cv_7 %>% select(fc_.pred, fc_target_date))
+head(test %>% select(pred_cv_7, time_value))
+
+plot(epi_pred_cv$fc_target_date, epi_pred_cv$fc_.pred, type = 'l') +
+  lines(test$time_value, test$pred_cv_7, col = 'red')
+```
+
+--------------------------------------------------------------------------------
 
 # AR model
 
+We now consider a different model. We disregard `cases`, and only use past 
+`deaths` to predict future `deaths`. Let's check which lag leads to largest 
+correlation between deaths and lagged deaths. 
+
 ```{r auto-cor-deaths}
-lags <- 1:10
+lags <- 1:8
 auto_cor_deaths <- lapply(lags, 
                           function(x) epi_cor(train, deaths, deaths, 
                                               cor_by = geo_value, dt1 = x))
@@ -457,34 +520,726 @@ auto_cor_deaths %>%
   ggtitle('Auto-correlation for deaths by lag')
 ```
 
+We will consider an AR model where we predict `deaths` using `lagged_deaths`
+which lags the former by 1. That is 
+
+$y_t \approx \beta_0 + \beta_1 y_{t-1}$
+
 ```{r lag-deaths}
-ca$deaths_lag_1 <- dplyr::lag(ca$deaths, n = 1)
-ca$deaths_lag_2 <- dplyr::lag(ca$deaths, n = 2)
-ca$deaths_lag_3 <- dplyr::lag(ca$deaths, n = 3)
+ca$lagged_deaths <- dplyr::lag(ca$deaths, n = 1)
 ```
 
-```{r repeat-train-test-split}
-train <- ca %>% filter(time_value <= t0_date)
-test <- ca %>% filter(time_value > t0_date)
+```{r train/test-ar}
+train_ar <- ca %>% filter(time_value <= t0_date)
+test_ar <- ca %>% filter(time_value > t0_date)
 ```
+
+Let's plot COVID deaths versus lagged COVID deaths to check that the 
+relationship is approximately linear.
+
+```{r ar-plot-deaths-and-lagged-cases}
+ggplot(train_ar, aes(lagged_deaths, deaths)) + 
+  geom_point(alpha = .5) +
+  labs(x = "Lagged deaths", y = "Deaths")
+```
+
 
 Perform linear regression of deaths on lagged deaths using training data.
 
+**Note**: the intercept is approximately 0 and the coefficient is approximately 1. 
+This means that we are naively predicting the number of deaths tomorrow with the
+number of deaths observed today.
+
 ```{r ar-lm}
-reg_ar = lm(deaths ~ deaths_lag_1 + deaths_lag_2 + deaths_lag_3, data = train)
-coef(reg_ar)
+ar_fit = lm(deaths ~ lagged_deaths, data = train_ar)
+coef(ar_fit)
 ```
+
+Plot again COVID deaths versus lagged COVID cases with regression line.
+
+```{r plot-ar-fit-line}
+ggplot(train_ar, aes(lagged_deaths, deaths)) +
+  geom_point(alpha = .5) +
+  geom_abline(intercept = coef(ar_fit)[1], slope = coef(ar_fit)[2],
+              col = 'red') +
+  labs(x = "Lagged deaths", y = "Deaths") +
+  ggtitle("Deaths vs lagged deaths with regression line")
+
+```
+
+
+## Training error
+
+Let's compute the MSE, MAE, MAPE, and MASE on the training set.
+
+```{r ar-training-error}
+pred_train <- predict(ar_fit)
+
+train_ar$pred_train <- c(NA, pred_train)
+
+errors_ar <- data.frame("MSE" = MSE(train_ar$deaths[-1], pred_train), 
+                        "MAE"= MAE(train_ar$deaths[-1], pred_train), 
+                        "MAPE" = MAPE(train_ar$deaths[-1], pred_train), 
+                        "MASE" = MASE(train_ar$deaths[-1], pred_train), 
+                        row.names = "training")
+errors_ar
+```
+
+
+```{r ar-plot-train-predictions}
+train_ar %>% 
+  mutate(observed = deaths, predicted = pred_train) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "AR: training", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+## Split-sample error 
+
+Let's compute the MSE, MAE, MAPE, and MASE on the test set.
+Here, the test errors are very similar to the training errors.
+
+Notice that the MAPE does not have a finite value because there are some 0s in 
+the denominator.
+
+```{r ar-test-error}
+test_ar$pred_test <- predict(ar_fit, newdata = test_ar)
+
+errors_ar <- rbind(errors_ar, 
+                  data.frame("MSE" = MSE(test_ar$deaths, test_ar$pred_test), 
+                             "MAE"= MAE(test_ar$deaths, test_ar$pred_test), 
+                             "MAPE" = MAPE(test_ar$deaths, test_ar$pred_test), 
+                             "MASE" = MASE(test_ar$deaths, test_ar$pred_test), 
+                             row.names = "split-sample"))
+errors_ar
+```
+
+Let's plot the predictions on the test set.
+
+```{r ar-plot-test-predictions}
+test_ar %>% 
+  mutate(observed = deaths, predicted = pred_test) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "AR: test", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+## Time-series cross-validation
+
+We will now perform time-series cross-validation fitting the model on:
+
+- all the past data up to the forecasting time
+- a trailing window of data up to the forecasting time
+
+We set the trailing window to have size = 30, 
+and we perform 1-step-ahead predictions.
+
+```{r ar-time-series-cv}
+n <- nrow(ca)
+pred_all_past = pred_trailing <- rep(NA, length = n - t0)
+w <- 30 # trailing window size
+
+for (t in (t0+1):n) {
+  ar_all_past = lm(deaths ~ lagged_deaths, data = ca, 
+                    subset = (1:n) <= (t-1)) 
+  ar_trailing = lm(deaths ~ lagged_deaths, data = ca, 
+                    subset = (1:n) <= (t-1) & (1:n) > (t-1-w)) 
+  pred_all_past[t-t0] = predict(ar_all_past, newdata = data.frame(ca[t, ]))
+  pred_trailing[t-t0] = predict(ar_trailing, newdata = data.frame(ca[t, ]))
+}
+
+test_ar$pred_cv <- pred_all_past
+test_ar$pred_trailing_cv <- pred_trailing
+```
+
+We compute the cross-validated error when using all the past data up to the 
+forecasting time. Since we are refitting the model as new data come in, the 
+error (under all metrics) is slightly smaller than when using a split-sample 
+approach, but is still not as small as when we compute it on the training data.
+
+```{r ar-cv-error}
+errors_ar <- rbind(errors_ar, 
+                data.frame("MSE" = MSE(test_ar$deaths, pred_all_past), 
+                           "MAE"= MAE(test_ar$deaths, pred_all_past), 
+                           "MAPE" = MAPE(test_ar$deaths, pred_all_past), 
+                           "MASE" =  MASE(test_ar$deaths, pred_all_past), 
+                           row.names = "time series CV"))
+errors_ar
+```
+
+The cross-validated error obtained when using a trailing window is the largest
+under all metrics.
+This can be explained by the fact that the the relationship between deaths at 
+two contiguous time points is quite stable over time. Therefore considering a 
+limited window of data does not improve the fit, and leads instead to a fit that 
+is slightly too volatile.
+
+```{r ar-cv-trailing-error}
+errors_ar <- rbind(errors_ar, 
+                data.frame("MSE" = MSE(test_ar$deaths, pred_trailing), 
+                           "MAE"= MAE(test_ar$deaths, pred_trailing), 
+                           "MAPE" = MAPE(test_ar$deaths, pred_trailing), 
+                           "MASE" = MASE(test_ar$deaths, pred_trailing), 
+                           row.names = "time series CV + trailing"))
+errors_ar
+```
+
+We plot the 1-step-ahead predictions obtained by the model fitted on all past 
+data and on trailing windows. They are almost always overlapping.
+
+```{r ar-plot-cv-predictions}
+test_ar %>% 
+  mutate(observed = deaths, 
+         `predicted (CV)` = pred_cv, 
+         `predicted (trailing + CV)` = pred_trailing_cv) %>%
+  pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
+               names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "AR: time-series cross-validation", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+--------------------------------------------------------------------------------
+
+AFTERNOON
+
+```{r epipredict-ar}
+ar_all_past <- epi_slide(
+  ca, 
+  ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = "deaths", 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = 0L, ahead = 1L)
+                   )$predictions,
+  before = Inf, 
+  ref_time_values = fc_time_values,
+  new_col_name = "all_past"
+) 
+
+ar_trailing <- epi_slide(
+  ca, 
+  ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = "deaths", 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = 0L, ahead = 1L)
+                   )$predictions,
+  before = w, 
+  ref_time_values = fc_time_values,
+  new_col_name = "trailing"
+)
+```
+
+```{r plot-ar-predictions}
+ar_trailing %>% 
+  left_join(ar_all_past, join_by(time_value, geo_value, cases, deaths)) %>%
+  mutate(observed = deaths, 
+         `predicted (all past)` = all_past_.pred, 
+         `predicted (trailing)` = trailing_.pred) %>%
+  pivot_longer(cols = c(observed, `predicted (all past)`, `predicted (trailing)`), 
+               names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "Observed and predicted Covid-19 deaths on test set (California)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+```{r ar-check}
+# Check that manual implementation and epipredict give same results
+
+if(!all(test_ar$time_value == ar_all_past$all_past_target_date) | 
+   !all(test_ar$time_value == ar_trailing$trailing_target_date)) {
+  print("Error: target dates do not match!")
+}
+
+if(!all(test_ar$pred_cv == ar_all_past$all_past_.pred) | 
+   !all(test_ar$pred_trailing_cv == ar_trailing$trailing_.pred)) {
+  print("Error: predictions do not match!")
+}
+
+```
+
+
+--------------------------------------------------------------------------------
+
+# ARX model
+
+To improve our predictive performance, we could put together the two models 
+considered so far (i.e. linear regression on cases lagged by k = `r k`, and 
+linear regression on deaths lagged by 1).
+This will lead us to the following ARX model
+
+$y_t \approx \beta_0 + \beta_1 y_{t-1} + \beta_2 x_{t-k}$
+
+```{r train/test-arx}
+train_arx <- ca %>% filter(time_value <= t0_date)
+test_arx <- ca %>% filter(time_value > t0_date)
+```
+
+The estimated coefficients for the ARX model are
+
+```{r arx-lm}
+arx_fit = lm(deaths ~ lagged_deaths + lagged_cases, data = train_arx)
+coef(arx_fit)
+```
+
+
+## Training error
+
+Let's compute the MSE, MAE, MAPE, and MASE on the training set.
+
+```{r arx-training-error}
+pred_train <- predict(arx_fit)
+
+train_arx$pred_train <- c(rep(NA, k), pred_train)
+
+errors_arx <- data.frame("MSE" = MSE(train_arx$deaths[-(1:k)], pred_train), 
+                        "MAE"= MAE(train_arx$deaths[-(1:k)], pred_train), 
+                        "MAPE" = MAPE(train_arx$deaths[-(1:k)], pred_train), 
+                        "MASE" = MASE(train_arx$deaths[-(1:k)], pred_train), 
+                        row.names = "training")
+errors_arx
+```
+
+
+```{r arx-plot-train-predictions}
+train_arx %>% 
+  mutate(observed = deaths, predicted = pred_train) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "ARX: training", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+## Split-sample error 
+
+Let's compute the MSE, MAE, MAPE, and MASE on the test set.
+Here, the test errors are very similar to the training errors.
+
+Notice that the MAPE does not have a finite value because there are some 0s in 
+the denominator.
+
+```{r arx-test-error}
+test_arx$pred_test <- predict(arx_fit, newdata = test_arx)
+
+errors_arx <- rbind(errors_arx, 
+                  data.frame("MSE" = MSE(test_arx$deaths, test_arx$pred_test), 
+                             "MAE"= MAE(test_arx$deaths, test_arx$pred_test), 
+                             "MAPE" = MAPE(test_arx$deaths, test_arx$pred_test), 
+                             "MASE" = MASE(test_arx$deaths, test_arx$pred_test), 
+                             row.names = "split-sample"))
+errors_arx
+```
+
+Let's plot the predictions on the test set.
+
+```{r arx-plot-test-predictions}
+test_arx %>% 
+  mutate(observed = deaths, predicted = pred_test) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "ARX: test", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+## Time-series cross-validation
+
+We will now perform time-series cross-validation fitting the model on:
+
+- all the past data up to the forecasting time
+- a trailing window of data up to the forecasting time
+
+We set the trailing window to have size = 30, 
+and we perform 1-step-ahead predictions.
+
+```{r arx-time-series-cv}
+n <- nrow(ca)
+pred_all_past = pred_trailing <- rep(NA, length = n - t0)
+w <- 30 # trailing window size
+
+for (t in (t0+1):n) {
+  arx_all_past = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
+                    subset = (1:n) <= (t-1)) 
+  arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
+                    subset = (1:n) <= (t-1) & (1:n) > (t-1-w)) 
+  pred_all_past[t-t0] = predict(arx_all_past, newdata = data.frame(ca[t, ]))
+  pred_trailing[t-t0] = predict(arx_trailing, newdata = data.frame(ca[t, ]))
+}
+
+test_arx$pred_cv <- pred_all_past
+test_arx$pred_trailing_cv <- pred_trailing
+```
+
+We compute the cross-validated error when using all the past data up to the 
+forecasting time. Since we are refitting the model as new data come in, the 
+error (under all metrics) is slightly smaller than when using a split-sample 
+approach, but is still not as small as when we compute it on the training data.
+
+```{r arx-cv-error}
+errors_arx <- rbind(errors_arx, 
+                data.frame("MSE" = MSE(test_arx$deaths, pred_all_past), 
+                           "MAE" = MAE(test_arx$deaths, pred_all_past), 
+                           "MAPE" = MAPE(test_arx$deaths, pred_all_past), 
+                           "MASE" =  MASE(test_arx$deaths, pred_all_past), 
+                           row.names = "time series CV"))
+errors_arx
+```
+
+The cross-validated error obtained when using a trailing window is again the 
+largest under all metrics.
+
+```{r arx-cv-trailing-error}
+errors_arx <- rbind(errors_arx, 
+                data.frame("MSE" = MSE(test_arx$deaths, pred_trailing), 
+                           "MAE"= MAE(test_arx$deaths, pred_trailing), 
+                           "MAPE" = MAPE(test_arx$deaths, pred_trailing), 
+                           "MASE" = MASE(test_arx$deaths, pred_trailing), 
+                           row.names = "time series CV + trailing"))
+errors_arx
+```
+
+We plot the 1-step-ahead predictions obtained by the model fitted on all past 
+data and on trailing windows. 
+
+```{r arx-plot-cv-predictions}
+test_arx %>% 
+  mutate(observed = deaths, 
+         `predicted (CV)` = pred_cv, 
+         `predicted (trailing + CV)` = pred_trailing_cv) %>%
+  pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
+               names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "ARX: time-series cross-validation", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+--------------------------------------------------------------------------------
+
+AFTERNOON
+
+```{r epipredict-arx}
+arx_all_past <- epi_slide(
+  ca, 
+  ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = c("deaths", "cases"), 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = list(0, k-1), 
+                                             ahead = 1L)
+                   )$predictions,
+  before = Inf, 
+  ref_time_values = fc_time_values,
+  new_col_name = "all_past"
+) 
+
+arx_trailing <- epi_slide(
+  ca, 
+  ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = c("deaths", "cases"), 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = list(0, k-1), 
+                                             ahead = 1L)
+                   )$predictions,
+  before = (w+k-1), 
+  ref_time_values = fc_time_values,
+  new_col_name = "trailing"
+)
+
+
+```
+
+```{r plot-arx-predictions}
+arx_trailing %>% 
+  left_join(arx_all_past, join_by(time_value, geo_value, cases, deaths)) %>%
+  mutate(observed = deaths, 
+         `predicted (all past)` = all_past_.pred, 
+         `predicted (trailing)` = trailing_.pred) %>%
+  pivot_longer(cols = c(observed, `predicted (all past)`, `predicted (trailing)`), 
+               names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  labs(title = "Observed and predicted Covid-19 deaths on test set (California)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+```{r arx-check}
+# Check that manual implementation and epipredict give same results
+
+if(!all(test_arx$time_value == arx_all_past$all_past_target_date) | 
+   !all(test_arx$time_value == arx_trailing$trailing_target_date)) {
+  print("Error: target dates do not match!")
+}
+
+if(!all(test_arx$pred_cv == arx_all_past$all_past_.pred)) {
+  print("Error: all past predictions do not match!")
+}
+
+if (!all(test_arx$pred_trailing_cv == arx_trailing$trailing_.pred)) {
+  print("Error: trailing predictions do not match!")
+}
+
+different <- (test_arx$pred_trailing_cv != arx_trailing$trailing_.pred)
+
+cbind("manual" = test_arx$pred_trailing_cv,
+      "epipredict" = arx_trailing$trailing_.pred)[different, ]
+
+```
+   
+## Prediction Intervals
+
+So far we focused on point predictions, i.e. we provided one "best" value as our 
+guess for the number of deaths. We will now introduce 95% predictions intervals:
+each forecast will be accompanied by an interval (i.e. a range of values) that 
+we expect to cover the true number of deaths about 95% of the times.
+
+To get prediction intervals from the previous code, we only need to tweak our 
+call to `predict` by adding as an input: `interval = "prediction", level = 0.95`.
+The output from `predict` will then be a matrix with first column a point
+estimate, second column the lower limit of the interval, and third column the 
+upper limit of the interval. 
+
+Next, we plot the point predictions on the training and test set together with 
+the prediction intervals (shadowed bands).
+
+```{r arx-intervals-test}
+pred_test_ci <- predict(arx_fit, newdata = test_arx, 
+                        interval = "prediction", level = 0.95)
+
+head(pred_test_ci)
+
+test_arx %>% 
+  mutate(observed = deaths, 
+         predicted = pred_test_ci[, 1], 
+         lower = pred_test_ci[, 2], 
+         upper = pred_test_ci[, 3]) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_line(aes(col = Deaths)) + 
+  labs(title = "ARX: point predictions and intervals on training and test sets", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+We can also provide prediction intervals for the cross-validated approach.
+
+Notice that the width of the prediction intervals varies substantially for the 
+trailing window method.
+
+```{r arx-intervals-time-series-cv}
+n <- nrow(ca)
+pred_all_past = pred_trailing <- matrix(NA, nrow = n - t0, ncol = 3)
+w <- 30 # trailing window size
+
+for (t in (t0+1):n) {
+  arx_all_past = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
+                    subset = (1:n) <= (t-1)) 
+  arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
+                    subset = (1:n) <= (t-1) & (1:n) > (t-1-w)) 
+  pred_all_past[t-t0, ] = predict(arx_all_past, newdata = data.frame(ca[t, ]),
+                                interval = "prediction", level = 0.95)
+  pred_trailing[t-t0, ] = predict(arx_trailing, newdata = data.frame(ca[t, ]),
+                                interval = "prediction", level = 0.95)
+}
+
+test_arx %>% 
+  mutate(observed = deaths, 
+         `predicted (CV)` = pred_all_past[, 1], 
+         lower = pred_all_past[, 2], 
+         upper = pred_all_past[, 3]) %>%
+  pivot_longer(cols = c(observed, `predicted (CV)`), 
+               names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_line(aes(col = Deaths)) + 
+  labs(title = "ARX: point predictions and intervals (time-series CV)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+
+test_arx %>% 
+  mutate(observed = deaths, 
+         `predicted (CV + trailing)` = pred_trailing[, 1], 
+         lower = pred_trailing[, 2], 
+         upper = pred_trailing[, 3]) %>%
+  pivot_longer(cols = c(observed, `predicted (CV + trailing)`), 
+               names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_line(aes(col = Deaths)) + 
+  labs(title = "ARX: point predictions and intervals (time-series CV)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+
+# Quantile Regression
+
+```{r q-reg-library}
+#install.packages("quantreg")
+library(quantreg)
+```
+
+```{r train/test-q-reg}
+train_rq <- ca %>% filter(time_value <= t0_date)
+test_rq <- ca %>% filter(time_value > t0_date)
+```
+
+
+```{r q-reg}
+q_reg = rq(deaths ~ lagged_deaths + lagged_cases, data = train_rq, 
+           tau = c(.025, .5, .975))
+coef(q_reg)
+```
+
+
+## Train/test predictions
+
+Let's plot the predictions (point estimates and 95% confidence intervals) 
+for the training and test sets. 
+
+```{r q-reg-training}
+pred_train <- rbind(matrix(NA, nrow = k, ncol = 3), 
+                    predict(q_reg))
+pred_test <- predict(q_reg, newdata = test_rq)
+
+preds <- rbind(pred_train, pred_test)
+
+ca %>% 
+  mutate(observed = deaths, 
+         predicted = preds[, 2],
+         lower = preds[, 1],
+         upper = preds[, 3]) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_line(aes(col = Deaths)) + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "Quantile Regression: point predictions and intervals (train/test)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+## Time-series cross-validation
+
+We will now perform time-series cross-validation fitting the model on:
+
+- all the past data up to the forecasting time
+- a trailing window of data up to the forecasting time
+
+We set the trailing window to have size = 30, 
+and we perform 1-step-ahead predictions.
+
+```{r q-reg-time-series-cv}
+n <- nrow(ca)
+pred_all_past = pred_trailing <- matrix(NA, nrow = n - t0, ncol = 3)
+w <- 30 # trailing window size
+
+for (t in (t0+1):n) {
+  rq_all_past = rq(deaths ~ lagged_deaths + lagged_cases, tau = c(.025, .5, .975),
+                   data = ca, subset = (1:n) <= (t-1)) 
+  rq_trailing = rq(deaths ~ lagged_deaths + lagged_cases, tau = c(.025, .5, .975),
+                   data = ca, subset = (1:n) <= (t-1) & (1:n) > (t-1-w)) 
+  pred_all_past[t-t0, ] = predict(rq_all_past, newdata = data.frame(ca[t, ]))
+  pred_trailing[t-t0, ] = predict(rq_trailing, newdata = data.frame(ca[t, ]))
+}
+```
+
+We plot the 1-step-ahead predictions obtained by the model fitted on all past 
+data and on trailing windows. 
+
+```{r q-reg-plot-cv-predictions}
+test_rq %>% 
+  mutate(observed = deaths, 
+         `predicted (CV)` = pred_all_past[, 2],
+         lower = pred_all_past[, 1],
+         upper = pred_all_past[, 3]) %>%
+  pivot_longer(cols = c(`predicted (CV)`, 
+                        observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
+              fill = hue_pal()(2)[2]) +
+  geom_line(aes(col = Deaths)) + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "Quantile Regression: point predictions and intervals (time-series CV)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+
+test_rq %>% 
+  mutate(observed = deaths, 
+         `predicted (trailing + CV)` = pred_trailing[, 2], 
+          lower = pred_trailing[, 1],
+          upper = pred_trailing[, 3]) %>%
+  pivot_longer(cols = c(`predicted (trailing + CV)`, 
+                        observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
+              fill = hue_pal()(2)[2]) +
+  geom_line(aes(col = Deaths)) + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "Quantile Regression: point predictions and intervals (time-series CV)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+--------------------------------------------------------------------------------
+
+AFTERNOON
+
+# LASSO
+
+```{r lasso}
+ar_lasso <- arx_forecaster(epi_data = train %>% as_epi_df(), 
+                           outcome = "deaths", 
+                           predictors = "deaths", 
+                           trainer = linear_reg(penalty = double(1), 
+                                                mixture = double(1)) %>% 
+                             set_engine("glmnet") %>%
+                             #set_engine("spark") %>% 
+                             translate(),
+                           args_list = arx_args_list(lags = c(0L, 7L, 14L), 
+                                                     ahead = 1L))
+
+ar_lasso_fit <- extract_fit_parsnip(ar_lasso$epi_workflow)
+#ar_lasso_fit
+```
+
 
 # Next
 
-- Fit AR using epi-slide, check if error goes down
+- Introduce appropriate evaluation methods for probabilistic forecasters
 
-- Fit ARX using epi-slide and including lagged cases and deaths as predictors,
-check if error goes down
+- Introduce versioning
+
+- Regularization
+
+- Geo-pooling
 
 - Is there an automatic way to select best lags within epipredict 
 (e.g. using Lasso somehow)?
 
-- Introduce probabilistic forecasters (quantile regression) and appropriate 
-evaluation methods
 
