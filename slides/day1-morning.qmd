@@ -1,0 +1,78 @@
+---
+talk-title: "Title"
+talk-short-title: "{{< meta talk-title >}}"
+talk-subtitle: "Subtitle"
+author: "Daniel J. McDonald"
+other-authors: ""
+repo-address: "cmu-delphi/insightnet-workshop-2024"
+talk-date: "Venue -- dd Somemonth yyyy"
+format: revealjs
+---
+
+<!-- Set any of the above to "" to omit them -->
+
+<!-- Or adjust the formatting in _titleslide.qmd -->
+{{< include _titleslide.qmd >}}
+
+
+
+## Slides begin
+
+## Callouts
+
+::: {.callout-note}
+You can use these. See <https://quarto.org/docs/authoring/callouts.html>
+:::
+
+## Final slide {.smaller}
+
+
+### Thanks:
+
+```{r qr-codes}
+#| include: false
+#| fig-format: png
+# Code to generate QR codes to link to any external sources
+qrdat <- function(text, ecl = c("L", "M", "Q", "H")) {
+  x <- qrcode::qr_code(text, ecl)
+  n <- nrow(x)
+  s <- seq_len(n)
+  tib <- tidyr::expand_grid(x = s, y = rev(s))
+  tib$z <- c(x)
+  tib
+}
+qr1 <- qrdat("https://cmu-delphi.github.io/epiprocess/")
+qr2 <- qrdat("https://cmu-delphi.github.io/epipredict/")
+ggplot(qr1, aes(x, y, fill = z)) +
+  geom_raster() +
+  ggtitle("{epiprocess}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+ggplot(qr2, aes(x, y, fill = z)) +
+  geom_raster() +
+  labs(title = "{epipredict}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+```
+
+- The whole [CMU Delphi Team](https://delphi.cmu.edu/about/team/) (across many institutions)
+- Optum/UnitedHealthcare, Change Healthcare.
+- Google, Facebook, Amazon Web Services.
+- Quidel, SafeGraph, Qualtrics.
+- Centers for Disease Control and Prevention.
+- Council of State and Territorial Epidemiologists
+
+
+::: {layout-row=1 fig-align="center"}
+![](gfx/delphi.jpg){height="100px"}
+![](gfx/berkeley.jpg){height="100px"}
+![](gfx/cmu.jpg){height="100px"}
+![](gfx/ubc.jpg){width="250px"}
+![](gfx/stanford.jpg){width="250px"}
+:::
+
+

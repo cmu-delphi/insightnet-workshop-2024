@@ -1,0 +1,28 @@
+/*-- scss:defaults --*/
+@import 'https://fonts.googleapis.com/css?family=Open+Sans';
+
+$primary: #C41230;
+$secondary: #007BC0;
+$navbar-fg: $primary;
+$navbar-bg: rgb(255,255,255,.8);
+$footer-fg: white;
+
+$font-family-sans-serif: "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+
+/*-- scss:rules --*/
+
+.navbar {
+  border-bottom: 3px solid $primary;
+}
+
+
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $primary;
+}

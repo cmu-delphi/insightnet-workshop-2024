@@ -1,0 +1,19 @@
+{
+  "hash": "b9e8088be5623c8d48c2c37a8caa817d",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntalk-title: \"Title\"\ntalk-short-title: \"{{< meta talk-title >}}\"\ntalk-subtitle: \"Subtitle\"\nauthor: \"Daniel J. McDonald\"\nother-authors: \"\"\nrepo-address: \"cmu-delphi/insightnet-workshop-2024\"\ntalk-date: \"Venue -- dd Somemonth yyyy\"\nformat: revealjs\n---\n\n\n\n<!-- Set any of the above to \"\" to omit them -->\n\n<!-- Or adjust the formatting in _titleslide.qmd -->\n\n\n---\n---\n\n\n\\DeclareMathOperator*{\\minimize}{minimize}\n\n\n\n\n\n\n\n\n\n::: flex\n::: w-20\n\n:::\n::: w-80\n## {{< meta talk-title >}} {background-image=\"gfx/cover-art-1.svg\" background-position=\"bottom\"}\n\n### {{< meta talk-subtitle >}}\n\n<br>\n\n#### {{< meta author >}} \n\n{{< meta other-authors >}}\n\n\n{{< meta talk-date >}}\n\n\n:::\n:::\n\n\n\n\n\n\n## Slides begin\n\n## Callouts\n\n::: {.callout-note}\nYou can use these. See <https://quarto.org/docs/authoring/callouts.html>\n:::\n\n## Final slide {.smaller}\n\n\n### Thanks:\n\n\n\n\n\n\n\n- The whole [CMU Delphi Team](https://delphi.cmu.edu/about/team/) (across many institutions)\n- Optum/UnitedHealthcare, Change Healthcare.\n- Google, Facebook, Amazon Web Services.\n- Quidel, SafeGraph, Qualtrics.\n- Centers for Disease Control and Prevention.\n- Council of State and Territorial Epidemiologists\n\n\n::: {layout-row=1 fig-align=\"center\"}\n![](gfx/delphi.jpg){height=\"100px\"}\n![](gfx/berkeley.jpg){height=\"100px\"}\n![](gfx/cmu.jpg){height=\"100px\"}\n![](gfx/ubc.jpg){width=\"250px\"}\n![](gfx/stanford.jpg){width=\"250px\"}\n:::\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {
+      "include-after-body": [
+        "\n<script>\n  // htmlwidgets need to know to resize themselves when slides are shown/hidden.\n  // Fire the \"slideenter\" event (handled by htmlwidgets.js) when the current\n  // slide changes (different for each slide format).\n  (function () {\n    // dispatch for htmlwidgets\n    function fireSlideEnter() {\n      const event = window.document.createEvent(\"Event\");\n      event.initEvent(\"slideenter\", true, true);\n      window.document.dispatchEvent(event);\n    }\n\n    function fireSlideChanged(previousSlide, currentSlide) {\n      fireSlideEnter();\n\n      // dispatch for shiny\n      if (window.jQuery) {\n        if (previousSlide) {\n          window.jQuery(previousSlide).trigger(\"hidden\");\n        }\n        if (currentSlide) {\n          window.jQuery(currentSlide).trigger(\"shown\");\n        }\n      }\n    }\n\n    // hookup for slidy\n    if (window.w3c_slidy) {\n      window.w3c_slidy.add_observer(function (slide_num) {\n        // slide_num starts at position 1\n        fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);\n      });\n    }\n\n  })();\n</script>\n\n"
+      ]
+    },
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

@@ -1,0 +1,33 @@
+project:
+  type: website
+  lib-dir: site_libs
+  render:
+    - index.qmd
+    - slides/*.qmd
+
+execute:
+  freeze: auto
+
+editor: source
+
+website:
+  title: "InsightNet EpiData Workshop 2024"
+  page-footer:
+    background: primary
+    center: "This work by [CMU's Delphi Research Group](https://delphi.cmu.edu) is licensed under the [MIT license](LICENSE.md)."
+  navbar:
+    pinned: false
+    title: "<i class='bi bi-graph-down'></i> InsightNet Workshop 2024"
+    right:
+      - text: CMU Delphi
+        url: https://delphi.cmu.edu/
+      - text: Github
+        url: https://github.com/cmu-delphi/insightnet-workshop-2024
+        icon: github
+
+
+format:
+  html:
+    theme: [cosmo, assets/styles.scss]
+    toc: true
+

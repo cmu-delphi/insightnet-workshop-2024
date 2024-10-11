@@ -1,0 +1,69 @@
+---
+---
+
+\DeclareMathOperator*{\minimize}{minimize}
+
+```{r setup}
+#| include: false
+primary <- "#a8201a"
+secondary <- "#f9c80e"
+tertiary <- "#2a76dd"
+fourth_colour <- "#311847"
+library(epiprocess)
+suppressMessages(library(tidyverse))
+x <- archive_cases_dv_subset
+x_latest <- epix_as_of(x, max_version = max(x$DT$version))
+self_max = max(x$DT$version)
+versions = seq(as.Date("2020-06-01"), self_max - 1, by = "1 month")
+snapshots_all <- map_dfr(versions, function(v) { 
+  epix_as_of(x, max_version = v) %>% mutate(version = v)}) %>%
+  bind_rows(x_latest %>% mutate(version = self_max)) %>%
+  mutate(latest = version == self_max)
+snapshots <- snapshots_all %>% 
+  filter(geo_value %in% c("ca", "fl"))
+```
+
+```{r}
+#| include: false
+#| label: cover-art
+snapshots_all |>
+  arrange(geo_value, version, time_value) |>
+  # filter(!latest) |>
+  ggplot(aes(x = time_value, y = percent_cli)) +  
+  geom_line(
+    aes(color = factor(version), group = interaction(geo_value, version))
+  ) + 
+  # geom_vline(aes(color = factor(version), xintercept = version), lty = 3, 
+  #           size = 0.5) +
+  scale_x_date(minor_breaks = "month", labels = NULL) +
+  labs(x = "", y = "") + 
+  theme_void() +
+  coord_cartesian(xlim = as.Date(c("2020-10-01", NA)), ylim = c(-5, NA)) +
+  scale_color_viridis_d(option = "B", end = .8) +
+  theme(legend.position = "none", panel.background = element_blank()) +
+  geom_line(
+    data = snapshots %>% filter(latest),
+    aes(x = time_value, y = percent_cli, group = geo_value), 
+    inherit.aes = FALSE, color = primary)
+```
+
+
+
+::: flex
+::: w-20
+
+:::
+::: w-80
+## {{< meta talk-title >}} {background-image="gfx/cover-art-1.svg" background-position="bottom"}
+
+### {{< meta talk-subtitle >}}
+
+<br>
+
+#### {{< meta author >}} 
+{{< meta other-authors >}}
+
+{{< meta talk-date >}}
+:::
+:::
+

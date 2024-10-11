@@ -1,0 +1,40 @@
+---
+toc: false
+---
+
+::: column-page
+::: {layout=[45,10,45]}
+::: {#first-column}
+
+<br><br><br>
+
+![](assets/img/cover-art.svg)
+
+:::
+
+::: {#second-column}
+
+:::
+
+::: {#third-column}
+
+## Schedule
+
+Short description
+
+1. [Day 1 Morning](slides/day1-morning.qmd)
+1. Day 1 Afternoon
+1. Day 2 Morning
+1. Day 2 Afternoon
+
+
+## Instructors
+
+* Ryan J. Tibshirani
+* Daniel J. McDonald
+* Alice Clime
+* Rachel Lobay
+
+:::
+:::
+:::

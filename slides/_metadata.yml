@@ -1,0 +1,38 @@
+author: "Daniel J. McDonald"
+
+format:
+  revealjs:
+    theme: [default, themer.scss]
+    css: tachyons-minimal.css
+    logo: "gfx/delphi.jpg"
+    chalkboard: true
+    width: 1280
+    height: 720
+    html-math-method: mathjax
+    slide-number: true
+    fig-format: svg
+    fig-align: center
+    fig-width: 5.33
+    fig-height: 3
+    scrollable: false
+    history: false
+    link-external-icon: true
+    link-external-newwindow: true
+    code-overflow: wrap
+    lang: en-CA
+    footer: "{{< meta talk-short-title >}} --- {{< meta repo-address >}}"
+
+execute:
+  echo: false
+  warning: false
+
+knitr:
+  opts_chunk:
+    message: FALSE
+    dev: "svg"
+    fig.width: 5.33
+    fig.height: 3
+    fig.align: center
+    fig.path: "gfx/"
+
+editor: source

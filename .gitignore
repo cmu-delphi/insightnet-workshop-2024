@@ -1,5 +1,5 @@
 .DS_Store
-
+_site
 
 # History files
 .Rhistory
@@ -26,3 +26,5 @@
 .Renviron
 .Rproj.user
 .Rdata
+
+/.quarto/

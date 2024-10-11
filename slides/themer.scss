@@ -1,0 +1,26 @@
+/*-- scss:defaults --*/
+
+// import google fonts
+
+
+// @import url("https://fonts.googleapis.com/css2?family=EB+Garamond");
+// @import url("https://fonts.googleapis.com/css2?family=Commissioner");
+
+$primary: #a8201a;
+$secondary: #f9c80e;
+$tertiary: #2a76dd;
+$fourth-colour: #311847;
+// $font-family-sans-serif:  "Commissioner", "Source Sans Pro", Helvetica, sans-serif, !default;
+// $presentation-font-size-root: 40px;
+$body-bg: #fefefe;
+$presentation-heading-color: $primary;
+$presentation-font-size-root: 36px;
+
+$link-color: $primary;
+
+/*-- scss:rules --*/
+
+.primary {color: $primary;}
+.secondary {color: $secondary;}
+.tertiary {color: $tertiary;}
+.fourth-colour {color: $fourth-colour;}
