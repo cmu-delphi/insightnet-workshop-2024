@@ -199,7 +199,7 @@ the model in the future.
 appropriate way to estimate the prediction error is time-series cross-validation.
 
 * Assume we want to make 1-step ahead predictions (i.e. at time $t-1$ we want to 
-make a forecast for time $t$). Then, for $t = t0+1, t0+2, \dots$, we proceed
+make a forecast for time $t$). Then, for $t = t_0+1, t_0+2, \dots$, we proceed
 as follows:
 
   1. Fit the model using data up to time $t-1$
@@ -218,17 +218,17 @@ with data available up to time $t-1$.
 ## Time-series cross-validation (CV) {.smaller}
 ### $h$-step ahead predictions
 
-More in general, if we want to make $h$-step ahead predictions (i.e. at time 
+* More in general, if we want to make $h$-step ahead predictions (i.e. at time 
 $t-h$ we want to make a forecast for time $t$), we proceed as follows 
-for $t = t0+1, t0+2, \dots$
+for $t = t_0+1, t_0+2, \dots$
 
-- Fit the model using data up to time $t-h$
+  * Fit the model using data up to time $t-h$
 
-- Make a prediction for $t$ 
+  * Make a prediction for $t$ 
 
-- Record the prediction error
+  * Record the prediction error
 
-The cross-validation MSE is then
+* The cross-validation MSE is then
 
 $$CVMSE = \frac{1}{n-t_0} \sum_{t = t_0+1}^n (\hat y_{t|t-h} - y_t)^2$$
 
@@ -284,10 +284,78 @@ variables
 
 ## ARX model for COVID deaths
 
+
 # Overfitting and Regularization
 
+## Too many predictors
 
-# Probabilistic Forecasters
+* What if we fit a model with a very large number of predictors?
+
+* The estimated coefficients will be chosen to mimic the observed data very 
+closely on the training set, leading to small training error
+
+* The predictive performance on the test set might be very poor, 
+producing large split-sample and CV error
+
+
+OVERFITTING
+
+
+
+# Prediction Intervals
+
+## Point predictions vs intervals 
+
+* So far, we have only considered point predictions, i.e. we have fitted models 
+to provide our best guess on the outcome at time $t$. 
+
+
+* What if we want to provide a measure of uncertainty around our point 
+prediction or a likely range of values for the outcome at time $t$?
+
+
+* For each target time $t$, we can construct prediction intervals, i.e. provide 
+ranges of values that are expected to cover the true outcome value a fixed 
+percentage of times.
+
+## Prediction intervals via residuals
+
+## Prediction intervals via residuals
+### ARX model for COVID deaths
+
+## Quantile regression
+
+* Different approach: method that directly targets conditional quantiles of the 
+outcome.
+
+* Conditional quantile = value below which a given percentage (e.g., 25%, 50%, 
+75%) of observations fall, given specific values of the predictor variables. 
+
+* [Advantage]{.primary}: it provides a more complete picture of the outcome distribution.
+
+## Quantile regression
+### ARX model for COVID deaths
+
+
+## Evaluation
+
+* Prediction intervals are “good” if they 
+
+  * cover the truth most of the time
+  
+  * are not too wide
+  
+* Error metric that captures both desiderata: Weighted Interval Score (WIS)
+
+* $F$ = forecast composed of predicted quantiles $q_{\tau}$ for the set 
+of quantile levels $\tau$. The WIS for target variable $Y$ is represented as 
+([McDonald et al., 2021](https://www.pnas.org/doi/full/10.1073/pnas.2111453118)):
+
+$$WIS(F, Y) = 2\sum_{\tau} \phi_{\tau} (Y - q_{\tau})$$
+
+where $\phi_{\tau}(x) = \tau |x|$ for $x \geq 0$ and 
+$\phi_{\tau}(x) = (1-\tau) |x|$ for $x < 0$.
+
 # Forecasting with Versioned Data
 # Geo-pooling
 
