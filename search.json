@@ -1,0 +1,282 @@
+[
+  {
+    "objectID": "slides/day2-morning.html#section",
+    "href": "slides/day2-morning.html#section",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Forecasting and Time-Series Models",
+    "text": "Forecasting and Time-Series Models\n\n\n\n\nVenue – dd Somemonth yyyy"
+  },
+  {
+    "objectID": "slides/day2-morning.html#basics-of-linear-regression",
+    "href": "slides/day2-morning.html#basics-of-linear-regression",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Basics of linear regression",
+    "text": "Basics of linear regression\n\nAssume we observe a predictor \\(x_i\\) and an outcome \\(y_i\\) for \\(i = 1, \\dots, n\\).\nLinear regression seeks coefficients \\(\\beta_0\\) and \\(\\beta_1\\) such that\n\n\\[y_i \\approx \\beta_0 + \\beta_1 x_i\\]\nis a good approximation for every \\(i = 1, \\dots, n\\).\n\nIn R, the coefficients are found by running lm(y ~ x), where y is the vector of responses and x the vector of predictors."
+  },
+  {
+    "objectID": "slides/day2-morning.html#multiple-linear-regression",
+    "href": "slides/day2-morning.html#multiple-linear-regression",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Multiple linear regression",
+    "text": "Multiple linear regression\nGiven \\(p\\) different predictors, we seek \\((p+1)\\) coefficients such that\n\\[y_i \\approx \\beta_0 + \\beta_1 x_{i1} + \\dots + \\beta_p x_{ip}\\] is a good approximation for every \\(i = 1, \\dots, n\\)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#linear-regression-with-lagged-predictor",
+    "href": "slides/day2-morning.html#linear-regression-with-lagged-predictor",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Linear regression with lagged predictor",
+    "text": "Linear regression with lagged predictor\n\nIn time series models, the outcomes and predictors are usually indexed by time \\(t\\).\nOften we want to predict a future value of \\(y\\), given present and past values of \\(x\\).\nFor this purpose, we introduce linear regression with lagged predictors\n\n\\[y_t \\approx \\beta_0 + \\beta_1 x_{t-k}\\]\ni.e. we regress the outcome \\(y\\) at time \\(t\\) on the predictor \\(x\\) at time \\(t-k\\)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#example-covid-cases-and-deaths",
+    "href": "slides/day2-morning.html#example-covid-cases-and-deaths",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Example: COVID cases and deaths",
+    "text": "Example: COVID cases and deaths\n\nCases seem to be highly correlated with deaths several weeks later\nWhat is the lag \\(k\\) for which the correlation between cases at \\(t-k\\) and deaths at \\(t\\) is maximized?\nGiven that lag, we can fit linear regression with a lagged predictor where\n\n\\[y_t = \\text{deaths at time } t\\] \\[x_{t-k} = \\text{cases at time } t-k\\]"
+  },
+  {
+    "objectID": "slides/day2-morning.html#choosing-the-lag-k",
+    "href": "slides/day2-morning.html#choosing-the-lag-k",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Choosing the lag \\(k\\)",
+    "text": "Choosing the lag \\(k\\)\n\nLet’s split the data into a training set (before 2021-03-01), and a test set (after 2021-03-01).\nThe lag leading to largest correlation between lagged cases and deaths is \\(k = 26\\)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#fitting-lagged-linear-regression-in-r",
+    "href": "slides/day2-morning.html#fitting-lagged-linear-regression-in-r",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Fitting lagged linear regression in R",
+    "text": "Fitting lagged linear regression in R"
+  },
+  {
+    "objectID": "slides/day2-morning.html#error-metrics",
+    "href": "slides/day2-morning.html#error-metrics",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Error metrics",
+    "text": "Error metrics\n\nAssume we have predictions \\(\\hat y_{new, t}\\) for the unseen observations \\(y_{new,t}\\) over times \\(t = 1, \\dots, N\\).\nFour commonly used error metrics are:\n\nmean squared error (MSE)\nmean absolute error (MAE)\nmean absolute percentage error (MAPE)\nmean absolute scaled error (MASE)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#error-metrics-mse-and-mae",
+    "href": "slides/day2-morning.html#error-metrics-mse-and-mae",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Error metrics: MSE and MAE",
+    "text": "Error metrics: MSE and MAE\n\\[MSE = \\frac{1}{N} \\sum_{t=1}^N (y_{new, t}- \\hat y_{new, t})^2\\] \\[MAE = \\frac{1}{N} \\sum_{t=1}^N |y_{new, t}- \\hat y_{new, t}|\\]\n\nMAE gives less importance to extreme errors than MSE.\nDrawback: both metrics are scale-dependent, so they are not universally interpretable. (For example, if \\(y\\) captures height, MSE and MAE will vary depending on whether we measure in feet or meters.)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#error-metrics-mape",
+    "href": "slides/day2-morning.html#error-metrics-mape",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Error metrics: MAPE",
+    "text": "Error metrics: MAPE\n\nFixing scale-dependence:\n\n\\[MAPE = 100 \\times \\frac{1}{N} \\sum_{t=1}^N\n\\left|\\frac{y_{new, t}- \\hat y_{new, t}}{y_{new, t}}\\right|\\]\n\nDrawbacks:\n\nErratic behavior when \\(y_{new, t}\\) is close to zero\nIt assumes the unit of measurement has a meaningful zero (e.g. using Fahrenheit or Celsius to measure temperature will lead to different MAPE)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#error-metrics-mase",
+    "href": "slides/day2-morning.html#error-metrics-mase",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Error metrics: MASE",
+    "text": "Error metrics: MASE\n\\[MASE = 100 \\times \\frac{\\frac{1}{N} \\sum_{t=1}^N\n|y_{new, t}- \\hat y_{new, t}|}\n{\\frac{1}{N-1} \\sum_{t=2}^N\n|y_{new, t}- y_{new, t-1}|}\\]\n\nAdvantages:\n\nis universally interpretable (not scale dependent)\navoids the zero-pitfall\n\nMASE in words: we normalize the error of our forecasts by that of a naive method which always predicts the last observation."
+  },
+  {
+    "objectID": "slides/day2-morning.html#estimating-the-prediction-error",
+    "href": "slides/day2-morning.html#estimating-the-prediction-error",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Estimating the prediction error",
+    "text": "Estimating the prediction error\n\nAfter choosing the error metric (e.g. MSE), we need to estimate the prediction error.\nThis can be accomplished in different ways, using the\n\nTraining error\nSplit-sample error\nTime series cross-validation error (using all past data or a trailing window)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#training-error",
+    "href": "slides/day2-morning.html#training-error",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Training error",
+    "text": "Training error\n\nThe easiest but worst approach to estimate the prediction error is to use the training error, i.e. the average error on the training set that was used to fit the model.\nThe training error is\n\ngenerally too optimistic as an estimate of prediction error\nmore optimistic the more complex the model!"
+  },
+  {
+    "objectID": "slides/day2-morning.html#training-error-1",
+    "href": "slides/day2-morning.html#training-error-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Training error",
+    "text": "Training error\nLinear regression of COVID deaths on lagged cases"
+  },
+  {
+    "objectID": "slides/day2-morning.html#split-sample-error",
+    "href": "slides/day2-morning.html#split-sample-error",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Split-sample error",
+    "text": "Split-sample error\n\nTo compute the split-sample error\n\nSplit the data into training (up to time \\(t_0\\)), and test set (after \\(t_0\\))\nFit the model to the training data only\nMake predictions for the test set\nCompute the selected error metric on the test set only\n\nFormally, the split-sample MSE is\n\n\\[\\text{SplitMSE} = \\frac{1}{n-t_0} \\sum_{t = t_0 +1}^n (\\hat y_t - y_t)^2\\]\n\nIn practice, split-sample estimates of prediction error are generally pessimistic, as they mimic a situation where we would never refit the model in the future."
+  },
+  {
+    "objectID": "slides/day2-morning.html#split-sample-error-1",
+    "href": "slides/day2-morning.html#split-sample-error-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Split-sample error",
+    "text": "Split-sample error\nLinear regression of COVID deaths on lagged cases"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cross-validation-cv",
+    "href": "slides/day2-morning.html#time-series-cross-validation-cv",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series cross-validation (CV)",
+    "text": "Time-series cross-validation (CV)\n1-step ahead predictions\n\nIf we will refit the model in the future once new data become available, a more appropriate way to estimate the prediction error is time-series cross-validation.\nAssume we want to make 1-step ahead predictions (i.e. at time \\(t-1\\) we want to make a forecast for time \\(t\\)). Then, for \\(t = t_0+1, t_0+2, \\dots\\), we proceed as follows:\n\nFit the model using data up to time \\(t-1\\)\nMake a prediction for \\(t\\)\nRecord the prediction error\n\n\nThe cross-validation MSE is then\n\\[CVMSE = \\frac{1}{n-t_0} \\sum_{t = t_0+1}^n (\\hat y_{t|t-1} - y_t)^2\\]\nwhere \\(\\hat y_{t|t-1}\\) indicates a prediction for \\(y\\) at time \\(t\\) that was made with data available up to time \\(t-1\\)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cross-validation-cv-1",
+    "href": "slides/day2-morning.html#time-series-cross-validation-cv-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series cross-validation (CV)",
+    "text": "Time-series cross-validation (CV)\n\\(h\\)-step ahead predictions\n\nMore in general, if we want to make \\(h\\)-step ahead predictions (i.e. at time \\(t-h\\) we want to make a forecast for time \\(t\\)), we proceed as follows for \\(t = t_0+1, t_0+2, \\dots\\)\n\nFit the model using data up to time \\(t-h\\)\nMake a prediction for \\(t\\)\nRecord the prediction error\n\nThe cross-validation MSE is then\n\n\\[CVMSE = \\frac{1}{n-t_0} \\sum_{t = t_0+1}^n (\\hat y_{t|t-h} - y_t)^2\\]\nwhere \\(\\hat y_{t|t-h}\\) indicates a prediction for \\(y\\) at time \\(t\\) that was made with data available up to time \\(t-h\\)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-on-a-trailing-window",
+    "href": "slides/day2-morning.html#time-series-cv-on-a-trailing-window",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series CV on a trailing window",
+    "text": "Time-series CV on a trailing window\n\nSo far, when making \\(h\\)-step ahead predictions for time \\(t\\), we have fitted the model on all the data available up to time \\(t-h\\). We can instead use a trailing window, i.e. fit the model on only a window of data of length \\(w\\), starting at time \\(t-h-w\\) and ending at time \\(t-h\\).\nAdvantage: if the relationship between predictors and outcome changes over time, training the forecaster on a window of recent data can better capture the recent relationship.\nWindow length \\(w\\) considerations:\n\nif \\(w\\) is too large, the model cannot adapt to the recent predictors-outcome relation\nif \\(w\\) is too small, the fitted model may be too volatile (trained on too little data)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-all-past-vs-trailing-window",
+    "href": "slides/day2-morning.html#time-series-cv-all-past-vs-trailing-window",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series CV: all past vs trailing window",
+    "text": "Time-series CV: all past vs trailing window\nLinear regression of COVID deaths on lagged cases"
+  },
+  {
+    "objectID": "slides/day2-morning.html#autoregressive-ar-model",
+    "href": "slides/day2-morning.html#autoregressive-ar-model",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Autoregressive (AR) model",
+    "text": "Autoregressive (AR) model\n\nIdea: predicting the outcome via a linear combination of its lags\n\n\\[y_t \\approx \\phi_1 y_{t-1} + \\phi_2 y_{t-2} + \\dots + \\phi_p y_{t-p}\\]\n\nIn R, the coefficients \\(\\phi_1, \\phi_2, \\dots, \\phi_p\\) can be estimated using lm."
+  },
+  {
+    "objectID": "slides/day2-morning.html#ar-model-for-covid-deaths",
+    "href": "slides/day2-morning.html#ar-model-for-covid-deaths",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "AR model for COVID deaths",
+    "text": "AR model for COVID deaths"
+  },
+  {
+    "objectID": "slides/day2-morning.html#autoregressive-exogenous-input-arx-model",
+    "href": "slides/day2-morning.html#autoregressive-exogenous-input-arx-model",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Autoregressive exogenous input (ARX) model",
+    "text": "Autoregressive exogenous input (ARX) model\n\nIdea: predicting the outcome via a linear combination of its lags and a set of exogenous (i.e. external) input variables\nExample of ARX model\n\n\\[y_t \\approx \\sum_{i=1}^p \\phi_i y_{t-i} + \\sum_{j=1}^q \\psi_j x_{t-j}\\]\n\nWe can construct more complex ARX models with multiple lags of several exogenous variables"
+  },
+  {
+    "objectID": "slides/day2-morning.html#arx-model-for-covid-deaths",
+    "href": "slides/day2-morning.html#arx-model-for-covid-deaths",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "ARX model for COVID deaths",
+    "text": "ARX model for COVID deaths"
+  },
+  {
+    "objectID": "slides/day2-morning.html#too-many-predictors",
+    "href": "slides/day2-morning.html#too-many-predictors",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Too many predictors",
+    "text": "Too many predictors\n\nWhat if we fit a model with a very large number of predictors?\nThe estimated coefficients will be chosen to mimic the observed data very closely on the training set, leading to small training error\nThe predictive performance on the test set might be very poor, producing large split-sample and CV error\n\nOVERFITTING"
+  },
+  {
+    "objectID": "slides/day2-morning.html#point-predictions-vs-intervals",
+    "href": "slides/day2-morning.html#point-predictions-vs-intervals",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Point predictions vs intervals",
+    "text": "Point predictions vs intervals\n\nSo far, we have only considered point predictions, i.e. we have fitted models to provide our best guess on the outcome at time \\(t\\).\nWhat if we want to provide a measure of uncertainty around our point prediction or a likely range of values for the outcome at time \\(t\\)?\nFor each target time \\(t\\), we can construct prediction intervals, i.e. provide ranges of values that are expected to cover the true outcome value a fixed percentage of times."
+  },
+  {
+    "objectID": "slides/day2-morning.html#prediction-intervals-via-residuals",
+    "href": "slides/day2-morning.html#prediction-intervals-via-residuals",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Prediction intervals via residuals",
+    "text": "Prediction intervals via residuals"
+  },
+  {
+    "objectID": "slides/day2-morning.html#prediction-intervals-via-residuals-1",
+    "href": "slides/day2-morning.html#prediction-intervals-via-residuals-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Prediction intervals via residuals",
+    "text": "Prediction intervals via residuals\nARX model for COVID deaths"
+  },
+  {
+    "objectID": "slides/day2-morning.html#quantile-regression",
+    "href": "slides/day2-morning.html#quantile-regression",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Quantile regression",
+    "text": "Quantile regression\n\nDifferent approach: method that directly targets conditional quantiles of the outcome.\nConditional quantile = value below which a given percentage (e.g., 25%, 50%, 75%) of observations fall, given specific values of the predictor variables.\nAdvantage: it provides a more complete picture of the outcome distribution."
+  },
+  {
+    "objectID": "slides/day2-morning.html#quantile-regression-1",
+    "href": "slides/day2-morning.html#quantile-regression-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Quantile regression",
+    "text": "Quantile regression\nARX model for COVID deaths"
+  },
+  {
+    "objectID": "slides/day2-morning.html#evaluation-1",
+    "href": "slides/day2-morning.html#evaluation-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Evaluation",
+    "text": "Evaluation\n\nPrediction intervals are “good” if they\n\ncover the truth most of the time\nare not too wide\n\nError metric that captures both desiderata: Weighted Interval Score (WIS)\n\\(F\\) = forecast composed of predicted quantiles \\(q_{\\tau}\\) for the set of quantile levels \\(\\tau\\). The WIS for target variable \\(Y\\) is represented as (McDonald et al., 2021):\n\n\\[WIS(F, Y) = 2\\sum_{\\tau} \\phi_{\\tau} (Y - q_{\\tau})\\]\nwhere \\(\\phi_{\\tau}(x) = \\tau |x|\\) for \\(x \\geq 0\\) and \\(\\phi_{\\tau}(x) = (1-\\tau) |x|\\) for \\(x &lt; 0\\)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#callouts",
+    "href": "slides/day2-morning.html#callouts",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Callouts",
+    "text": "Callouts\n\n\n\n\n\n\nNote\n\n\nYou can use these. See https://quarto.org/docs/authoring/callouts.html"
+  },
+  {
+    "objectID": "slides/day2-morning.html#final-slide",
+    "href": "slides/day2-morning.html#final-slide",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Final slide",
+    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting and Time-Series Models — cmu-delphi/insightnet-workshop-2024"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "",
+    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon\n\n\n\n\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Clime\nRachel Lobay"
+  },
+  {
+    "objectID": "index.html#schedule",
+    "href": "index.html#schedule",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "",
+    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon"
+  },
+  {
+    "objectID": "index.html#instructors",
+    "href": "index.html#instructors",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "",
+    "text": "Ryan J. Tibshirani\nDaniel J. McDonald\nAlice Clime\nRachel Lobay"
+  },
+  {
+    "objectID": "slides/day1-morning.html#section",
+    "href": "slides/day1-morning.html#section",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Title",
+    "text": "Title\nSubtitle\n\nDaniel J. McDonald\n\nVenue – dd Somemonth yyyy"
+  },
+  {
+    "objectID": "slides/day1-morning.html#slides-begin",
+    "href": "slides/day1-morning.html#slides-begin",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Slides begin",
+    "text": "Slides begin"
+  },
+  {
+    "objectID": "slides/day1-morning.html#callouts",
+    "href": "slides/day1-morning.html#callouts",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Callouts",
+    "text": "Callouts\n\n\n\n\n\n\nNote\n\n\nYou can use these. See https://quarto.org/docs/authoring/callouts.html"
+  },
+  {
+    "objectID": "slides/day1-morning.html#final-slide",
+    "href": "slides/day1-morning.html#final-slide",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Final slide",
+    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nTitle — cmu-delphi/insightnet-workshop-2024"
+  }
+]
