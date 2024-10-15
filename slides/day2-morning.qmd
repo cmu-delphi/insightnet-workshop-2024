@@ -1,0 +1,418 @@
+---
+talk-title: "Forecasting and Time-Series Models"
+talk-short-title: "{{< meta talk-title >}}"
+talk-subtitle: ""
+author: ""
+other-authors: ""
+repo-address: "cmu-delphi/insightnet-workshop-2024"
+talk-date: "Venue -- dd Somemonth yyyy"
+format: revealjs
+---
+
+<!-- Set any of the above to "" to omit them -->
+
+<!-- Or adjust the formatting in _titleslide.qmd -->
+{{< include _titleslide.qmd >}}
+
+```{r}
+library(tidyverse)
+```
+
+## Basics of linear regression 
+
+* Assume we observe a predictor $x_i$ and an outcome $y_i$ for $i = 1, \dots, n$.
+
+* Linear regression seeks coefficients $\beta_0$ and $\beta_1$ such that
+
+$$y_i \approx \beta_0 + \beta_1 x_i$$
+
+is a good approximation for every $i = 1, \dots, n$.
+
+* In R, the coefficients are found by running `lm(y ~ x)`, where `y` is the vector 
+of responses and `x` the vector of predictors.
+
+
+## Multiple linear regression 
+
+Given $p$ different predictors, we seek $(p+1)$ coefficients such that
+
+$$y_i \approx \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}$$
+is a good approximation for every $i = 1, \dots, n$.
+
+
+## Linear regression with lagged predictor
+
+* In time series models, the outcomes and predictors are usually indexed by time 
+$t$. 
+
+* Often we want to predict a future value of $y$, given present and past 
+values of $x$. 
+
+* For this purpose, we introduce linear regression with lagged 
+predictors 
+
+$$y_t \approx \beta_0 + \beta_1 x_{t-k}$$
+
+i.e. we regress the outcome $y$ at time $t$ on the predictor $x$ at time $t-k$.
+
+## Example: COVID cases and deaths
+
+- Cases seem to be highly correlated with deaths several weeks later
+
+- What is the lag $k$ for which the correlation between cases at $t-k$ and 
+deaths at $t$ is maximized?
+
+- Given that lag, we can fit linear regression with a lagged predictor where
+
+$$y_t = \text{deaths at time } t$$
+$$x_{t-k} = \text{cases at time } t-k$$
+
+## Choosing the lag $k$
+
+* Let’s split the data into a training set (before 2021-03-01), and a test set
+(after 2021-03-01).
+
+* The lag leading to largest correlation between lagged cases and deaths is 
+$k = 26$.
+
+
+## Fitting lagged linear regression in R
+
+# Evaluation
+
+## Error metrics
+
+* Assume we have predictions $\hat y_{new, t}$ for the unseen observations 
+$y_{new,t}$ over times $t = 1, \dots, N$.
+
+* Four commonly used error metrics are:
+
+  * mean squared error (MSE)
+
+  * mean absolute error (MAE)
+
+  * mean absolute percentage error (MAPE)
+
+  * mean absolute scaled error (MASE)
+
+## Error metrics: MSE and MAE
+
+$$MSE = \frac{1}{N} \sum_{t=1}^N (y_{new, t}- \hat y_{new, t})^2$$
+$$MAE = \frac{1}{N} \sum_{t=1}^N |y_{new, t}- \hat y_{new, t}|$$
+
+* MAE gives less importance to extreme errors than MSE.
+
+* [Drawback]{.primary}: both metrics are scale-dependent, so they are not universally 
+interpretable.
+(For example, if $y$ captures height, MSE and MAE will vary depending on whether we measure in feet or meters.)
+
+## Error metrics: MAPE
+
+* Fixing scale-dependence:
+
+$$MAPE = 100 \times \frac{1}{N} \sum_{t=1}^N 
+\left|\frac{y_{new, t}- \hat y_{new, t}}{y_{new, t}}\right|$$
+
+* [Drawbacks]{.primary}:
+
+  * Erratic behavior when $y_{new, t}$ is close to zero
+
+  * It assumes the unit of measurement has a meaningful zero (e.g. using 
+Fahrenheit or Celsius to measure temperature will lead to different MAPE)
+
+
+## Error metrics: MASE
+
+$$MASE = 100 \times \frac{\frac{1}{N} \sum_{t=1}^N 
+|y_{new, t}- \hat y_{new, t}|}
+{\frac{1}{N-1} \sum_{t=2}^N 
+|y_{new, t}- y_{new, t-1}|}$$
+
+* [Advantages]{.primary}:
+
+  * is universally interpretable (not scale dependent)
+
+  * avoids the zero-pitfall
+
+* MASE in words: we normalize the error of our forecasts by that of a naive method 
+which always predicts the last observation.
+
+
+## Estimating the prediction error
+
+* After choosing the error metric (e.g. MSE), we need to estimate the prediction 
+error. 
+
+* This can be accomplished in different ways, using the
+
+  * Training error
+
+  * Split-sample error
+
+  * Time series cross-validation error (using all past data or a trailing window)
+
+
+## Training error
+
+* The easiest but [worst]{.primary} approach to estimate the prediction error is 
+to use the training error, i.e. the average error on the training set that was 
+used to fit the model.
+
+* The training error is
+
+  * generally too optimistic as an estimate of prediction error
+
+  * [more optimistic the more complex the model!]{.primary}
+
+
+## Training error
+### Linear regression of COVID deaths on lagged cases
+
+
+## Split-sample error {.smaller}
+
+* To compute the split-sample error  
+
+  1. Split the data into training (up to time $t_0$), and test set (after $t_0$)
+
+  1. Fit the model to the training data only
+
+  1. Make predictions for the test set
+
+  1. Compute the selected error metric on the test set only
+
+* Formally, the split-sample MSE is
+
+$$\text{SplitMSE} = \frac{1}{n-t_0} \sum_{t = t_0 +1}^n (\hat y_t - y_t)^2$$
+
+* In practice, split-sample estimates of prediction error are generally 
+[pessimistic]{.primary}, as they mimic a situation where we would never refit
+the model in the future. 
+
+## Split-sample error
+### Linear regression of COVID deaths on lagged cases
+
+## Time-series cross-validation (CV) {.smaller}
+### 1-step ahead predictions
+
+* If we will refit the model in the future once new data become available, a more 
+appropriate way to estimate the prediction error is time-series cross-validation.
+
+* Assume we want to make 1-step ahead predictions (i.e. at time $t-1$ we want to 
+make a forecast for time $t$). Then, for $t = t_0+1, t_0+2, \dots$, we proceed
+as follows:
+
+  1. Fit the model using data up to time $t-1$
+
+  1. Make a prediction for $t$ 
+
+  1. Record the prediction error
+
+The cross-validation MSE is then
+
+$$CVMSE = \frac{1}{n-t_0} \sum_{t = t_0+1}^n (\hat y_{t|t-1} - y_t)^2$$
+
+where	$\hat y_{t|t-1}$ indicates a prediction for $y$ at time $t$ that was made 
+with data available up to time $t-1$.
+
+## Time-series cross-validation (CV) {.smaller}
+### $h$-step ahead predictions
+
+* More in general, if we want to make $h$-step ahead predictions (i.e. at time 
+$t-h$ we want to make a forecast for time $t$), we proceed as follows 
+for $t = t_0+1, t_0+2, \dots$
+
+  * Fit the model using data up to time $t-h$
+
+  * Make a prediction for $t$ 
+
+  * Record the prediction error
+
+* The cross-validation MSE is then
+
+$$CVMSE = \frac{1}{n-t_0} \sum_{t = t_0+1}^n (\hat y_{t|t-h} - y_t)^2$$
+
+where	$\hat y_{t|t-h}$ indicates a prediction for $y$ at time $t$ that was made 
+with data available up to time $t-h$.
+
+## Time-series CV on a trailing window
+
+* So far, when making $h$-step ahead predictions for time $t$, we have fitted the 
+model on all the data available up to time $t-h$. We can instead use a trailing 
+window, i.e. fit the model on only a window of data of length $w$, starting at 
+time $t-h-w$ and ending at time $t-h$.
+
+* [Advantage]{.primary}: if the relationship between predictors and outcome changes over time,
+training the forecaster on a window of recent data can better capture the 
+recent relationship.
+
+* Window length $w$ considerations: 
+
+  * if $w$ is too large, the model cannot adapt to the recent predictors-outcome 
+relation 
+
+  * if $w$ is too small, the fitted model may be too volatile (trained on too 
+little data)
+
+
+## Time-series CV: all past vs trailing window
+### Linear regression of COVID deaths on lagged cases
+
+
+# ARX Models
+
+## Autoregressive (AR) model
+
+* [Idea]{.primary}: predicting the outcome via a linear combination of its lags 
+
+$$y_t \approx \phi_1 y_{t-1} + \phi_2 y_{t-2} + \dots + \phi_p y_{t-p}$$
+
+* In R, the coefficients $\phi_1, \phi_2, \dots, \phi_p$ can be estimated using `lm`.
+
+## AR model for COVID deaths
+
+## Autoregressive exogenous input (ARX) model
+
+* [Idea]{.primary}: predicting the outcome via a linear combination of its lags and a set of exogenous (i.e. external) input variables
+
+* Example of ARX model 
+
+$$y_t \approx \sum_{i=1}^p \phi_i y_{t-i} + \sum_{j=1}^q \psi_j x_{t-j}$$
+
+* We can construct more complex ARX models with multiple lags of several exogenous 
+variables
+
+## ARX model for COVID deaths
+
+
+# Overfitting and Regularization
+
+## Too many predictors
+
+* What if we fit a model with a very large number of predictors?
+
+* The estimated coefficients will be chosen to mimic the observed data very 
+closely on the training set, leading to small training error
+
+* The predictive performance on the test set might be very poor, 
+producing large split-sample and CV error
+
+
+OVERFITTING
+
+
+
+# Prediction Intervals
+
+## Point predictions vs intervals 
+
+* So far, we have only considered point predictions, i.e. we have fitted models 
+to provide our best guess on the outcome at time $t$. 
+
+
+* What if we want to provide a measure of uncertainty around our point 
+prediction or a likely range of values for the outcome at time $t$?
+
+
+* For each target time $t$, we can construct prediction intervals, i.e. provide 
+ranges of values that are expected to cover the true outcome value a fixed 
+percentage of times.
+
+## Prediction intervals via residuals
+
+## Prediction intervals via residuals
+### ARX model for COVID deaths
+
+## Quantile regression
+
+* Different approach: method that directly targets conditional quantiles of the 
+outcome.
+
+* Conditional quantile = value below which a given percentage (e.g., 25%, 50%, 
+75%) of observations fall, given specific values of the predictor variables. 
+
+* [Advantage]{.primary}: it provides a more complete picture of the outcome distribution.
+
+## Quantile regression
+### ARX model for COVID deaths
+
+
+## Evaluation
+
+* Prediction intervals are “good” if they 
+
+  * cover the truth most of the time
+  
+  * are not too wide
+  
+* Error metric that captures both desiderata: Weighted Interval Score (WIS)
+
+* $F$ = forecast composed of predicted quantiles $q_{\tau}$ for the set 
+of quantile levels $\tau$. The WIS for target variable $Y$ is represented as 
+([McDonald et al., 2021](https://www.pnas.org/doi/full/10.1073/pnas.2111453118)):
+
+$$WIS(F, Y) = 2\sum_{\tau} \phi_{\tau} (Y - q_{\tau})$$
+
+where $\phi_{\tau}(x) = \tau |x|$ for $x \geq 0$ and 
+$\phi_{\tau}(x) = (1-\tau) |x|$ for $x < 0$.
+
+# Forecasting with Versioned Data
+# Geo-pooling
+
+## Callouts
+
+::: {.callout-note}
+You can use these. See <https://quarto.org/docs/authoring/callouts.html>
+:::
+
+## Final slide {.smaller}
+
+### Thanks:
+
+```{r qr-codes}
+#| include: false
+#| fig-format: png
+# Code to generate QR codes to link to any external sources
+qrdat <- function(text, ecl = c("L", "M", "Q", "H")) {
+  x <- qrcode::qr_code(text, ecl)
+  n <- nrow(x)
+  s <- seq_len(n)
+  tib <- tidyr::expand_grid(x = s, y = rev(s))
+  tib$z <- c(x)
+  tib
+}
+qr1 <- qrdat("https://cmu-delphi.github.io/epiprocess/")
+qr2 <- qrdat("https://cmu-delphi.github.io/epipredict/")
+ggplot(qr1, aes(x, y, fill = z)) +
+  geom_raster() +
+  ggtitle("{epiprocess}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+ggplot(qr2, aes(x, y, fill = z)) +
+  geom_raster() +
+  labs(title = "{epipredict}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+```
+
+- The whole [CMU Delphi Team](https://delphi.cmu.edu/about/team/) (across many institutions)
+- Optum/UnitedHealthcare, Change Healthcare.
+- Google, Facebook, Amazon Web Services.
+- Quidel, SafeGraph, Qualtrics.
+- Centers for Disease Control and Prevention.
+- Council of State and Territorial Epidemiologists
+
+
+::: {layout-row=1 fig-align="center"}
+![](gfx/delphi.jpg){height="100px"}
+![](gfx/berkeley.jpg){height="100px"}
+![](gfx/cmu.jpg){height="100px"}
+![](gfx/ubc.jpg){width="250px"}
+![](gfx/stanford.jpg){width="250px"}
+:::
+
+
