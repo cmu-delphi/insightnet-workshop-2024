@@ -14,7 +14,6 @@ library(epidatr)
 library(epiprocess)
 library(epipredict)
 
-#set_cache(cache_dir = 'epi_cache', days = 30)
 theme_set(theme_bw())
 ```
 
@@ -129,15 +128,15 @@ ggplot(ca %>%
 Split data into training (before 2021-03-01) and testing set (after 2021-03-01).
 
 ```{r train-test-split}
-t0_date <- as.Date('2021-03-01')
+t0_date <- as.Date('2021-03-01') #split date
 
 train <- ca %>% filter(time_value <= t0_date)
 test <- ca %>% filter(time_value > t0_date)
 
-t0 <- nrow(train)
+t0 <- nrow(train)  #split index
 ```
 
-# Choose and create lagged predictor
+# Choose and create a lagged predictor
 
 Check which lag leads to highest correlation between cases and deaths on the 
 training set.
@@ -151,7 +150,7 @@ cor_deaths_cases <- lapply(lags,
 
 cor_deaths_cases <- list_rbind(cor_deaths_cases, names_to = 'Lag') 
 
-# best lag
+# lag leading to maximum correlation
 k <- which.max(cor_deaths_cases$cor)
 
 cor_deaths_cases %>%
@@ -198,7 +197,7 @@ ggplot(train, aes(lagged_cases, deaths)) +
   geom_point(alpha = .5) +
   geom_abline(intercept = coef(reg_lagged)[1], slope = coef(reg_lagged)[2],
               col = 'red') +
-  labs(x = "Lagged Cases", y = "Deaths") +
+  labs(x = "Lagged cases", y = "Deaths") +
   ggtitle("Deaths vs cases (lagged by 26 days) with regression line")
 
 ```
@@ -397,8 +396,8 @@ The approach with trailing window is reported next.
 ```{r epipredict-cv-trailing}
 # specify the forecast dates
 fc_time_values <- seq(
-  from = as.Date("2021-03-01"),
-  to = as.Date("2021-12-31"),
+  from = t0_date,
+  to = tail(ca$time_value, 1) - 1,
   by = "1 day"
 )
 
@@ -450,10 +449,7 @@ head(epi_pred_cv %>% select(fc_.pred, fc_target_date))
 head(test %>% select(pred_cv, time_value))
 ```
 
-**ISSUE**
-
-If we modify the algorithms to predict 7-step ahead, the manual and 
-`{epipredict}` implementations do not match.
+Predicting 7 days ahead:
 
 ```{r epipredict-cv-7ahead}
 n <- nrow(ca)
@@ -481,19 +477,20 @@ epi_pred_cv_7 <- epi_slide(
                    outcome = "deaths", 
                    predictors = "cases", 
                    trainer = linear_reg() %>% set_engine("lm"),
-                   args_list = arx_args_list(lags = k-1, ahead = n_ahead)
+                   args_list = arx_args_list(lags = k-n_ahead, ahead = n_ahead)
                    )$predictions,
   before = Inf, 
   ref_time_values = fc_time_values_7,
   new_col_name = "fc"
 )
 
-# they do not match
+# they match
 head(epi_pred_cv_7 %>% select(fc_.pred, fc_target_date))
 head(test %>% select(pred_cv_7, time_value))
 
-plot(epi_pred_cv$fc_target_date, epi_pred_cv$fc_.pred, type = 'l') +
-  lines(test$time_value, test$pred_cv_7, col = 'red')
+all(test$time_value == epi_pred_cv_7$fc_target_date)
+all(test$pred_cv_7 == epi_pred_cv_7$fc_.pred)
+
 ```
 
 --------------------------------------------------------------------------------
@@ -771,8 +768,8 @@ if(!all(test_ar$pred_cv == ar_all_past$all_past_.pred) |
 
 ```
 
-
 --------------------------------------------------------------------------------
+
 
 # ARX model
 
@@ -1008,6 +1005,168 @@ cbind("manual" = test_arx$pred_trailing_cv,
 
 ```
    
+   
+## Overfitting and Regularization
+
+```{r}
+y <- ca$deaths
+lags = 1:30  
+
+# Build predictor matrix, and run linear regression
+X = data.frame(matrix(NA, nrow = length(y), ncol = 2*length(lags)))
+for (j in 1:length(lags)) {
+  X[, j] = dplyr::lag(ca$deaths, lags[j])
+  X[, length(lags) + j] = dplyr::lag(ca$cases, lags[j])
+}
+colnames(X) = paste('X', 1:ncol(X), sep = '')
+
+head(y); head(X)
+
+y_train <- y[1:t0]
+X_train <- X[1:t0, ]
+y_test <- y[(t0+1):length(y)]
+X_test <- X[(t0+1):length(y), ]
+
+reg = lm(y_train ~ ., data = X_train)
+coef(reg)
+
+pred_train <- predict(reg)
+pred_test <- predict(reg, newdata = X_test)
+
+
+ca %>% 
+  mutate(observed = deaths, 
+         predicted = c(rep(NA, max(lags)), pred_train, pred_test)) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "ARX with 60 predictors: training and test", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+
+```
+
+```{r}
+library(glmnet) # Implements LASSO
+
+# We'll need to omit NA values explicitly, as otherwise glmnet will complain
+na_obs = 1:max(lags)
+X_train = X_train[-na_obs, ]
+y_train = y_train[-na_obs]
+
+# Ridge regression: set alpha = 0, lambda sequence will be chosen automatically
+ridge = glmnet(X_train, y_train, alpha = 0)
+beta_ridge = coef(ridge)
+lambda_ridge = ridge$lambda
+
+# Lasso regression: set alpha = 1, and let glmnet() choose a lambda sequence 
+# itself, automatically
+lasso = glmnet(X_train, y_train, alpha = 1)
+beta_lasso = coef(lasso)
+lambda_lasso = lasso$lambda
+
+dim(beta_lasso)      # One row per coefficient, one column per lambda value
+head(beta_lasso)
+
+# Predict values for second half of the time series
+yhat_ridge = predict(ridge, newx = as.matrix(X_test))
+lambda_ridge = ridge$lambda
+
+yhat_lasso = predict(lasso, newx = as.matrix(X_test))
+lambda_lasso = lasso$lambda
+
+# Compute MAE 
+mae_ridge = colMeans(abs(yhat_ridge - y[(t0+1):n]))
+mae_lasso = colMeans(abs(yhat_lasso - y[(t0+1):n]))
+
+# Select index of lambda vector which gives lowest MAE
+min_ridge = which.min(mae_ridge)
+min_lasso = which.min(mae_lasso)
+cbind(beta_ridge[, min_ridge], beta_lasso[, min_lasso])
+
+ggplot() +
+  geom_point(aes(1:nrow(beta_ridge), beta_ridge[, min_ridge])) + 
+  geom_point(aes(1:nrow(beta_lasso), beta_lasso[, min_lasso]), col = 'red') +
+  xlab('Regressor') + 
+  ylab('Estimated coefficient')
+
+min(mae_ridge); min(mae_lasso)
+```
+
+
+```{r}
+pred_train <- predict(lasso, newx = as.matrix(X_train))[, min_lasso] 
+pred_test <- yhat_lasso[, min_lasso]
+
+ca %>% 
+  mutate(observed = deaths, 
+         predicted = c(rep(NA, max(lags)), pred_train, pred_test)) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "ARX + LASSO with 60 predictors: training and test", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+```{r}
+pred_train <- predict(ridge, newx = as.matrix(X_train))[, min_ridge] 
+pred_test <- yhat_ridge[, min_ridge]
+
+ca %>% 
+  mutate(observed = deaths, 
+         predicted = c(rep(NA, max(lags)), pred_train, pred_test)) %>%
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "ARX + Ridge with 60 predictors: training and test", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+```{r}
+yhat_ridge = matrix(NA, ncol = length(lambda_ridge), nrow = n-t0) 
+yhat_lasso = matrix(NA, ncol = length(lambda_lasso), nrow = n-t0) 
+
+for (t in (t0+1):n) {
+  inds = t-1-w < 1:n & 1:n <= t-1
+  ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = lambda_ridge)
+  lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = lambda_lasso)
+  yhat_ridge[t-t0, ] = predict(ridge_trail, newx = as.matrix(X[t, ]))
+  yhat_lasso[t-t0, ] = predict(lasso_trail, newx = as.matrix(X[t, ]))
+}
+
+mae_ridge = colMeans(abs(yhat_ridge - y[(t0+1):n]))
+mae_lasso = colMeans(abs(yhat_lasso - y[(t0+1):n]))
+
+min_ridge = which.min(mae_ridge)
+min_lasso = which.min(mae_lasso)
+
+min(mae_ridge); min(mae_lasso)
+```
+
+```{r}
+pred_cv_ridge <- yhat_ridge[, min_ridge]
+pred_cv_lasso <- yhat_lasso[, min_lasso]
+
+test %>% 
+  mutate(observed = deaths, 
+         ridge = pred_cv_ridge,
+         lasso = pred_cv_lasso) %>%
+  pivot_longer(cols = c(observed, ridge, lasso), names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line() + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "ARX + Ridge/LASSO with 60 predictors: time-series CV", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
 ## Prediction Intervals
 
 So far we focused on point predictions, i.e. we provided one "best" value as our 
@@ -1037,9 +1196,10 @@ test_arx %>%
          upper = pred_test_ci[, 3]) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
+              fill = hue_pal()(2)[2]) +
   geom_line(aes(col = Deaths)) + 
-  labs(title = "ARX: point predictions and intervals on training and test sets", 
+  labs(title = "ARX: point predictions and intervals on test set", 
        x = "", y = "Covid-19 deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
@@ -1052,6 +1212,8 @@ trailing window method.
 ```{r arx-intervals-time-series-cv}
 n <- nrow(ca)
 pred_all_past = pred_trailing <- matrix(NA, nrow = n - t0, ncol = 3)
+colnames(pred_all_past) = colnames(pred_trailing) <- c('prediction', 
+                                                       'lower', 'upper')
 w <- 30 # trailing window size
 
 for (t in (t0+1):n) {
@@ -1065,29 +1227,36 @@ for (t in (t0+1):n) {
                                 interval = "prediction", level = 0.95)
 }
 
-test_arx %>% 
+lm_pred_all_past <- cbind(test_arx %>% select(time_value, deaths),
+                           pred_all_past)
+
+lm_pred_trailing <- cbind(test_arx %>% select(time_value, deaths),
+                           pred_trailing)
+
+```
+
+```{r plot arx-intervals-cv}
+lm_pred_all_past %>% 
   mutate(observed = deaths, 
-         `predicted (CV)` = pred_all_past[, 1], 
-         lower = pred_all_past[, 2], 
-         upper = pred_all_past[, 3]) %>%
+         `predicted (CV)` = prediction) %>%
   pivot_longer(cols = c(observed, `predicted (CV)`), 
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
+              fill = hue_pal()(2)[2]) +
   geom_line(aes(col = Deaths)) + 
   labs(title = "ARX: point predictions and intervals (time-series CV)", 
        x = "", y = "Covid-19 deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 
-test_arx %>% 
+lm_pred_trailing %>% 
   mutate(observed = deaths, 
-         `predicted (CV + trailing)` = pred_trailing[, 1], 
-         lower = pred_trailing[, 2], 
-         upper = pred_trailing[, 3]) %>%
+         `predicted (CV + trailing)` = prediction) %>%
   pivot_longer(cols = c(observed, `predicted (CV + trailing)`), 
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
+              fill = hue_pal()(2)[2]) +
   geom_line(aes(col = Deaths)) + 
   labs(title = "ARX: point predictions and intervals (time-series CV)", 
        x = "", y = "Covid-19 deaths per 100k people") +
@@ -1110,8 +1279,9 @@ test_rq <- ca %>% filter(time_value > t0_date)
 
 
 ```{r q-reg}
+quantile_levels <- c(0.025, 0.5, 0.975)
 q_reg = rq(deaths ~ lagged_deaths + lagged_cases, data = train_rq, 
-           tau = c(.025, .5, .975))
+           tau = quantile_levels)
 coef(q_reg)
 ```
 
@@ -1135,7 +1305,8 @@ ca %>%
          upper = preds[, 3]) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, fill = "#00BFC4") +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
+              fill = hue_pal()(2)[2]) +
   geom_line(aes(col = Deaths)) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(title = "Quantile Regression: point predictions and intervals (train/test)", 
@@ -1157,29 +1328,36 @@ and we perform 1-step-ahead predictions.
 ```{r q-reg-time-series-cv}
 n <- nrow(ca)
 pred_all_past = pred_trailing <- matrix(NA, nrow = n - t0, ncol = 3)
+colnames(pred_all_past) = colnames(pred_trailing) <- c('lower', 'median', 
+                                                       'upper')
+
 w <- 30 # trailing window size
 
 for (t in (t0+1):n) {
-  rq_all_past = rq(deaths ~ lagged_deaths + lagged_cases, tau = c(.025, .5, .975),
+  rq_all_past = rq(deaths ~ lagged_deaths + lagged_cases, tau = quantile_levels,
                    data = ca, subset = (1:n) <= (t-1)) 
-  rq_trailing = rq(deaths ~ lagged_deaths + lagged_cases, tau = c(.025, .5, .975),
+  rq_trailing = rq(deaths ~ lagged_deaths + lagged_cases, tau = quantile_levels,
                    data = ca, subset = (1:n) <= (t-1) & (1:n) > (t-1-w)) 
   pred_all_past[t-t0, ] = predict(rq_all_past, newdata = data.frame(ca[t, ]))
   pred_trailing[t-t0, ] = predict(rq_trailing, newdata = data.frame(ca[t, ]))
 }
+
+rq_pred_all_past <- cbind(test_rq %>% select(time_value, deaths),
+                           pred_all_past)
+
+rq_pred_trailing <- cbind(test_rq %>% select(time_value, deaths),
+                           pred_trailing)
+
 ```
 
 We plot the 1-step-ahead predictions obtained by the model fitted on all past 
 data and on trailing windows. 
 
 ```{r q-reg-plot-cv-predictions}
-test_rq %>% 
+rq_pred_all_past %>% 
   mutate(observed = deaths, 
-         `predicted (CV)` = pred_all_past[, 2],
-         lower = pred_all_past[, 1],
-         upper = pred_all_past[, 3]) %>%
-  pivot_longer(cols = c(`predicted (CV)`, 
-                        observed), names_to = 'Deaths') %>%
+         `predicted (CV)` = median) %>%
+  pivot_longer(cols = c(`predicted (CV)`, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
               fill = hue_pal()(2)[2]) +
@@ -1189,13 +1367,11 @@ test_rq %>%
        x = "", y = "Covid-19 deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 
-test_rq %>% 
+rq_pred_trailing %>% 
   mutate(observed = deaths, 
-         `predicted (trailing + CV)` = pred_trailing[, 2], 
-          lower = pred_trailing[, 1],
-          upper = pred_trailing[, 3]) %>%
-  pivot_longer(cols = c(`predicted (trailing + CV)`, 
-                        observed), names_to = 'Deaths') %>%
+         `predicted (trailing + CV)` = median) %>%
+  pivot_longer(cols = c(`predicted (trailing + CV)`, observed), 
+               names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4, 
               fill = hue_pal()(2)[2]) +
@@ -1205,6 +1381,385 @@ test_rq %>%
        x = "", y = "Covid-19 deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
+
+# Evaluation for Prediction Intervals 
+
+Are the intervals obtained actually covering the observed death rate about 95% 
+of the times? 
+How do we compare the performance of different prediction intervals?
+
+We will first look into actual coverage of the prediction intervals we obtained, 
+and then consider a metric called "Weighted Interval Score" (WIS).
+
+The coverage of ARX (fittem via `lm`) on all past data is around the expected 
+coverage of 95%:
+
+```{r lm-coverage-all-past}
+lm_pred_all_past %>%
+  summarise(coverage = mean(deaths >= lower & deaths <= upper, 
+                            na.rm = TRUE))
+```
+
+The actual coverage for the same model trained on a trailing window is a bit 
+lower:
+
+```{r lm-coverage-trailing}
+lm_pred_trailing %>%
+  summarise(coverage = mean(deaths >= lower & deaths <= upper, 
+                            na.rm = TRUE))
+```
+
+The coverage of the model fitted by quantile regression on all past data is 
+quite low:
+
+```{r rq-coverage-all-past}
+rq_pred_all_past %>%
+  summarise(coverage = mean(deaths >= lower & deaths <= upper, 
+                            na.rm = TRUE))
+```
+
+The actual coverage for the same model trained on a trailing window is even
+lower:
+
+```{r rq-coverage-trailing}
+rq_pred_trailing %>%
+  summarise(coverage = mean(deaths >= lower & deaths <= upper, 
+                            na.rm = TRUE))
+```
+
+We will now evaluate the forecast intervals using a different measure: the 
+Weighted Interval Score (WIS). The following is a function to compute the WIS, 
+given observed data (`truth`), and corresponding `estimates` for different 
+quantiles (`quantile_levels`).
+
+```{r wis-function}
+WIS <- function(truth, estimates, quantile_levels) {
+  2 * mean(pmax(
+    quantile_levels * (truth - estimates),
+    (1 - quantile_levels) * (estimates - truth),
+    na.rm = TRUE
+  ))
+}
+```
+
+Below is the mean WIS for the ARX model fitted via `lm` on all past data.
+
+```{r wis-lm-all-past}
+lm_pred_all_past %>% 
+  rowwise() %>%
+  mutate(wis = WIS(deaths,
+                   c(lower, prediction, upper),
+                   quantile_levels)) %>%
+  ungroup() %>%
+  summarise(mean_wis = mean(wis, na.rm = T))
+```
+
+The mean WIS for the same model fitted on a trailing window is:
+
+```{r wis-lm-trailing}
+lm_pred_trailing %>% 
+  rowwise() %>%
+  mutate(wis = WIS(deaths,
+                   c(lower, prediction, upper),
+                   quantile_levels)) %>%
+  ungroup() %>%
+  summarise(mean_wis = mean(wis, na.rm = T))
+```
+
+
+Below is the mean WIS for the ARX model fitted via `rq` on all past data.
+
+```{r wis-lm-all-past}
+rq_pred_all_past %>% 
+  rowwise() %>%
+  mutate(wis = WIS(deaths,
+                   c(lower, median, upper),
+                   quantile_levels)) %>%
+  ungroup() %>%
+  summarise(mean_wis = mean(wis, na.rm = T))
+```
+
+The mean WIS for the same model fitted on a trailing window is:
+
+```{r wis-lm-trailing}
+rq_pred_trailing %>% 
+  rowwise() %>%
+  mutate(wis = WIS(deaths,
+                   c(lower, median, upper),
+                   quantile_levels)) %>%
+  ungroup() %>%
+  summarise(mean_wis = mean(wis, na.rm = T))
+```
+
+
+
+# Forecasting with Versioned Data
+
+```{r download-versioned-data}
+states <- "*"
+
+cases_archive <- pub_covidcast(
+  source = "jhu-csse",
+  signals = "confirmed_incidence_prop",
+  time_type = "day",
+  geo_type = "state",
+  time_values = epirange(20200401, 20220101),
+  geo_values = states,
+  issues = epirange(20200401, 20220101)) %>%
+  select(geo_value, time_value, version = issue, case_rate = value) %>%
+  arrange(geo_value, time_value) %>%
+  as_epi_archive(compactify = FALSE)
+
+deaths_archive <- pub_covidcast(
+  source = "jhu-csse",
+  signals = "deaths_incidence_prop",
+  time_type = "day",
+  geo_type = "state",
+  time_values = epirange(20200401, 20220101),
+  geo_values = states,
+  issues = epirange(20200401, 20220101)) %>%
+  select(geo_value, time_value, version = issue, death_rate = value) %>%
+  arrange(geo_value, time_value) %>%
+  as_epi_archive(compactify = FALSE)
+
+data_archive <- epix_merge(cases_archive, deaths_archive, sync = "locf")
+
+data_archive
+```
+
+```{r weekly-avg}
+#fc_time_values <- seq(
+#  from = as.Date("2020-09-01"),
+#  to = as.Date("2021-12-31"),
+#  by = "1 month"
+#)
+
+fc_time_values <- seq(
+  from = t0_date,
+  to = as.Date("2021-12-31"),
+  by = "1 day"
+)
+
+data_archive <- data_archive %>%
+  epix_slide(
+    before = Inf, 
+    ref_time_values = fc_time_values,
+    function(x, gk, rtv) {
+      x %>%
+        #group_by(geo_value) %>%
+        epi_slide_mean(case_rate, before = 6L) %>%
+        epi_slide_mean(death_rate, before = 6L) %>%
+        #ungroup() %>%
+        rename(case_rate_7d_av = slide_value_case_rate,
+               death_rate_7d_av = slide_value_death_rate)
+    }
+  ) %>%
+  rename(version = time_value) %>%
+  rename(
+    time_value = slide_value_time_value,
+    geo_value = slide_value_geo_value,
+    cases = slide_value_case_rate_7d_av,
+    deaths = slide_value_death_rate_7d_av
+  ) %>%
+  select(version, time_value, geo_value, cases, deaths) %>%
+  as_epi_archive(compactify = TRUE)
+
+#saveRDS(x$DT, file = "case_death_rate_archive.rds")
+
+ca_archive <- data_archive$DT %>% 
+  #filter(geo_value == "ca") %>%
+  as_epi_archive()
+
+ca_archive
+```
+
+```{r versioned-quantile-reg}
+pred_all_past = pred_trailing <- matrix(NA, ncol = 4, nrow = 0)
+
+w <- 30 # trailing window size
+
+for (fc_date in fc_time_values) {
+  data <- epix_as_of(ca_archive, max_version = as.Date(fc_date))
+  data$lagged_deaths <- dplyr::lag(data$deaths, 1)
+  data$lagged_cases <- dplyr::lag(data$cases, k)
+  
+  rq_all_past <- rq(deaths ~ lagged_deaths + lagged_cases, 
+                    tau = c(.025, .5, .975), data = data) 
+  rq_trailing <- rq(deaths ~ lagged_deaths + lagged_cases, 
+                    tau = c(.025, .5, .975), 
+                    data = data %>% 
+                      filter(time_value > (max(time_value) - w))) 
+  
+  new <- data.frame(geo_value = "ca", 
+                    time_value = max(data$time_value) + 1, 
+                    cases = NA, deaths = NA, 
+                    lagged_deaths = tail(data$deaths, 1), 
+                    lagged_cases = (data %>% 
+                                      filter(time_value == 
+                                               (max(time_value) - k + 1)))$cases)
+  
+  pred_all_past <- rbind(pred_all_past, 
+                         cbind('target_date' = new$time_value, 
+                               predict(rq_all_past, newdata = new)))
+  pred_trailing <- rbind(pred_trailing, 
+                         cbind('target_date' = new$time_value, 
+                               predict(rq_trailing, newdata = new)))
+}
+
+pred_all_past <- as.data.frame(pred_all_past, 
+                               row.names = 1:nrow(pred_all_past)) %>%
+  mutate(target_date = as.Date(target_date)) %>%
+  rename(median = `tau= 0.500`,
+         lower = `tau= 0.025`,
+         upper = `tau= 0.975`) %>%
+  full_join(ca %>% 
+              select(time_value, deaths), 
+            join_by(target_date == time_value)) %>%
+  arrange(target_date)
+
+
+pred_trailing <- as.data.frame(pred_trailing, 
+                               row.names = 1:nrow(pred_trailing)) %>%
+  mutate(target_date = as.Date(target_date)) %>%
+  rename(median = `tau= 0.500`,
+         lower = `tau= 0.025`,
+         upper = `tau= 0.975`) %>%
+  full_join(ca %>% 
+              select(time_value, deaths), 
+            join_by(target_date == time_value)) %>%
+  arrange(target_date)
+
+```
+
+
+```{r plot-versioned-cv}
+pred_all_past %>%
+  mutate(observed = deaths, 
+         `predicted (CV)` = median) %>%
+  pivot_longer(cols = c(`predicted (CV)`, observed), names_to = 'Deaths') %>%
+  ggplot(aes(target_date, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4) +
+  geom_line(aes(col = Deaths)) + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "Versioned Quantile Regression (time-series CV)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+```{r plot-versioned-cv-trailing}
+pred_trailing %>%
+  mutate(observed = deaths, 
+         `predicted (CV + trailing)` = median) %>%
+  pivot_longer(cols = c(`predicted (CV + trailing)`, 
+                        observed), names_to = 'Deaths') %>%
+  ggplot(aes(target_date, value)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4) +
+  geom_line(aes(col = Deaths)) + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(title = "Versioned Quantile Regression (time-series CV + trailing)", 
+       x = "", y = "Covid-19 deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+Are the intervals obtained actually covering the observed death rate about 95% 
+of the times?
+
+```{r quantile-reg-coverage-all-past}
+pred_all_past %>%
+  summarise(coverage = mean(deaths >= lower & deaths <= upper, 
+                            na.rm = TRUE))
+```
+
+The actual coverage for the model trained on all past data is lower than 95%. 
+If we look at the model trained on a trailing window, coverage is even lower.
+
+```{r quantile-reg-coverage-trailing}
+pred_trailing %>%
+  summarise(coverage = mean(deaths >= lower & deaths <= upper, 
+                            na.rm = TRUE))
+```
+
+Below is the mean WIS for the model fitted on all past data.
+
+```{r wis-all-past}
+pred_all_past %>% 
+  rowwise() %>%
+  mutate(wis = WIS(deaths,
+                   c(lower, median, upper),
+                   c(.025, .5, .975))) %>%
+  ungroup() %>%
+  summarise(mean_wis = mean(wis, na.rm = T))
+```
+
+The mean WIS for the model fitted on a trailing window is:
+
+```{r wis-trailing}
+pred_trailing %>% 
+  rowwise() %>%
+  mutate(wis = WIS(deaths,
+                   c(lower, median, upper),
+                   c(.025, .5, .975))) %>%
+  ungroup() %>%
+  summarise(mean_wis = mean(wis, na.rm = T))
+```
+
+--------------------------------------------------------------------------------
+
+```{r}
+aheads <- c(7, 14, 21)
+
+forecaster <- function(x) {
+  map(aheads, function(ahead) {
+    arx_forecaster(
+      epi_data = x,
+      outcome = "death_rate_7d_av",
+      predictors = c("death_rate_7d_av", "case_rate_7d_av"),
+      trainer = quantile_reg(),
+      args_list = arx_args_list(lags = c(0, 7, 14, 21), ahead = ahead)
+    )$predictions
+  }) %>%
+    bind_rows()
+}
+
+arx_preds <- data %>%
+  epix_slide(~ forecaster(.x),
+    before = 120, ref_time_values = fc_time_values,
+    names_sep = NULL
+  ) %>%
+  mutate(engine_type = quantile_reg()$engine) %>%
+  mutate(ahead_val = target_date - forecast_date)
+
+x_latest <- epix_as_of(data, 
+                       max_version = max(data$versions_end))
+```
+
+
+```{r}
+states_to_show <- c("ca", "ny", "mi", "az")
+
+fc_states <- arx_preds %>%
+  filter(geo_value %in% states_to_show) %>%
+  pivot_quantiles_wider(.pred_distn)
+
+x_latest_states <- x_latest %>% filter(geo_value %in% states_to_show)
+
+ggplot(fc_states, aes(target_date, group = time_value)) +
+  geom_ribbon(aes(ymin = `0.05`, ymax = `0.95`, fill = geo_value), alpha = 0.4) +
+  geom_line(
+    data = x_latest_states, aes(x = time_value, y = death_rate_7d_av),
+    inherit.aes = FALSE, color = "gray50"
+  ) +
+  geom_line(aes(y = .pred, color = geo_value)) +
+  geom_point(aes(y = .pred, color = geo_value), size = 0.5) +
+  geom_vline(aes(xintercept = time_value), linetype = 2, alpha = 0.5) +
+  facet_wrap(~geo_value, scales = "free_y", ncol = 1L) +
+  scale_x_date(minor_breaks = "month", date_labels = "%b %y") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1") +
+  labs(x = "Date", y = "7 day average COVID-19 death rates") +
+  theme(legend.position = "none")
+```
+
 
 --------------------------------------------------------------------------------
 
@@ -1227,19 +1782,5 @@ ar_lasso <- arx_forecaster(epi_data = train %>% as_epi_df(),
 ar_lasso_fit <- extract_fit_parsnip(ar_lasso$epi_workflow)
 #ar_lasso_fit
 ```
-
-
-# Next
-
-- Introduce appropriate evaluation methods for probabilistic forecasters
-
-- Introduce versioning
-
-- Regularization
-
-- Geo-pooling
-
-- Is there an automatic way to select best lags within epipredict 
-(e.g. using Lasso somehow)?
 
 
