@@ -7,6 +7,13 @@
     "text": "Forecasting and Time-Series Models\n\n\n\n\nVenue – dd Somemonth yyyy"
   },
   {
+    "objectID": "slides/day2-morning.html#outline",
+    "href": "slides/day2-morning.html#outline",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Outline",
+    "text": "Outline\n\nLinear Regression for Time Series Data\nEvaluation Methods\nARX Models\nOverfitting and Regularization\nPrediction Intervals\nForecasting with Versioned Data\nGeo-pooling"
+  },
+  {
     "objectID": "slides/day2-morning.html#basics-of-linear-regression",
     "href": "slides/day2-morning.html#basics-of-linear-regression",
     "title": "InsightNet EpiData Workshop 2024",
@@ -18,7 +25,7 @@
     "href": "slides/day2-morning.html#multiple-linear-regression",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Multiple linear regression",
-    "text": "Multiple linear regression\nGiven \\(p\\) different predictors, we seek \\((p+1)\\) coefficients such that\n\\[y_i \\approx \\beta_0 + \\beta_1 x_{i1} + \\dots + \\beta_p x_{ip}\\] is a good approximation for every \\(i = 1, \\dots, n\\)."
+    "text": "Multiple linear regression\n\nGiven \\(p\\) different predictors, we seek \\((p+1)\\) coefficients such that\n\n\\[y_i \\approx \\beta_0 + \\beta_1 x_{i1} + \\dots + \\beta_p x_{ip}\\] is a good approximation for every \\(i = 1, \\dots, n\\)."
   },
   {
     "objectID": "slides/day2-morning.html#linear-regression-with-lagged-predictor",
@@ -28,25 +35,32 @@
     "text": "Linear regression with lagged predictor\n\nIn time series models, the outcomes and predictors are usually indexed by time \\(t\\).\nOften we want to predict a future value of \\(y\\), given present and past values of \\(x\\).\nFor this purpose, we introduce linear regression with lagged predictors\n\n\\[y_t \\approx \\beta_0 + \\beta_1 x_{t-k}\\]\ni.e. we regress the outcome \\(y\\) at time \\(t\\) on the predictor \\(x\\) at time \\(t-k\\)."
   },
   {
-    "objectID": "slides/day2-morning.html#example-covid-cases-and-deaths",
-    "href": "slides/day2-morning.html#example-covid-cases-and-deaths",
+    "objectID": "slides/day2-morning.html#example-covid-cases-and-deaths-in-california",
+    "href": "slides/day2-morning.html#example-covid-cases-and-deaths-in-california",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Example: COVID cases and deaths",
-    "text": "Example: COVID cases and deaths\n\nCases seem to be highly correlated with deaths several weeks later\nWhat is the lag \\(k\\) for which the correlation between cases at \\(t-k\\) and deaths at \\(t\\) is maximized?\nGiven that lag, we can fit linear regression with a lagged predictor where\n\n\\[y_t = \\text{deaths at time } t\\] \\[x_{t-k} = \\text{cases at time } t-k\\]"
+    "section": "Example: COVID cases and deaths in California",
+    "text": "Example: COVID cases and deaths in California\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nhead(ca)\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-10-23 20:07:29.405142\n\n# A tibble: 6 × 4\n  geo_value time_value cases deaths\n* &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt;\n1 ca        2020-04-01  3.17 0.0734\n2 ca        2020-04-02  3.48 0.0835\n3 ca        2020-04-03  3.44 0.0894\n4 ca        2020-04-04  3.05 0.0778\n5 ca        2020-04-05  3.28 0.0876\n6 ca        2020-04-06  3.37 0.0848\n\n\n\n\n\nCases seem to be highly correlated with deaths several weeks later\nWhat is the lag \\(k\\) for which the correlation between cases at \\(t-k\\) and deaths at \\(t\\) is maximized?\nGiven that lag, we can fit linear regression with a lagged predictor where\n\n\\[y_t = \\text{deaths at time } t \\quad\\quad x_{t-k} = \\text{cases at time } t-k\\]"
   },
   {
     "objectID": "slides/day2-morning.html#choosing-the-lag-k",
     "href": "slides/day2-morning.html#choosing-the-lag-k",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Choosing the lag \\(k\\)",
-    "text": "Choosing the lag \\(k\\)\n\nLet’s split the data into a training set (before 2021-03-01), and a test set (after 2021-03-01).\nThe lag leading to largest correlation between lagged cases and deaths is \\(k = 26\\)."
+    "text": "Choosing the lag \\(k\\)\n\nLet’s split the data into a training and a test set (before/after 2021-03-01).\nThe lag leading to largest correlation between lagged cases and deaths on the training set is \\(k = 26\\).\n\n\n\nLet’s use (base) R to prepare the data and fit\n\n\\[y_t \\approx \\beta_0 + \\beta_1 x_{t-26}\\]"
+  },
+  {
+    "objectID": "slides/day2-morning.html#preparing-the-data",
+    "href": "slides/day2-morning.html#preparing-the-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Preparing the data",
+    "text": "Preparing the data\n\n# Add column with cases lagged by k\nca$lagged_cases &lt;- dplyr::lag(ca$cases, n = k)\n\n# Split into train and test (before/after t0_date)\nt0_date &lt;- as.Date('2021-03-01')\ntrain &lt;- ca %&gt;% filter(time_value &lt;= t0_date)\ntest &lt;- ca %&gt;% filter(time_value &gt; t0_date)\n\n\nCheck if deaths is approximately linear in lagged_cases:"
   },
   {
     "objectID": "slides/day2-morning.html#fitting-lagged-linear-regression-in-r",
     "href": "slides/day2-morning.html#fitting-lagged-linear-regression-in-r",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Fitting lagged linear regression in R",
-    "text": "Fitting lagged linear regression in R"
+    "text": "Fitting lagged linear regression in R\n\nreg_lagged = lm(deaths ~ lagged_cases, data = train)\ncoef(reg_lagged)\n\n (Intercept) lagged_cases \n  0.09533276   0.01134891"
   },
   {
     "objectID": "slides/day2-morning.html#error-metrics",
@@ -77,11 +91,18 @@
     "text": "Error metrics: MASE\n\\[MASE = 100 \\times \\frac{\\frac{1}{N} \\sum_{t=1}^N\n|y_{new, t}- \\hat y_{new, t}|}\n{\\frac{1}{N-1} \\sum_{t=2}^N\n|y_{new, t}- y_{new, t-1}|}\\]\n\nAdvantages:\n\nis universally interpretable (not scale dependent)\navoids the zero-pitfall\n\nMASE in words: we normalize the error of our forecasts by that of a naive method which always predicts the last observation."
   },
   {
+    "objectID": "slides/day2-morning.html#defining-the-error-metrics-in-r",
+    "href": "slides/day2-morning.html#defining-the-error-metrics-in-r",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Defining the error metrics in R",
+    "text": "Defining the error metrics in R\n\nMSE &lt;- function(truth, prediction) {\n  mean((truth - prediction)^2)}\n\nMAE &lt;- function(truth, prediction) {\n  mean(abs(truth - prediction))}\n\nMAPE &lt;- function(truth, prediction) {\n  100 * mean(abs(truth - prediction) / truth)}\n\nMASE &lt;- function(truth, prediction) {\n  100 * MAE(truth, prediction) / mean(abs(diff(truth)))}"
+  },
+  {
     "objectID": "slides/day2-morning.html#estimating-the-prediction-error",
     "href": "slides/day2-morning.html#estimating-the-prediction-error",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Estimating the prediction error",
-    "text": "Estimating the prediction error\n\nAfter choosing the error metric (e.g. MSE), we need to estimate the prediction error.\nThis can be accomplished in different ways, using the\n\nTraining error\nSplit-sample error\nTime series cross-validation error (using all past data or a trailing window)"
+    "text": "Estimating the prediction error\n\nGiven an error metric (e.g. MSE), we want to estimate the prediction error under that metric.\nThis can be accomplished in different ways, using the\n\nTraining error\nSplit-sample error\nTime series cross-validation error (using all past data or a trailing window)"
   },
   {
     "objectID": "slides/day2-morning.html#training-error",
@@ -95,7 +116,7 @@
     "href": "slides/day2-morning.html#training-error-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Training error",
-    "text": "Training error\nLinear regression of COVID deaths on lagged cases"
+    "text": "Training error\nLinear regression of COVID deaths on lagged cases\n\n# Getting the predictions for the training set\npred_train &lt;- predict(reg_lagged)\n\n\n\n\n                 MSE        MAE     MAPE     MASE\ntraining 0.008094702 0.05294347 17.82704 311.8417"
   },
   {
     "objectID": "slides/day2-morning.html#split-sample-error",
@@ -109,7 +130,7 @@
     "href": "slides/day2-morning.html#split-sample-error-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Split-sample error",
-    "text": "Split-sample error\nLinear regression of COVID deaths on lagged cases"
+    "text": "Split-sample error\nLinear regression of COVID deaths on lagged cases\n\n# Getting the predictions for the test set\npred_test &lt;- predict(reg_lagged, newdata = test)\n\n\n\n\n                     MSE        MAE     MAPE     MASE\ntraining     0.008094702 0.05294347 17.82704 311.8417\nsplit-sample 0.016062115 0.10175475      Inf 671.1406"
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cross-validation-cv",
@@ -126,18 +147,39 @@
     "text": "Time-series cross-validation (CV)\n\\(h\\)-step ahead predictions\n\nMore in general, if we want to make \\(h\\)-step ahead predictions (i.e. at time \\(t-h\\) we want to make a forecast for time \\(t\\)), we proceed as follows for \\(t = t_0+1, t_0+2, \\dots\\)\n\nFit the model using data up to time \\(t-h\\)\nMake a prediction for \\(t\\)\nRecord the prediction error\n\nThe cross-validation MSE is then\n\n\\[CVMSE = \\frac{1}{n-t_0} \\sum_{t = t_0+1}^n (\\hat y_{t|t-h} - y_t)^2\\]\nwhere \\(\\hat y_{t|t-h}\\) indicates a prediction for \\(y\\) at time \\(t\\) that was made with data available up to time \\(t-h\\)."
   },
   {
+    "objectID": "slides/day2-morning.html#time-series-cross-validation-cv-2",
+    "href": "slides/day2-morning.html#time-series-cross-validation-cv-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series cross-validation (CV)",
+    "text": "Time-series cross-validation (CV)\nLinear regression of COVID deaths on lagged cases\nGetting the predictions requires slightly more code:\n\nn &lt;- nrow(ca)                               #length of time series\npred_all_past &lt;- rep(NA, length = n - t0)   #initialize vector of predictions\nh &lt;- 1                                      #number of days ahead for which prediction is wanted\n\nfor (t in (t0+1):n) {\n  # fit to all past data and make 1-step ahead prediction\n  reg_all_past = lm(deaths ~ lagged_cases, data = ca, subset = (1:n) &lt;= (t-h)) \n  pred_all_past[t-t0] = predict(reg_all_past, newdata = data.frame(ca[t, ]))\n}\n\n\n\n\nNote\n\n\nIn general, we can predict at most \\(k\\) days ahead (where \\(k\\) = number of days by which predictor is lagged)!"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cross-validation-cv-3",
+    "href": "slides/day2-morning.html#time-series-cross-validation-cv-3",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series cross-validation (CV)",
+    "text": "Time-series cross-validation (CV)\nLinear regression of COVID deaths on lagged cases\n\n\n\n                       MSE        MAE     MAPE     MASE\ntraining       0.008094702 0.05294347 17.82704 311.8417\nsplit-sample   0.016062115 0.10175475      Inf 671.1406\ntime series CV 0.014838552 0.09623533      Inf 634.7363"
+  },
+  {
     "objectID": "slides/day2-morning.html#time-series-cv-on-a-trailing-window",
     "href": "slides/day2-morning.html#time-series-cv-on-a-trailing-window",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Time-series CV on a trailing window",
-    "text": "Time-series CV on a trailing window\n\nSo far, when making \\(h\\)-step ahead predictions for time \\(t\\), we have fitted the model on all the data available up to time \\(t-h\\). We can instead use a trailing window, i.e. fit the model on only a window of data of length \\(w\\), starting at time \\(t-h-w\\) and ending at time \\(t-h\\).\nAdvantage: if the relationship between predictors and outcome changes over time, training the forecaster on a window of recent data can better capture the recent relationship.\nWindow length \\(w\\) considerations:\n\nif \\(w\\) is too large, the model cannot adapt to the recent predictors-outcome relation\nif \\(w\\) is too small, the fitted model may be too volatile (trained on too little data)"
+    "text": "Time-series CV on a trailing window\n\nSo far, when making \\(h\\)-step ahead predictions for time \\(t\\), we have fitted the model on all the data available up to time \\(t-h\\). We can instead use a trailing window, i.e. fit the model on only a window of data of length \\(w\\), starting at time \\(t-h-w\\) and ending at time \\(t-h\\).\nAdvantage: if the relationship between predictors and outcome changes over time, training the forecaster on a window of recent data can better capture the recent relationship which might be more relevant to events in the near future.\nWindow length \\(w\\) considerations:\n\nif \\(w\\) is too big, the model can’t adapt to the recent predictors-outcome relation\nif \\(w\\) is too small, the fitted model may be too volatile (trained on too little data)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-on-a-trailing-window-1",
+    "href": "slides/day2-morning.html#time-series-cv-on-a-trailing-window-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series CV on a trailing window",
+    "text": "Time-series CV on a trailing window\nLinear regression of COVID deaths on lagged cases\n\n# Getting the predictions through CV with trailing window\nw &lt;- 30                                     #trailing window size\npred_trailing &lt;- rep(NA, length = n - t0)   #initialize vector of predictions\nh &lt;- 1                                      #number of days ahead for which prediction is wanted\n\nfor (t in (t0+1):n) {\n  # fit to a trailing window of size w and make 1-step ahead prediction\n  reg_trailing = lm(deaths ~ lagged_cases, data = ca, \n                    subset = (1:n) &lt;= (t-h) & (1:n) &gt; (t-h-w)) \n  pred_trailing[t-t0] = predict(reg_trailing, newdata = data.frame(ca[t, ]))\n}"
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cv-all-past-vs-trailing-window",
     "href": "slides/day2-morning.html#time-series-cv-all-past-vs-trailing-window",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Time-series CV: all past vs trailing window",
-    "text": "Time-series CV: all past vs trailing window\nLinear regression of COVID deaths on lagged cases"
+    "text": "Time-series CV: all past vs trailing window\nLinear regression of COVID deaths on lagged cases\n\n\n\n                                  MSE        MAE     MAPE     MASE\ntraining                  0.008094702 0.05294347 17.82704 311.8417\nsplit-sample              0.016062115 0.10175475      Inf 671.1406\ntime series CV            0.014838552 0.09623533      Inf 634.7363\ntime series CV + trailing 0.004064001 0.04507775      Inf 297.3179"
   },
   {
     "objectID": "slides/day2-morning.html#autoregressive-ar-model",
@@ -151,7 +193,42 @@
     "href": "slides/day2-morning.html#ar-model-for-covid-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "AR model for COVID deaths",
-    "text": "AR model for COVID deaths"
+    "text": "AR model for COVID deaths\n\nLet’s disregard cases, and only use past deaths to predict future deaths.\nFor now we use one lag only, the one for which deaths and lagged deaths have largest correlation.\n\n\n\nWe will fit the model: \\(\\quad y_t \\approx \\beta_0 + \\beta_1 y_{t-1}\\)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#preparing-the-data-1",
+    "href": "slides/day2-morning.html#preparing-the-data-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Preparing the data",
+    "text": "Preparing the data\n\n# Add column with deaths lagged by 1\nca$lagged_deaths &lt;- dplyr::lag(ca$deaths, n = 1)\n\n# Split into train and test (before/after t0_date)\ntrain &lt;- ca %&gt;% filter(time_value &lt;= t0_date)\ntest &lt;- ca %&gt;% filter(time_value &gt; t0_date)\n\nCheck that the relationship between COVID deaths and lagged COVID deaths is approximately linear (on the training set):"
+  },
+  {
+    "objectID": "slides/day2-morning.html#fitting-the-ar-model-for-covid-deaths",
+    "href": "slides/day2-morning.html#fitting-the-ar-model-for-covid-deaths",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Fitting the AR model for COVID deaths",
+    "text": "Fitting the AR model for COVID deaths\n\nar_fit = lm(deaths ~ lagged_deaths, data = train)\ncoef(ar_fit)\n\n  (Intercept) lagged_deaths \n  0.002515034   1.001278147 \n\n\n\n\n\nNote\n\n\nThe intercept is \\(\\approx 0\\) and the coefficient is \\(\\approx 1\\). This means that we are naively predicting the number of deaths tomorrow with the number of deaths observed today."
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-on-training-and-test-sets-ar-model",
+    "href": "slides/day2-morning.html#predictions-on-training-and-test-sets-ar-model",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions on training and test sets (AR model)",
+    "text": "Predictions on training and test sets (AR model)\n\npred_train &lt;- predict(ar_fit)                 #get training predictions\npred_test &lt;- predict(ar_fit, newdata = test)  #get test predictions\n\n\n\n\n                      MSE        MAE     MAPE     MASE\ntraining     0.0007915624 0.01630727 4.737325 100.1796\nsplit-sample 0.0008281702 0.01571932      Inf 103.6794"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-ar-model",
+    "href": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-ar-model",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-Series CV: all past and trailing (AR model)",
+    "text": "Time-Series CV: all past and trailing (AR model)\n\n# Getting 1-step ahead predictions through CV \npred_all_past = pred_trailing &lt;- rep(NA, length = n - t0) #initialize vectors of predictions\nw &lt;- 30                                                   #trailing window size\nh &lt;- 1                                                    #number of days ahead for which prediction is wanted\n\nfor (t in (t0+1):n) {\n  # fit to all past data \n  ar_all_past = lm(deaths ~ lagged_deaths, data = ca, subset = (1:n) &lt;= (t-h)) \n  # fit to trailing window of data\n  ar_trailing = lm(deaths ~ lagged_deaths, data = ca, subset = (1:n) &lt;= (t-h) & (1:n) &gt; (t-h-w)) \n  # make 1-step ahead predictions\n  pred_all_past[t-t0] = predict(ar_all_past, newdata = data.frame(ca[t, ]))\n  pred_trailing[t-t0] = predict(ar_trailing, newdata = data.frame(ca[t, ]))\n}\n\n\n\n\nReminder\n\n\nWe can predict at most 1-day ahead in this case, because the predictor is only lagged by 1 with respect to the outcome."
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-ar-model-1",
+    "href": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-ar-model-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-Series CV: all past and trailing (AR model)",
+    "text": "Time-Series CV: all past and trailing (AR model)\n\n\n\n                                   MSE        MAE     MAPE     MASE\ntraining                  0.0007915624 0.01630727 4.737325 100.1796\nsplit-sample              0.0008281702 0.01571932      Inf 103.6794\ntime series CV            0.0008103096 0.01531685      Inf 101.0248\ntime series CV + trailing 0.0008502810 0.01682578      Inf 110.9773"
   },
   {
     "objectID": "slides/day2-morning.html#autoregressive-exogenous-input-arx-model",
@@ -165,49 +242,210 @@
     "href": "slides/day2-morning.html#arx-model-for-covid-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "ARX model for COVID deaths",
-    "text": "ARX model for COVID deaths"
+    "text": "ARX model for COVID deaths\n\nTo improve our predictions for COVID deaths, we could merge the two models considered so far (i.e. linear regression on cases lagged by k = 26, and linear regression on deaths lagged by 1).\nThis leads us to the ARX model\n\n\\[y_t \\approx \\beta_0 + \\beta_1 y_{t-1} + \\beta_2 x_{t-k}\\]\n\nWe can fit it on the training set by running\n\n\narx_fit = lm(deaths ~ lagged_deaths + lagged_cases, data = train)\ncoef(arx_fit)\n\n  (Intercept) lagged_deaths  lagged_cases \n 0.0037535320  0.9810095601  0.0002469175"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-on-training-and-test-sets-arx-model",
+    "href": "slides/day2-morning.html#predictions-on-training-and-test-sets-arx-model",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions on training and test sets (ARX model)",
+    "text": "Predictions on training and test sets (ARX model)\n\npred_train &lt;- predict(arx_fit)                  #get training predictions\npred_test &lt;- predict(arx_fit, newdata = test)   #get test predictions\n\n\n\n\n                      MSE        MAE     MAPE     MASE\ntraining     0.0008454054 0.01704495 4.613866 100.3963\nsplit-sample 0.0007874735 0.01560882      Inf 102.9506"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-arx-model",
+    "href": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-arx-model",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-Series CV: all past and trailing (ARX model)",
+    "text": "Time-Series CV: all past and trailing (ARX model)\n\n# Getting 1-step ahead predictions through CV \npred_all_past = pred_trailing &lt;- rep(NA, length = n - t0) #initialize vector of predictions\nw &lt;- 30                                                   #trailing window size\nh &lt;- 1                                                    #number of days ahead for which prediction is wanted\n\nfor (t in (t0+1):n) {\n  # fit to all past data\n  arx_all_past = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, subset = (1:n) &lt;= (t-h)) \n  # fit to trailing window of data\n  arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, \n                    subset = (1:n) &lt;= (t-h) & (1:n) &gt; (t-h-w)) \n  # make 1-step ahead prediction\n  pred_all_past[t-t0] = predict(arx_all_past, newdata = data.frame(ca[t, ]))\n  pred_trailing[t-t0] = predict(arx_trailing, newdata = data.frame(ca[t, ]))\n}"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-arx-model-1",
+    "href": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-arx-model-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-Series CV: all past and trailing (ARX model)",
+    "text": "Time-Series CV: all past and trailing (ARX model)\n\n\n\n                                   MSE        MAE     MAPE     MASE\ntraining                  0.0008454054 0.01704495 4.613866 100.3963\nsplit-sample              0.0007874735 0.01560882      Inf 102.9506\ntime series CV            0.0007658799 0.01561658      Inf 103.0018\ntime series CV + trailing 0.0009794230 0.01816857      Inf 119.8339"
   },
   {
     "objectID": "slides/day2-morning.html#too-many-predictors",
     "href": "slides/day2-morning.html#too-many-predictors",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Too many predictors",
-    "text": "Too many predictors\n\nWhat if we fit a model with a very large number of predictors?\nThe estimated coefficients will be chosen to mimic the observed data very closely on the training set, leading to small training error\nThe predictive performance on the test set might be very poor, producing large split-sample and CV error\n\nOVERFITTING"
+    "text": "Too many predictors\n\nWhat if we try to incorporate past information extensively by fitting a model with a very large number of predictors?\n\nThe estimated coefficients will be chosen to mimic the observed data very closely on the training set, leading to small training error\nThe predictive performance on the test set might be very poor, producing large split-sample and CV error\n\n\n\n\n\nIssue\n\n\nOverfitting!"
+  },
+  {
+    "objectID": "slides/day2-morning.html#arx-model-for-covid-deaths-with-many-predictors",
+    "href": "slides/day2-morning.html#arx-model-for-covid-deaths-with-many-predictors",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "ARX model for COVID deaths with many predictors",
+    "text": "ARX model for COVID deaths with many predictors\n\nWhen predicting COVID deaths at time \\(t\\), we can try to use more past information by fitting a model that includes the past two months of COVID deaths and cases as predictors\n\n\\[y_t \\approx \\phi_1 y_{t-1} + \\phi_2 y_{t-2} + \\dots + \\phi_{60} y_{t-60} +\n\\psi_1 yx_{t-1} + \\psi_2 x_{t-2} + \\dots + \\psi_{60} x_{t-60}\\]"
+  },
+  {
+    "objectID": "slides/day2-morning.html#preparing-the-data-2",
+    "href": "slides/day2-morning.html#preparing-the-data-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Preparing the data",
+    "text": "Preparing the data\n\ny &lt;- ca$deaths  #outcome\nlags &lt;- 1:60    #lags used for predictors (deaths and cases)\n\n# Build predictor matrix with 60 columns\nX &lt;- data.frame(matrix(NA, nrow = length(y), ncol = 2*length(lags)))\ncolnames(X) &lt;- paste('X', 1:ncol(X), sep = '')\n\nfor (j in 1:length(lags)) {\n  # first 60 columns contain deaths lagged by 1, 2,..., 60\n  X[, j] = dplyr::lag(ca$deaths, lags[j])\n  # last 60 columns contain cases lagged by 1, 2,..., 60\n  X[, length(lags) + j] = dplyr::lag(ca$cases, lags[j])\n}\n\nX[1:5, 1:5] #look at first few entries of predictor matrix\n\n          X1         X2         X3         X4 X5\n1         NA         NA         NA         NA NA\n2 0.07339501         NA         NA         NA NA\n3 0.08351846 0.07339501         NA         NA NA\n4 0.08942381 0.08351846 0.07339501         NA NA\n5 0.07782402 0.08942381 0.08351846 0.07339501 NA"
+  },
+  {
+    "objectID": "slides/day2-morning.html#fitting-the-arx-model",
+    "href": "slides/day2-morning.html#fitting-the-arx-model",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Fitting the ARX model",
+    "text": "Fitting the ARX model\n\n# Train/test split\ny_train &lt;- y[1:t0]\nX_train &lt;- X[1:t0, ]\ny_test &lt;- y[(t0+1):length(y)]\nX_test &lt;- X[(t0+1):length(y), ]\n\n# Fitting the ARX model\nreg = lm(y_train ~ ., data = X_train)\ncoef(reg)\n\n  (Intercept)            X1            X2            X3            X4 \n-0.0289752219  1.0036479336 -0.0697910592 -0.0965290853  0.1253086968 \n           X5            X6            X7            X8            X9 \n-0.2084337959  0.2883024258 -0.8537569681  0.9078062453 -0.1967353863 \n          X10           X11           X12           X13           X14 \n 0.0249038037  0.1204699405 -0.5801064428  0.5603828110 -0.6110256391 \n          X15           X16           X17           X18           X19 \n 0.8353450749 -0.4524450151  0.1033181504  0.1245158924 -0.3785864886 \n          X20           X21           X22           X23           X24 \n 0.6905902987 -0.6700783625  0.6263187331 -0.5753647865  0.2775892130 \n          X25           X26           X27           X28           X29 \n-0.0897320984 -0.1341105958  0.4351486697 -0.2602753831  0.4725943368 \n          X30           X31           X32           X33           X34 \n-0.8007746051  0.3937355737  0.0128097365 -0.1043945210  0.5427975537 \n          X35           X36           X37           X38           X39 \n-0.4767252646  0.3308456841 -0.6875831564  0.2761150796  0.2558659205 \n          X40           X41           X42           X43           X44 \n-0.1255477523  0.1558682187 -0.4422861566  0.6432639852 -0.6517865298 \n          X45           X46           X47           X48           X49 \n 0.3358910370  0.2200145225 -0.1375613552  0.0672151530 -0.3252118296 \n          X50           X51           X52           X53           X54 \n 0.2540547370 -0.1871310791  0.2459380841  0.1757874014 -0.1549375123 \n          X55           X56           X57           X58           X59 \n 0.0255017050 -0.1832944351  0.0593011197  0.2009740908 -0.3059064460 \n          X60           X61           X62           X63           X64 \n 0.1253184868  0.0031164120 -0.0018705523 -0.0014906132  0.0007032307 \n          X65           X66           X67           X68           X69 \n-0.0005234523  0.0002075257  0.0009498408  0.0001458265 -0.0018947471 \n          X70           X71           X72           X73           X74 \n-0.0008634595  0.0035604212 -0.0029179301  0.0025100174  0.0023823915 \n          X75           X76           X77           X78           X79 \n 0.0007823787 -0.0038703871 -0.0050937407 -0.0011287754  0.0052345076 \n          X80           X81           X82           X83           X84 \n 0.0043848044 -0.0006836941 -0.0010784050 -0.0013433377 -0.0064516860 \n          X85           X86           X87           X88           X89 \n 0.0092375513 -0.0018808875 -0.0006133343  0.0037939090 -0.0031949315 \n          X90           X91           X92           X93           X94 \n-0.0039879854  0.0019643772 -0.0001691026  0.0029029383 -0.0013385902 \n          X95           X96           X97           X98           X99 \n 0.0043478153 -0.0066887049 -0.0027919455  0.0085703483 -0.0035707441 \n         X100          X101          X102          X103          X104 \n 0.0041815143 -0.0061790306  0.0052011426 -0.0080402651  0.0016673399 \n         X105          X106          X107          X108          X109 \n 0.0079619883 -0.0078739633  0.0053070612 -0.0032932701  0.0038191524 \n         X110          X111          X112          X113          X114 \n-0.0038973101  0.0001299517  0.0038706215 -0.0074718376  0.0056987332 \n         X115          X116          X117          X118          X119 \n-0.0011644932 -0.0042328810  0.0031769041 -0.0002317292  0.0025479447 \n         X120 \n-0.0033566562"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-on-training-and-test-set",
+    "href": "slides/day2-morning.html#predictions-on-training-and-test-set",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions on training and test set",
+    "text": "Predictions on training and test set\n\npred_train &lt;- predict(reg)                    #get training predictions\npred_test &lt;- predict(reg, newdata = X_test)   #get test predictions\n\n\n\n\n                      MSE         MAE     MAPE      MASE\ntraining     0.0001314975 0.008841864 3.488839  47.99282\nsplit-sample 0.0033671353 0.042037088      Inf 277.26268"
+  },
+  {
+    "objectID": "slides/day2-morning.html#regularization",
+    "href": "slides/day2-morning.html#regularization",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Regularization",
+    "text": "Regularization\n\nIf we want to consider a large number of predictors, how can we avoid overfitting?\nIdea: introduce a regularization parameter \\(\\lambda\\) that shrinks or sets some of the estimated coefficients to zero, i.e. some predictors are estimated to have limited or no predictive power\nMost common regularization methods\n\nRidge: shrinks coefficients to zero\nLasso: sets some coefficients to zero"
+  },
+  {
+    "objectID": "slides/day2-morning.html#choosing-lambda",
+    "href": "slides/day2-morning.html#choosing-lambda",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Choosing \\(\\lambda\\)",
+    "text": "Choosing \\(\\lambda\\)\n\nThe regularization parameter \\(\\lambda\\) can be selected by cross-validation:\n\nSelect a sequence of \\(\\lambda\\)’s\nFit and predict for each such \\(\\lambda\\)\nSelect the \\(\\lambda\\) that leads to smaller error\n\nThe R library glmnet implements ridge and lasso regression, and can perform step 1. automatically."
+  },
+  {
+    "objectID": "slides/day2-morning.html#fit-arx-ridgelasso-for-covid-deaths",
+    "href": "slides/day2-morning.html#fit-arx-ridgelasso-for-covid-deaths",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Fit ARX + ridge/lasso for COVID deaths",
+    "text": "Fit ARX + ridge/lasso for COVID deaths\n\nlibrary(glmnet) # Implements ridge and lasso\n\n# We'll need to omit NA values explicitly, as otherwise glmnet will complain\nna_obs &lt;- 1:max(lags)\nX_train &lt;- X_train[-na_obs, ]\ny_train &lt;- y_train[-na_obs]\n\n# Ridge regression: set alpha = 0, lambda sequence will be chosen automatically\nridge &lt;- glmnet(X_train, y_train, alpha = 0)\nbeta_ridge &lt;- coef(ridge)       # matrix of estimated coefficients \nlambda_ridge &lt;- ridge$lambda    # sequence of lambdas used to fit ridge \n\n# Lasso regression: set alpha = 1, lambda sequence will be chosen automatically\nlasso &lt;- glmnet(X_train, y_train, alpha = 1)\nbeta_lasso &lt;- coef(lasso)       # matrix of estimated coefficients \nlambda_lasso &lt;- lasso$lambda    # sequence of lambdas used to fit lasso \n\ndim(beta_lasso)      # One row per coefficient, one column per lambda value\n\n[1] 121 100"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-on-test-set-and-selection-of-lambda",
+    "href": "slides/day2-morning.html#predictions-on-test-set-and-selection-of-lambda",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions on test set and selection of \\(\\lambda\\)",
+    "text": "Predictions on test set and selection of \\(\\lambda\\)\n\n# Predict values for second half of the time series\nyhat_ridge &lt;- predict(ridge, newx = as.matrix(X_test))\nyhat_lasso &lt;- predict(lasso, newx = as.matrix(X_test))\n\n# Compute MAE \nmae_ridge &lt;- colMeans(abs(yhat_ridge - y_test))\nmae_lasso &lt;- colMeans(abs(yhat_lasso - y_test))\n\n# Select index of lambda vector which gives lowest MAE\nmin_ridge &lt;- which.min(mae_ridge)\nmin_lasso &lt;- which.min(mae_lasso)\npaste('Best MAE ridge:', round(min(mae_ridge), 3),\n      '; Best MAE lasso:', round(min(mae_lasso), 3))\n\n[1] \"Best MAE ridge: 0.046 ; Best MAE lasso: 0.018\"\n\n# Get predictions for train and test sets\npred_train_ridge &lt;- predict(ridge, newx = as.matrix(X_train))[, min_ridge] \npred_test_ridge &lt;- yhat_ridge[, min_ridge]\npred_train_lasso &lt;- predict(lasso, newx = as.matrix(X_train))[, min_lasso] \npred_test_lasso &lt;- yhat_lasso[, min_lasso]"
+  },
+  {
+    "objectID": "slides/day2-morning.html#estimated-coefficients-shrinkage-vs-sparsity",
+    "href": "slides/day2-morning.html#estimated-coefficients-shrinkage-vs-sparsity",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Estimated coefficients: shrinkage vs sparsity",
+    "text": "Estimated coefficients: shrinkage vs sparsity\n\n\n\n\n                    ridge        lasso\n(Intercept) -9.939300e-03 1.189313e-02\nX1           8.872966e-02 9.289459e-01\nX2           6.782888e-02 0.000000e+00\nX3           4.946021e-02 0.000000e+00\nX4           3.515120e-02 0.000000e+00\nX5           2.419016e-02 0.000000e+00\nX6           1.128371e-02 0.000000e+00\nX7           2.612847e-03 0.000000e+00\nX8           6.823573e-03 0.000000e+00\nX9           1.148253e-02 0.000000e+00\nX10          1.400489e-02 0.000000e+00\nX11          1.450184e-02 0.000000e+00\nX12          9.401767e-03 0.000000e+00\nX13          9.216418e-03 0.000000e+00\nX14          9.760208e-03 0.000000e+00\nX15          8.210787e-03 0.000000e+00\nX16          5.431338e-03 0.000000e+00\nX17          4.833249e-03 0.000000e+00\nX18          6.670780e-03 0.000000e+00\nX19          1.199074e-02 3.382723e-04\nX20          1.275594e-02 0.000000e+00\nX21          1.440701e-02 0.000000e+00\nX22          1.840612e-02 0.000000e+00\nX23          2.384495e-02 2.080244e-04\nX24          2.761157e-02 0.000000e+00\nX25          2.542945e-02 0.000000e+00\nX26          2.419727e-02 0.000000e+00\nX27          2.434294e-02 0.000000e+00\nX28          2.449578e-02 0.000000e+00\nX29          2.021843e-02 0.000000e+00\nX30          1.338327e-02 0.000000e+00\nX31          7.529272e-03 0.000000e+00\nX32          5.901396e-03 0.000000e+00\nX33          3.727127e-03 0.000000e+00\nX34          6.462585e-03 0.000000e+00\nX35          1.673897e-03 0.000000e+00\nX36         -3.282419e-03 0.000000e+00\nX37         -7.946291e-03 0.000000e+00\nX38         -1.191724e-02 0.000000e+00\nX39         -1.069952e-02 0.000000e+00\nX40         -8.865466e-03 0.000000e+00\nX41         -6.464374e-03 0.000000e+00\nX42          4.275794e-03 0.000000e+00\nX43          1.919658e-02 0.000000e+00\nX44          2.980180e-02 0.000000e+00\nX45          4.786958e-02 4.480153e-04\nX46          5.324895e-02 0.000000e+00\nX47          4.886655e-02 0.000000e+00\nX48          3.628809e-02 0.000000e+00\nX49          2.580591e-02 0.000000e+00\nX50          2.677230e-02 0.000000e+00\nX51          3.225742e-02 0.000000e+00\nX52          2.766313e-02 0.000000e+00\nX53          3.045624e-02 0.000000e+00\nX54          4.402694e-02 0.000000e+00\nX55          3.934535e-02 0.000000e+00\nX56          2.177537e-02 0.000000e+00\nX57         -2.157397e-02 0.000000e+00\nX58         -6.404024e-02 0.000000e+00\nX59         -1.143864e-01 0.000000e+00\nX60         -1.501638e-01 0.000000e+00\nX61          4.161470e-04 0.000000e+00\nX62          3.253236e-04 0.000000e+00\nX63          2.394225e-04 0.000000e+00\nX64          1.513126e-04 0.000000e+00\nX65          6.424676e-05 0.000000e+00\nX66          3.746423e-05 0.000000e+00\nX67          2.581948e-05 0.000000e+00\nX68          4.789785e-05 0.000000e+00\nX69          7.950204e-05 0.000000e+00\nX70          1.040050e-04 0.000000e+00\nX71          1.400745e-04 8.926210e-06\nX72          1.591103e-04 2.342475e-07\nX73          1.604022e-04 0.000000e+00\nX74          1.744726e-04 1.241179e-05\nX75          1.730420e-04 0.000000e+00\nX76          1.362768e-04 0.000000e+00\nX77          1.275257e-04 0.000000e+00\nX78          1.281437e-04 0.000000e+00\nX79          2.084742e-04 0.000000e+00\nX80          2.942656e-04 6.824032e-04\nX81          3.237605e-04 0.000000e+00\nX82          3.553267e-04 0.000000e+00\nX83          3.928755e-04 0.000000e+00\nX84          3.962876e-04 0.000000e+00\nX85          4.183372e-04 0.000000e+00\nX86          3.568176e-04 0.000000e+00\nX87          2.716336e-04 0.000000e+00\nX88          2.091001e-04 0.000000e+00\nX89          1.229814e-04 0.000000e+00\nX90          6.607063e-05 0.000000e+00\nX91          2.150426e-05 0.000000e+00\nX92         -4.080164e-05 0.000000e+00\nX93         -5.813667e-05 0.000000e+00\nX94         -5.999272e-05 0.000000e+00\nX95         -4.409698e-05 0.000000e+00\nX96         -1.834663e-05 0.000000e+00\nX97         -9.220951e-06 0.000000e+00\nX98          1.791033e-05 0.000000e+00\nX99          1.464231e-05 0.000000e+00\nX100         1.109229e-05 0.000000e+00\nX101         2.655447e-05 0.000000e+00\nX102         5.768881e-05 0.000000e+00\nX103         8.401814e-05 0.000000e+00\nX104         9.262989e-05 0.000000e+00\nX105         7.920049e-05 0.000000e+00\nX106         7.983363e-05 0.000000e+00\nX107         8.220127e-05 0.000000e+00\nX108         6.665727e-05 0.000000e+00\nX109         7.027286e-05 0.000000e+00\nX110         2.697071e-05 0.000000e+00\nX111        -1.231577e-05 0.000000e+00\nX112        -4.742160e-05 0.000000e+00\nX113        -6.578796e-05 0.000000e+00\nX114        -7.822627e-05 0.000000e+00\nX115        -1.489561e-04 0.000000e+00\nX116        -2.535423e-04 0.000000e+00\nX117        -3.046913e-04 0.000000e+00\nX118        -3.284353e-04 0.000000e+00\nX119        -3.492309e-04 0.000000e+00\nX120        -3.962423e-04 0.000000e+00"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-arx-ridgelasso-train-and-test-set",
+    "href": "slides/day2-morning.html#predictions-arx-ridgelasso-train-and-test-set",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions: ARX + ridge/lasso (train and test set)",
+    "text": "Predictions: ARX + ridge/lasso (train and test set)\n\n\n\n                            MSE        MAE     MAPE      MASE\nridge training     0.0013213488 0.02555976 7.905021 138.73603\nridge split-sample 0.0037754983 0.04613864      Inf 304.31515\nlasso training     0.0008857085 0.01822366 5.139256  98.91632\nlasso split-sample 0.0007674461 0.01767544      Inf 116.58133"
+  },
+  {
+    "objectID": "slides/day2-morning.html#time-series-cv-for-arx-ridgelasso-trailing",
+    "href": "slides/day2-morning.html#time-series-cv-for-arx-ridgelasso-trailing",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Time-series CV for ARX + ridge/lasso (trailing)",
+    "text": "Time-series CV for ARX + ridge/lasso (trailing)\n\n# Initialize matrices for predictions (one column per lambda value)\nyhat_ridge &lt;- matrix(NA, ncol = length(lambda_ridge), nrow = n-t0) \nyhat_lasso &lt;- matrix(NA, ncol = length(lambda_lasso), nrow = n-t0) \n\nh &lt;- 1 #number of days ahead for which prediction is wanted\n\nfor (t in (t0+1):n) {\n  # Indices of data within window\n  inds = t-h-w &lt; 1:n & 1:n &lt;= t-h\n  # Fit ARX + ridge/lasso\n  ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = lambda_ridge)\n  lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = lambda_lasso)\n  # Predict\n  yhat_ridge[t-t0, ] = predict(ridge_trail, newx = as.matrix(X[t, ]))\n  yhat_lasso[t-t0, ] = predict(lasso_trail, newx = as.matrix(X[t, ]))\n}\n\n# MAE values for each lambda\nmae_ridge &lt;- colMeans(abs(yhat_ridge - y_test))\nmae_lasso &lt;- colMeans(abs(yhat_lasso - y_test))\n\n# Select lambda that minimizes MAE and save corresponding predictions\nmin_ridge &lt;- which.min(mae_ridge)\nmin_lasso &lt;- which.min(mae_lasso)\npred_cv_ridge &lt;- yhat_ridge[, min_ridge]\npred_cv_lasso &lt;- yhat_lasso[, min_lasso]\n\npaste('Best MAE ridge:', round(min(mae_ridge), 3))\n\n[1] \"Best MAE ridge: 0.019\"\n\npaste('Best MAE lasso:', round(min(mae_lasso), 3))\n\n[1] \"Best MAE lasso: 0.02\""
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-time-series-cv-for-arx-ridgelasso-trailing",
+    "href": "slides/day2-morning.html#predictions-time-series-cv-for-arx-ridgelasso-trailing",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions: time-series CV for ARX + ridge/lasso (trailing)",
+    "text": "Predictions: time-series CV for ARX + ridge/lasso (trailing)\n\n\n\n                             MSE        MAE MAPE     MASE\nridge CV + trailing 0.0009448604 0.01893437  Inf 124.8848\nlasso CV + trailing 0.0011654498 0.02040692  Inf 134.5973"
   },
   {
     "objectID": "slides/day2-morning.html#point-predictions-vs-intervals",
     "href": "slides/day2-morning.html#point-predictions-vs-intervals",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Point predictions vs intervals",
-    "text": "Point predictions vs intervals\n\nSo far, we have only considered point predictions, i.e. we have fitted models to provide our best guess on the outcome at time \\(t\\).\nWhat if we want to provide a measure of uncertainty around our point prediction or a likely range of values for the outcome at time \\(t\\)?\nFor each target time \\(t\\), we can construct prediction intervals, i.e. provide ranges of values that are expected to cover the true outcome value a fixed percentage of times."
+    "text": "Point predictions vs intervals\n\nSo far, we have only considered point predictions, i.e.  we have fitted models to provide our best guess on the outcome at time \\(t\\).\n\n\n\n\nImportant\n\n\n\nWhat if we want to provide a measure of uncertainty around our point prediction or a likely range of values for the outcome at time \\(t\\)?\n\n\n\n\n\nFor each target time \\(t\\), we can construct prediction intervals, i.e. provide ranges of values that are expected to cover the true outcome value a fixed fraction of times."
   },
   {
-    "objectID": "slides/day2-morning.html#prediction-intervals-via-residuals",
-    "href": "slides/day2-morning.html#prediction-intervals-via-residuals",
+    "objectID": "slides/day2-morning.html#prediction-intervals-for-lm-fits",
+    "href": "slides/day2-morning.html#prediction-intervals-for-lm-fits",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Prediction intervals via residuals",
-    "text": "Prediction intervals via residuals"
+    "section": "Prediction intervals for lm fits",
+    "text": "Prediction intervals for lm fits\n\nTo get prediction intervals for the models we previously fitted, we only need to tweak our call to predict by adding as an input:\ninterval = \"prediction\", level = p\nwhere \\(p \\in (0, 1)\\) is the desired coverage.\nThe output from predict will then be a matrix with\n\nfirst column a point estimate\nsecond column the lower limit of the interval\nthird column the upper limit of the interval"
   },
   {
-    "objectID": "slides/day2-morning.html#prediction-intervals-via-residuals-1",
-    "href": "slides/day2-morning.html#prediction-intervals-via-residuals-1",
+    "objectID": "slides/day2-morning.html#prediction-intervals-for-arx-test",
+    "href": "slides/day2-morning.html#prediction-intervals-for-arx-test",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Prediction intervals via residuals",
-    "text": "Prediction intervals via residuals\nARX model for COVID deaths"
+    "section": "Prediction intervals for ARX (test)",
+    "text": "Prediction intervals for ARX (test)\n\n\npred_test_ci &lt;- predict(arx_fit, \n                        newdata = test, \n                        interval = \"prediction\", \n                        level = 0.95)\n\nhead(pred_test_ci)\n\n\n        fit       lwr       upr\n1 1.0712145 1.0101736 1.1322555\n2 1.0483291 0.9872675 1.1093908\n3 0.7648747 0.7063989 0.8233506\n4 0.7314587 0.6730736 0.7898439\n5 0.6984966 0.6402211 0.7567721\n6 0.7422651 0.6836403 0.8008899"
+  },
+  {
+    "objectID": "slides/day2-morning.html#prediction-intervals-for-arx-time-series-cv",
+    "href": "slides/day2-morning.html#prediction-intervals-for-arx-time-series-cv",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Prediction intervals for ARX (time-series CV)",
+    "text": "Prediction intervals for ARX (time-series CV)\n\n# Initialize matrices to store predictions \n# 3 columns: point estimate, lower limit, and upper limit\npred_all_past = pred_trailing &lt;- matrix(NA, nrow = n - t0, ncol = 3)\ncolnames(pred_all_past) = colnames(pred_trailing) &lt;- c('prediction', 'lower', 'upper')\n\nfor (t in (t0+1):n) {\n  # Fit ARX \n  arx_all_past = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, \n                    subset = (1:n) &lt;= (t-h)) \n  arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, \n                    subset = (1:n) &lt;= (t-h) & (1:n) &gt; (t-h-w)) \n  # Predict\n  pred_all_past[t-t0, ] = predict(arx_all_past, newdata = data.frame(ca[t, ]),\n                                interval = \"prediction\", level = 0.95)\n  pred_trailing[t-t0, ] = predict(arx_trailing, newdata = data.frame(ca[t, ]),\n                                interval = \"prediction\", level = 0.95)\n}\n\nlm_pred_all_past &lt;- cbind(test, pred_all_past)\nlm_pred_trailing &lt;- cbind(test, pred_trailing)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#prediction-intervals-for-arx-cv-all-past",
+    "href": "slides/day2-morning.html#prediction-intervals-for-arx-cv-all-past",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Prediction intervals for ARX (CV, all past)",
+    "text": "Prediction intervals for ARX (CV, all past)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#prediction-intervals-for-arx-cv-trailing-window",
+    "href": "slides/day2-morning.html#prediction-intervals-for-arx-cv-trailing-window",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Prediction intervals for ARX (CV, trailing window)",
+    "text": "Prediction intervals for ARX (CV, trailing window)\n\nNote: the width of the prediction intervals varies substantially over time."
   },
   {
     "objectID": "slides/day2-morning.html#quantile-regression",
     "href": "slides/day2-morning.html#quantile-regression",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Quantile regression",
-    "text": "Quantile regression\n\nDifferent approach: method that directly targets conditional quantiles of the outcome.\nConditional quantile = value below which a given percentage (e.g., 25%, 50%, 75%) of observations fall, given specific values of the predictor variables.\nAdvantage: it provides a more complete picture of the outcome distribution."
+    "text": "Quantile regression\n\nSo far we only considered different ways to apply linear regression.\nQuantile regression is a different estimation method, and it directly targets conditional quantiles of the outcome over time.\n\n\n\n\n\n\n\nDefinition\n\n\nConditional quantile = value below which a given percentage (e.g. 25%, 50%, 75%) of observations fall, given specific values of the predictor variables.\n\n\n\n\nAdvantage: it provides a more complete picture of the outcome distribution."
   },
   {
-    "objectID": "slides/day2-morning.html#quantile-regression-1",
-    "href": "slides/day2-morning.html#quantile-regression-1",
+    "objectID": "slides/day2-morning.html#arx-model-for-covid-deaths-via-quantile-regression",
+    "href": "slides/day2-morning.html#arx-model-for-covid-deaths-via-quantile-regression",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Quantile regression",
-    "text": "Quantile regression\nARX model for COVID deaths"
+    "section": "ARX model for COVID deaths via quantile regression",
+    "text": "ARX model for COVID deaths via quantile regression\n\n#install.packages(\"quantreg\")\nlibrary(quantreg)  #library to perform quantile regression\n\n# Set quantiles of interest: we will focus on 2.5%, 50% (i.e. median), and 97.5% quantiles\nquantiles &lt;- c(0.025, 0.5, 0.975)  \n\n# Fit quantile regression on training set\nq_reg &lt;- rq(deaths ~ lagged_deaths + lagged_cases, data = train, tau = quantiles)\n\n# Estimated coefficients\ncoef(q_reg)\n\n                 tau= 0.025   tau= 0.500  tau= 0.975\n(Intercept)   -0.0090324978 0.0032234550 0.004291003\nlagged_deaths  0.9190610331 0.9812695258 1.082715062\nlagged_cases   0.0002464703 0.0001356316 0.000528872\n\n# Predict on test set\npred_test &lt;- predict(q_reg, newdata = test)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-via-quantile-regression-test",
+    "href": "slides/day2-morning.html#predictions-via-quantile-regression-test",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions via quantile regression (test)",
+    "text": "Predictions via quantile regression (test)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-via-quantile-regression-time-series-cv",
+    "href": "slides/day2-morning.html#predictions-via-quantile-regression-time-series-cv",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions via quantile regression (time-series CV)",
+    "text": "Predictions via quantile regression (time-series CV)\n\n# Initialize matrices to store predictions \n# 3 columns: lower limit, median, and upper limit\npred_all_past = pred_trailing &lt;- matrix(NA, nrow = n - t0, ncol = 3)\ncolnames(pred_all_past) = colnames(pred_trailing) &lt;- c('lower', 'median', 'upper')\n\nfor (t in (t0+1):n) {\n  # Fit quantile regression\n  rq_all_past = rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles,\n                   data = ca, subset = (1:n) &lt;= (t-h)) \n  rq_trailing = rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles,\n                   data = ca, subset = (1:n) &lt;= (t-h) & (1:n) &gt; (t-h-w)) \n  # Predict\n  pred_all_past[t-t0, ] = predict(rq_all_past, newdata = data.frame(ca[t, ]))\n  pred_trailing[t-t0, ] = predict(rq_trailing, newdata = data.frame(ca[t, ]))\n}\n\nrq_pred_all_past &lt;- cbind(test, pred_all_past)\nrq_pred_trailing &lt;- cbind(test, pred_trailing)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-via-quantile-regression-cv-all-past",
+    "href": "slides/day2-morning.html#predictions-via-quantile-regression-cv-all-past",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions via quantile regression (CV, all past)",
+    "text": "Predictions via quantile regression (CV, all past)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predictions-via-quantile-regression-cv-trailing",
+    "href": "slides/day2-morning.html#predictions-via-quantile-regression-cv-trailing",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions via quantile regression (CV, trailing)",
+    "text": "Predictions via quantile regression (CV, trailing)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#actual-coverage",
+    "href": "slides/day2-morning.html#actual-coverage",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Actual Coverage",
+    "text": "Actual Coverage\n\nWe would expect the ARX model fitted via lm and via rq to cover the truth about 95% of the times. Is this actually true in practice?\nThe actual coverage of each predictive interval is\n\n\n\n         lm.all.past lm.trailing rq.all.past rq.trailing\nCoverage   0.9673203   0.9215686   0.8660131   0.7124183\n\n\n\nNotice that the coverage of lm is close to 95%, while rq has lower coverage, especially for the trailing window case."
   },
   {
     "objectID": "slides/day2-morning.html#evaluation-1",
@@ -217,11 +455,81 @@
     "text": "Evaluation\n\nPrediction intervals are “good” if they\n\ncover the truth most of the time\nare not too wide\n\nError metric that captures both desiderata: Weighted Interval Score (WIS)\n\\(F\\) = forecast composed of predicted quantiles \\(q_{\\tau}\\) for the set of quantile levels \\(\\tau\\). The WIS for target variable \\(Y\\) is represented as (McDonald et al., 2021):\n\n\\[WIS(F, Y) = 2\\sum_{\\tau} \\phi_{\\tau} (Y - q_{\\tau})\\]\nwhere \\(\\phi_{\\tau}(x) = \\tau |x|\\) for \\(x \\geq 0\\) and \\(\\phi_{\\tau}(x) = (1-\\tau) |x|\\) for \\(x &lt; 0\\)."
   },
   {
-    "objectID": "slides/day2-morning.html#callouts",
-    "href": "slides/day2-morning.html#callouts",
+    "objectID": "slides/day2-morning.html#computing-the-wis",
+    "href": "slides/day2-morning.html#computing-the-wis",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Callouts",
-    "text": "Callouts\n\n\n\n\n\n\nNote\n\n\nYou can use these. See https://quarto.org/docs/authoring/callouts.html"
+    "section": "Computing the WIS",
+    "text": "Computing the WIS\n\nWIS &lt;- function(truth, estimates, quantiles) {\n  2 * sum(pmax(\n    quantiles * (truth - estimates),\n    (1 - quantiles) * (estimates - truth),\n    na.rm = TRUE\n  ))\n}\n\n\n\n\nNote\n\n\nWIS tends to prioritize sharpness (how wide the interval is) relative to coverage (if the interval contains the truth)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#wis-for-arx-fitted-via-lm-and-rq",
+    "href": "slides/day2-morning.html#wis-for-arx-fitted-via-lm-and-rq",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "WIS for ARX fitted via lm and rq",
+    "text": "WIS for ARX fitted via lm and rq\n\nThe lowest mean WIS is attained by quantile regression trained on all past data.\nNotice that this method has coverage below 95% but it is still preferred under WIS because its intervals are narrower than for linear regression.\n\n\n\n\n\n# A tibble: 2 × 2\n  method      mean_wis\n  &lt;chr&gt;          &lt;dbl&gt;\n1 lm.all.past   0.0245\n2 lm.trailing   0.0273\n\n\n\n\n\n\n# A tibble: 2 × 2\n  method      mean_wis\n  &lt;chr&gt;          &lt;dbl&gt;\n1 rq.all.past   0.0240\n2 rq.trailing   0.0336"
+  },
+  {
+    "objectID": "slides/day2-morning.html#versioned-data",
+    "href": "slides/day2-morning.html#versioned-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Versioned data",
+    "text": "Versioned data\n\nIn our forecasting examples, we have assumed the data are never revised (or have simply ignored revisions, and used data as_of today)\n\n\n\n\nImportant\n\n\nHow can we train forecasters when dealing with versioned data?\n\n\n\n\nhead(data_archive)\n\n$DT\n       geo_value time_value    version case_rate death_rate\n    1:        ak 2020-04-01 2020-04-02  1.797489          0\n    2:        ak 2020-04-01 2020-05-07  1.777061          0\n    3:        ak 2020-04-01 2020-10-28  1.106147          0\n    4:        ak 2020-04-01 2020-10-29  1.797489          0\n    5:        ak 2020-04-01 2020-10-30  1.797489          0\n   ---                                                     \n93562:        wy 2021-12-27 2021-12-28 65.598769          0\n93563:        wy 2021-12-28 2021-12-29 50.315286          0\n93564:        wy 2021-12-29 2021-12-30 55.810471          0\n93565:        wy 2021-12-30 2021-12-31 68.002912          0\n93566:        wy 2021-12-31 2022-01-01  0.000000          0\n\n$geo_type\n[1] \"state\"\n\n$time_type\n[1] \"day\"\n\n$additional_metadata\nlist()\n\n$clobberable_versions_start\n[1] NA\n\n$versions_end\n[1] \"2022-01-01\""
+  },
+  {
+    "objectID": "slides/day2-morning.html#version-aware-forecasting",
+    "href": "slides/day2-morning.html#version-aware-forecasting",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Version-aware forecasting",
+    "text": "Version-aware forecasting\n\n# initialize dataframe for predictions\n# 5 columns: forecast date, target date, 2.5%, 50%, and 97.5% quantiles\npred_all_past = pred_trailing &lt;- data.frame(matrix(NA, ncol = 5, nrow = 0))\ncolnames(pred_all_past) = colnames(pred_trailing) &lt;- c(\"forecast_date\", \"target_date\",\n                                                       'tau..0.025', 'tau..0.500', 'tau..0.975')\n\nw &lt;- 30         #trailing window size\nh &lt;- 7          #number of days ahead\n\n# dates when predictions are made (set to be 1 month apart)\nfc_time_values &lt;- seq(from = t0_date, to = as.Date(\"2021-12-31\"), by = \"1 month\")\n\nfor (fc_date in fc_time_values) {\n  # get data version as_of forecast date\n  data &lt;- epix_as_of(ca_archive, max_version = as.Date(fc_date))\n  # create lagged predictors\n  data$lagged_deaths &lt;- dplyr::lag(data$deaths, h) #since we want to predict h-ahead, \n                                                   #we need to lag deaths by h (at least)\n  data$lagged_cases &lt;- dplyr::lag(data$cases, k)\n  # perform quantile regression\n  rq_all_past &lt;- rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles, data = data) \n  rq_trailing &lt;- rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles, \n                    # only consider window of data\n                    data = data %&gt;% filter(time_value &gt; (max(time_value) - w))) \n  # construct data.frame with the right predictors for the target date\n  predictors &lt;- data.frame(lagged_deaths = tail(data$deaths, 1), \n                           lagged_cases = (data %&gt;% \n                                             filter(time_value == (max(time_value) + h - k)))$cases)\n  # make predictions for target date and add them to matrix of predictions\n  pred_all_past &lt;- rbind(pred_all_past, \n                         data.frame('forecast_date' = max(data$time_value),\n                                    'target_date' = max(data$time_value) + h, \n                                    predict(rq_all_past, newdata = predictors)))\n  pred_trailing &lt;- rbind(pred_trailing, \n                         data.frame('forecast_date' = max(data$time_value),\n                                    'target_date' = max(data$time_value) + h, \n                                    predict(rq_trailing, newdata = predictors)))\n}"
+  },
+  {
+    "objectID": "slides/day2-morning.html#version-aware-predictions-cv-all-past",
+    "href": "slides/day2-morning.html#version-aware-predictions-cv-all-past",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Version-aware predictions (CV, all past)",
+    "text": "Version-aware predictions (CV, all past)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#version-awere-predictions-cv-trailing",
+    "href": "slides/day2-morning.html#version-awere-predictions-cv-trailing",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Version-awere predictions (CV, trailing)",
+    "text": "Version-awere predictions (CV, trailing)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#using-geo-information",
+    "href": "slides/day2-morning.html#using-geo-information",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Using geo information",
+    "text": "Using geo information\n\nAssume we observe data over time from multiple locations (e.g. states or counties).\nWe could\n\nEstimate coefficients separately for each location (as we have done so far).\nFit one model using all locations together at each time point (geo-pooling). Estimated coefficients will not be location specific.\nEstimate coefficients separately for each location, but include predictors capturing averages across locations (partial geo-pooling)."
+  },
+  {
+    "objectID": "slides/day2-morning.html#geo-pooling-cv-all-past",
+    "href": "slides/day2-morning.html#geo-pooling-cv-all-past",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Geo-pooling: CV all past",
+    "text": "Geo-pooling: CV all past\n\nusa_archive &lt;- data_archive$DT %&gt;% \n  as_epi_archive()\n\n# initialize dataframe for predictions\n# 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles\npred_all_past &lt;- data.frame(matrix(NA, ncol = 6, nrow = 0))\ncolnames(pred_all_past) &lt;- c('geo_value', 'forecast_date', 'target_date',\n                             'tau..0.025', 'tau..0.500', 'tau..0.975')\n\nh &lt;- 7     #number of days ahead\n\nfor (fc_date in fc_time_values) {\n  # get data version as_of forecast date\n  data &lt;- epix_as_of(usa_archive, max_version = as.Date(fc_date))\n  \n  # create lagged predictors for each state \n  data &lt;- data %&gt;%\n    arrange(geo_value, time_value) %&gt;%  \n    group_by(geo_value) %&gt;%\n    mutate(lagged_deaths = dplyr::lag(deaths, h),\n           lagged_cases = dplyr::lag(cases, k)) %&gt;%\n    ungroup()\n  \n  # perform quantile regression\n  rq_all_past &lt;- rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles, data = data) \n  \n  # construct dataframe with the right predictors for the target date\n  new_lagged_deaths &lt;- data %&gt;% \n    filter(time_value == max(time_value)) %&gt;%\n    select(geo_value, deaths)\n  \n  new_lagged_cases &lt;- data %&gt;% \n    filter(time_value == max(time_value) + h - k) %&gt;%\n    select(geo_value, cases)\n  \n  predictors &lt;- new_lagged_deaths %&gt;%\n    inner_join(new_lagged_cases, join_by(geo_value)) %&gt;%\n    rename(lagged_deaths = deaths,\n           lagged_cases = cases)\n  \n  # make predictions for target date and add them to matrix of predictions\n  pred_all_past &lt;- rbind(pred_all_past, \n                         data.frame(\n                           'geo_value' = predictors$geo_value,\n                           'forecast_date' = max(data$time_value),\n                           'target_date' = max(data$time_value) + h, \n                           predict(rq_all_past, newdata = predictors)))\n}\n\n# geo-pooled predictions for California\npred_ca &lt;- pred_all_past %&gt;%\n  filter(geo_value == 'ca') %&gt;%\n  rename(median = `tau..0.500`,\n         lower = `tau..0.025`,\n         upper = `tau..0.975`) %&gt;%\n  full_join(ca %&gt;% select(time_value, deaths), join_by(target_date == time_value)) %&gt;%\n  arrange(target_date)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#geo-pooled-predictions-for-california",
+    "href": "slides/day2-morning.html#geo-pooled-predictions-for-california",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Geo-pooled predictions for California",
+    "text": "Geo-pooled predictions for California"
+  },
+  {
+    "objectID": "slides/day2-morning.html#partial-geo-pooling-cv-all-past",
+    "href": "slides/day2-morning.html#partial-geo-pooling-cv-all-past",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Partial geo-pooling: CV all past",
+    "text": "Partial geo-pooling: CV all past\n\n# initialize dataframe for predictions\n# 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles\npred_all_past &lt;- data.frame(matrix(NA, ncol = 6, nrow = 0))\ncolnames(pred_all_past) &lt;- c('geo_value', 'forecast_date', 'target_date',\n                             'tau..0.025', 'tau..0.500', 'tau..0.975')\n\nh &lt;- 7     #number of days ahead\n\nfor (fc_date in fc_time_values) {\n  # get data version as_of forecast date\n  data &lt;- epix_as_of(usa_archive, max_version = as.Date(fc_date))\n  \n  # create lagged predictors \n  data &lt;- data %&gt;%\n    arrange(geo_value, time_value) %&gt;%  \n    group_by(geo_value) %&gt;%\n    mutate(lagged_deaths = dplyr::lag(deaths, h),\n           lagged_cases = dplyr::lag(cases, k)) %&gt;%\n    ungroup() %&gt;%\n    group_by(time_value) %&gt;%\n    mutate(avg_lagged_deaths = mean(lagged_deaths, na.rm = T),\n           avg_lagged_cases = mean(lagged_cases, na.rm = T)) %&gt;%\n    ungroup() \n  \n  # perform quantile regression\n  rq_all_past &lt;- rq(deaths ~ lagged_deaths + lagged_cases + avg_lagged_deaths +\n                      avg_lagged_cases, tau = quantiles, \n                    data = (data %&gt;% filter(geo_value == 'ca'))) \n  \n  # construct data.frame with the right predictors for the target date\n  new_lagged_deaths &lt;- data %&gt;% \n    filter(time_value == max(time_value)) %&gt;%\n    select(geo_value, deaths) %&gt;%\n    mutate(avg_lagged_deaths = mean(deaths, na.rm = T)) %&gt;%\n    filter(geo_value == 'ca')\n  \n  new_lagged_cases &lt;- data %&gt;% \n    filter(time_value == max(time_value) + h - k) %&gt;%\n    select(geo_value, cases) %&gt;%\n    mutate(avg_lagged_cases = mean(cases, na.rm = T)) %&gt;%\n    filter(geo_value == 'ca')\n  \n  predictors &lt;- new_lagged_deaths %&gt;%\n    inner_join(new_lagged_cases, join_by(geo_value)) %&gt;%\n    rename(lagged_deaths = deaths,\n           lagged_cases = cases)\n  \n  # make predictions for target date and add them to matrix of predictions\n  pred_all_past &lt;- rbind(pred_all_past, \n                         data.frame(\n                           'geo_value' = predictors$geo_value,\n                           'forecast_date' = max(data$time_value),\n                           'target_date' = max(data$time_value) + h, \n                           predict(rq_all_past, newdata = predictors)))\n}\n\n# partially geo-pooled predictions for California\npred_ca &lt;- pred_all_past %&gt;%\n  filter(geo_value == 'ca') %&gt;%\n  rename(median = `tau..0.500`,\n         lower = `tau..0.025`,\n         upper = `tau..0.975`) %&gt;%\n  full_join(ca %&gt;% select(time_value, deaths), join_by(target_date == time_value)) %&gt;%\n  arrange(target_date)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#partially-geo-pooled-predictions-for-california",
+    "href": "slides/day2-morning.html#partially-geo-pooled-predictions-for-california",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Partially geo-pooled predictions for California",
+    "text": "Partially geo-pooled predictions for California"
   },
   {
     "objectID": "slides/day2-morning.html#final-slide",
@@ -235,7 +543,7 @@
     "href": "index.html",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "",
-    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon\n\n\n\n\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Clime\nRachel Lobay"
+    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon\n\n\n\n\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
   },
   {
     "objectID": "index.html#schedule",
@@ -249,7 +557,7 @@
     "href": "index.html#instructors",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "",
-    "text": "Ryan J. Tibshirani\nDaniel J. McDonald\nAlice Clime\nRachel Lobay"
+    "text": "Ryan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
   },
   {
     "objectID": "slides/day1-morning.html#section",
