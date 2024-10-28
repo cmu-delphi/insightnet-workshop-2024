@@ -1486,24 +1486,21 @@ fc_time_values <- seq(
 
 data_archive <- data_archive %>%
   epix_slide(
-    before = Inf, 
-    ref_time_values = fc_time_values,
+    .before = Inf, 
+    .versions = fc_time_values,
     function(x, gk, rtv) {
       x %>%
         group_by(geo_value) %>%
-        epi_slide_mean(case_rate, before = 6L) %>%
-        epi_slide_mean(death_rate, before = 6L) %>%
+        epi_slide_mean(case_rate, .window_size = 7L) %>%
+        epi_slide_mean(death_rate, .window_size = 7L) %>%
         ungroup() %>%
         rename(case_rate_7d_av = slide_value_case_rate,
                death_rate_7d_av = slide_value_death_rate)
     }
   ) %>%
-  rename(version = time_value) %>%
   rename(
-    time_value = slide_value_time_value,
-    geo_value = slide_value_geo_value,
-    cases = slide_value_case_rate_7d_av,
-    deaths = slide_value_death_rate_7d_av
+    cases = case_rate_7d_av,
+    deaths = death_rate_7d_av
   ) %>%
   select(version, time_value, geo_value, cases, deaths) %>%
   as_epi_archive(compactify = TRUE)
