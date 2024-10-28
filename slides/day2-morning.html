@@ -421,7 +421,7 @@
 <li><p>Overfitting and Regularization</p></li>
 <li><p>Prediction Intervals</p></li>
 <li><p>Forecasting with Versioned Data</p></li>
-<li><p>Geo-pooling</p></li>
+<li><p>Modeling Multiple Time Series</p></li>
 </ol>
 </section>
 <section>
@@ -451,15 +451,33 @@
 <section id="linear-regression-with-lagged-predictor" class="slide level2">
 <h2>Linear regression with lagged predictor</h2>
 <ul>
-<li><p>In time series models, the outcomes and predictors are usually indexed by time <span class="math inline">\(t\)</span>.</p></li>
-<li><p>Often we want to predict a future value of <span class="math inline">\(y\)</span>, given present and past values of <span class="math inline">\(x\)</span>.</p></li>
-<li><p>For this purpose, we introduce linear regression with lagged predictors</p></li>
+<li><p>In time series, outcomes and predictors are usually indexed by time <span class="math inline">\(t\)</span>.</p></li>
+<li><p><span class="primary">Goal</span>: predicting future <span class="math inline">\(y\)</span>, given present <span class="math inline">\(x\)</span>.</p></li>
+<li><p><span class="primary">Model</span>: linear regression with lagged predictor</p></li>
 </ul>
-<p><span class="math display">\[y_t \approx \beta_0 + \beta_1 x_{t-k}\]</span></p>
-<p>i.e.&nbsp;we regress the outcome <span class="math inline">\(y\)</span> at time <span class="math inline">\(t\)</span> on the predictor <span class="math inline">\(x\)</span> at time <span class="math inline">\(t-k\)</span>.</p>
+<p><span class="math display">\[\hat y_t = \hat \beta_0 + \hat \beta_1 x_{t-k}\]</span></p>
+<p>i.e.&nbsp;regress the outcome <span class="math inline">\(y\)</span> at time <span class="math inline">\(t\)</span> on the predictor <span class="math inline">\(x\)</span> at time <span class="math inline">\(t-k\)</span>.</p>
+<ul>
+<li>Equivalent way to write the model:</li>
+</ul>
+<p><span class="math display">\[\hat y_{t+k} = \hat \beta_0 + \hat \beta_1 x_t\]</span></p>
 </section>
-<section id="example-covid-cases-and-deaths-in-california" class="slide level2 smaller">
+<section id="example-predicting-covid-deaths" class="slide level2">
+<h2>Example: predicting COVID deaths</h2>
+<ul>
+<li><p>During the pandemic, interest in predicting COVID deaths 7, 14, 28 days ahead.</p></li>
+<li><p>Can we reasonably predict COVID deaths 28 days ahead by just using cases today?</p></li>
+<li><p>If we let</p></li>
+</ul>
+<p><span class="math display">\[y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t\]</span> is the following a good model?</p>
+<p><span class="math display">\[\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}\]</span></p>
+</section>
+<section id="example-covid-cases-and-deaths-in-california" class="slide level2">
 <h2>Example: COVID cases and deaths in California</h2>
+<ul>
+<li><p>Let’s focus on California.</p></li>
+<li><p>Cases seem highly correlated with deaths several weeks later.</p></li>
+</ul>
 <div class="flex">
 <div class="w-50">
 <div class="cell" data-layout-align="center">
@@ -494,24 +512,18 @@
 </div>
 </div>
 </div>
-<ul>
-<li><p>Cases seem to be highly correlated with deaths several weeks later</p></li>
-<li><p>What is the lag <span class="math inline">\(k\)</span> for which the correlation between cases at <span class="math inline">\(t-k\)</span> and deaths at <span class="math inline">\(t\)</span> is maximized?</p></li>
-<li><p>Given that lag, we can fit linear regression with a lagged predictor where</p></li>
-</ul>
-<p><span class="math display">\[y_t = \text{deaths at time } t \quad\quad x_{t-k} = \text{cases at time } t-k\]</span></p>
 </section>
-<section id="choosing-the-lag-k" class="slide level2">
-<h2>Choosing the lag <span class="math inline">\(k\)</span></h2>
+<section id="checking-correlation" class="slide level2">
+<h2>Checking correlation</h2>
 <ul>
 <li><p>Let’s split the data into a training and a test set (before/after 2021-03-01).</p></li>
-<li><p>The lag leading to largest correlation between lagged cases and deaths on the training set is <span class="math inline">\(k = 26\)</span>.</p></li>
+<li><p>On the training set, the correlation between cases and deaths 28 days ahead is very large (&gt; 0.95).</p></li>
 </ul>
 
 <img data-src="gfx/correlation-cases-deaths-1.svg" class="quarto-figure quarto-figure-center r-stretch"><ul>
 <li>Let’s use (base) R to prepare the data and fit</li>
 </ul>
-<p><span class="math display">\[y_t \approx \beta_0 + \beta_1 x_{t-26}\]</span></p>
+<p><span class="math display">\[\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}\]</span></p>
 </section>
 <section id="preparing-the-data" class="slide level2">
 <h2>Preparing the data</h2>
@@ -536,7 +548,7 @@
 <span id="cb4-2"><a></a><span class="fu">coef</span>(reg_lagged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> (Intercept) lagged_cases 
-  0.09533276   0.01134891 </code></pre>
+  0.09853776   0.01132312 </code></pre>
 </div>
 </div>
 
@@ -632,10 +644,10 @@
 <li><p>The training error is</p>
 <ul>
 <li><p>generally too optimistic as an estimate of prediction error</p></li>
-<li><p><span class="primary">more optimistic the more complex the model!</span></p></li>
+<li><p><span class="primary">more optimistic the more complex the model!</span><sup>1</sup></p></li>
 </ul></li>
 </ul>
-</section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>More on this when we talk about overfitting.</p></li></ol></aside></section>
 <section id="training-error-1" class="slide level2">
 <h2>Training error</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases">Linear regression of COVID deaths on lagged cases</h4>
@@ -646,8 +658,8 @@
 
 <img data-src="gfx/plot-train-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                 MSE        MAE     MAPE     MASE
-training 0.008094702 0.05294347 17.82704 311.8417</code></pre>
+<pre><code>                MAE     MASE
+training 0.05985631 351.4848</code></pre>
 </div>
 </div>
 </section>
@@ -656,7 +668,7 @@ training 0.008094702 0.05294347 17.82704 311.8417</code></pre>
 <ul>
 <li><p>To compute the split-sample error</p>
 <ol type="1">
-<li><p>Split the data into training (up to time <span class="math inline">\(t_0\)</span>), and test set (after <span class="math inline">\(t_0\)</span>)</p></li>
+<li><p>Split data into training (up to time <span class="math inline">\(t_0\)</span>), and test set (after <span class="math inline">\(t_0\)</span>)</p></li>
 <li><p>Fit the model to the training data only</p></li>
 <li><p>Make predictions for the test set</p></li>
 <li><p>Compute the selected error metric on the test set only</p></li>
@@ -665,7 +677,7 @@ training 0.008094702 0.05294347 17.82704 311.8417</code></pre>
 </ul>
 <p><span class="math display">\[\text{SplitMSE} = \frac{1}{n-t_0} \sum_{t = t_0 +1}^n (\hat y_t - y_t)^2\]</span></p>
 <ul>
-<li>In practice, split-sample estimates of prediction error are generally <span class="primary">pessimistic</span>, as they mimic a situation where we would never refit the model in the future.</li>
+<li>Split-sample estimates of prediction error don’t mimic a situation where we would refit the model in the future. They are <span class="primary">pessimistic</span> if the relation between outcome and predictors changes over time.</li>
 </ul>
 </section>
 <section id="split-sample-error-1" class="slide level2">
@@ -678,9 +690,9 @@ training 0.008094702 0.05294347 17.82704 311.8417</code></pre>
 
 <img data-src="gfx/plot-test-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                     MSE        MAE     MAPE     MASE
-training     0.008094702 0.05294347 17.82704 311.8417
-split-sample 0.016062115 0.10175475      Inf 671.1406</code></pre>
+<pre><code>                    MAE     MASE
+training     0.05985631 351.4848
+split-sample 0.10005007 659.8971</code></pre>
 </div>
 </div>
 </section>
@@ -688,32 +700,32 @@ split-sample 0.016062115 0.10175475      Inf 671.1406</code></pre>
 <h2>Time-series cross-validation (CV)</h2>
 <h4 id="step-ahead-predictions">1-step ahead predictions</h4>
 <ul>
-<li><p>If we will refit the model in the future once new data become available, a more appropriate way to estimate the prediction error is time-series cross-validation.</p></li>
-<li><p>Assume we want to make 1-step ahead predictions (i.e.&nbsp;at time <span class="math inline">\(t-1\)</span> we want to make a forecast for time <span class="math inline">\(t\)</span>). Then, for <span class="math inline">\(t = t_0+1, t_0+2, \dots\)</span>, we proceed as follows:</p>
+<li><p>If we refit in the future once new data are available, a more appropriate way to estimate the prediction error is time-series cross-validation.</p></li>
+<li><p>To get 1-step ahead predictions (i.e.&nbsp;at time <span class="math inline">\(t\)</span> we forecast for <span class="math inline">\(t+1\)</span>) we proceed as follows, for <span class="math inline">\(t = t_0, t_0+1, \dots\)</span></p>
 <ol type="1">
-<li><p>Fit the model using data up to time <span class="math inline">\(t-1\)</span></p></li>
-<li><p>Make a prediction for <span class="math inline">\(t\)</span></p></li>
+<li><p>Fit the model using data up to time <span class="math inline">\(t\)</span></p></li>
+<li><p>Make a prediction for <span class="math inline">\(t+1\)</span></p></li>
 <li><p>Record the prediction error</p></li>
 </ol></li>
 </ul>
 <p>The cross-validation MSE is then</p>
-<p><span class="math display">\[CVMSE = \frac{1}{n-t_0} \sum_{t = t_0+1}^n (\hat y_{t|t-1} - y_t)^2\]</span></p>
-<p>where <span class="math inline">\(\hat y_{t|t-1}\)</span> indicates a prediction for <span class="math inline">\(y\)</span> at time <span class="math inline">\(t\)</span> that was made with data available up to time <span class="math inline">\(t-1\)</span>.</p>
+<p><span class="math display">\[CVMSE = \frac{1}{n-t_0} \sum_{t = t_0}^{n-1} (\hat y_{t+1|t} - y_{t+1})^2\]</span></p>
+<p>where <span class="math inline">\(\hat y_{t+1|t}\)</span> indicates a prediction for <span class="math inline">\(y\)</span> at time <span class="math inline">\(t+1\)</span> that was made with data available up to time <span class="math inline">\(t\)</span>.</p>
 </section>
 <section id="time-series-cross-validation-cv-1" class="slide level2 smaller">
 <h2>Time-series cross-validation (CV)</h2>
 <h4 id="h-step-ahead-predictions"><span class="math inline">\(h\)</span>-step ahead predictions</h4>
 <ul>
-<li><p>More in general, if we want to make <span class="math inline">\(h\)</span>-step ahead predictions (i.e.&nbsp;at time <span class="math inline">\(t-h\)</span> we want to make a forecast for time <span class="math inline">\(t\)</span>), we proceed as follows for <span class="math inline">\(t = t_0+1, t_0+2, \dots\)</span></p>
+<li><p>In general, if we want to make <span class="math inline">\(h\)</span>-step ahead predictions (i.e.&nbsp;at time <span class="math inline">\(t\)</span> we forecast for <span class="math inline">\(t+h\)</span>), we proceed as follows for <span class="math inline">\(t = t_0, t_0+1, \dots\)</span></p>
 <ul>
-<li><p>Fit the model using data up to time <span class="math inline">\(t-h\)</span></p></li>
-<li><p>Make a prediction for <span class="math inline">\(t\)</span></p></li>
+<li><p>Fit the model using data up to time <span class="math inline">\(t\)</span></p></li>
+<li><p>Make a prediction for <span class="math inline">\(t+h\)</span></p></li>
 <li><p>Record the prediction error</p></li>
 </ul></li>
 <li><p>The cross-validation MSE is then</p></li>
 </ul>
-<p><span class="math display">\[CVMSE = \frac{1}{n-t_0} \sum_{t = t_0+1}^n (\hat y_{t|t-h} - y_t)^2\]</span></p>
-<p>where <span class="math inline">\(\hat y_{t|t-h}\)</span> indicates a prediction for <span class="math inline">\(y\)</span> at time <span class="math inline">\(t\)</span> that was made with data available up to time <span class="math inline">\(t-h\)</span>.</p>
+<p><span class="math display">\[CVMSE = \frac{1}{n-t_0} \sum_{t = t_0}^{n-h} (\hat y_{t+h|t} - y_{t+h})^2\]</span></p>
+<p>where <span class="math inline">\(\hat y_{t+h|t}\)</span> indicates a prediction for <span class="math inline">\(y\)</span> at time <span class="math inline">\(t+h\)</span> that was made with data available up to time <span class="math inline">\(t\)</span>.</p>
 </section>
 <section id="time-series-cross-validation-cv-2" class="slide level2">
 <h2>Time-series cross-validation (CV)</h2>
@@ -721,13 +733,13 @@ split-sample 0.016062115 0.10175475      Inf 671.1406</code></pre>
 <p>Getting the predictions requires slightly more code:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ca)                               <span class="co">#length of time series</span></span>
-<span id="cb11-2"><a></a>pred_all_past <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="at">length =</span> n <span class="sc">-</span> t0)   <span class="co">#initialize vector of predictions</span></span>
-<span id="cb11-3"><a></a>h <span class="ot">&lt;-</span> <span class="dv">1</span>                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
+<span id="cb11-2"><a></a>h <span class="ot">&lt;-</span> k                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
+<span id="cb11-3"><a></a>pred_all_past <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="at">length =</span> n<span class="sc">-</span>h<span class="sc">-</span>t0<span class="sc">+</span><span class="dv">1</span>) <span class="co">#initialize vector of predictions</span></span>
 <span id="cb11-4"><a></a></span>
-<span id="cb11-5"><a></a><span class="cf">for</span> (t <span class="cf">in</span> (t0<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n) {</span>
+<span id="cb11-5"><a></a><span class="cf">for</span> (t <span class="cf">in</span> t0<span class="sc">:</span>(n<span class="sc">-</span>h)) {</span>
 <span id="cb11-6"><a></a>  <span class="co"># fit to all past data and make 1-step ahead prediction</span></span>
-<span id="cb11-7"><a></a>  reg_all_past <span class="ot">=</span> <span class="fu">lm</span>(deaths <span class="sc">~</span> lagged_cases, <span class="at">data =</span> ca, <span class="at">subset =</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&lt;=</span> (t<span class="sc">-</span>h)) </span>
-<span id="cb11-8"><a></a>  pred_all_past[t<span class="sc">-</span>t0] <span class="ot">=</span> <span class="fu">predict</span>(reg_all_past, <span class="at">newdata =</span> <span class="fu">data.frame</span>(ca[t, ]))</span>
+<span id="cb11-7"><a></a>  reg_all_past <span class="ot">=</span> <span class="fu">lm</span>(deaths <span class="sc">~</span> lagged_cases, <span class="at">data =</span> ca, <span class="at">subset =</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&lt;=</span> t) </span>
+<span id="cb11-8"><a></a>  pred_all_past[t<span class="sc">-</span>t0<span class="sc">+</span><span class="dv">1</span>] <span class="ot">=</span> <span class="fu">predict</span>(reg_all_past, <span class="at">newdata =</span> <span class="fu">data.frame</span>(ca[t<span class="sc">+</span>h, ]))</span>
 <span id="cb11-9"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-important no-icon callout-titled callout-style-default">
@@ -736,7 +748,7 @@ split-sample 0.016062115 0.10175475      Inf 671.1406</code></pre>
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>In general, we can predict at most <span class="math inline">\(k\)</span> days ahead (where <span class="math inline">\(k\)</span> = number of days by which predictor is lagged)!</p>
+<p>With the current model, we can only predict <span class="math inline">\(k\)</span> days ahead (where <span class="math inline">\(k\)</span> = number of days by which predictor is lagged)!</p>
 </div>
 </div>
 </div>
@@ -747,22 +759,22 @@ split-sample 0.016062115 0.10175475      Inf 671.1406</code></pre>
 
 <img data-src="gfx/plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                       MSE        MAE     MAPE     MASE
-training       0.008094702 0.05294347 17.82704 311.8417
-split-sample   0.016062115 0.10175475      Inf 671.1406
-time series CV 0.014838552 0.09623533      Inf 634.7363</code></pre>
+<pre><code>                      MAE     MASE
+training       0.05985631 351.4848
+split-sample   0.10005007 659.8971
+time series CV 0.08973951 732.5769</code></pre>
 </div>
 </div>
 </section>
-<section id="time-series-cv-on-a-trailing-window" class="slide level2">
+<section id="time-series-cv-on-a-trailing-window" class="slide level2 smaller">
 <h2>Time-series CV on a trailing window</h2>
 <ul>
-<li><p>So far, when making <span class="math inline">\(h\)</span>-step ahead predictions for time <span class="math inline">\(t\)</span>, we have fitted the model on all the data available up to time <span class="math inline">\(t-h\)</span>. We can instead use a trailing window, i.e.&nbsp;fit the model on only a window of data of length <span class="math inline">\(w\)</span>, starting at time <span class="math inline">\(t-h-w\)</span> and ending at time <span class="math inline">\(t-h\)</span>.</p></li>
-<li><p><span class="primary">Advantage</span>: if the relationship between predictors and outcome changes over time, training the forecaster on a window of recent data can better capture the recent relationship which might be more relevant to events in the near future.</p></li>
-<li><p>Window length <span class="math inline">\(w\)</span> considerations:</p>
+<li><p>So far, to get <span class="math inline">\(h\)</span>-step ahead predictions for time <span class="math inline">\(t+h\)</span>, we have fitted the model on all data available up to time <span class="math inline">\(t\)</span>. We can instead use a trailing window, i.e.&nbsp;fit the model on a window of data of length <span class="math inline">\(w\)</span>, starting at time <span class="math inline">\(t-w\)</span> and ending at <span class="math inline">\(t\)</span>.</p></li>
+<li><p><span class="primary">Advantage</span>: if the predictors-outcome relation changes over time, training the forecaster on a window of recent data can better capture the recent relation which might be more relevant to predict the outcome in the near future.</p></li>
+<li><p>Window length <span class="primary"><span class="math inline">\(w\)</span></span> considerations:</p>
 <ul>
-<li><p>if <span class="math inline">\(w\)</span> is too big, the model can’t adapt to the recent predictors-outcome relation</p></li>
-<li><p>if <span class="math inline">\(w\)</span> is too small, the fitted model may be too volatile (trained on too little data)</p></li>
+<li><p>if <span class="math inline">\(w\)</span> is too <span class="primary">big</span>, the model <span class="primary">can’t adapt</span> to the recent predictors-outcome relation</p></li>
+<li><p>if <span class="math inline">\(w\)</span> is too <span class="primary">small</span>, the fitted model may be <span class="primary">too volatile</span> (trained on too little data)</p></li>
 </ul></li>
 </ul>
 </section>
@@ -771,15 +783,15 @@ time series CV 0.014838552 0.09623533      Inf 634.7363</code></pre>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-4">Linear regression of COVID deaths on lagged cases</h4>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="co"># Getting the predictions through CV with trailing window</span></span>
-<span id="cb13-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">30</span>                                     <span class="co">#trailing window size</span></span>
-<span id="cb13-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="at">length =</span> n <span class="sc">-</span> t0)   <span class="co">#initialize vector of predictions</span></span>
-<span id="cb13-4"><a></a>h <span class="ot">&lt;-</span> <span class="dv">1</span>                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
+<span id="cb13-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">60</span>                                     <span class="co">#trailing window size</span></span>
+<span id="cb13-3"><a></a>h <span class="ot">&lt;-</span> k                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
+<span id="cb13-4"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="at">length =</span> n<span class="sc">-</span>h<span class="sc">-</span>t0<span class="sc">+</span><span class="dv">1</span>) <span class="co">#initialize vector of predictions</span></span>
 <span id="cb13-5"><a></a></span>
-<span id="cb13-6"><a></a><span class="cf">for</span> (t <span class="cf">in</span> (t0<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n) {</span>
+<span id="cb13-6"><a></a><span class="cf">for</span> (t <span class="cf">in</span> t0<span class="sc">:</span>(n<span class="sc">-</span>h)) {</span>
 <span id="cb13-7"><a></a>  <span class="co"># fit to a trailing window of size w and make 1-step ahead prediction</span></span>
 <span id="cb13-8"><a></a>  reg_trailing <span class="ot">=</span> <span class="fu">lm</span>(deaths <span class="sc">~</span> lagged_cases, <span class="at">data =</span> ca, </span>
-<span id="cb13-9"><a></a>                    <span class="at">subset =</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&lt;=</span> (t<span class="sc">-</span>h) <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&gt;</span> (t<span class="sc">-</span>h<span class="sc">-</span>w)) </span>
-<span id="cb13-10"><a></a>  pred_trailing[t<span class="sc">-</span>t0] <span class="ot">=</span> <span class="fu">predict</span>(reg_trailing, <span class="at">newdata =</span> <span class="fu">data.frame</span>(ca[t, ]))</span>
+<span id="cb13-9"><a></a>                    <span class="at">subset =</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&lt;=</span> t <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&gt;</span> (t<span class="sc">-</span>w)) </span>
+<span id="cb13-10"><a></a>  pred_trailing[t<span class="sc">-</span>t0<span class="sc">+</span><span class="dv">1</span>] <span class="ot">=</span> <span class="fu">predict</span>(reg_trailing, <span class="at">newdata =</span> <span class="fu">data.frame</span>(ca[t<span class="sc">+</span>h, ]))</span>
 <span id="cb13-11"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -789,11 +801,11 @@ time series CV 0.014838552 0.09623533      Inf 634.7363</code></pre>
 
 <img data-src="gfx/plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                  MSE        MAE     MAPE     MASE
-training                  0.008094702 0.05294347 17.82704 311.8417
-split-sample              0.016062115 0.10175475      Inf 671.1406
-time series CV            0.014838552 0.09623533      Inf 634.7363
-time series CV + trailing 0.004064001 0.04507775      Inf 297.3179</code></pre>
+<pre><code>                                 MAE     MASE
+training                  0.05985631 351.4848
+split-sample              0.10005007 659.8971
+time series CV            0.08973951 732.5769
+time series CV + trailing 0.11305308 922.8942</code></pre>
 </div>
 </div>
 </section></section>
@@ -805,13 +817,15 @@ time series CV + trailing 0.004064001 0.04507775      Inf 297.3179</code></pre>
 <section id="autoregressive-ar-model" class="slide level2">
 <h2>Autoregressive (AR) model</h2>
 <ul>
-<li><span class="primary">Idea</span>: predicting the outcome via a linear combination of its lags</li>
+<li><span class="primary">Idea</span>: predicting the outcome via a linear combination of (some of) its lags</li>
 </ul>
-<p><span class="math display">\[y_t \approx \phi_1 y_{t-1} + \phi_2 y_{t-2} + \dots + \phi_p y_{t-p}\]</span></p>
+<p><span class="math display">\[\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-1} + \dots + \hat\phi_p y_{t-p}\]</span></p>
 <ul>
-<li>In R, the coefficients <span class="math inline">\(\phi_1, \phi_2, \dots, \phi_p\)</span> can be estimated using <code>lm</code>.</li>
+<li><p><span class="primary">Notice</span>: we don’t need to include all contiguous lags<sup>1</sup>.</p></li>
+<li><p>For example, we could fit</p></li>
 </ul>
-</section>
+<p><span class="math display">\[\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14}\]</span></p>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>Here we depart from traditional AR models, which do include all contiguous lags.</p></li></ol></aside></section>
 <section id="ar-model-for-covid-deaths" class="slide level2">
 <h2>AR model for COVID deaths</h2>
 <ul>
@@ -866,9 +880,9 @@ time series CV + trailing 0.004064001 0.04507775      Inf 297.3179</code></pre>
 
 <img data-src="gfx/ar-plot-train-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                      MSE        MAE     MAPE     MASE
-training     0.0007915624 0.01630727 4.737325 100.1796
-split-sample 0.0008281702 0.01571932      Inf 103.6794</code></pre>
+<pre><code>                    MAE     MASE
+training     0.01630727 100.1796
+split-sample 0.01571932 103.6794</code></pre>
 </div>
 </div>
 </section>
@@ -906,11 +920,11 @@ split-sample 0.0008281702 0.01571932      Inf 103.6794</code></pre>
 
 <img data-src="gfx/ar-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                   MSE        MAE     MAPE     MASE
-training                  0.0007915624 0.01630727 4.737325 100.1796
-split-sample              0.0008281702 0.01571932      Inf 103.6794
-time series CV            0.0008103096 0.01531685      Inf 101.0248
-time series CV + trailing 0.0008502810 0.01682578      Inf 110.9773</code></pre>
+<pre><code>                                 MAE     MASE
+training                  0.01630727 100.1796
+split-sample              0.01571932 103.6794
+time series CV            0.01531685 101.0248
+time series CV + trailing 0.01682578 110.9773</code></pre>
 </div>
 </div>
 </section>
@@ -928,7 +942,7 @@ time series CV + trailing 0.0008502810 0.01682578      Inf 110.9773</code></pre>
 <section id="arx-model-for-covid-deaths" class="slide level2">
 <h2>ARX model for COVID deaths</h2>
 <ul>
-<li><p>To improve our predictions for COVID deaths, we could merge the two models considered so far (i.e.&nbsp;linear regression on cases lagged by k = 26, and linear regression on deaths lagged by 1).</p></li>
+<li><p>To improve our predictions for COVID deaths, we could merge the two models considered so far (i.e.&nbsp;linear regression on cases lagged by k = 28, and linear regression on deaths lagged by 1).</p></li>
 <li><p>This leads us to the ARX model</p></li>
 </ul>
 <p><span class="math display">\[y_t \approx \beta_0 + \beta_1 y_{t-1} + \beta_2 x_{t-k}\]</span></p>
@@ -940,7 +954,7 @@ time series CV + trailing 0.0008502810 0.01682578      Inf 110.9773</code></pre>
 <span id="cb22-2"><a></a><span class="fu">coef</span>(arx_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  (Intercept) lagged_deaths  lagged_cases 
- 0.0037535320  0.9810095601  0.0002469175 </code></pre>
+ 0.0006846861  1.0211510942 -0.0002334021 </code></pre>
 </div>
 </div>
 </section>
@@ -953,9 +967,9 @@ time series CV + trailing 0.0008502810 0.01682578      Inf 110.9773</code></pre>
 
 <img data-src="gfx/arx-plot-train-test-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                      MSE        MAE     MAPE     MASE
-training     0.0008454054 0.01704495 4.613866 100.3963
-split-sample 0.0007874735 0.01560882      Inf 102.9506</code></pre>
+<pre><code>                    MAE     MASE
+training     0.01716877 100.8174
+split-sample 0.01595024 105.2025</code></pre>
 </div>
 </div>
 </section>
@@ -984,11 +998,11 @@ split-sample 0.0007874735 0.01560882      Inf 102.9506</code></pre>
 
 <img data-src="gfx/arx-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                   MSE        MAE     MAPE     MASE
-training                  0.0008454054 0.01704495 4.613866 100.3963
-split-sample              0.0007874735 0.01560882      Inf 102.9506
-time series CV            0.0007658799 0.01561658      Inf 103.0018
-time series CV + trailing 0.0009794230 0.01816857      Inf 119.8339</code></pre>
+<pre><code>                                 MAE     MASE
+training                  0.01716877 100.8174
+split-sample              0.01595024 105.2025
+time series CV            0.01558245 102.7767
+time series CV + trailing 0.01840599 121.3998</code></pre>
 </div>
 </div>
 </section></section>
@@ -1128,9 +1142,9 @@ time series CV + trailing 0.0009794230 0.01816857      Inf 119.8339</code></pre>
 
 <img data-src="gfx/overfit-plot-train-test-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                      MSE         MAE     MAPE      MASE
-training     0.0001314975 0.008841864 3.488839  47.99282
-split-sample 0.0033671353 0.042037088      Inf 277.26268</code></pre>
+<pre><code>                     MAE      MASE
+training     0.008841864  47.99282
+split-sample 0.042037088 277.26268</code></pre>
 </div>
 </div>
 </section>
@@ -1359,11 +1373,11 @@ X120        -3.962423e-04 0.000000e+00</code></pre>
 
 <img data-src="gfx/shrinkage-sparsity-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                            MSE        MAE     MAPE      MASE
-ridge training     0.0013213488 0.02555976 7.905021 138.73603
-ridge split-sample 0.0037754983 0.04613864      Inf 304.31515
-lasso training     0.0008857085 0.01822366 5.139256  98.91632
-lasso split-sample 0.0007674461 0.01767544      Inf 116.58133</code></pre>
+<pre><code>                          MAE      MASE
+ridge training     0.02555976 138.73603
+ridge split-sample 0.04613864 304.31515
+lasso training     0.01822366  98.91632
+lasso split-sample 0.01767544 116.58133</code></pre>
 </div>
 </div>
 </section>
@@ -1412,9 +1426,9 @@ lasso split-sample 0.0007674461 0.01767544      Inf 116.58133</code></pre>
 
 <img data-src="gfx/plot-regularization-cv-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                             MSE        MAE MAPE     MASE
-ridge CV + trailing 0.0009448604 0.01893437  Inf 124.8848
-lasso CV + trailing 0.0011654498 0.02040692  Inf 134.5973</code></pre>
+<pre><code>                           MAE     MASE
+ridge CV + trailing 0.01893437 124.8848
+lasso CV + trailing 0.02040692 134.5973</code></pre>
 </div>
 </div>
 </section></section>
@@ -1471,12 +1485,12 @@ lasso CV + trailing 0.0011654498 0.02040692  Inf 134.5973</code></pre>
 </div><div class="column">
 <div class="cell-output cell-output-stdout">
 <pre><code>        fit       lwr       upr
-1 1.0712145 1.0101736 1.1322555
-2 1.0483291 0.9872675 1.1093908
-3 0.7648747 0.7063989 0.8233506
-4 0.7314587 0.6730736 0.7898439
-5 0.6984966 0.6402211 0.7567721
-6 0.7422651 0.6836403 0.8008899</code></pre>
+1 1.0915747 1.0307660 1.1523834
+2 1.0686306 1.0079132 1.1293480
+3 0.7745034 0.7160805 0.8329263
+4 0.7406785 0.6823080 0.7990490
+5 0.7071047 0.6488102 0.7653992
+6 0.7532920 0.6946283 0.8119557</code></pre>
 </div>
 </div></div>
 
@@ -1553,10 +1567,10 @@ lasso CV + trailing 0.0011654498 0.02040692  Inf 134.5973</code></pre>
 <span id="cb49-10"><a></a><span class="co"># Estimated coefficients</span></span>
 <span id="cb49-11"><a></a><span class="fu">coef</span>(q_reg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                 tau= 0.025   tau= 0.500  tau= 0.975
-(Intercept)   -0.0090324978 0.0032234550 0.004291003
-lagged_deaths  0.9190610331 0.9812695258 1.082715062
-lagged_cases   0.0002464703 0.0001356316 0.000528872</code></pre>
+<pre><code>                tau= 0.025    tau= 0.500   tau= 0.975
+(Intercept)   -0.009625083  0.0010198050  0.005489311
+lagged_deaths  0.926648244  1.0133190428  1.287609030
+lagged_cases   0.000158453 -0.0002417395 -0.002422954</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a><span class="co"># Predict on test set</span></span>
 <span id="cb51-2"><a></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(q_reg, <span class="at">newdata =</span> test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1606,7 +1620,7 @@ lagged_cases   0.0002464703 0.0001356316 0.000528872</code></pre>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>         lm.all.past lm.trailing rq.all.past rq.trailing
-Coverage   0.9673203   0.9215686   0.8660131   0.7124183</code></pre>
+Coverage   0.9673203   0.9281046    0.875817   0.6699346</code></pre>
 </div>
 </div>
 <ul>
@@ -1662,8 +1676,8 @@ Coverage   0.9673203   0.9215686   0.8660131   0.7124183</code></pre>
 <pre><code># A tibble: 2 × 2
   method      mean_wis
   &lt;chr&gt;          &lt;dbl&gt;
-1 lm.all.past   0.0245
-2 lm.trailing   0.0273</code></pre>
+1 lm.all.past   0.0247
+2 lm.trailing   0.0274</code></pre>
 </div>
 </div>
 </div>
@@ -1673,8 +1687,8 @@ Coverage   0.9673203   0.9215686   0.8660131   0.7124183</code></pre>
 <pre><code># A tibble: 2 × 2
   method      mean_wis
   &lt;chr&gt;          &lt;dbl&gt;
-1 rq.all.past   0.0240
-2 rq.trailing   0.0336</code></pre>
+1 rq.all.past   0.0242
+2 rq.trailing   0.0348</code></pre>
 </div>
 </div>
 </div>
@@ -1963,6 +1977,7 @@ $versions_end
 </div>
 </div>
 </section></section>
+
     </div>
   </div>
 
