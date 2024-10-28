@@ -34,7 +34,7 @@ theme_set(theme_bw())
 
 1. Forecasting with Versioned Data
 
-1. Geo-pooling
+1. Modeling Multiple Time Series
 
 
 # Linear Regression for Time Series Data
@@ -63,20 +63,40 @@ is a good approximation for every $i = 1, \dots, n$.
 
 ## Linear regression with lagged predictor
 
-* In time series models, the outcomes and predictors are usually indexed by time 
-$t$. 
+* In time series, outcomes and predictors are usually indexed by time $t$. 
 
-* Often we want to predict a future value of $y$, given present and past 
-values of $x$. 
+* [Goal]{.primary}: predicting future $y$, given present $x$. 
 
-* For this purpose, we introduce linear regression with lagged 
-predictors 
+* [Model]{.primary}: linear regression with lagged predictor
 
-$$y_t \approx \beta_0 + \beta_1 x_{t-k}$$
+$$\hat y_t = \hat \beta_0 + \hat \beta_1 x_{t-k}$$
 
-i.e. we regress the outcome $y$ at time $t$ on the predictor $x$ at time $t-k$.
+i.e. regress the outcome $y$ at time $t$ on the predictor $x$ at time $t-k$.
 
-## Example: COVID cases and deaths in California {.smaller}
+* Equivalent way to write the model: 
+
+$$\hat y_{t+k} = \hat \beta_0 + \hat \beta_1 x_t$$
+
+
+## Example: predicting COVID deaths  
+
+* During the pandemic, interest in predicting COVID deaths 7, 14, 28 days ahead.
+
+* Can we reasonably predict COVID deaths 28 days ahead by just using cases today?
+
+* If we let
+
+$$y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t$$
+  is the following a good model?
+
+  $$\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}$$
+
+
+## Example: COVID cases and deaths in California 
+
+* Let's focus on California.
+
+* Cases seem highly correlated with deaths several weeks later.
 
 ::: flex
 ::: w-50
@@ -111,23 +131,12 @@ head(ca)
 :::
 :::
 
-* Cases seem to be highly correlated with deaths several weeks later
 
-* What is the lag $k$ for which the correlation between cases at $t-k$ and 
-deaths at $t$ is maximized?
-
-* Given that lag, we can fit linear regression with a lagged predictor where
-
-$$y_t = \text{deaths at time } t \quad\quad x_{t-k} = \text{cases at time } t-k$$
-
-
-## Choosing the lag $k$
+## Checking correlation
 
 * Let’s split the data into a training and a test set (before/after 2021-03-01).
 
-* The lag leading to largest correlation between lagged cases and deaths on
-the training set is 
-$k = 26$.
+* On the training set, the correlation between cases and deaths 28 days ahead is very large (> 0.95).
 
 ```{r correlation-cases-deaths}
 t0_date <- as.Date('2021-03-01') #split date
@@ -145,8 +154,8 @@ cor_deaths_cases <- lapply(lags,
 
 cor_deaths_cases <- list_rbind(cor_deaths_cases, names_to = 'Lag') 
 
-# lag leading to maximum correlation
-k <- which.max(cor_deaths_cases$cor)
+#k <- which.max(cor_deaths_cases$cor)
+k <- 28 # selected lag
 
 cor_deaths_cases %>%
   ggplot(aes(Lag, cor)) +
@@ -160,7 +169,8 @@ cor_deaths_cases %>%
 
 * Let's use (base) R to prepare the data and fit 
 
-$$y_t \approx \beta_0 + \beta_1 x_{t-26}$$
+$$\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}$$
+
 
 ## Preparing the data
 
@@ -181,7 +191,7 @@ test <- ca %>% filter(time_value > t0_date)
 ggplot(train, aes(lagged_cases, deaths)) + 
   geom_point(alpha = .5) +
   labs(x = "Lagged cases", y = "Deaths") + 
-  ggtitle("Deaths vs cases lagged by 26 days")
+  ggtitle("Deaths vs cases lagged by 28 days")
 ```
 
 ## Fitting lagged linear regression in R
@@ -198,7 +208,7 @@ ggplot(train, aes(lagged_cases, deaths)) +
   geom_abline(intercept = coef(reg_lagged)[1], slope = coef(reg_lagged)[2],
               col = 'red') +
   labs(x = "Lagged cases", y = "Deaths") +
-  ggtitle("Deaths vs cases lagged by 26 days with regression line")
+  ggtitle("Deaths vs cases lagged by 28 days with regression line")
 
 ```
 
@@ -302,7 +312,7 @@ used to fit the model.
 
   * generally too optimistic as an estimate of prediction error
 
-  * [more optimistic the more complex the model!]{.primary}
+  * [more optimistic the more complex the model!]{.primary}^[More on this when we talk about overfitting.]
 
 
 ## Training error
@@ -316,21 +326,24 @@ pred_train <- predict(reg_lagged)
 
 ```{r plot-train-predictions}
 #| fig-align: left
-train %>% 
-  mutate(observed = deaths, predicted = c(rep(NA, k), pred_train)) %>%
+ca %>%
+  mutate(observed = deaths, 
+         predicted = c(rep(NA, k), pred_train, rep(NA, nrow(test)))) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
-  ggplot(aes(time_value, value, col = Deaths)) +
-  geom_line() + 
-  geom_vline(xintercept = t0_date, lty = 2) +
-  labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  ggplot(aes(time_value, value, col = Deaths)) + 
+  geom_line(aes(alpha = ifelse(time_value < t0_date, 1, .5)), show.legend = FALSE) + 
+  geom_vline(xintercept = t0_date, lty = 2) + 
+  labs(x = "", y = "Deaths per 100k people") + 
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+
 ```
 
 ```{r function errors}
 getErrors <- function(truth, prediction, type) {
-  return(data.frame("MSE" = MSE(truth, prediction), 
+  return(data.frame(#"MSE" = MSE(truth, prediction), 
                     "MAE"= MAE(truth, prediction), 
-                    "MAPE" = MAPE(truth, prediction), 
+                    #"MAPE" = MAPE(truth, prediction), 
                     "MASE" = MASE(truth, prediction), 
                     row.names = type))
 }
@@ -347,7 +360,7 @@ errors
 
 * To compute the split-sample error  
 
-  1. Split the data into training (up to time $t_0$), and test set (after $t_0$)
+  1. Split data into training (up to time $t_0$), and test set (after $t_0$)
 
   1. Fit the model to the training data only
 
@@ -359,9 +372,10 @@ errors
 
 $$\text{SplitMSE} = \frac{1}{n-t_0} \sum_{t = t_0 +1}^n (\hat y_t - y_t)^2$$
 
-* In practice, split-sample estimates of prediction error are generally 
-[pessimistic]{.primary}, as they mimic a situation where we would never refit
-the model in the future. 
+* Split-sample estimates of prediction error don't mimic a situation where we 
+would refit the model in the future. 
+They are [pessimistic]{.primary} if the relation between outcome and predictors 
+changes over time.
 
 ## Split-sample error
 #### Linear regression of COVID deaths on lagged cases
@@ -374,14 +388,15 @@ pred_test <- predict(reg_lagged, newdata = test)
 
 ```{r plot-test-predictions}
 #| fig-align: left
-test %>% 
-  mutate(observed = deaths, predicted = pred_test) %>%
+ca %>% 
+  mutate(observed = deaths, predicted = c(rep(NA, k), pred_train, pred_test)) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
-  geom_line() + 
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5)), show.legend = FALSE) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
 ```
 
 
@@ -393,45 +408,44 @@ errors
 ## Time-series cross-validation (CV) {.smaller}
 #### 1-step ahead predictions
 
-* If we will refit the model in the future once new data become available, a more 
+* If we refit in the future once new data are available, a more 
 appropriate way to estimate the prediction error is time-series cross-validation.
 
-* Assume we want to make 1-step ahead predictions (i.e. at time $t-1$ we want to 
-make a forecast for time $t$). Then, for $t = t_0+1, t_0+2, \dots$, we proceed
-as follows:
+* To get 1-step ahead predictions (i.e. at time $t$ we forecast for $t+1$) we proceed as follows,
+for $t = t_0, t_0+1, \dots$
 
-  1. Fit the model using data up to time $t-1$
+  1. Fit the model using data up to time $t$
 
-  1. Make a prediction for $t$ 
+  1. Make a prediction for $t+1$ 
 
   1. Record the prediction error
 
 The cross-validation MSE is then
 
-$$CVMSE = \frac{1}{n-t_0} \sum_{t = t_0+1}^n (\hat y_{t|t-1} - y_t)^2$$
+$$CVMSE = \frac{1}{n-t_0} \sum_{t = t_0}^{n-1} (\hat y_{t+1|t} - y_{t+1})^2$$
 
-where	$\hat y_{t|t-1}$ indicates a prediction for $y$ at time $t$ that was made 
-with data available up to time $t-1$.
+where	$\hat y_{t+1|t}$ indicates a prediction for $y$ at time $t+1$ that was made 
+with data available up to time $t$.
 
 ## Time-series cross-validation (CV) {.smaller}
 #### $h$-step ahead predictions
 
-* More in general, if we want to make $h$-step ahead predictions (i.e. at time 
-$t-h$ we want to make a forecast for time $t$), we proceed as follows 
-for $t = t_0+1, t_0+2, \dots$
+* In general, if we want to make $h$-step ahead predictions (i.e. at time 
+$t$ we forecast for $t+h$), we proceed as follows 
+for $t = t_0, t_0+1, \dots$
 
-  * Fit the model using data up to time $t-h$
+  * Fit the model using data up to time $t$
 
-  * Make a prediction for $t$ 
+  * Make a prediction for $t+h$ 
 
   * Record the prediction error
 
 * The cross-validation MSE is then
 
-$$CVMSE = \frac{1}{n-t_0} \sum_{t = t_0+1}^n (\hat y_{t|t-h} - y_t)^2$$
+$$CVMSE = \frac{1}{n-t_0} \sum_{t = t_0}^{n-h} (\hat y_{t+h|t} - y_{t+h})^2$$
 
-where	$\hat y_{t|t-h}$ indicates a prediction for $y$ at time $t$ that was made 
-with data available up to time $t-h$.
+where	$\hat y_{t+h|t}$ indicates a prediction for $y$ at time $t+h$ that was made 
+with data available up to time $t$.
 
 ## Time-series cross-validation (CV) 
 #### Linear regression of COVID deaths on lagged cases
@@ -441,13 +455,13 @@ Getting the predictions requires slightly more code:
 ```{r time-series-cv}
 #| echo: true
 n <- nrow(ca)                               #length of time series
-pred_all_past <- rep(NA, length = n - t0)   #initialize vector of predictions
-h <- 1                                      #number of days ahead for which prediction is wanted
+h <- k                                      #number of days ahead for which prediction is wanted
+pred_all_past <- rep(NA, length = n-h-t0+1) #initialize vector of predictions
 
-for (t in (t0+1):n) {
+for (t in t0:(n-h)) {
   # fit to all past data and make 1-step ahead prediction
-  reg_all_past = lm(deaths ~ lagged_cases, data = ca, subset = (1:n) <= (t-h)) 
-  pred_all_past[t-t0] = predict(reg_all_past, newdata = data.frame(ca[t, ]))
+  reg_all_past = lm(deaths ~ lagged_cases, data = ca, subset = (1:n) <= t) 
+  pred_all_past[t-t0+1] = predict(reg_all_past, newdata = data.frame(ca[t+h, ]))
 }
 
 ```
@@ -455,7 +469,7 @@ for (t in (t0+1):n) {
 ::: {.callout-important icon="false"}
 ## Note
 
-In general, we can predict at most $k$ days ahead (where $k$ = number of days by which predictor is lagged)!
+With the current model, we can only predict $k$ days ahead (where $k$ = number of days by which predictor is lagged)!
 :::
 
 
@@ -466,7 +480,7 @@ In general, we can predict at most $k$ days ahead (where $k$ = number of days by
 #| fig-align: left
 test %>% 
   mutate(observed = deaths, 
-         `predicted (CV)` = pred_all_past) %>%
+         `predicted (CV)` = c(rep(NA, k-1), pred_all_past)) %>%
   pivot_longer(cols = c(observed, `predicted (CV)`), 
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
@@ -477,26 +491,29 @@ test %>%
 ```
 
 ```{r cv-error}
-errors <- rbind(errors, getErrors(test$deaths, pred_all_past, "time series CV"))
+errors <- rbind(errors, getErrors(test$deaths[-(1:(k-1))], pred_all_past, 
+                                  "time series CV"))
 errors
 ```
 
-## Time-series CV on a trailing window
+## Time-series CV on a trailing window {.smaller}
 
-* So far, when making $h$-step ahead predictions for time $t$, we have fitted the 
-model on all the data available up to time $t-h$. We can instead use a trailing 
-window, i.e. fit the model on only a window of data of length $w$, starting at 
-time $t-h-w$ and ending at time $t-h$.
+* So far, to get $h$-step ahead predictions for time $t+h$, we have fitted the 
+model on all data available up to time $t$. We can instead use a trailing 
+window, i.e. fit the model on a window of data of length $w$, starting at 
+time $t-w$ and ending at $t$.
 
-* [Advantage]{.primary}: if the relationship between predictors and outcome changes over time,
-training the forecaster on a window of recent data can better capture the recent relationship which might be more relevant to events in the near future.
+* [Advantage]{.primary}: if the predictors-outcome relation changes over time,
+training the forecaster on a window of recent data can better capture the recent 
+relation which might be more relevant to predict the outcome in the near future.
 
-* Window length $w$ considerations: 
+* Window length [$w$]{.primary} considerations: 
 
-  * if $w$ is too big, the model can't adapt to the recent predictors-outcome relation 
+  * if $w$ is too [big]{.primary}, the model [can't adapt]{.primary} to the 
+  recent predictors-outcome relation 
 
-  * if $w$ is too small, the fitted model may be too volatile (trained on too 
-little data)
+  * if $w$ is too [small]{.primary}, the fitted model may be [too volatile]{.primary} 
+  (trained on too little data)
 
 ## Time-series CV on a trailing window
 #### Linear regression of COVID deaths on lagged cases
@@ -504,15 +521,15 @@ little data)
 ```{r time-series-cv-trailing}
 #| echo: true
 # Getting the predictions through CV with trailing window
-w <- 30                                     #trailing window size
-pred_trailing <- rep(NA, length = n - t0)   #initialize vector of predictions
-h <- 1                                      #number of days ahead for which prediction is wanted
+w <- 60                                     #trailing window size
+h <- k                                      #number of days ahead for which prediction is wanted
+pred_trailing <- rep(NA, length = n-h-t0+1) #initialize vector of predictions
 
-for (t in (t0+1):n) {
+for (t in t0:(n-h)) {
   # fit to a trailing window of size w and make 1-step ahead prediction
   reg_trailing = lm(deaths ~ lagged_cases, data = ca, 
-                    subset = (1:n) <= (t-h) & (1:n) > (t-h-w)) 
-  pred_trailing[t-t0] = predict(reg_trailing, newdata = data.frame(ca[t, ]))
+                    subset = (1:n) <= t & (1:n) > (t-w)) 
+  pred_trailing[t-t0+1] = predict(reg_trailing, newdata = data.frame(ca[t+h, ]))
 }
 ```
 
@@ -523,8 +540,8 @@ for (t in (t0+1):n) {
 #| fig-align: left
 test %>% 
   mutate(observed = deaths, 
-         `predicted (CV)` = pred_all_past, 
-         `predicted (trailing + CV)` = pred_trailing) %>%
+         `predicted (CV)` = c(rep(NA, k-1), pred_all_past), 
+         `predicted (trailing + CV)` = c(rep(NA, k-1), pred_trailing)) %>%
   pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
@@ -536,7 +553,7 @@ test %>%
 
 
 ```{r cv-trailing-error}
-errors <- rbind(errors, getErrors(test$deaths, pred_trailing, 
+errors <- rbind(errors, getErrors(test$deaths[-(1:(k-1))], pred_trailing, 
                                   "time series CV + trailing"))
 errors
 ```
@@ -549,11 +566,17 @@ errors
 
 ## Autoregressive (AR) model
 
-* [Idea]{.primary}: predicting the outcome via a linear combination of its lags 
+* [Idea]{.primary}: predicting the outcome via a linear combination of (some of) its lags 
 
-$$y_t \approx \phi_1 y_{t-1} + \phi_2 y_{t-2} + \dots + \phi_p y_{t-p}$$
+$$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-1} + \dots + \hat\phi_p y_{t-p}$$
 
-* In R, the coefficients $\phi_1, \phi_2, \dots, \phi_p$ can be estimated using `lm`.
+* [Notice]{.primary}: we don't need to include all contiguous lags^[Here we 
+depart from traditional AR models, which do include all contiguous lags.].
+
+* For example, we could fit
+
+$$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14}$$
+
 
 ## AR model for COVID deaths
 
