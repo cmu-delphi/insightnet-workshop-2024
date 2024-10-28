@@ -104,7 +104,7 @@ $$y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time 
 ```{r plot-ca-cases-deaths}
 #| fig-width: 8
 #| fig-height: 5
-source("../_code/ca_cases_deaths.R")
+source(here::here("_code/ca_cases_deaths.R"))
 ggplot(ca %>% 
          mutate(deaths = trans21(deaths)) %>%
          pivot_longer(cols = c(cases, deaths), names_to = 'name'),
@@ -1467,12 +1467,12 @@ How can we train forecasters when dealing with versioned data?
 :::
 
 ```{r get-versioned-data}
-source("../_code/versioned_data.R")
+source(here::here("_code/versioned_data.R"))
 ```
 
 ```{r versioned-data}
 #| echo: true
-head(data_archive)
+data_archive
 ```
 
 ## Version-aware forecasting

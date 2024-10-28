@@ -4,7 +4,7 @@ library(epiprocess)
 library(epipredict)
 
 
-file_path <- "../_data/ca_cases_deaths"
+file_path <- here::here("_data/ca_cases_deaths.rds")
 if (!file.exists(file_path)) {
   cases <- pub_covidcast(
     source = "jhu-csse",
@@ -38,8 +38,8 @@ if (!file.exists(file_path)) {
     select(-pop)
 
   ca <- ca %>%
-    epi_slide(cases = mean(cases), before = 6) %>%
-    epi_slide(deaths = mean(deaths), before = 6)
+    epi_slide(cases = mean(cases), .window_size = 7) %>%
+    epi_slide(deaths = mean(deaths), .window_size = 7)
 
   ca$deaths[ca$deaths < 0] <- 0
   saveRDS(ca, file = file_path)
