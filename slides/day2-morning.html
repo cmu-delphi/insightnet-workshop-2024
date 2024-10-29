@@ -497,7 +497,7 @@
 <pre><code>An `epi_df` object, 6 x 4 with metadata:
 * geo_type  = state
 * time_type = day
-* as_of     = 2024-10-23 20:07:29.405142
+* as_of     = 2024-10-23 11:07:29.405142
 
 # A tibble: 6 × 4
   geo_value time_value cases deaths
@@ -1715,10 +1715,16 @@ Coverage   0.9673203   0.9281046    0.875817   0.6699346</code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a></a><span class="fu">head</span>(data_archive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a></a>data_archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$DT
+<pre><code>→ An `epi_archive` object, with metadata:
+ℹ Min/max time values: 2020-04-01 / 2021-12-31
+ℹ First/last version with update: 2020-04-02 / 2022-01-01
+ℹ Versions end: 2022-01-01
+ℹ A preview of the table (93566 rows x 5 columns):
+Key: &lt;geo_value, time_value, version&gt;
        geo_value time_value    version case_rate death_rate
+          &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;     &lt;num&gt;      &lt;num&gt;
     1:        ak 2020-04-01 2020-04-02  1.797489          0
     2:        ak 2020-04-01 2020-05-07  1.777061          0
     3:        ak 2020-04-01 2020-10-28  1.106147          0
@@ -1729,22 +1735,7 @@ Coverage   0.9673203   0.9281046    0.875817   0.6699346</code></pre>
 93563:        wy 2021-12-28 2021-12-29 50.315286          0
 93564:        wy 2021-12-29 2021-12-30 55.810471          0
 93565:        wy 2021-12-30 2021-12-31 68.002912          0
-93566:        wy 2021-12-31 2022-01-01  0.000000          0
-
-$geo_type
-[1] "state"
-
-$time_type
-[1] "day"
-
-$additional_metadata
-list()
-
-$clobberable_versions_start
-[1] NA
-
-$versions_end
-[1] "2022-01-01"</code></pre>
+93566:        wy 2021-12-31 2022-01-01  0.000000          0</code></pre>
 </div>
 </div>
 </section>
