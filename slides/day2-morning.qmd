@@ -8,7 +8,7 @@ repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "Venue -- dd Somemonth yyyy"
 format: revealjs
 execute:
-  cache: false
+  cache: true
 ---
 
 <!-- Set any of the above to "" to omit them -->
@@ -110,7 +110,7 @@ ggplot(ca %>%
          pivot_longer(cols = c(cases, deaths), names_to = 'name'),
        aes(x = time_value, y = value)) + 
   geom_line(aes(color = name)) +
-  scale_color_manual(values = palette()[c(2,4)]) +
+  scale_color_manual(values = c(primary, tertiary)) +
   scale_y_continuous(
     name = "Reported Covid-19 cases per 100k people", 
     limits = range1,
@@ -206,7 +206,7 @@ coef(reg_lagged)
 ggplot(train, aes(lagged_cases, deaths)) +
   geom_point(alpha = .5) +
   geom_abline(intercept = coef(reg_lagged)[1], slope = coef(reg_lagged)[2],
-              col = 'red') +
+              col = primary) +
   labs(x = "Lagged cases", y = "Deaths") +
   ggtitle("Deaths vs cases lagged by 28 days with regression line")
 
@@ -325,18 +325,20 @@ pred_train <- predict(reg_lagged)
 ```
 
 ```{r plot-train-predictions}
-#| fig-align: left
+#| fig-width: 9
 ca %>%
   mutate(observed = deaths, 
          predicted = c(rep(NA, k), pred_train, rep(NA, nrow(test)))) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) + 
-  geom_line(aes(alpha = ifelse(time_value < t0_date, 1, .5)), show.legend = FALSE) + 
+  geom_line(aes(alpha = ifelse(time_value < t0_date, 1, .4))) + 
   geom_vline(xintercept = t0_date, lty = 2) + 
   labs(x = "", y = "Deaths per 100k people") + 
-  theme(legend.position = "bottom", legend.title = element_blank()) +
-  scale_alpha_identity()
-
+  theme(legend.position = "right", legend.title = element_blank()) +
+  scale_alpha_identity() +
+  scale_x_date(date_labels = "%b %Y") +
+  scale_y_continuous(expand = expansion(c(0, 0.05))) +
+  scale_color_manual(values = c(primary, tertiary))
 ```
 
 ```{r function errors}
@@ -352,7 +354,7 @@ getErrors <- function(truth, prediction, type) {
 
 ```{r training-error}
 errors <- getErrors(train$deaths[-(1:k)], pred_train, "training")
-errors
+round(errors, 3)
 ```
 
 
@@ -387,16 +389,19 @@ pred_test <- predict(reg_lagged, newdata = test)
 ```
 
 ```{r plot-test-predictions}
-#| fig-align: left
+#| fig-width: 9
 ca %>% 
   mutate(observed = deaths, predicted = c(rep(NA, k), pred_train, pred_test)) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
-  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5)), show.legend = FALSE) + 
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank()) +
-  scale_alpha_identity()
+  theme(legend.position = "right", legend.title = element_blank()) +
+  scale_alpha_identity() +
+  scale_x_date(date_labels = "%b %Y") +
+  scale_y_continuous(expand = expansion(c(0, 0.05))) +
+  scale_color_manual(values = c(primary, tertiary))
 ```
 
 
@@ -463,7 +468,6 @@ for (t in t0:(n-h)) {
   reg_all_past = lm(deaths ~ lagged_cases, data = ca, subset = (1:n) <= t) 
   pred_all_past[t-t0+1] = predict(reg_all_past, newdata = data.frame(ca[t+h, ]))
 }
-
 ```
 
 ::: {.callout-important icon="false"}
@@ -477,7 +481,7 @@ With the current model, we can only predict $k$ days ahead (where $k$ = number o
 #### Linear regression of COVID deaths on lagged cases
 
 ```{r plot-cv-predictions}
-#| fig-align: left
+#| fig-width: 9
 test %>% 
   mutate(observed = deaths, 
          `predicted (CV)` = c(rep(NA, k-1), pred_all_past)) %>%
@@ -485,15 +489,18 @@ test %>%
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
+  scale_x_date(date_labels = "%b %Y") +
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  theme(legend.position = "right", legend.title = element_blank()) +
+  scale_y_continuous(expand = expansion(c(0, 0.05))) +
+  scale_color_manual(values = c(primary, tertiary))
 ```
 
 ```{r cv-error}
 errors <- rbind(errors, getErrors(test$deaths[-(1:(k-1))], pred_all_past, 
                                   "time series CV"))
-errors
+round(errors, 3)
 ```
 
 ## Time-series CV on a trailing window {.smaller}
@@ -521,15 +528,20 @@ relation which might be more relevant to predict the outcome in the near future.
 ```{r time-series-cv-trailing}
 #| echo: true
 # Getting the predictions through CV with trailing window
-w <- 60                                     #trailing window size
-h <- k                                      #number of days ahead for which prediction is wanted
-pred_trailing <- rep(NA, length = n-h-t0+1) #initialize vector of predictions
+w <- 60                                     # trailing window size
+h <- k                                      # number of days ahead for which prediction is wanted
+pred_trailing <- rep(NA, length = n-h-t0+1) # initialize space to hold predictions
 
-for (t in t0:(n-h)) {
-  # fit to a trailing window of size w and make 1-step ahead prediction
-  reg_trailing = lm(deaths ~ lagged_cases, data = ca, 
-                    subset = (1:n) <= t & (1:n) > (t-w)) 
-  pred_trailing[t-t0+1] = predict(reg_trailing, newdata = data.frame(ca[t+h, ]))
+for (t in t0:(n - h)) {
+  reg_trailing <- lm(
+    formula = deaths ~ lagged_cases, 
+    data = ca, 
+    subset = (1:n) <= t & (1:n) > (t - w)   # fit to a trailing window of size w
+  )
+  pred_trailing[t - t0 + 1] <- predict(
+    reg_trailing, 
+    newdata = data.frame(ca[t + h, ])       # predict 1 step ahead
+  )
 }
 ```
 
@@ -537,7 +549,7 @@ for (t in t0:(n-h)) {
 #### Linear regression of COVID deaths on lagged cases
 
 ```{r plot-cv-predictions-trailing}
-#| fig-align: left
+#| fig-width: 9
 test %>% 
   mutate(observed = deaths, 
          `predicted (CV)` = c(rep(NA, k-1), pred_all_past), 
@@ -548,7 +560,10 @@ test %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  theme(legend.position = "right", legend.title = element_blank()) +
+  scale_color_manual(values = c(primary, secondary, tertiary)) +
+  scale_x_date(date_labels = "%b %Y") +
+  geom_hline(yintercept = 0)
 ```
 
 
@@ -627,7 +642,7 @@ ggplot(train, aes(lagged_deaths, deaths)) +
 
 ```{r ar-lm}
 #| echo: true
-ar_fit = lm(deaths ~ lagged_deaths, data = train)
+ar_fit <- lm(deaths ~ lagged_deaths, data = train)
 coef(ar_fit)
 ```
 
@@ -648,7 +663,7 @@ pred_test <- predict(ar_fit, newdata = test)  #get test predictions
 ```
 
 ```{r ar-plot-train-predictions}
-#| fig-align: left
+#| fig-width: 9
 ca %>% 
   mutate(observed = deaths, 
          predicted = c(NA, pred_train, pred_test)) %>%
@@ -657,7 +672,10 @@ ca %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  theme(legend.position = "right", legend.title = element_blank()) +
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, tertiary)) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 ```{r ar-train-test-error}
@@ -672,18 +690,19 @@ errors_ar
 ```{r ar-time-series-cv}
 #| echo: true
 # Getting 1-step ahead predictions through CV 
-pred_all_past = pred_trailing <- rep(NA, length = n - t0) #initialize vectors of predictions
-w <- 30                                                   #trailing window size
-h <- 1                                                    #number of days ahead for which prediction is wanted
+pred_all_past <- rep(NA, length = n - t0)
+pred_trailing <- rep(NA, length = n - t0)       # initialize space for predictions
+w <- 30                                         # trailing window size
+h <- 1                                          # number of days ahead for which prediction is wanted
 
-for (t in (t0+1):n) {
+for (t in (t0 + 1):n) {
   # fit to all past data 
-  ar_all_past = lm(deaths ~ lagged_deaths, data = ca, subset = (1:n) <= (t-h)) 
+  ar_all_past <- lm(deaths ~ lagged_deaths, data = ca, subset = (1:n) <= (t-h)) 
   # fit to trailing window of data
-  ar_trailing = lm(deaths ~ lagged_deaths, data = ca, subset = (1:n) <= (t-h) & (1:n) > (t-h-w)) 
+  ar_trailing <- lm(deaths ~ lagged_deaths, data = ca, subset = (1:n) <= (t-h) & (1:n) > (t-h-w)) 
   # make 1-step ahead predictions
-  pred_all_past[t-t0] = predict(ar_all_past, newdata = data.frame(ca[t, ]))
-  pred_trailing[t-t0] = predict(ar_trailing, newdata = data.frame(ca[t, ]))
+  pred_all_past[t - t0] <- predict(ar_all_past, newdata = data.frame(ca[t, ]))
+  pred_trailing[t - t0] <- predict(ar_trailing, newdata = data.frame(ca[t, ]))
 }
 ```
 
@@ -697,7 +716,7 @@ by 1 with respect to the outcome.
 ## Time-Series CV: all past and trailing (AR model)
 
 ```{r ar-plot-cv-predictions}
-#| fig-align: left
+#| fig-width: 9
 test %>% 
   mutate(observed = deaths, 
          `predicted (CV)` = pred_all_past, 
@@ -708,7 +727,9 @@ test %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 ```{r ar-cv-error}
@@ -744,7 +765,7 @@ $$y_t \approx \beta_0 + \beta_1 y_{t-1} + \beta_2 x_{t-k}$$
 
 ```{r arx-lm}
 #| echo: true
-arx_fit = lm(deaths ~ lagged_deaths + lagged_cases, data = train)
+arx_fit <- lm(deaths ~ lagged_deaths + lagged_cases, data = train)
 coef(arx_fit)
 ```
 
@@ -752,12 +773,12 @@ coef(arx_fit)
 
 ```{r arx-training-error}
 #| echo: true
-pred_train <- predict(arx_fit)                  #get training predictions
-pred_test <- predict(arx_fit, newdata = test)   #get test predictions
+pred_train <- predict(arx_fit)                  # training predictions
+pred_test <- predict(arx_fit, newdata = test)   # test predictions
 ```
 
 ```{r arx-plot-train-test-predictions}
-#| fig-align: left
+#| fig-width: 9
 ca %>% 
   mutate(observed = deaths, 
          predicted = c(rep(NA, k), pred_train, pred_test)) %>%
@@ -766,7 +787,9 @@ ca %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 ```{r arx-train-test-errors}
@@ -780,26 +803,29 @@ errors_arx
 ```{r arx-time-series-cv}
 #| echo: true
 # Getting 1-step ahead predictions through CV 
-pred_all_past = pred_trailing <- rep(NA, length = n - t0) #initialize vector of predictions
-w <- 30                                                   #trailing window size
-h <- 1                                                    #number of days ahead for which prediction is wanted
+pred_all_past <- rep(NA, length = n - t0)
+pred_trailing <- rep(NA, length = n - t0)      # initialize space for predictions
+w <- 30                                        # trailing window size
+h <- 1                                         # number of days ahead for which prediction is wanted
 
 for (t in (t0+1):n) {
-  # fit to all past data
-  arx_all_past = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, subset = (1:n) <= (t-h)) 
-  # fit to trailing window of data
-  arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
-                    subset = (1:n) <= (t-h) & (1:n) > (t-h-w)) 
+  arx_all_past <- lm(
+    deaths ~ lagged_deaths + lagged_cases, data = ca, 
+    subset = (1:n) <= (t-h)                    # fit to all past data
+  ) 
+  arx_trailing <- lm(
+    deaths ~ lagged_deaths + lagged_cases, data = ca, 
+    subset = (1:n) <= (t-h) & (1:n) > (t-h-w)) # fit to trailing window of data
   # make 1-step ahead prediction
-  pred_all_past[t-t0] = predict(arx_all_past, newdata = data.frame(ca[t, ]))
-  pred_trailing[t-t0] = predict(arx_trailing, newdata = data.frame(ca[t, ]))
+  pred_all_past[t - t0] <- predict(arx_all_past, newdata = data.frame(ca[t, ]))
+  pred_trailing[t - t0] <- predict(arx_trailing, newdata = data.frame(ca[t, ]))
 }
 ```
 
 ## Time-Series CV: all past and trailing (ARX model)
 
 ```{r arx-plot-cv-predictions}
-#| fig-align: left
+#| fig-width: 9
 test %>% 
   mutate(observed = deaths, 
          `predicted (CV)` = pred_all_past, 
@@ -810,7 +836,9 @@ test %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  geom_hline(yintercept = 0)
 ```
 
 
@@ -847,28 +875,33 @@ Overfitting!
 information by fitting a model that includes the past two months of COVID deaths 
 and cases as predictors
 
-$$y_t \approx \phi_1 y_{t-1} + \phi_2 y_{t-2} + \dots + \phi_{60} y_{t-60} + 
-\psi_1 yx_{t-1} + \psi_2 x_{t-2} + \dots + \psi_{60} x_{t-60}$$
+$$
+\begin{aligned}
+y_t &\approx \phi_1 y_{t-1} + \phi_2 y_{t-2} + \dots + \phi_{60} y_{t-60}\\
+ &\quad +\; \psi_1 x_{t-1} + \psi_2 x_{t-2} + \dots + \psi_{60} x_{t-60}
+\end{aligned}
+$$
 
 ## Preparing the data
 
 ```{r overfit-data}
 #| echo: true
-y <- ca$deaths  #outcome
-lags <- 1:60    #lags used for predictors (deaths and cases)
+y <- ca$deaths     # outcome
+nlags <- 60
+lags <- 1:nlags    # lags used for predictors (deaths and cases)
 
-# Build predictor matrix with 60 columns
-X <- data.frame(matrix(NA, nrow = length(y), ncol = 2*length(lags)))
-colnames(X) <- paste('X', 1:ncol(X), sep = '')
+# Build predictor matrix with 120 columns
+X <- data.frame(matrix(NA, nrow = length(y), ncol = 2 * length(lags)))
+names(X) <- c(t(outer(c("Y", "X"), lags, paste0)))
 
 for (j in 1:length(lags)) {
   # first 60 columns contain deaths lagged by 1, 2,..., 60
-  X[, j] = dplyr::lag(ca$deaths, lags[j])
+  X[, j] <- dplyr::lag(ca$deaths, lags[j])
   # last 60 columns contain cases lagged by 1, 2,..., 60
-  X[, length(lags) + j] = dplyr::lag(ca$cases, lags[j])
+  X[, length(lags) + j] <- dplyr::lag(ca$cases, lags[j])
 }
 
-X[1:5, 1:5] #look at first few entries of predictor matrix
+X[1:5, 1:5] # look at first few entries of predictor matrix
 ```
 
 ## Fitting the ARX model
@@ -878,11 +911,11 @@ X[1:5, 1:5] #look at first few entries of predictor matrix
 # Train/test split
 y_train <- y[1:t0]
 X_train <- X[1:t0, ]
-y_test <- y[(t0+1):length(y)]
-X_test <- X[(t0+1):length(y), ]
+y_test <- y[(t0 + 1):length(y)]
+X_test <- X[(t0 + 1):length(y), ]
 
 # Fitting the ARX model
-reg = lm(y_train ~ ., data = X_train)
+reg <- lm(y_train ~ ., data = X_train)
 coef(reg)
 ```
 
@@ -895,7 +928,7 @@ pred_test <- predict(reg, newdata = X_test)   #get test predictions
 ```
 
 ```{r overfit-plot-train-test}
-#| fig-align: left
+#| fig-width: 9
 ca %>% 
   mutate(observed = deaths, 
          predicted = c(rep(NA, max(lags)), pred_train, pred_test)) %>%
@@ -904,8 +937,9 @@ ca %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
-
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 ```{r overfit-train-test-error}

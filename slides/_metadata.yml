@@ -34,5 +34,7 @@ knitr:
     fig.height: 3
     fig.align: center
     fig.path: "gfx/"
+    R.options:
+      digits: 4
 
 editor: source
