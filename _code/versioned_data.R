@@ -1,4 +1,4 @@
-file_path <- "../_data/data_archive"
+file_path <- here::here("_data/data_archive.rds")
 
 if (!file.exists(file_path)) {
   states <- "*"
