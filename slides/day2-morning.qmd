@@ -923,8 +923,8 @@ coef(reg)
 
 ```{r overfit-pred}
 #| echo: true
-pred_train <- predict(reg)                    #get training predictions
-pred_test <- predict(reg, newdata = X_test)   #get test predictions
+pred_train <- predict(reg)                    # training predictions
+pred_test <- predict(reg, newdata = X_test)   # test predictions
 ```
 
 ```{r overfit-plot-train-test}
@@ -938,7 +938,7 @@ ca %>%
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
   scale_x_date(date_labels = "%b %Y") +
-  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
   scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
