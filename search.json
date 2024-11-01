@@ -39,7 +39,7 @@
     "href": "slides/day2-morning.html#example-predicting-covid-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example: predicting COVID deaths",
-    "text": "Example: predicting COVID deaths\n\nDuring the pandemic, interest in predicting COVID deaths 7, 14, 28 days ahead.\nCan we reasonably predict COVID deaths 28 days ahead by just using cases today?\nIf we let\n\n\\[y_{t+28} = \\text{deaths at time } t+28 \\quad\\quad x_{t} = \\text{cases at time } t\\] is the following a good model?\n\\[\\hat y_{t+28} = \\hat\\beta_0 + \\hat\\beta_1 x_{t}\\]"
+    "text": "Example: predicting COVID deaths\n\nDuring the pandemic, interest in predicting COVID deaths 7, 14, 21, 28 days ahead.\nCan we reasonably predict COVID deaths 28 days ahead by just using cases today?\nIf we let\n\n\\[y_{t+28} = \\text{deaths at time } t+28 \\quad\\quad x_{t} = \\text{cases at time } t\\] is the following a good model?\n\\[\\hat y_{t+28} = \\hat\\beta_0 + \\hat\\beta_1 x_{t}\\]"
   },
   {
     "objectID": "slides/day2-morning.html#example-covid-cases-and-deaths-in-california",
@@ -249,7 +249,7 @@
     "href": "slides/day2-morning.html#autoregressive-exogenous-input-arx-model",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Autoregressive exogenous input (ARX) model",
-    "text": "Autoregressive exogenous input (ARX) model\n\nIdea: predicting the outcome via a linear combination of its lags and a set of exogenous (i.e. external) input variables\nExample:\n\n\\[\\hat y_t = \\hat\\phi + \\sum_{i=0}^p \\hat\\phi_i y_{t-i} + \\sum_{j=0}^q \\hat\\beta_j x_{t-j}\\]\n\nWe can construct more complex ARX models with multiple lags of several exogenous variables"
+    "text": "Autoregressive exogenous input (ARX) model\n\nIdea: predicting the outcome via a linear combination of its lags and a set of exogenous (i.e. external) input variables\nExample:\n\n\\[\\hat y_{t+h} = \\hat\\phi + \\sum_{i=0}^p \\hat\\phi_i y_{t-i} + \\sum_{j=0}^q \\hat\\beta_j x_{t-j}\\]\n\nWe can construct more complex ARX models with multiple lags of several exogenous variables"
   },
   {
     "objectID": "slides/day2-morning.html#arx-model-for-covid-deaths",
@@ -277,7 +277,7 @@
     "href": "slides/day2-morning.html#changing-h",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Changing \\(h\\)",
-    "text": "Changing \\(h\\)\n\nSo far we focused on COVID deaths prediction 28 days ahead.\nThe ARX model we fitted had much better performance than the AR model.\nWe will next compare the AR model\n\n\\[\\hat y_{t+h} = \\hat\\phi + \\hat\\phi_0 y_t\\]\nto the ARX model\n\\[\\hat y_{t+h} = \\hat\\phi + \\hat\\phi_0 y_t + \\hat\\beta_0 x_t\\]\nfor horizons \\(h = 7, 14, 28\\) (using a trailing window of size 200)."
+    "text": "Changing \\(h\\)\n\nSo far we focused on COVID deaths prediction 28 days ahead.\nThe ARX model we fitted had much better performance than the AR model.\nWe will next compare the AR model\n\n\\[\\hat y_{t+h} = \\hat\\phi + \\hat\\phi_0 y_t\\]\nto the ARX model\n\\[\\hat y_{t+h} = \\hat\\phi + \\hat\\phi_0 y_t + \\hat\\beta_0 x_t\\]\nfor horizons \\(h = 7, 14, 21, 28\\) (using a trailing window of size 200)."
   },
   {
     "objectID": "slides/day2-morning.html#predicting-7-days-ahead",
@@ -292,6 +292,13 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predicting 14 days ahead",
     "text": "Predicting 14 days ahead\n\n\n\n           MAE     MASE\nAR  0.13037989 956.0440\nARX 0.06348795 465.5417"
+  },
+  {
+    "objectID": "slides/day2-morning.html#predicting-21-days-ahead",
+    "href": "slides/day2-morning.html#predicting-21-days-ahead",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predicting 21 days ahead",
+    "text": "Predicting 21 days ahead\n\n\n\n          MAE      MASE\nAR  0.1702452 1312.0747\nARX 0.0488983  376.8577"
   },
   {
     "objectID": "slides/day2-morning.html#predicting-28-days-ahead",
@@ -497,11 +504,11 @@
     "text": "Version-aware forecasting\n\n# initialize dataframe for predictions\n# 5 columns: forecast date, target date, 2.5%, 50%, and 97.5% quantiles\npred_trailing &lt;- data.frame(matrix(NA, ncol = 5, nrow = 0))\ncolnames(pred_trailing) &lt;- c(\"forecast_date\", \"target_date\", 'tau..0.025', 'tau..0.500', 'tau..0.975')\n\nw &lt;- 200         #trailing window size\nh &lt;- 28          #number of days ahead\n\n# dates when predictions are made (set to be 1 month apart)\nfc_time_values &lt;- seq(from = t0_date, to = as.Date(\"2021-12-31\"), by = \"1 month\")\n\nfor (fc_date in fc_time_values) {\n  # get data version as_of forecast date\n  data &lt;- epix_as_of(ca_archive, max_version = as.Date(fc_date))\n  # create lagged predictors\n  data$lagged_deaths &lt;- dplyr::lag(data$deaths, h) \n                                                  \n  data$lagged_cases &lt;- dplyr::lag(data$cases, h)\n  # perform quantile regression\n  rq_trailing &lt;- rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles, \n                    # only consider window of data\n                    data = data %&gt;% filter(time_value &gt; (max(time_value) - w))) \n  # construct data.frame with the right predictors for the target date\n  predictors &lt;- data.frame(lagged_deaths = tail(data$deaths, 1), \n                           lagged_cases = tail(data$cases, 1))\n  # make predictions for target date and add them to matrix of predictions\n  pred_trailing &lt;- rbind(pred_trailing, \n                         data.frame('forecast_date' = max(data$time_value),\n                                    'target_date' = max(data$time_value) + h, \n                                    predict(rq_trailing, newdata = predictors)))\n}"
   },
   {
-    "objectID": "slides/day2-morning.html#version-awere-predictions-cv-trailing",
-    "href": "slides/day2-morning.html#version-awere-predictions-cv-trailing",
+    "objectID": "slides/day2-morning.html#version-aware-predictions-cv-trailing",
+    "href": "slides/day2-morning.html#version-aware-predictions-cv-trailing",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Version-awere predictions (CV, trailing)",
-    "text": "Version-awere predictions (CV, trailing)"
+    "section": "Version-aware predictions (CV, trailing)",
+    "text": "Version-aware predictions (CV, trailing)"
   },
   {
     "objectID": "slides/day2-morning.html#using-geo-information",
@@ -546,27 +553,6 @@
     "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting and Time-Series Models — cmu-delphi/insightnet-workshop-2024"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "",
-    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon\n\n\n\n\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
-  },
-  {
-    "objectID": "index.html#schedule",
-    "href": "index.html#schedule",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "",
-    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon"
-  },
-  {
-    "objectID": "index.html#instructors",
-    "href": "index.html#instructors",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "",
-    "text": "Ryan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
-  },
-  {
     "objectID": "slides/day1-morning.html#section",
     "href": "slides/day1-morning.html#section",
     "title": "InsightNet EpiData Workshop 2024",
@@ -593,5 +579,75 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Final slide",
     "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nTitle — cmu-delphi/insightnet-workshop-2024"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "",
+    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon\n\n\n\n\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
+  },
+  {
+    "objectID": "index.html#schedule",
+    "href": "index.html#schedule",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "",
+    "text": "Short description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon"
+  },
+  {
+    "objectID": "index.html#instructors",
+    "href": "index.html#instructors",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "",
+    "text": "Ryan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#section",
+    "href": "slides/day2-afternoon.html#section",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Forecasting with {epipredict}",
+    "text": "Forecasting with {epipredict}\n\n\n\n\nVenue – dd Somemonth yyyy"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#outline",
+    "href": "slides/day2-afternoon.html#outline",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Outline",
+    "text": "Outline\n\n{epipredict}\nARX Models\nForecasting with Versioned Data"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#fit-arx-on-training-set",
+    "href": "slides/day2-afternoon.html#fit-arx-on-training-set",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Fit ARX on training set",
+    "text": "Fit ARX on training set\n\n# Split into train and test (before/after t0_date)\nt0_date &lt;- as.Date('2021-03-01')\ntrain &lt;- ca %&gt;% filter(time_value &lt;= t0_date)\ntest &lt;- ca %&gt;% filter(time_value &gt; t0_date)\n\nh &lt;- 28 \n\nepi_arx &lt;- arx_forecaster(epi_data = train %&gt;% as_epi_df(), \n                          outcome = \"deaths\", \n                          predictors = c(\"cases\", \"deaths\"),\n                          trainer = linear_reg() %&gt;% set_engine(\"lm\"),\n                          args_list = arx_args_list(lags = 0, \n                                                    ahead = h))\nepi_arx"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#extract-workflow",
+    "href": "slides/day2-afternoon.html#extract-workflow",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Extract workflow",
+    "text": "Extract workflow\n\nepi_arx$epi_workflow\n\n\nCall:\nstats::lm(formula = ..y ~ ., data = data)\n\nCoefficients:\n (Intercept)   lag_0_cases  lag_0_deaths  \n     0.08133       0.01030       0.14011"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#extract-prediction",
+    "href": "slides/day2-afternoon.html#extract-prediction",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Extract prediction",
+    "text": "Extract prediction\n\nepi_arx$predictions\n\n# A tibble: 1 × 5\n  geo_value .pred        .pred_distn forecast_date target_date\n  &lt;chr&gt;     &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     \n1 ca        0.368 quantiles(0.37)[2] 2021-03-01    2021-03-29 \n\n\n\nepi_arx$predictions %&gt;%\n  # first create a \"nested\" list-column\n  mutate(.pred_distn = nested_quantiles(.pred_distn)) %&gt;%\n  unnest(.pred_distn) # then unnest it\n\n# A tibble: 2 × 6\n  geo_value .pred values quantile_levels forecast_date target_date\n  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;     \n1 ca        0.368  0.224            0.05 2021-03-01    2021-03-29 \n2 ca        0.368  0.513            0.95 2021-03-01    2021-03-29"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#arx-on-trailing-window",
+    "href": "slides/day2-afternoon.html#arx-on-trailing-window",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "ARX on trailing window",
+    "text": "ARX on trailing window\n\n# Specify the forecast dates\nfc_time_values &lt;- seq(\n  from = t0_date,\n  to = tail(ca$time_value, 1) - h,\n  by = \"1 day\"\n)\n\nw &lt;- 200  # trailing window length\n\n# Slide an arx_forecaster with appropriate outcome, predictions, lags, and trailing window\nepi_pred_cv_trailing &lt;- ca %&gt;%\n  epi_slide(\n    ~ arx_forecaster(epi_data = .x,\n                   outcome = \"deaths\", \n                   predictors = c(\"cases\", \"deaths\"), \n                   trainer = linear_reg() %&gt;% set_engine(\"lm\"),\n                   args_list = arx_args_list(lags = 0, ahead = h)\n                   )$predictions %&gt;%\n      pivot_quantiles_wider(.pred_distn),\n  # notice that `before` is not simply equal to w-1. That's because previously, \n  # when considering a window from t to t+w, we had access to y_t, ..., y_{t+w} \n  # and also to x_{t-h}, ..., x_{t+w-h}. (That's because of how we structured \n  # the dataframe after manually lagging x.) So we were \"cheating\" by saying that \n  # the trailing window had length w, as its actual size was w+h! \n  .window_size = (w+h-1), \n  .ref_time_values = fc_time_values,\n  .new_col_name = \"fc\"\n)\n\n# they match exactly\nhead(epi_pred_cv_trailing %&gt;% select(fc))\nhead(test %&gt;% select(pred_trailing_cv, time_value))\n\nThe method fitting on all past data up to the forecasting date can be implemented by changing before = Inf in epi_slide."
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#thanks",
+    "href": "slides/day2-afternoon.html#thanks",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Thanks:",
+    "text": "Thanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting with {epipredict} — cmu-delphi/insightnet-workshop-2024"
   }
 ]
