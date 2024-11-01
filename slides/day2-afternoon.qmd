@@ -1,0 +1,190 @@
+---
+talk-title: "Forecasting with `{epipredict}`"
+talk-short-title: "{{< meta talk-title >}}"
+talk-subtitle: ""
+author: ""
+other-authors: ""
+repo-address: "cmu-delphi/insightnet-workshop-2024"
+talk-date: "Venue -- dd Somemonth yyyy"
+format: revealjs
+---
+
+<!-- Set any of the above to "" to omit them -->
+
+<!-- Or adjust the formatting in _titleslide.qmd -->
+{{< include _titleslide.qmd >}}
+
+
+
+## Outline
+
+1. `{epipredict}`
+
+1. ARX Models
+
+1. Forecasting with Versioned Data
+
+# `{epipredict}` 
+
+# ARX Models
+
+## Fit ARX on training set
+
+```{r}
+source(here::here("_code/ca_cases_deaths.R"))
+library(epipredict)
+library(workflows)
+```
+
+```{r epipredict-lagged-reg}
+#| echo: true
+# Split into train and test (before/after t0_date)
+t0_date <- as.Date('2021-03-01')
+train <- ca %>% filter(time_value <= t0_date)
+test <- ca %>% filter(time_value > t0_date)
+
+h <- 28 
+
+epi_arx <- arx_forecaster(epi_data = train %>% as_epi_df(), 
+                          outcome = "deaths", 
+                          predictors = c("cases", "deaths"),
+                          trainer = linear_reg() %>% set_engine("lm"),
+                          args_list = arx_args_list(lags = 0, 
+                                                    ahead = h))
+epi_arx
+```
+
+## Extract workflow
+
+```{r epi-workflow-arx}
+#| echo: true
+epi_arx$epi_workflow
+```
+
+
+## Extract prediction
+
+```{r epi-pred-arx}
+#| echo: true
+epi_arx$predictions
+```
+
+```{r epi-pred-arx-unnest}
+#| echo: true
+epi_arx$predictions %>%
+  # first create a "nested" list-column
+  mutate(.pred_distn = nested_quantiles(.pred_distn)) %>%
+  unnest(.pred_distn) # then unnest it
+```
+
+## ARX on trailing window
+
+```{r epipredict-cv-trailing, eval=FALSE}
+#| echo: true
+# Specify the forecast dates
+fc_time_values <- seq(
+  from = t0_date,
+  to = tail(ca$time_value, 1) - h,
+  by = "1 day"
+)
+
+w <- 200  # trailing window length
+
+# Slide an arx_forecaster with appropriate outcome, predictions, lags, and trailing window
+epi_pred_cv_trailing <- ca %>%
+  epi_slide(
+    ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = c("cases", "deaths"), 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = 0, ahead = h)
+                   )$predictions %>%
+      pivot_quantiles_wider(.pred_distn),
+  # notice that `before` is not simply equal to w-1. That's because previously, 
+  # when considering a window from t to t+w, we had access to y_t, ..., y_{t+w} 
+  # and also to x_{t-h}, ..., x_{t+w-h}. (That's because of how we structured 
+  # the dataframe after manually lagging x.) So we were "cheating" by saying that 
+  # the trailing window had length w, as its actual size was w+h! 
+  .window_size = (w+h-1), 
+  .ref_time_values = fc_time_values,
+  .new_col_name = "fc"
+)
+
+# they match exactly
+head(epi_pred_cv_trailing %>% select(fc))
+head(test %>% select(pred_trailing_cv, time_value))
+```
+
+The method fitting on all past data up to the forecasting date can be 
+implemented by changing `before = Inf` in `epi_slide`.
+
+```{r epipredict-cv, eval=FALSE}
+# slide an arx_forecaster with appropriate outcome, predictions and lags
+epi_pred_cv <- epi_slide(
+  ca, 
+  ~ arx_forecaster(epi_data = .x,
+                   outcome = "deaths", 
+                   predictors = "cases", 
+                   trainer = linear_reg() %>% set_engine("lm"),
+                   args_list = arx_args_list(lags = h-1, ahead = 1L)
+                   )$predictions,
+  before = Inf, 
+  ref_time_values = fc_time_values,
+  new_col_name = "fc"
+)
+
+# they match exactly
+head(epi_pred_cv %>% select(fc_.pred, fc_target_date))
+head(test %>% select(pred_cv, time_value))
+```
+
+
+## Thanks:
+
+```{r qr-codes}
+#| include: false
+#| fig-format: png
+# Code to generate QR codes to link to any external sources
+qrdat <- function(text, ecl = c("L", "M", "Q", "H")) {
+  x <- qrcode::qr_code(text, ecl)
+  n <- nrow(x)
+  s <- seq_len(n)
+  tib <- tidyr::expand_grid(x = s, y = rev(s))
+  tib$z <- c(x)
+  tib
+}
+qr1 <- qrdat("https://cmu-delphi.github.io/epiprocess/")
+qr2 <- qrdat("https://cmu-delphi.github.io/epipredict/")
+ggplot(qr1, aes(x, y, fill = z)) +
+  geom_raster() +
+  ggtitle("{epiprocess}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+ggplot(qr2, aes(x, y, fill = z)) +
+  geom_raster() +
+  labs(title = "{epipredict}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+```
+
+- The whole [CMU Delphi Team](https://delphi.cmu.edu/about/team/) (across many institutions)
+- Optum/UnitedHealthcare, Change Healthcare.
+- Google, Facebook, Amazon Web Services.
+- Quidel, SafeGraph, Qualtrics.
+- Centers for Disease Control and Prevention.
+- Council of State and Territorial Epidemiologists
+
+
+::: {layout-row=1 fig-align="center"}
+![](gfx/delphi.jpg){height="100px"}
+![](gfx/berkeley.jpg){height="100px"}
+![](gfx/cmu.jpg){height="100px"}
+![](gfx/ubc.jpg){width="250px"}
+![](gfx/stanford.jpg){width="250px"}
+:::
+
+

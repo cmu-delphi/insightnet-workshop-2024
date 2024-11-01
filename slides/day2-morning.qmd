@@ -83,7 +83,7 @@ $$\hat y_{t+k} = \hat \beta + \hat \beta_0 x_t$$
 
 ## Example: predicting COVID deaths  
 
-* During the pandemic, interest in predicting COVID deaths 7, 14, 28 days ahead.
+* During the pandemic, interest in predicting COVID deaths 7, 14, 21, 28 days ahead.
 
 * Can we reasonably [predict COVID deaths 28 days ahead]{.primary} by just using cases today?
 
@@ -805,7 +805,7 @@ errors_ar
 
 * Example:
 
-$$\hat y_t = \hat\phi + \sum_{i=0}^p \hat\phi_i y_{t-i} + \sum_{j=0}^q \hat\beta_j x_{t-j}$$
+$$\hat y_{t+h} = \hat\phi + \sum_{i=0}^p \hat\phi_i y_{t-i} + \sum_{j=0}^q \hat\beta_j x_{t-j}$$
 
 * We can construct more complex ARX models with multiple lags of several exogenous 
 variables
@@ -914,7 +914,7 @@ to the ARX model
 
 $$\hat y_{t+h} = \hat\phi + \hat\phi_0 y_t + \hat\beta_0 x_t$$
 
-for horizons $h = 7, 14, 28$ (using a trailing window of size 200).
+for horizons $h = 7, 14, 21, 28$ (using a trailing window of size 200).
 
 ## Predicting 7 days ahead
 
@@ -1001,6 +1001,45 @@ ca_14 %>%
 
 rbind(getErrors(test$deaths[-c(1:(h-1))], pred_14_ar, "AR"),
       getErrors(test$deaths[-c(1:(h-1))], pred_14_arx, "ARX"))
+```
+
+## Predicting 21 days ahead
+
+```{r ar-arx-21}
+# Getting 21-step ahead predictions 
+h <- 21  
+pred_21_ar = pred_21_arx <- rep(NA, length = n-h-t0+1) #initialize vectors of predictions
+w <- 200                                               #trailing window size
+
+for (t in t0:(n-h)) {
+  # fit to trailing window of data
+  ar_trailing = lm(deaths ~ lagged_deaths, data = ca, 
+                   subset = (1:n) <= t & (1:n) > (t-w)) 
+  arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
+                    subset = (1:n) <= t & (1:n) > (t-w)) 
+  # make h-step ahead predictions
+  pred_21_ar[t-t0+1] = predict(ar_trailing, newdata = data.frame(ca[t+h, ]))
+  pred_21_arx[t-t0+1] = predict(arx_trailing, newdata = data.frame(ca[t+h, ]))
+}
+```
+
+```{r ar-arx-plot-21}
+#| fig-align: left
+ca %>% 
+  mutate(observed = deaths, 
+         `predicted (AR)` = c(rep(NA, nrow(train)+h-1), pred_21_ar), 
+         `predicted (ARX)` = c(rep(NA, nrow(train)+h-1), pred_21_arx)) %>%
+  pivot_longer(cols = c(observed, `predicted (AR)`, `predicted (ARX)`), 
+               names_to = 'Deaths') %>%
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date, lty = 2) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+
+rbind(getErrors(test$deaths[-c(1:(h-1))], pred_21_ar, "AR"),
+      getErrors(test$deaths[-c(1:(h-1))], pred_21_arx, "ARX"))
 ```
 
 ## Predicting 28 days ahead
@@ -1715,7 +1754,7 @@ for (fc_date in fc_time_values) {
 ```
 
 
-## Version-awere predictions (CV, trailing)
+## Version-aware predictions (CV, trailing)
 
 ```{r clean-data-output}
 # clean output and join it with finalized values (`ca` dataset)
