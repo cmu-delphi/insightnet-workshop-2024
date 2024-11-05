@@ -788,7 +788,7 @@ ca %>%
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
   scale_x_date(date_labels = "%b %Y") +
-  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
   scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
@@ -901,7 +901,7 @@ for (j in 1:length(lags)) {
   X[, length(lags) + j] <- dplyr::lag(ca$cases, lags[j])
 }
 
-X[1:5, 1:5] # look at first few entries of predictor matrix
+round(X[1:5, 1:5], 3) # look at first few entries of predictor matrix
 ```
 
 ## Fitting the ARX model
@@ -916,7 +916,7 @@ X_test <- X[(t0 + 1):length(y), ]
 
 # Fitting the ARX model
 reg <- lm(y_train ~ ., data = X_train)
-coef(reg)
+round(coef(reg), 3)
 ```
 
 ## Predictions on training and test set 
@@ -1035,8 +1035,10 @@ pred_test_lasso <- yhat_lasso[, min_lasso]
 ::: w-50
 ```{r lasso-ridge-coeff}
 # Estimated coefficients
-cbind('ridge' = beta_ridge[, min_ridge], 
-      'lasso' = beta_lasso[, min_lasso])
+round(cbind(
+  'ridge' = beta_ridge[, min_ridge], 
+  'lasso' = beta_lasso[, min_lasso]
+), 3)
 ```
 
 :::
@@ -1044,16 +1046,22 @@ cbind('ridge' = beta_ridge[, min_ridge],
 ::: w-50
 
 ```{r plot-ridge-lasso-coeff}
-#| out-height: "600px"
-data.frame('x'= 1:(2 * max(lags) + 1),
-           'ridge' = beta_ridge[, min_ridge], 
-           'lasso' = beta_lasso[, min_lasso]) %>%
-  pivot_longer(cols = c('ridge', 'lasso'), names_to = 'Method') %>%
-  ggplot(aes(x, value, col = Method)) +
+#| fig-height: 8
+#| fig-width: 8
+tibble(
+  predictor = names(beta_ridge[, min_ridge]),
+  ridge = beta_ridge[, min_ridge],
+  lasso = beta_lasso[, min_lasso]) |>
+  pivot_longer(-predictor, names_to = 'Method') |>
+  ggplot(aes(value, predictor, color = Method)) +
   geom_point(alpha = .8) +
-  geom_line() +
-  xlab('Regressor') + 
-  ylab('Estimated coefficient')
+  #geom_line() +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
+  xlab('Estimated coefficient (log scale)') +
+  scale_x_continuous(transform = scales::pseudo_log_trans(sigma = .1),
+                     breaks = c(-.1, 0, .1, .25, .5, 1)) +
+  geom_vline(xintercept = 0) +
+  theme(text = element_text(size = 20))
 ```
 
 :::
@@ -1062,7 +1070,8 @@ data.frame('x'= 1:(2 * max(lags) + 1),
 ## Predictions: ARX + ridge/lasso (train and test set)
 
 ```{r shrinkage-sparsity}
-#| fig-align: left
+#| fig-width: 6
+#| fig-height: 3
 ca %>% 
   mutate(observed = deaths, 
          `predicted (ridge)` = c(rep(NA, max(lags)), pred_train_ridge, 
@@ -1075,7 +1084,9 @@ ca %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 ```{r regularization-train-test-errors}
@@ -1127,7 +1138,8 @@ paste('Best MAE lasso:', round(min(mae_lasso), 3))
 ## Predictions: time-series CV for ARX + ridge/lasso (trailing)
 
 ```{r plot-regularization-cv}
-#| fig-align: left
+#| fig-width: 6
+#| fig-height: 3
 test %>% 
   mutate(observed = deaths, 
          `predicted (ridge)` = pred_cv_ridge,
@@ -1138,7 +1150,9 @@ test %>%
   geom_line() + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, secondary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 ```{r regularization-cv-errors}
@@ -1189,16 +1203,19 @@ we only need to tweak our call to `predict` by adding as an input:
 ```{r arx-intervals-test}
 #| echo: true
 #| output-location: column
-pred_test_ci <- predict(arx_fit, 
-                        newdata = test, 
-                        interval = "prediction", 
-                        level = 0.95)
-
+pred_test_ci <- predict(
+  arx_fit, 
+  newdata = test, 
+  interval = "prediction", 
+  level = 0.8
+)
 head(pred_test_ci)
 ```
 
 
 ```{r plot-arx-intervals}
+#| fig-width: 6
+#| fig-height: 3
 test %>% 
   mutate(observed = deaths, 
          predicted = pred_test_ci[, 1], 
@@ -1206,11 +1223,13 @@ test %>%
          upper = pred_test_ci[, 3]) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .3) +
+  geom_ribbon(aes(ymin = pmax(lower, 0), ymax = pmax(upper, 0)), fill = tertiary, alpha = .3) +
   geom_line(aes(col = Deaths)) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 ## Prediction intervals for ARX (time-series CV)
@@ -1242,36 +1261,43 @@ lm_pred_trailing <- cbind(test, pred_trailing)
 ## Prediction intervals for ARX (CV, all past)
 
 ```{r plot arx-intervals-cv}
+#| fig-width: 6
+#| fig-height: 3
 lm_pred_all_past %>%
   mutate(observed = deaths, 
          `predicted (CV)` = prediction) %>%
   pivot_longer(cols = c(observed, `predicted (CV)`), 
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, 
-                  ymax = upper), alpha = .3) +
+  geom_ribbon(aes(ymin = pmax(lower, 0), 
+                  ymax = pmax(upper, 0)), fill = tertiary, alpha = .3) +
   geom_line(aes(col = Deaths)) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
-
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 ## Prediction intervals for ARX (CV, trailing window)
 
 ```{r plot arx-intervals-cv-trailing}
+#| fig-width: 6
+#| fig-height: 3
 lm_pred_trailing %>%
   mutate(observed = deaths, 
          `predicted (CV + trailing)` = prediction) %>%
   pivot_longer(cols = c(observed, `predicted (CV + trailing)`), 
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, 
-                  ymax = upper), alpha = .3) +
+  geom_ribbon(aes(ymin = pmax(lower, 0), 
+                  ymax = pmax(upper, 0)), fill = tertiary, alpha = .3) +
   geom_line(aes(col = Deaths)) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 [Note]{.primary}: the width of the prediction intervals varies substantially over time.
@@ -1299,14 +1325,14 @@ Conditional quantile = value below which a given percentage (e.g. 25%, 50%,
 #install.packages("quantreg")
 library(quantreg)  #library to perform quantile regression
 
-# Set quantiles of interest: we will focus on 2.5%, 50% (i.e. median), and 97.5% quantiles
-quantiles <- c(0.025, 0.5, 0.975)  
+# Set quantiles of interest: we will focus on 10%, 50% (i.e. median), and 90% quantiles
+quantiles <- c(0.1, 0.5, 0.9)  
 
 # Fit quantile regression on training set
 q_reg <- rq(deaths ~ lagged_deaths + lagged_cases, data = train, tau = quantiles)
 
 # Estimated coefficients
-coef(q_reg)
+round(coef(q_reg), 3)
 
 # Predict on test set
 pred_test <- predict(q_reg, newdata = test)
@@ -1315,6 +1341,8 @@ pred_test <- predict(q_reg, newdata = test)
 ## Predictions via quantile regression (test)
 
 ```{r q-reg-training}
+#| fig-width: 6
+#| fig-height: 3
 test %>% 
   mutate(observed = deaths, 
          predicted = pred_test[, 2],
@@ -1322,11 +1350,13 @@ test %>%
          upper = pred_test[, 3]) %>%
   pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .4) +
+  geom_ribbon(aes(ymin = pmax(lower, 0), ymax = pmax(upper, 0)), fill = tertiary, alpha = .4) +
   geom_line(aes(col = Deaths)) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 ## Predictions via quantile regression (time-series CV)
@@ -1356,32 +1386,40 @@ rq_pred_trailing <- cbind(test, pred_trailing)
 ## Predictions via quantile regression (CV, all past)
 
 ```{r q-reg-plot-cv-predictions}
+#| fig-width: 6
+#| fig-height: 3
 rq_pred_all_past %>%
   mutate(observed = deaths, 
          `predicted (CV)` = median) %>%
   pivot_longer(cols = c(`predicted (CV)`, observed), names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .3) +
+  geom_ribbon(aes(ymin = pmax(lower, 0), ymax = pmax(upper, 0)), fill = tertiary, alpha = .3) +
   geom_line(aes(col = Deaths)) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 ## Predictions via quantile regression (CV, trailing)
 
 ```{r q-reg-plot-cv-predictions-trailing}
+#| fig-width: 6
+#| fig-height: 3
 rq_pred_trailing %>%
   mutate(observed = deaths, 
          `predicted (CV + trailing)` = median) %>%
   pivot_longer(cols = c(`predicted (CV + trailing)`, observed), 
                names_to = 'Deaths') %>%
   ggplot(aes(time_value, value)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .3) +
+  geom_ribbon(aes(ymin = pmax(lower, 0), ymax = pmax(upper, 0)), fill = tertiary, alpha = .3) +
   geom_line(aes(col = Deaths)) + 
   geom_vline(xintercept = t0_date, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_color_manual(values = c(primary, tertiary), name = "") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 ## Actual Coverage
@@ -1592,43 +1630,51 @@ for (fc_date in fc_time_values) {
 ```{r clean-data-output}
 # clean output and join it with finalized values (`ca` dataset)
 pred_all_past <- pred_all_past %>%
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) %>%
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) %>%
   full_join(ca %>% select(time_value, deaths), join_by(target_date == time_value)) %>%
   arrange(target_date)
 
 pred_trailing <- pred_trailing %>%
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) %>%
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) %>%
   full_join(ca %>% select(time_value, deaths), join_by(target_date == time_value)) %>%
   arrange(target_date)
 ```
 
 
 ```{r plot-versioned-cv}
+#| fig-width: 6
+#| fig-height: 3
 pred_all_past %>%
   ggplot(aes(x = target_date)) +
-  geom_line(aes(y = deaths), col = 'gray50') + 
-  geom_point(aes(y = median), col = 'red') +
-  geom_linerange(aes(ymin = lower, ymax = upper), col = 'red', alpha = .6) +
+  geom_line(aes(y = deaths), col = tertiary) + 
+  geom_point(aes(y = median), col = primary) +
+  geom_linerange(aes(ymin = lower, ymax = upper), col = primary, alpha = .6) +
   geom_vline(xintercept = fc_time_values, lty = 2, col = 'gray50') +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 ## Version-awere predictions (CV, trailing)
 
+DJM: something wrong here, intervals don't contain the point preds
+
 ```{r plot-versioned-cv-trailing}
+#| fig-width: 6
+#| fig-height: 3
 pred_trailing %>%
   ggplot(aes(x = target_date)) +
-  geom_line(aes(y = deaths), col = 'gray50') + 
-  geom_point(aes(y = median), col = 'blue') +
-  geom_linerange(aes(ymin = lower, ymax = upper), col = 'blue', alpha = .6) +
+  geom_line(aes(y = deaths), col = tertiary) + 
+  geom_point(aes(y = median), col = secondary) +
+  geom_linerange(aes(ymin = lower, ymax = upper), col = secondary, alpha = .6) +
   geom_vline(xintercept = fc_time_values, lty = 2, col = 'gray50') +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 # Geo-pooling
@@ -1661,7 +1707,7 @@ usa_archive <- data_archive$DT %>%
 # 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles
 pred_all_past <- data.frame(matrix(NA, ncol = 6, nrow = 0))
 colnames(pred_all_past) <- c('geo_value', 'forecast_date', 'target_date',
-                             'tau..0.025', 'tau..0.500', 'tau..0.975')
+                             'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 h <- 7     #number of days ahead
 
@@ -1706,9 +1752,9 @@ for (fc_date in fc_time_values) {
 # geo-pooled predictions for California
 pred_ca <- pred_all_past %>%
   filter(geo_value == 'ca') %>%
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) %>%
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) %>%
   full_join(ca %>% select(time_value, deaths), join_by(target_date == time_value)) %>%
   arrange(target_date)
 
@@ -1717,14 +1763,17 @@ pred_ca <- pred_all_past %>%
 ## Geo-pooled predictions for California
 
 ```{r plot-geo-pooling}
+#| fig-width: 6
+#| fig-height: 3
 pred_ca %>%
   ggplot(aes(x = target_date)) +
-  geom_line(aes(y = deaths), col = 'gray50') + 
+  geom_line(aes(y = deaths), col = tertiary) + 
   geom_point(aes(y = median), col = 'purple') +
   geom_linerange(aes(ymin = lower, ymax = upper), col = 'purple', alpha = .6) +
   geom_vline(aes(xintercept = forecast_date), lty = 2, col = 'gray50') +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 ## Partial geo-pooling: CV all past
@@ -1736,7 +1785,7 @@ pred_ca %>%
 # 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles
 pred_all_past <- data.frame(matrix(NA, ncol = 6, nrow = 0))
 colnames(pred_all_past) <- c('geo_value', 'forecast_date', 'target_date',
-                             'tau..0.025', 'tau..0.500', 'tau..0.975')
+                             'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 h <- 7     #number of days ahead
 
@@ -1791,9 +1840,9 @@ for (fc_date in fc_time_values) {
 # partially geo-pooled predictions for California
 pred_ca <- pred_all_past %>%
   filter(geo_value == 'ca') %>%
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) %>%
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) %>%
   full_join(ca %>% select(time_value, deaths), join_by(target_date == time_value)) %>%
   arrange(target_date)
 
@@ -1802,14 +1851,17 @@ pred_ca <- pred_all_past %>%
 ## Partially geo-pooled predictions for California
 
 ```{r plot-partial-geo-pooling}
+#| fig-width: 6
+#| fig-height: 3
 pred_ca %>%
   ggplot(aes(x = target_date)) +
-  geom_line(aes(y = deaths), col = 'gray50') + 
+  geom_line(aes(y = deaths), col = tertiary) + 
   geom_point(aes(y = median), col = 'darkgreen') +
   geom_linerange(aes(ymin = lower, ymax = upper), col = 'darkgreen', alpha = .6) +
   geom_vline(aes(xintercept = forecast_date), lty = 2, col = 'gray50') +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_x_date(date_labels = "%b %Y") +
+  scale_y_continuous(expand = expansion(c(0, 0.05)), limits = c(0, NA))
 ```
 
 
