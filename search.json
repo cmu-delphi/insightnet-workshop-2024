@@ -25,7 +25,7 @@
     "href": "slides/day2-morning.html#multiple-linear-regression",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Multiple linear regression",
-    "text": "Multiple linear regression\n\nGiven \\(p\\) different predictors, we seek \\((p+1)\\) coefficients such that\n\n\\[y_i \\approx \\beta_0 + \\beta_1 x_{i1} + \\dots + \\beta_p x_{ip}\\]\nis a good approximation for every \\(i = 1, \\dots, n\\)."
+    "text": "Multiple linear regression\n\nGiven \\(p\\) different predictors, we seek \\((p+1)\\) coefficients such that\n\n\\[y_i \\approx \\beta_0 + \\beta_1 x_{i1} + \\dots + \\beta_p x_{ip}\\] is a good approximation for every \\(i = 1, \\dots, n\\)."
   },
   {
     "objectID": "slides/day2-morning.html#linear-regression-with-lagged-predictor",
@@ -39,7 +39,7 @@
     "href": "slides/day2-morning.html#example-predicting-covid-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example: predicting COVID deaths",
-    "text": "Example: predicting COVID deaths\n\nDuring the pandemic, interest in predicting COVID deaths 7, 14, 21, 28 days ahead.\nCan we reasonably predict COVID deaths 28 days ahead by just using cases today?\nIf we let\n\n\\[y_{t+28} = \\text{deaths at time } t+28 \\quad\\quad x_{t} = \\text{cases at time } t\\]\nis the following a good model?\n\\[\\hat y_{t+28} = \\hat\\beta_0 + \\hat\\beta_1 x_{t}\\]"
+    "text": "Example: predicting COVID deaths\n\nDuring the pandemic, interest in predicting COVID deaths 7, 14, 21, 28 days ahead.\nCan we reasonably predict COVID deaths 28 days ahead by just using cases today?\nIf we let\n\n\\[y_{t+28} = \\text{deaths at time } t+28 \\quad\\quad x_{t} = \\text{cases at time } t\\] is the following a good model?\n\\[\\hat y_{t+28} = \\hat\\beta_0 + \\hat\\beta_1 x_{t}\\]"
   },
   {
     "objectID": "slides/day2-morning.html#example-covid-cases-and-deaths-in-california",
@@ -81,7 +81,7 @@
     "href": "slides/day2-morning.html#error-metrics-mse-and-mae",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Error metrics: MSE and MAE",
-    "text": "Error metrics: MSE and MAE\n\\[MSE = \\frac{1}{N} \\sum_{t=1}^N (y_{new, t}- \\hat y_{new, t})^2\\]\n\\[MAE = \\frac{1}{N} \\sum_{t=1}^N |y_{new, t}- \\hat y_{new, t}|\\]\n\nMAE gives less importance to extreme errors than MSE.\nDrawback: both metrics are scale-dependent, so they are not universally interpretable. (For example, if \\(y\\) captures height, MSE and MAE will vary depending on whether we measure in feet or meters.)"
+    "text": "Error metrics: MSE and MAE\n\\[MSE = \\frac{1}{N} \\sum_{t=1}^N (y_{new, t}- \\hat y_{new, t})^2\\] \\[MAE = \\frac{1}{N} \\sum_{t=1}^N |y_{new, t}- \\hat y_{new, t}|\\]\n\nMAE gives less importance to extreme errors than MSE.\nDrawback: both metrics are scale-dependent, so they are not universally interpretable. (For example, if \\(y\\) captures height, MSE and MAE will vary depending on whether we measure in feet or meters.)"
   },
   {
     "objectID": "slides/day2-morning.html#error-metrics-mape",
@@ -102,7 +102,7 @@
     "href": "slides/day2-morning.html#error-metrics-mase",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Error metrics: MASE",
-    "text": "Error metrics: MASE\n$$MASE = 100 { {t=2}^N |y{new, t}- y_{new, t-1}|}$$\n\nAdvantages:\n\nis universally interpretable (not scale dependent)\navoids the zero-pitfall\n\nMASE in words: we normalize the error of our forecasts by that of a naive method which always predicts the last observation."
+    "text": "Error metrics: MASE\n\\[MASE = 100 \\times \\frac{\\frac{1}{N} \\sum_{t=1}^N\n|y_{new, t}- \\hat y_{new, t}|}\n{\\frac{1}{N-1} \\sum_{t=2}^N\n|y_{new, t}- y_{new, t-1}|}\\]\n\nAdvantages:\n\nis universally interpretable (not scale dependent)\navoids the zero-pitfall\n\nMASE in words: we normalize the error of our forecasts by that of a naive method which always predicts the last observation."
   },
   {
     "objectID": "slides/day2-morning.html#comparing-mae-mape-and-mase",
@@ -550,7 +550,7 @@
     "href": "slides/day2-morning.html#final-slide",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Final slide",
-    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting and Time-Series Models — cmu-delphi/insightnet-workshop-2024"
+    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nTime series — cmu-delphi/insightnet-workshop-2024"
   },
   {
     "objectID": "slides/day2-afternoon.html#section",
