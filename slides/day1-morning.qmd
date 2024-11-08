@@ -1,6 +1,6 @@
 ---
 talk-title: "Signal Discovery & Data Fetching"
-talk-short-title: "{{< Day 1 Morning >}}"
+talk-short-title: "Day 1 Morning"
 talk-subtitle: ""
 author: ""
 other-authors: ""
@@ -19,8 +19,6 @@ format: revealjs
 
 ```{r theme}
 theme_set(theme_bw())
-
-library(tidyverse)
 library(tidymodels)
 library(gridExtra)
 library(epidatasets)

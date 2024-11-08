@@ -1,14 +1,12 @@
 ---
 talk-title: "Forecasting and Time-Series Models"
-talk-short-title: "{{< meta talk-title >}}"
+talk-short-title: "Time series"
 talk-subtitle: ""
 author: ""
 other-authors: ""
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "Venue -- dd Somemonth yyyy"
 format: revealjs
-execute:
-  cache: false
 ---
 
 <!-- Set any of the above to "" to omit them -->
@@ -17,7 +15,6 @@ execute:
 {{< include _titleslide.qmd >}}
 
 ```{r theme}
-library(tidyverse)
 theme_set(theme_bw())
 ```
 
