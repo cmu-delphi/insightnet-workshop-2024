@@ -5,6 +5,7 @@
 
 ```{r setup}
 #| include: false
+options(htmltools.dir.version = FALSE)
 primary <- "#a8201a"
 secondary <- "#f9c80e"
 tertiary <- "#2a76dd"

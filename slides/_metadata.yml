@@ -33,6 +33,5 @@ knitr:
     fig.width: 5.33
     fig.height: 3
     fig.align: center
-    fig.path: "gfx/"
 
 editor: source
