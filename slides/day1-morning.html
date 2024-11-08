@@ -10,7 +10,7 @@
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.57">
 
-  <meta name="author" content="Daniel J. McDonald">
+  <meta name="author" content="">
   <title>InsightNet EpiData Workshop 2024 – day1-morning</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -29,6 +29,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto.css">
   <link rel="stylesheet" href="tachyons-minimal.css">
@@ -338,32 +403,1094 @@
 
 </div>
 <section id="section" class="slide level2 w-80" data-background-image="gfx/cover-art-1.svg" data-background-position="bottom">
-<h2>Title</h2>
-<h3 id="section-1">Subtitle</h3>
+<h2>Signal Discovery &amp; Data Fetching</h2>
+<h3 id="section-1"></h3>
 <p><br></p>
-<h4 id="section-2">Daniel J. McDonald</h4>
+<h4 id="section-2"></h4>
 <p></p>
-<p>Venue – dd Somemonth yyyy</p>
+<p></p>
 </section>
 </div>
 </section>
-<section id="slides-begin" class="slide level2">
-<h2>Slides begin</h2>
+<section id="outline" class="slide level2">
+<h2>Outline</h2>
+<ol type="1">
+<li><p>About Delphi</p></li>
+<li><p>Goals of Delphi Epidata platform</p></li>
+<li><p>Epidata API</p></li>
+<li><p>Finding data sources and signals</p></li>
+<li><p>Versioned data</p></li>
+</ol>
 </section>
-<section id="callouts" class="slide level2">
-<h2>Callouts</h2>
-<div class="callout callout-note callout-titled callout-style-default">
+<section>
+<section id="delphi" class="title-slide slide level1 center">
+<h1>Delphi</h1>
+
+</section>
+<section id="about-delphi" class="slide level2">
+<h2>About Delphi</h2>
+<ul>
+<li><p>Founded in 2012 at Carnegie Mellon University, now expanded to UC Berkeley, and University of British Columbia.</p></li>
+<li><p>Currently 5 faculty, ~10 PhD students, ~15 staff (mostly software engineers).</p></li>
+<li><p>Easy to join us from anywhere (lots of volunteers during Covid-19 pandemic).</p></li>
+<li><p>We are:</p>
+<ul>
+<li>CDC Center of Excellence for Influenza and Covid-19 Forecasting (2019-24).</li>
+<li>CDC Innovation Center for Outbreak Analytics and Disease Modeling (2024-29).</li>
+</ul></li>
+</ul>
+<p><strong>Our mission:</strong> To develop the theory and practice of <span class="primary">epidemic detection, tracking and forecasting</span>, and their use in decision making, both public and private.</p>
+</section>
+<section id="what-does-delphi-do" class="slide level2">
+<h2>What does Delphi do?</h2>
+<ul>
+<li><p>Procure <span class="primary">real-time, aggregated data streams</span> informative of infectious diseases and syndromes, in collaboration with partners in industry and government.</p></li>
+<li><p>Extract signals and make them widely available via the <span class="primary">Epidata platform &amp; API</span>.</p></li>
+<li><p>Develop and deploy algorithms for <span class="primary">epidemic detection, tracking, forecasting</span>.</p></li>
+<li><p>Develop and maintain statistical software packages for these tasks.</p></li>
+<li><p>Make it all production-grade, maximally-accessible, and open-source (to serve CDC, state and local public health agencies, epi-forecasting researchers, data journalists, the public)</p></li>
+</ul>
+</section>
+<section id="what-we-provide" class="slide level2">
+<h2>What we provide</h2>
+
+<img data-src="gfx/web_of_parts.jpg" class="r-stretch"></section>
+<section id="goals-of-delphi-epidata-platform-and-repository" class="slide level2">
+<h2>Goals of Delphi Epidata platform and repository</h2>
+<div style="font-size: 0.9em;">
+<ol type="1">
+<li><strong>Be the one-stop shop for aggregated epi-surveillance time-series (“epi-signals”)</strong>
+<ul>
+<li>Hence: include also signals available elsewhere, especially if they don’t keep data revisions - E.g. CDC’s own NSSP, NWSS</li>
+<li>Be the national historical repository of record &amp; preserve the raw data</li>
+</ul></li>
+<li><strong>Be the national clearinghouse for epi-signals, including those held elsewhere</strong>
+<ul>
+<li>The go-to place for signal discovery</li>
+</ul></li>
+<li><strong>Add value to existing signals and synthesize new ones</strong>
+<ul>
+<li>Added value: see next slide</li>
+<li>Synthesize new: via signal fusion, e.g.&nbsp;nowcasting</li>
+</ul></li>
+<li><strong>Be the focal point for community-wide efforts to open up privately held data</strong>
+<ul>
+<li>Better positioned than government or industry</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="the-bigger-goal" class="slide level2">
+<h2>The bigger goal</h2>
+<p>The goal is to make epi-surveillance <span class="primary">more nimble, complete, standardized, robust, and real-time</span>; and <span class="primary">less burdensome on the health system itself</span>. Epidata is not the solution; but we hope it is a blueprint towards such a solution.</p>
+</section></section>
+<section>
+<section id="epidata-api" class="title-slide slide level1 center">
+<h1>Epidata API</h1>
+
+</section>
+<section id="what-is-the-epidata-repository" class="slide level2">
+<h2>What is the Epidata repository</h2>
+<p><span class="primary">Epidata</span> is a repository of aggregated epi-surveillance time series. To the full extent we can, we make everything <span class="primary">free and open-source</span>.</p>
+<ul>
+<li><p>To date, it has accumulated over 5 billion records (each record is the value of a signal, at a particular date, and a particular location).</p></li>
+<li><p>At the peak of the pandemic, we were receiving millions of API queries per day.</p></li>
+<li><p>Data comes from: public health reporting, medical insurance claims, medical device data, Google search queries, wastewater, app-based mobility patterns.</p></li>
+<li><p>Many of our data streams simply aren’t available anywhere else.</p></li>
+<li><p>Added value we provide: revision tracking, anomaly detection, trend detection, smoothing, imputation, geo-temporal-demographic disaggregation</p></li>
+</ul>
+</section>
+<section id="features-of-delphi-epidata" class="slide level2">
+<h2>Features of Delphi Epidata</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>Built-in support for:</p>
+<ul>
+<li>Data revisions (“backfill”). Concepts of “reporting date” and “as of”.</li>
+<li>Backfill projection and alerting to changes in backfill dynamics</li>
+<li>Geo levels w/ auto-aggregation: county, MSA, HRR, state, HHS region, nation
+<ul>
+<li>Also esoteric ones: DMA, sewer sheds</li>
+</ul></li>
+<li>Demographic breakdown</li>
+<li>Representation for missingness and censoring</li>
+<li>Population sizes and fine-grained population density</li>
+</ul></li>
+<li><p>Pre-computed smoothing and normalization (customization planned)</p></li>
+<li><p>Access control</p></li>
+<li><p>Code is Open Source. Signals are as accessible (w/ API, SDK) as allowed by DUAs</p></li>
+</ul>
+</div>
+</section>
+<section id="epidata-api-1" class="slide level2">
+<h2>Epidata API</h2>
+<ul>
+<li><p><a href="https://cmu-delphi.github.io/delphi-epidata/">Delphi’s Epidata API</a> provides real-time access to epidemiological surveillance data.</p></li>
+<li><p>The <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html">main endpoint</a> (covidcast) providing daily updates about current COVID-19 and influenza activity across the United States.</p></li>
+<li><p>A <a href="https://cmu-delphi.github.io/delphi-epidata/api/README.html">variety of other endpoints</a>, providing primarily historical data about various diseases including COVID-19, influenza, dengue fever, and norovirus in several countries.</p></li>
+<li><p>A <a href="https://cmu-delphi.github.io/delphi-epidata/api/client_libraries.html">full-featured R client</a> is available for quick access to all data.</p></li>
+<li><p>A <a href="https://cmu-delphi.github.io/delphi-epidata/api/client_libraries.html#python">Legacy Python client</a> is available, full-featured Python client in development.</p></li>
+</ul>
+</section>
+<section id="some-of-our-data-sources" class="slide level2">
+<h2>Some of our data sources</h2>
+<ul>
+<li><strong>Ongoing Sources</strong>:
+<ul>
+<li>Insurance claims: %Covid {inpatient, outpatient}, by {county x day}</li>
+<li>Google Symptom searches: 7 symptoms groups, by {county x day}</li>
+<li>Quidel/Ortho antigen tests: %Covid by age group, by {county x day}</li>
+<li>NCHS Deaths: all-cause, pneumonia, flu, Covid, by {state x week}</li>
+<li>NSSP ED visits: %Covid, %flu, %RSV, by {county x week} (new!)</li>
+<li>NWSS Covid, by {sampling-site x day} (in progress)</li>
+</ul></li>
+</ul>
+</section>
+<section id="some-of-our-data-sources-1" class="slide level2">
+<h2>Some of our data sources</h2>
+<ul>
+<li><strong>Active during the pandemic, and could be restarted for the next PHE</strong>:
+<ul>
+<li>HHS Hosp/ICU beds: Covid, flu, by age-group, by {state x day}, {facility x week}</li>
+<li>CTIS (“Delphi Facebook Survey”): many dozens of questions, by (county x day)</li>
+<li>STLT-reported {cases, deaths} via {JHU, USAFacts}, by (country x day)</li>
+<li>Safegraph mobility: misc measures by {county x day},{county x week}</li>
+</ul></li>
+</ul>
+</section>
+<section id="some-of-our-pre-pandemic-data-sources" class="slide level2">
+<h2>Some of our Pre-Pandemic Data Sources</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>FluView ILINet, by {state x week}</p></li>
+<li><p>FluView Clinical (% positive flu, PH and clinical labs)</p></li>
+<li><p>Google Health Trends (GHT), precursor to Google Symptoms</p></li>
+<li><p>Google Flu Trends (GFT), precursor to to GHT</p></li>
+<li><p>Twitter flu</p></li>
+<li><p>Access counts for flu-related CDC pages, by {city x week}</p></li>
+<li><p>Access counts for flu-related Wikipedia entries by {day x hour}</p></li>
+<li><p>Flu-surv (flu hosp rates, now expanded to RESP-NET)</p></li>
+<li><p>Misc signals for dengue, norovirus</p></li>
+<li><p>Misc signals for PAHO countries, ECDC, KCDC, Taiwan,…</p></li>
+<li><p>Delphi ILI nowcasts, by {state x week}, visualized in “ILI Nearby” website</p></li>
+<li><p>Delphi ILI forecasts, by {state x week}</p></li>
+</ul>
+</div>
+</section>
+<section id="section-3" class="slide level2">
+<h2></h2>
+<p><img data-src="gfx/severity_pyramid.jpg" style="height:75.0%"></p>
+</section></section>
+<section>
+<section id="epidatr" class="title-slide slide level1 center">
+<h1>Epidatr</h1>
+
+</section>
+<section id="installing-epidatr" class="slide level2">
+<h2>Installing <code>epidatr</code></h2>
+<p>Installing the package is straightforward:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="co"># Install the CRAN version</span></span>
+<span id="cb1-2"><a></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"epidatr"</span>)</span>
+<span id="cb1-3"><a></a><span class="co"># Install the development version from the GitHub dev branch</span></span>
+<span id="cb1-4"><a></a><span class="co"># pak::pkg_install("cmu-delphi/epidatr@dev")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The CRAN listing is <a href="https://cran.r-project.org/package=epidatr/index.html">here</a>.</p>
+<div class="callout callout-important no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Python</strong></p>
+</div>
+<div class="callout-content">
+<p>In Python, install <a href="https://pypi.org/project/delphi-epidata/"><code>delphi-epidata</code> from PyPI</a> with <code>pip install delphi-epidata</code>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="using-epidatr-and-epidatpy" class="slide level2">
+<h2>Using <code>epidatr</code> and <code>epidatpy</code></h2>
+<div style="font-size: 0.8em;">
+<p>The following shows how to import the library and fetch Delphi’s COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001:</p>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="co"># Configure API key interactively, if needed. See</span></span>
+<span id="cb2-2"><a></a><span class="co"># https://cmu-delphi.github.io/epidatr/articles/epidatr.html#api-keys for details.</span></span>
+<span id="cb2-3"><a></a><span class="co">#save_api_key()</span></span>
+<span id="cb2-4"><a></a><span class="fu">library</span>(epidatr)</span>
+<span id="cb2-5"><a></a>res <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(<span class="st">'fb-survey'</span>, <span class="st">'smoothed_cli'</span>, <span class="st">'county'</span>, <span class="st">'day'</span>, <span class="at">geo_values =</span> <span class="st">'06001'</span>,</span>
+<span id="cb2-6"><a></a>                     <span class="at">time_values =</span> <span class="fu">c</span>(<span class="dv">20200401</span>, <span class="dv">20200405</span><span class="sc">:</span><span class="dv">20200414</span>))</span>
+<span id="cb2-7"><a></a><span class="fu">head</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 15
+  geo_value signal     source geo_type time_type time_value direction issue     
+  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;  &lt;fct&gt;    &lt;fct&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;date&gt;    
+1 06001     smoothed_… fb-su… county   day       2020-04-06        NA 2020-09-03
+2 06001     smoothed_… fb-su… county   day       2020-04-07        NA 2020-09-03
+3 06001     smoothed_… fb-su… county   day       2020-04-08        NA 2020-09-03
+4 06001     smoothed_… fb-su… county   day       2020-04-09        NA 2020-09-03
+5 06001     smoothed_… fb-su… county   day       2020-04-10        NA 2020-09-03
+6 06001     smoothed_… fb-su… county   day       2020-04-11        NA 2020-09-03
+# ℹ 7 more variables: lag &lt;dbl&gt;, missing_value &lt;dbl&gt;, missing_stderr &lt;dbl&gt;,
+#   missing_sample_size &lt;dbl&gt;, value &lt;dbl&gt;, stderr &lt;dbl&gt;, sample_size &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="api-keys" class="slide level2">
+<h2>API keys</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>Anyone may access the Epidata API anonymously without providing any personal data.</p></li>
+<li><p>Anonymous API access is subject to the following restrictions:</p>
+<ol type="1">
+<li>public datasets only</li>
+<li>rate limited to 60 requests per hour</li>
+<li>only two parameters may have multiple selections</li>
+</ol></li>
+<li><p>An API key grants priviledged access to the Epidata API and can be obtained by <a href="https://api.delphi.cmu.edu/epidata/admin/registration_form">registering with us</a>.</p></li>
+<li><p>Privileges of registration:</p>
+<ol type="1">
+<li>no rate limit</li>
+<li>no limit on multiple selections</li>
+</ol></li>
+</ul>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
+<p><strong>Tip</strong></p>
+</div>
+<div class="callout-content">
+<p>The <code>epidatr</code> client automatically searches for the key in the <code>DELPHI_EPIDATA_KEY</code> environment variable. We recommend storing it in your <code>.Renviron</code> file, which R reads by default. More on setting your API key <a href="https://rdrr.io/cran/epidatr/man/get_api_key.html">here</a>.</p>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="find-data-sources-signals" class="title-slide slide level1 center">
+<h1>Find data sources &amp; signals</h1>
+
+</section>
+<section id="finding-data-sources-and-signals-of-interest" class="slide level2">
+<h2>Finding data sources and signals of interest</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li>Diverse Data Streams
+<ul>
+<li><strong>Variety of Data</strong>: Access to medical claims data, cases and deaths, mobility data, and more.</li>
+<li><strong>Geographic Coverage</strong>: Includes multiple regions, making it comprehensive yet complex.</li>
+<li><strong>Challenge</strong>: Difficulty in pinpointing the specific data stream of interest.</li>
+</ul></li>
+<li>Using the Documentation
+<ul>
+<li><strong>Comprehensive Listings</strong>: Documentation details all available data sources and signals for both <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast_signals.html">COVID-19</a> and other <a href="https://cmu-delphi.github.io/delphi-epidata/api/README.html#source-specific-parameters">endpoints</a>.</li>
+</ul></li>
+<li>Docs are great for a deep dive into the data, whereas the apps &amp; tools are useful to see what is available…</li>
+</ul>
+</div>
+</section>
+<section id="cheatsheet-of-tools-we-provide" class="slide level2">
+<h2>Cheatsheet of tools we provide</h2>
+<p>We provide…</p>
+<ul>
+<li><p>A <a href="https://delphi.cmu.edu/signals/">signal discovery app</a>, to explore what epi-signals are available in Delphi Epidata and elsewhere in the community.</p></li>
+<li><p>A <a href="https://delphi.cmu.edu/epivis/">general signal visualization tool</a>.</p></li>
+<li><p>A <a href="https://delphi.cmu.edu/covidcast/">signal dashboard</a> and a “classic” <a href="https://delphi.cmu.edu/covidcast/classic/">map-based version</a> to visualize a core set of COVID-19 and flu indicators.</p></li>
+<li><p>A <a href="https://delphi.cmu.edu/covidcast/export/">COVID-19 signal export app</a>, a <a href="https://delphi.cmu.edu/covidcast/dashboard/">dashboard builder</a>, and more!</p></li>
+</ul>
+</section>
+<section id="signal-dashboard---for-covid-19-flu-data" class="slide level2">
+<h2>Signal dashboard - For COVID-19 &amp; flu data</h2>
+<div class="flex">
+<div class="w-50">
+<ul>
+<li><p>The <a href="https://delphi.cmu.edu/covidcast/">signal dashboard</a> displays a selection of our signals for COVID-19 and the flu.</p></li>
+<li><p>Includes an “Advanced Data Export” to pull a selected signal &amp; download as a CSV.</p></li>
+<li><p>Browse by location or indicator to choose which signal you are interested in &amp; then export the data for further analysis.</p></li>
+</ul>
+</div>
+<div class="w-50">
+<p><img data-src="gfx/covid_hosp_admissions.jpg"></p>
+</div>
+</div>
+</section>
+<section id="signal-discovery-app---browse-for-more-data" class="slide level2">
+<h2>Signal discovery app - Browse for more data</h2>
+<ul>
+<li><strong>Signal discovery app</strong>: An easy way to find data sources and signals (no programming required).
+<ul>
+<li>Search tool that is a good to browse &amp; find data.</li>
+</ul></li>
+<li><a href="https://delphi.cmu.edu/signals/">Let’s try it out together!</a> <img data-src="gfx/signal_discover_screenshot.jpg">{height=auto, width = 50%}</li>
+</ul>
+</section>
+<section id="interactive-tooling" class="slide level2">
+<h2>Interactive tooling</h2>
+<div style="font-size: 0.8em;">
+<p>Other main way to find data sources and signals in R… Functions to enhance data discovery in <code>epidatr</code>:</p>
+<ul>
+<li><code>avail_endpoints()</code> Function:
+<ul>
+<li>Lists all endpoints with brief descriptions.</li>
+<li>Highlights specific endpoints that cover non-US locations, facilitating targeted searches.</li>
+</ul></li>
+<li><strong>Output Format</strong>: Returns a tibble for easy viewing and analysis of available data sources.</li>
+</ul>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">avail_endpoints</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="using-the-covidcast_epidata-function" class="slide level2">
+<h2>Using the <code>covidcast_epidata()</code> function</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li>In-Depth Data Exploration
+<ul>
+<li><strong>Function Overview</strong>: <code>covidcast_epidata()</code> provides detailed insights into data sources from the COVIDcast endpoint.</li>
+<li><strong>Source List</strong>: Each data source is listed in <code>covid_sources$sources</code>, with associated tibbles describing included signals.</li>
+</ul></li>
+<li>Tab Completion for Ease of Use
+<ul>
+<li><strong>Editor Support</strong>: In RStudio or similar editors, use tab completion to explore:
+<ul>
+<li><strong>Data Sources</strong>: Type <code>covid_sources$source$</code> to view available data sources.</li>
+<li><strong>Signals</strong>: Type <code>covid_sources$signals$</code> to see signal options with autocomplete assistance.</li>
+</ul></li>
+</ul></li>
+<li><strong>Filtering Convenience</strong>: Signal names are prefixed with their respective data source for easier navigation.</li>
+</ul>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>covid_sources <span class="ot">&lt;-</span> <span class="fu">covidcast_epidata</span>()</span>
+<span id="cb5-2"><a></a><span class="fu">head</span>(covid_sources<span class="sc">$</span>sources, <span class="at">n =</span> <span class="dv">2</span>) <span class="co"># head(list, n = 2) will print the first two elements of the list</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="fetching-data---covidcast-main-endpoint" class="slide level2">
+<h2>Fetching data - COVIDcast main endpoint</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>Fetching data from the Delphi Epidata API is simple.</p></li>
+<li><p>The <code>pub_covidcast()</code> function lets us access the <code>covidcast</code> endpoint.</p></li>
+<li><p>We need to specify the following six arguments…</p>
+<ol type="1">
+<li><code>source</code>: Data source name</li>
+<li><code>signals</code>: Signal name</li>
+<li><code>geo_type</code>: Geographic level</li>
+<li><code>time_type</code>: Time resolution</li>
+<li><code>geo_values</code>: Location(s)</li>
+<li><code>time_values</code>: times of interest</li>
+</ol></li>
+<li><p>Let’s give this a try!</p></li>
+</ul>
+</div>
+</section>
+<section id="fetching-data---covidcast-main-endpoint-1" class="slide level2">
+<h2>Fetching data - COVIDcast main endpoint</h2>
+<div style="font-size: 0.8em;">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">library</span>(epidatr)</span>
+<span id="cb6-2"><a></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="co"># Obtain the most up-to-date version of the smoothed covid-like illness (CLI)</span></span>
+<span id="cb7-2"><a></a><span class="co"># signal from the COVID-19 Trends and Impact survey for the US</span></span>
+<span id="cb7-3"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb7-4"><a></a>  <span class="at">source =</span> <span class="st">"fb-survey"</span>,</span>
+<span id="cb7-5"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_cli"</span>,</span>
+<span id="cb7-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"nation"</span>,</span>
+<span id="cb7-7"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb7-8"><a></a>  <span class="at">geo_values =</span> <span class="st">"us"</span>,</span>
+<span id="cb7-9"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20210105</span>, <span class="dv">20210410</span>)</span>
+<span id="cb7-10"><a></a>)</span>
+<span id="cb7-11"><a></a><span class="fu">head</span>(epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, geo_type, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+  geo_value signal      source geo_type time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 us        smoothed_c… fb-su… nation   2021-01-05 2021-01-10     5  1.18 0.0162
+2 us        smoothed_c… fb-su… nation   2021-01-06 2021-01-29    23  1.18 0.0163
+3 us        smoothed_c… fb-su… nation   2021-01-07 2021-01-29    22  1.20 0.0165
+4 us        smoothed_c… fb-su… nation   2021-01-08 2021-01-29    21  1.22 0.0167
+5 us        smoothed_c… fb-su… nation   2021-01-09 2021-01-29    20  1.22 0.0169
+6 us        smoothed_c… fb-su… nation   2021-01-10 2021-01-29    19  1.23 0.0171</code></pre>
+</div>
+</div>
+<p>Here <code>value</code> is the requested signal – in this case, the smoothed estimate of the percentage of people with COVID-like illness, based on the symptom surveys, and <code>stderr</code> is its standard error.</p>
+</div>
+</section>
+<section id="returned-data---covidcast-main-endpoint" class="slide level2">
+<h2>Returned data - COVIDcast main endpoint</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p><code>pub_covidcast()</code> outputs a tibble, where each row represents one observation.</p></li>
+<li><p>Each observation covers a set of events aggregated by time and by geographic region is a record in our database. Each such record includes:</p></li>
+<li><p><code>time_value</code>: time period when the events occurred.</p></li>
+<li><p><code>geo_value</code>: geographic region where the events occurred.</p></li>
+<li><p><code>value</code>: estimated value.</p></li>
+<li><p><code>stderr</code>: standard error of the estimate, usually referring to the sampling error.</p></li>
+<li><p><code>sample_size</code>: number of events used in the estimation.</p></li>
+</ul>
+</div>
+<!--  For example, a number of COVID-19 antigen tests were performed in the state of New York on August 1. The `time_value`ould be August 1, with `geo_value` indicating the state of New York, while the remaining fields would give the estimated test positivity rate (the percentage of tests that were positive for COVID-19), its standard error, and the number of tests used to calculate the estimate. -->
+</section>
+<section id="returned-data---covidcast-main-endpoint-1" class="slide level2">
+<h2>Returned data - COVIDcast main endpoint</h2>
+<p>Crucially—and unlike most other sources of COVID-19 data—our API reports two additional fields with each record:</p>
+<ul>
+<li><p><code>issue</code>: The time period when this observation was published.</p></li>
+<li><p><code>lag</code>: The time delay between when the events occurred and when this observation was published.</p></li>
+<li><p>Meaning that unlike most other sources of COVID data, it tracks the complete revision history of every signal.</p></li>
+<li><p>This allows for historical reconstructions of what information was available at specific times. <strong>More on this soon!</strong></p></li>
+</ul>
+</section>
+<section id="geographic-levels" class="slide level2">
+<h2>Geographic levels</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>The Epidata API makes signals available at different geographic levels, depending on the endpoint</p></li>
+<li><p>For the <code>smoothed_cli</code> signal, we can obtain values for each state</p></li>
+<li><p>Simply change <code>geo_type</code> and <code>geo_values</code> in the previous example to get…</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="co"># Obtain the most up-to-date version of the smoothed covid-like illness (CLI)</span></span>
+<span id="cb9-2"><a></a><span class="co"># signal from the COVID-19 Trends and Impact survey for all states</span></span>
+<span id="cb9-3"><a></a>state_epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb9-4"><a></a>  <span class="at">source =</span> <span class="st">"fb-survey"</span>,</span>
+<span id="cb9-5"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_cli"</span>,</span>
+<span id="cb9-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb9-7"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb9-8"><a></a>  <span class="at">geo_values =</span> <span class="st">"*"</span>,</span>
+<span id="cb9-9"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20210105</span>, <span class="dv">20210410</span>)</span>
+<span id="cb9-10"><a></a>)</span>
+<span id="cb9-11"><a></a><span class="fu">head</span>(state_epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, geo_type, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+  geo_value signal      source geo_type time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 ak        smoothed_c… fb-su… state    2021-01-05 2021-01-10     5 0.747 0.250 
+2 al        smoothed_c… fb-su… state    2021-01-05 2021-01-10     5 2.36  0.187 
+3 ar        smoothed_c… fb-su… state    2021-01-05 2021-01-10     5 1.93  0.200 
+4 az        smoothed_c… fb-su… state    2021-01-05 2021-01-10     5 1.56  0.129 
+5 ca        smoothed_c… fb-su… state    2021-01-05 2021-01-10     5 1.24  0.0542
+6 co        smoothed_c… fb-su… state    2021-01-05 2021-01-10     5 0.934 0.107 </code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="covidcast-main-endpoint---example-query" class="slide level2">
+<h2>COVIDcast main endpoint - Example query</h2>
+<div style="font-size: 0.75em;">
+<p>County <code>geo_values</code> are <a href="https://en.wikipedia.org/wiki/List_of_United_States_FIPS_codes_by_county">FIPS codes</a> and are discussed in the API docs <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast_geography.html">here</a>. The example below is for Orange County, California.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>fb_county_data <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb11-2"><a></a>  <span class="at">source =</span> <span class="st">"fb-survey"</span>,</span>
+<span id="cb11-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_accept_covid_vaccine"</span>,</span>
+<span id="cb11-4"><a></a>  <span class="at">geo_type =</span> <span class="st">"county"</span>,</span>
+<span id="cb11-5"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb11-6"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20201221</span>, <span class="dv">20201225</span>),</span>
+<span id="cb11-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"06059"</span></span>
+<span id="cb11-8"><a></a>)</span>
+<span id="cb11-9"><a></a><span class="fu">head</span>(fb_county_data) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, geo_type, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 9
+  geo_value signal      source geo_type time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 06059     smoothed_a… fb-su… county   2020-12-21 2020-12-22     1  80.9   2.08
+2 06059     smoothed_a… fb-su… county   2020-12-22 2020-12-23     1  78.9   1.76
+3 06059     smoothed_a… fb-su… county   2020-12-23 2020-12-24     1  80.0   1.50
+4 06059     smoothed_a… fb-su… county   2020-12-24 2020-12-25     1  79.3   1.35
+5 06059     smoothed_a… fb-su… county   2020-12-25 2020-12-26     1  80.3   1.21</code></pre>
+</div>
+</div>
+</div>
+<div class="callout callout-important no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>You can use these. See <a href="https://quarto.org/docs/authoring/callouts.html" class="uri">https://quarto.org/docs/authoring/callouts.html</a></p>
+<p>The <code>covidcast</code> endpoint supports <code>*</code> in its time and geo fields. Try to obtain the signal values for all available counties by replacing <code>geo_values = "06059"</code> with <code>geo_values = "*"</code>.</p>
 </div>
 </div>
+</div>
+</section>
+<section id="example-queries---other-endpoints-hospitalizations" class="slide level2">
+<h2>Example queries - Other endpoints <br> Hospitalizations</h2>
+<ol type="1">
+<li><strong>COVID-19 Hospitalization: Facility Lookup</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">pub_covid_hosp_facility_lookup</span>(<span class="at">city =</span> <span class="st">"southlake"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 10
+  hospital_pk state ccn    hospital_name    address city  zip   hospital_subtype
+  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;           
+1 450888      TX    450888 TEXAS HEALTH HA… 1545 E… SOUT… 76092 Short Term      
+2 670132      TX    670132 METHODIST SOUTH… 421 E … SOUT… 76092 Short Term      
+# ℹ 2 more variables: fips_code &lt;chr&gt;, is_metro_micro &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="co"># pub_covid_hosp_facility_lookup(state = "WY")</span></span>
+<span id="cb15-2"><a></a><span class="co"># A non-example (there is no city called New York in Wyoming)</span></span>
+<span id="cb15-3"><a></a><span class="co"># pub_covid_hosp_facility_lookup(state = "WY", city = "New York")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="example-queries---other-endpoints-hospitalizations-1" class="slide level2">
+<h2>Example queries - Other endpoints <br> Hospitalizations</h2>
+<ol start="2" type="1">
+<li><strong>COVID-19 Hospitalization by Facility</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">pub_covid_hosp_facility</span>(</span>
+<span id="cb16-2"><a></a>  <span class="at">hospital_pks =</span> <span class="st">"100075"</span>,</span>
+<span id="cb16-3"><a></a>  <span class="at">collection_weeks =</span> <span class="fu">epirange</span>(<span class="dv">20200101</span>, <span class="dv">20200501</span>)</span>
+<span id="cb16-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="1">
+<li><strong>COVID-19 Hospitalization by State</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">pub_covid_hosp_state_timeseries</span>(<span class="at">states =</span> <span class="st">"MA"</span>, <span class="at">dates =</span> <span class="st">"20200510"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="example-queries---other-endpoints-flu-endpoints" class="slide level2">
+<h2>Example queries - Other endpoints <br> Flu endpoints</h2>
+<ol type="1">
+<li><strong>FluSurv hospitalization data</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">pub_flusurv</span>(<span class="at">locations =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="dv">202001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li><strong>Fluview data</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/fluview.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/fluview.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">pub_fluview</span>(<span class="at">regions =</span> <span class="st">"nat"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201201</span>, <span class="dv">202001</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="1">
+<li><strong>NIDSS Flu</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">pub_nidss_flu</span>(<span class="at">regions =</span> <span class="st">"taipei"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200901</span>, <span class="dv">201301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="example-queries---other-endpoints-dengue-endpoints" class="slide level2">
+<h2>Example queries - Other endpoints <br> Dengue endpoints</h2>
+<ol type="1">
+<li><strong>Delphi’s Dengue Nowcast</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="fu">pub_dengue_nowcast</span>(<span class="at">locations =</span> <span class="st">"pr"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201401</span>, <span class="dv">202301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li><strong>NIDSS dengue</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">pub_nidss_dengue</span>(<span class="at">locations =</span> <span class="st">"taipei"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200301</span>, <span class="dv">201301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="1">
+<li><strong>PAHO Dengue</strong></li>
+</ol>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">pub_paho_dengue</span>(<span class="at">regions =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200201</span>, <span class="dv">202319</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="example-queries---other-endpoints-wikipedia" class="slide level2">
+<h2>Example queries - Other endpoints <br> Wikipedia</h2>
+<p><strong>Wikipedia access</strong></p>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/wiki.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/wiki.html</a></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">pub_wiki</span>(</span>
+<span id="cb24-2"><a></a>  <span class="at">language =</span> <span class="st">"en"</span>,</span>
+<span id="cb24-3"><a></a>  <span class="at">articles =</span> <span class="st">"influenza"</span>,</span>
+<span id="cb24-4"><a></a>  <span class="at">time_type =</span> <span class="st">"week"</span>,</span>
+<span id="cb24-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">202001</span>, <span class="dv">202319</span>)</span>
+<span id="cb24-6"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 64 × 6
+   article   count     total  hour epiweek     value
+   &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;      &lt;dbl&gt;
+ 1 influenza  6516 663604044    -1 2019-12-29   9.82
+ 2 influenza 10244 789885521    -1 2020-01-05  13.0 
+ 3 influenza 10728 783760384    -1 2020-01-12  13.7 
+ 4 influenza 24843 785222292    -1 2020-01-19  31.6 
+ 5 influenza 62850 780291898    -1 2020-01-26  80.5 
+ 6 influenza 41768 778222703    -1 2020-02-02  53.7 
+ 7 influenza 29434 767244708    -1 2020-02-09  38.4 
+ 8 influenza 22714 764074572    -1 2020-02-16  29.7 
+ 9 influenza 88758 767718009    -1 2020-02-23 116.  
+10 influenza 62433 759825311    -1 2020-03-01  82.2 
+# ℹ 54 more rows</code></pre>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Tip - public vs private methods</strong></p>
+</div>
+<div class="callout-content">
+<p>Aside from these public methods we’ve gone through (these start with <code>pub_</code>), there are private methods (these start with <code>pvt_</code> when you type <code>avail_endpoints()</code>). These require private access keys to use (separate from the Delphi Epidata API key). To run these locally, you will need to store these secrets in your <code>.Reviron</code> file, or set them as environmental variables. See <a href="https://cmu-delphi.github.io/epidatr/articles/signal-discovery.html">Private methods</a> for examples of using private endpoints.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="signal-metadata" class="slide level2">
+<h2>Signal metadata</h2>
+<ul>
+<li>Some endpoints provide additional metadata for signals.
+<ul>
+<li><strong>Time Information</strong>: Details on available time frames and last update times.</li>
+<li><strong>Geography Information</strong>: Details on available geography types.</li>
+</ul></li>
+<li>Key Endpoints for Metadata
+<ul>
+<li><code>pub_covidcast_meta()</code>: Access metadata for the COVIDcast endpoint.</li>
+<li><code>pub_fluview_meta()</code>: Get metadata for the FluView endpoint.</li>
+<li><code>pub_meta()</code>: General metadata for the Delphi Epidata API.</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="panel-data" class="title-slide slide level1 center">
+<h1>Panel data</h1>
+
+</section>
+<section id="panel-data-1" class="slide level2">
+<h2>Panel data</h2>
+<div style="font-size: 0.91em;">
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/Panel_data">Panel data</a> or longitudinal data, contain cross-sectional measurements of subjects over time.</p></li>
+<li><p>In table form, panel data is a time index + one or more locations/keys.</p></li>
+<li><p>For example: The estimated percentage of outpatient doctor visits that are COVID-related in MA over 2021 (<a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">docs</a>):</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code>An `epi_df` object, 6 x 3 with metadata:
+* geo_type  = state
+* time_type = day
+* as_of     = 2021-12-17
+
+# A tibble: 6 × 3
+  geo_value time_value percent_cli
+* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;
+1 ma        2021-03-01        3.31
+2 ma        2021-03-02        2.87
+3 ma        2021-03-03        2.95
+4 ma        2021-03-04        3.17
+5 ma        2021-03-05        3.35
+6 ma        2021-03-06        3.38</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="examples-of-panel-data---covid-19-cases" class="slide level2">
+<h2>Examples of panel data - COVID-19 cases</h2>
+<p><strong>JHU CSSE COVID cases in the U.S.</strong> (smoothed with a 7-day trailing average) over the year of the pandemic (April 15, 2020 – April 15, 2021).</p>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html</a></p>
+
+<img data-src="gfx/examples-jhu-csse-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="examples-of-panel-data---chng-cli" class="slide level2">
+<h2>Examples of panel data - CHNG-CLI</h2>
+<p><strong>Change Healthcare COVID-like illness (CHNG-CLI)</strong> reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.</p>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html</a></p>
+
+<img data-src="gfx/examples-chng-cli-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="examples-of-panel-data---chng-covid" class="slide level2">
+<h2>Examples of panel data - CHNG-COVID</h2>
+<p><strong>Change Healthcare COVID (CHNG-COVID)</strong> reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.</p>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html</a></p>
+
+<img data-src="gfx/examples-chng-covid-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="examples-of-panel-data---ctis-cli" class="slide level2">
+<h2>Examples of panel data - CTIS-CLI</h2>
+<p><strong>COVID-19 Trends and Impact Survey CLI (CTIS-CLI)</strong> estimates the percentage of the population with COVID-like illness based on Delphi’s Facebook user surveys.</p>
+<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html</a></p>
+
+<img data-src="gfx/examples-ctis-cli-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="all-together---visualizing-multiple-panel-data-signals" class="slide level2">
+<h2>All together - Visualizing multiple panel data signals</h2>
+<p>Example: gathering different signals + visualizing panel data</p>
+
+<img data-src="gfx/multiple-signals-unscale-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="all-together---visualizing-multiple-panel-data-signals-1" class="slide level2">
+<h2>All together - Visualizing multiple panel data signals</h2>
+<p>Example: gathering different signals + <strong>scaling</strong> + visualizing panel data</p>
+
+<img data-src="gfx/scaled-signals-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>The auxiliary signals track changes in officially reported cases quite well. This is more clear when they have all been placed on the same range as reported cases per 100,000 people.</p>
+</section>
+<section id="covid-19-cases-and-deaths-in-ca-example" class="slide level2">
+<h2>COVID-19 cases and deaths in CA example</h2>
+<ul>
+<li><strong>Takeaway</strong>: Cases appear to strongly correlate with deaths several weeks later.</li>
+</ul>
+
+<img data-src="gfx/plot-ca-cases-deaths-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
+<section>
+<section id="versioned-data" class="title-slide slide level1 center">
+<h1>Versioned data</h1>
+
+</section>
+<section id="intro-to-versioned-data" class="slide level2">
+<h2>Intro to versioned data</h2>
+<ul>
+<li><p>In panel data, we’ve seen that time is indicated by <code>time_value</code>.</p></li>
+<li><p>Now, we add a second time index to indicate the data version…</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;geo_value, time_value, version&gt;
+   geo_value time_value    version percent_cli
+      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;
+1:        ma 2021-03-01 2021-03-04    6.470187
+2:        ma 2021-03-01 2021-03-05    6.207676
+3:        ma 2021-03-01 2021-03-06    5.664716
+4:        ma 2021-03-01 2021-03-07    5.636590
+5:        ma 2021-03-01 2021-03-08    5.665734
+6:        ma 2021-03-01 2021-03-09    5.537332</code></pre>
+</div>
+</div>
+<ul>
+<li>Note that this feature can be indicated in different ways (ex. <code>version</code>, <code>issue</code>, <code>release</code>, <code>as_of</code>).</li>
+</ul>
+</section>
+<section id="versioned-panel-data" class="slide level2">
+<h2>Versioned panel data</h2>
+<p>Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:</p>
+
+<img data-src="gfx/versioned-panel-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="latency-and-revision-in-signals" class="slide level2">
+<h2>Latency and revision in signals</h2>
+<ul>
+<li><strong>Latency</strong> refers to the delay between data collection and availability.</li>
+</ul>
+<p>Example: A signal based on medical insurance claims may take several days to appear but is subject to delays as claims are processed over weeks.</p>
+<ul>
+<li><strong>Revision</strong> occurs when data is updated or corrected after initial publication, often due to new information or late reporting.</li>
+</ul>
+<p>Example: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared.</p>
+</section>
+<section id="latency-and-revision-in-signals---example" class="slide level2">
+<h2>Latency and revision in signals - Example</h2>
+<div style="font-size: 0.9em;">
+<ul>
+<li>Recall the first example of panel &amp; versioned data we’ve seen.</li>
+</ul>
+<!-- on the % of COVID-related outpatient visits in MA during 2021. -->
+<ul>
+<li>This signal is 3 days latent (<code>version</code> - <code>time_value</code>) &amp; clearly undergoes revision over time (ex. consider March 1’s <code>percent_cli</code> across <code>version</code>).</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;geo_value, time_value, version&gt;
+   geo_value time_value    version percent_cli
+      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;
+1:        ma 2021-03-01 2021-03-04    6.470187
+2:        ma 2021-03-01 2021-03-05    6.207676
+3:        ma 2021-03-01 2021-03-06    5.664716
+4:        ma 2021-03-01 2021-03-07    5.636590
+5:        ma 2021-03-01 2021-03-08    5.665734
+6:        ma 2021-03-01 2021-03-09    5.537332</code></pre>
+</div>
+</div>
+<ul>
+<li>The amount of lag in reporting can vary, and not all visits are reported with the same lag.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code>     min median     mean     max
+  3 days 3 days 3.6 days 16 days</code></pre>
+</div>
+</div>
+</div>
+<!-- min_lag: the minimum time to any value  -->
+</section>
+<section id="revisions" class="slide level2">
+<h2>Revisions</h2>
+<p>Many data sources are subject to revisions:</p>
+<ul>
+<li><p>Case and death counts are frequently corrected or adjusted by authorities.</p></li>
+<li><p>Medical claims data can take weeks to be submitted and processed.</p></li>
+</ul>
+<!--* In the previous slide's example because doctor's visits may be reported to the health system partners several days after they occur, these signals are typically available with several days of lag. This means that estimates for a specific day are only available several days later. -->
+<ul>
+<li><p>Lab tests and medical records can be backlogged for a variety of reasons.</p></li>
+<li><p>Surveys are not always completed promptly.</p></li>
+<li><p><strong>Key</strong>: An accurate revision log is crucial for researchers building forecasts of COVID-19 cases or outcomes. <strong>A forecast that is made today can should rely on information we have access to today.</strong></p></li>
+</ul>
+</section>
+<section id="types-of-revisions" class="slide level2">
+<h2>Types of revisions</h2>
+<ol type="1">
+<li><p><strong>Sources that don’t revise</strong> - Ex. Facebook or Google symptoms (provisional and final are the same)</p></li>
+<li><p><strong>Predictable revisions</strong> - Ex. Claims data (CHNG) and public health reports aligned by observation/test, hosp, or death date</p></li>
+<li><p><strong>Revisions that are large and erratic to predict</strong> - Ex. COVID cases and deaths</p></li>
+</ol>
+</section>
+<section id="types-of-revisions---comparison-between-2.-and-3." class="slide level2">
+<h2>Types of revisions - Comparison between 2. and 3.</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li>Revision behavior for two indicators in the HRR containing Charlotte, NC.</li>
+</ul>
+<!-- Each colored line corresponds to the data as reported on a particular date (as of dates varying from 28 September through 19 October). -->
+<ul>
+<li><p><strong>DV-CLI signal (left) </strong> was regularly revised throughout the period, although effects fade farther back.</p></li>
+<li><p><strong>JHU CSSE cases (right) </strong> remain “as reported” on Sept.&nbsp;28, with a spike toward the end of this period, until a major correction is made on Oct.&nbsp;19, which brings this down &amp; affects prior data.</p></li>
+</ul>
+</div>
+
+<img data-src="gfx/figure-1-revisions-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="key-takeaways" class="slide level2">
+<h2>Key takeaways</h2>
+<ul>
+<li><strong>Medical claims revisions:</strong> More systematic and predictable.</li>
+<li><strong>COVID-19 case report revisions:</strong> Erratic and often unpredictable.</li>
+<li>Large spikes or anomalies can occur as:
+<ul>
+<li><strong>Reporting backlogs</strong> are cleared.</li>
+<li><strong>Changes in case definitions</strong> are implemented.</li>
+</ul></li>
+</ul>
+</section>
+<section id="reporting-backlogs---example" class="slide level2">
+<h2>Reporting backlogs - Example</h2>
+<ul>
+<li><p><strong>Left</strong>: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 <strong>backlogged cases</strong> were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.</p></li>
+<li><p><strong>Right</strong>: CTIS estimates of CLI-in-community showed more stable underlying trends.</p></li>
+</ul>
+
+<img data-src="gfx/figure-4-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="reporting-backlogs---key-takeaways" class="slide level2">
+<h2>Reporting backlogs - Key takeaways</h2>
+<ul>
+<li><p><strong>Reporting issues been common across U.S. jurisdictions.</strong></p></li>
+<li><p>For example, audits have regularly discovered <strong>misclassified or unreported cases and deaths</strong>.</p></li>
+<li><p>This underscores the value of <strong>cross-checking data with external sources</strong> not part of the same reporting systems.</p></li>
+</ul>
+</section></section>
+<section>
+<section id="versioning-in-epidatr" class="title-slide slide level1 center">
+<h1>Versioning in <code>epidatr</code></h1>
+
+</section>
+<section id="versioned-data-in-epidatr" class="slide level2">
+<h2>Versioned data in <code>epidatr</code></h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>Epidata API contains comprehensive data record, capturing each signal’s estimate, location, date, and update timeline.</p></li>
+<li><p><strong>Example</strong>: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">Doctor Visits Signal</a> (from the <code>covidcast</code> endpoint)</p>
+<ul>
+<li>Estimates the percentage of outpatient doctor visits that are COVID-related. To give a specific example, let’s consider the estimate for PA on May 1, 2020:</li>
+</ul></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb30-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb30-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb30-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb30-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb30-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb30-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb30-8"><a></a>  <span class="at">as_of =</span> <span class="st">"2020-05-07"</span></span>
+<span id="cb30-9"><a></a>)</span>
+<span id="cb30-10"><a></a><span class="fu">head</span>(epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, time_value, issue, lag, value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 7
+  geo_value signal           source        time_value issue        lag value
+  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;         &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;
+1 pa        smoothed_adj_cli doctor-visits 2020-05-01 2020-05-07     6  2.58</code></pre>
+</div>
+</div>
+<ul>
+<li>Initial estimate was <em>issued</em> on May 7, 2020 (due to delay from aggregation and ingestion by the API).</li>
+</ul>
+</div>
+</section>
+<section id="understanding-data-as-of-a-specific-date" class="slide level2">
+<h2>Understanding data “as of” a specific date</h2>
+<div style="font-size: 0.7em;">
+<ul>
+<li>Requesting Specific Data Versions:
+<ul>
+<li>Use <code>as_of</code>, <code>issues</code>, or <code>lag</code> arguments to specify data availability.</li>
+<li>Only one argument can be used at a time; not all endpoints support all three.</li>
+</ul></li>
+<li>We’ve already used the <code>as_of</code> argument, so let’s try <code>lag</code>
+<ul>
+<li>Example for May 7, 2020 (we should get the same output as before):</li>
+</ul></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb32-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb32-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb32-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb32-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb32-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb32-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb32-8"><a></a>  <span class="at">lag =</span> <span class="dv">6</span></span>
+<span id="cb32-9"><a></a>)</span>
+<span id="cb32-10"><a></a><span class="fu">head</span>(epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+  geo_value signal           source     time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA</code></pre>
+</div>
+</div>
+<p><strong>Result</strong>: Estimate of &lt;3% issued on May 7, 2020.</p>
+</div>
+</section>
+<section id="understanding-data-as-of-a-specific-date-1" class="slide level2">
+<h2>Understanding data “as of” a specific date</h2>
+<div style="font-size: 0.7em;">
+<p><strong>Default behaviour:</strong> If we don’t specify <code>as_of</code>, we get the most recent estimate:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb34-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb34-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb34-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb34-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb34-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb34-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span></span>
+<span id="cb34-8"><a></a>)</span>
+<span id="cb34-9"><a></a><span class="fu">head</span>(epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+  geo_value signal           source     time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  5.97     NA</code></pre>
+</div>
+</div>
+<ul>
+<li>Substantial Estimate Change:
+<ul>
+<li>Estimate increased from &lt;3% to almost 6% after May 7, reflecting new data on visits from May 1.</li>
+</ul></li>
+<li>Critical for Forecasting:
+<ul>
+<li>Accurate backtesting requires using data available at the time of model fitting, not later updates, to ensure valid forecasting results.</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="multiple-issues-of-observations" class="slide level2">
+<h2>Multiple issues of observations</h2>
+<p>By using the <code>issues</code> argument, we can request all issues in a certain time period:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb36-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb36-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb36-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb36-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb36-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb36-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb36-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-15"</span>)</span>
+<span id="cb36-9"><a></a>)</span>
+<span id="cb36-10"><a></a><span class="fu">head</span>(epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  geo_value signal           source     time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA
+2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA
+3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  3.32     NA
+4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  3.59     NA
+5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  3.63     NA
+6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA</code></pre>
+</div>
+</div>
+</section>
+<section id="observations-issued-with-a-specific-lag" class="slide level2">
+<h2>Observations issued with a specific lag</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>We can use the <code>lag</code> argument to request only data reported with a certain lag.</p></li>
+<li><p><strong>Example</strong>: Request a lag of 7 days fetches only data issued exactly 7 days after the corresponding <code>time_value</code>:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb38-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb38-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb38-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb38-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb38-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb38-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb38-8"><a></a>  <span class="at">lag =</span> <span class="dv">7</span></span>
+<span id="cb38-9"><a></a>)</span>
+<span id="cb38-10"><a></a><span class="fu">head</span>(epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 8
+  geo_value signal           source     time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA
+2 pa        smoothed_adj_cli doctor-vi… 2020-05-02 2020-05-09     7  3.23     NA
+3 pa        smoothed_adj_cli doctor-vi… 2020-05-05 2020-05-12     7  2.78     NA
+4 pa        smoothed_adj_cli doctor-vi… 2020-05-06 2020-05-13     7  2.56     NA
+5 pa        smoothed_adj_cli doctor-vi… 2020-05-07 2020-05-14     7  2.19     NA</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="query-results-exclusion" class="slide level2">
+<h2>Query results exclusion</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p>Although the query we ran on the previous slide requested values from May 1 to May 7, May 3 and May 4 were not included due to a 7-day lag.</p></li>
+<li><p>Results for those dates appear only if updates are issued on the corresponding lag day (e.g., May 10).</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb40-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb40-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb40-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb40-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-03"</span>, <span class="st">"2020-05-03"</span>),</span>
+<span id="cb40-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb40-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb40-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-09"</span>, <span class="st">"2020-05-15"</span>)</span>
+<span id="cb40-9"><a></a>)</span>
+<span id="cb40-10"><a></a><span class="fu">head</span>(epidata) <span class="sc">%&gt;%</span> <span class="fu">select</span>(geo_value, signal, source, time_value, issue, lag, value, stderr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 8
+  geo_value signal           source     time_value issue        lag value stderr
+  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-09     6  2.79     NA
+2 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-12     9  3.02     NA
+3 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-13    10  3.04     NA
+4 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-14    11  3.02     NA
+5 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-15    12  3.05     NA</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="main-takeaways" class="slide level2">
+<h2>Main takeaways</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><p><strong>Delphi Epidata:</strong> A one-stop platform for real-time epidemic data, providing aggregated signals for disease tracking and forecasting from diverse sources like health records, mobility patterns, and more.</p></li>
+<li><p><strong>Epidata API:</strong> Open-access API delivering up-to-date, granular epidemiological data + makes all historical versions available.</p></li>
+<li><p><strong>Epidatr:</strong> Enables you to access Delphi’s epidemiological data through R and Python, offering easy installation, powerful API functions, and interactive tools for discovering and analyzing health signals.</p></li>
+<li><p><strong>Versioned Data and Latency:</strong> Panel data captures time-series trends, which are often subject to revision. A standout feature of this API is its inclusion of two critical fields…</p>
+<ol type="1">
+<li><p><code>issue</code>: When the data was published</p></li>
+<li><p><code>lag</code>: The delay between the event and when it was published</p></li>
+</ol>
+<p>to manage latency and revisions for transparency and more accurate analysis.</p></li>
+</ul>
 </div>
 </section>
 <section id="final-slide" class="slide level2 smaller">
@@ -384,10 +1511,10 @@
 <div class="quarto-auto-generated-content">
 <p><img src="gfx/delphi.jpg" class="slide-logo"></p>
 <div class="footer footer-default">
-<p>Title — cmu-delphi/insightnet-workshop-2024</p>
+<p>Day 1 Morning — cmu-delphi/insightnet-workshop-2024</p>
 </div>
 </div>
-</section>
+</section></section>
     </div>
   </div>
 

@@ -447,7 +447,8 @@
 <ul>
 <li>Given <span class="math inline">\(p\)</span> different predictors, we seek <span class="math inline">\((p+1)\)</span> coefficients such that</li>
 </ul>
-<p><span class="math display">\[y_i \approx \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}\]</span> is a good approximation for every <span class="math inline">\(i = 1, \dots, n\)</span>.</p>
+<p><span class="math display">\[y_i \approx \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}\]</span></p>
+<p>is a good approximation for every <span class="math inline">\(i = 1, \dots, n\)</span>.</p>
 </section>
 <section id="linear-regression-with-lagged-predictor" class="slide level2">
 <h2>Linear regression with lagged predictor</h2>
@@ -470,7 +471,8 @@
 <li><p>Can we reasonably <span class="primary">predict COVID deaths 28 days ahead</span> by just using cases today?</p></li>
 <li><p>If we let</p></li>
 </ul>
-<p><span class="math display">\[y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t\]</span> is the following a good model?</p>
+<p><span class="math display">\[y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t\]</span></p>
+<p>is the following a good model?</p>
 <p><span class="math display">\[\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}\]</span></p>
 </section>
 <section id="example-covid-cases-and-deaths-in-california" class="slide level2">
@@ -498,7 +500,7 @@
 <pre><code>An `epi_df` object, 6 x 4 with metadata:
 * geo_type  = state
 * time_type = day
-* as_of     = 2024-10-23 20:07:29.405142
+* as_of     = 2024-10-23 11:07:29.405142
 
 # A tibble: 6 × 4
   geo_value time_value cases deaths
@@ -574,7 +576,8 @@
 </section>
 <section id="error-metrics-mse-and-mae" class="slide level2">
 <h2>Error metrics: MSE and MAE</h2>
-<p><span class="math display">\[MSE = \frac{1}{N} \sum_{t=1}^N (y_{new, t}- \hat y_{new, t})^2\]</span> <span class="math display">\[MAE = \frac{1}{N} \sum_{t=1}^N |y_{new, t}- \hat y_{new, t}|\]</span></p>
+<p><span class="math display">\[MSE = \frac{1}{N} \sum_{t=1}^N (y_{new, t}- \hat y_{new, t})^2\]</span></p>
+<p><span class="math display">\[MAE = \frac{1}{N} \sum_{t=1}^N |y_{new, t}- \hat y_{new, t}|\]</span></p>
 <ul>
 <li><p>MAE gives less importance to extreme errors than MSE.</p></li>
 <li><p><span class="primary">Drawback</span>: both metrics are scale-dependent, so they are not universally interpretable. (For example, if <span class="math inline">\(y\)</span> captures height, MSE and MAE will vary depending on whether we measure in feet or meters.)</p></li>
@@ -632,10 +635,7 @@ yhat2 5.382247 36.08279</code></pre>
 </section>
 <section id="error-metrics-mase" class="slide level2">
 <h2>Error metrics: MASE</h2>
-<p><span class="math display">\[MASE = 100 \times \frac{\frac{1}{N} \sum_{t=1}^N
-|y_{new, t}- \hat y_{new, t}|}
-{\frac{1}{N-1} \sum_{t=2}^N
-|y_{new, t}- y_{new, t-1}|}\]</span></p>
+<p>$$MASE = 100 { <em>{t=2}^N |y</em>{new, t}- y_{new, t-1}|}$$</p>
 <ul>
 <li><p><span class="primary">Advantages</span>:</p>
 <ul>
@@ -1743,7 +1743,9 @@ Coverage   0.9749104   0.8566308</code></pre>
 ℹ First/last version with update: 2020-04-02 / 2022-01-01
 ℹ Versions end: 2022-01-01
 ℹ A preview of the table (93566 rows x 5 columns):
+Key: &lt;geo_value, time_value, version&gt;
        geo_value time_value    version case_rate death_rate
+          &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;     &lt;num&gt;      &lt;num&gt;
     1:        ak 2020-04-01 2020-04-02  1.797489          0
     2:        ak 2020-04-01 2020-05-07  1.777061          0
     3:        ak 2020-04-01 2020-10-28  1.106147          0
@@ -2199,15 +2201,12 @@ Coverage   0.9749104   0.8566308</code></pre>
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          // dispatch for htmlwidgets
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -2218,6 +2217,13 @@ Coverage   0.9749104   0.8566308</code></pre>
               window.jQuery(currentSlide).trigger("shown");
             }
           }
+        }
+
+        // hookup for reveal
+        if (window.Reveal) {
+          window.Reveal.addEventListener("slidechanged", function(event) {
+            fireSlideChanged(event.previousSlide, event.currentSlide);
+          });
         }
 
         // hookup for slidy
