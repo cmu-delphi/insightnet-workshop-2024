@@ -8,9 +8,9 @@ if (!file.exists(file_path)) {
     signals = "confirmed_incidence_prop",
     time_type = "day",
     geo_type = "state",
-    time_values = epirange(20200401, 20220101),
+    time_values = epirange(20200401, 20230401),
     geo_values = states,
-    issues = epirange(20200401, 20220101)) %>%
+    issues = epirange(20200401, 20230401)) %>%
     select(geo_value, time_value, version = issue, case_rate = value) %>%
     arrange(geo_value, time_value) %>%
     as_epi_archive(compactify = FALSE)
@@ -20,9 +20,9 @@ if (!file.exists(file_path)) {
     signals = "deaths_incidence_prop",
     time_type = "day",
     geo_type = "state",
-    time_values = epirange(20200401, 20220101),
+    time_values = epirange(20200401, 20230401),
     geo_values = states,
-    issues = epirange(20200401, 20220101)) %>%
+    issues = epirange(20200401, 20230401)) %>%
     select(geo_value, time_value, version = issue, death_rate = value) %>%
     arrange(geo_value, time_value) %>%
     as_epi_archive(compactify = FALSE)
