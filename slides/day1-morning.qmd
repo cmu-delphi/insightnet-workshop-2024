@@ -75,6 +75,58 @@ library(epipredict)
 
 ![](gfx/web_of_parts.jpg)
 
+## What we provide NEW
+
+<style>
+/* Move the external link icon (square with arrow) to the right of the link */
+a[target="_blank"] {
+  position: relative; /* Make the link a positioned container */
+}
+
+/* Style for the external link icon */
+a[target="_blank"]::after {
+  font-size: 16px;   /* Adjust the size of the icon */
+  position: absolute; /* Position the icon absolutely inside the link */
+  right: 0;           /* Move the icon to the right side of the link */
+  top: 80%;           /* Vertically at bottom */
+}
+</style>
+
+<div style="position: relative; width: 80%; height: auto; margin: 0 auto;">
+  <!-- Embed the JPG image with 80% width -->
+  <img src="gfx/web_of_parts.jpg" width="100%" height="auto">
+  
+  <!-- Create clickable areas on top of the JPG -->
+  <!-- Signal discovery -->
+  <a href="https://delphi.cmu.edu/signals/"
+     style="position: absolute; top: 30px; left: 12px; width: 310px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
+  <a href="https://cmu-delphi.github.io/epiprocess/"
+     style="position: absolute; top: 30px; left: 362px; width: 290px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <a href="https://cmu-delphi.github.io/delphi-tooling-book/"
+     style="position: absolute; top: 30px; left: 682px; width: 270px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+</div>
+
+  <a href="https://cmu-delphi.github.io/delphi-epidata/"
+     style="position: absolute; top: 242px; left: 182px; width: 370px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <a href="https://cmu-delphi.github.io/epidatr/"
+     style="position: absolute; top: 222px; left: 582px; width: 260px; height: 140px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
+  <a href="https://cmu-delphi.github.io/epipredict/"
+     style="position: absolute; top: 222px; left: 866px; width: 170px; height: 150px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
+<a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/"
+     style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
 ## Goals of Delphi Epidata platform and repository
 
 <div style="font-size: 0.9em;">
@@ -190,9 +242,64 @@ The goal is to make epi-surveillance [more nimble, complete, standardized, robus
 * Delphi ILI forecasts, by {state x week}
 </div>
 
-##
+## Severity pyramid
 
-![](gfx/severity_pyramid.jpg){height=75%}
+<div style="position: relative; width: 90%; height: auto; margin: 0 auto;">
+  <!-- Embed the JPG image with 80% width -->
+  <img src="gfx/severity_pyramid.jpg" width="100%" height="auto">
+
+  <!-- Create clickable areas on top of the JPG -->
+  <!-- NCHS mortality -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nchs-mortality.html"
+     style="position: absolute; top: 85px; left: 685px; width: 170px; height: 25px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Hospital admissions - medical insurance claims -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hospital-admissions.html"
+     style="position: absolute; top: 165px; left: 685px; width: 245px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
+  <!-- Hospital reporting -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html"
+     style="position: absolute; top: 215px; left: 685px; width: 188px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Reported cases -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html"
+     style="position: absolute; top: 275px; left: 685px; width: 160px; height: 13px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>  
+  
+  <!-- Quidel -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/quidel.html"
+     style="position: absolute; top: 295px; left: 685px; width: 227px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Doctor visits -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html"
+     style="position: absolute; top: 335px; left: 685px; width: 245px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a> 
+  
+   <!-- Google search trends -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/google-symptoms.html"
+     style="position: absolute; top: 390px; left: 685px; width: 209px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+   <!-- FB survey -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html"
+     style="position: absolute; top: 410px; left: 685px; width: 158px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
+   <!-- SafeGraph -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/safegraph.html"
+     style="position: absolute; top: 530px; left: 685px; width: 175px; height: 18px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
+   <!-- FB survey -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html"
+     style="position: absolute; top: 550px; left: 685px; width: 158px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+  
+</div>
 
 # Epidatr
 
@@ -284,27 +391,42 @@ We provide...
 ## Signal dashboard - For COVID-19 & flu data
 
 ::: flex
-::: w-50
+::: w-40
 
-* The [signal dashboard](https://delphi.cmu.edu/covidcast/) displays a selection of our signals for COVID-19 and the flu.
+* The [signal dashboard](https://delphi.cmu.edu/covidcast/) displays a selection of signals for COVID-19 & flu.
 
-* Includes an "Advanced Data Export" to pull a selected signal & download as a CSV. 
+* Browse by location or indicator to choose which signal you are interested in & then export the data for analysis.
 
-* Browse by location or indicator to choose which signal you are interested in & then export the data for further analysis.
+* Example: Symptom searches on Google in NC
+
+<!-- 
+* Includes "Data Export" to pull a selected signal & download as a CSV. -->
+:::
+::: w-60
+
+<a href="https://delphi.cmu.edu/covidcast/indicator/?date=20240426&region=NC">
+  <img src="gfx/google_symptoms_signal_dash.jpg" alt="Signal Discover Screenshot">
+</a>
 
 :::
-::: w-50
+:::
 
-![](gfx/covid_hosp_admissions.jpg)
-:::
-:::
 
 ## Signal discovery app - Browse for more data
 * **Signal discovery app**: An easy way to find data sources and signals (no programming required).
     +  Search tool that is a good to browse & find data.
 * [Let's try it out together!](https://delphi.cmu.edu/signals/)
-![](gfx/signal_discover_screenshot.jpg){height=auto, width = 50%} 
+<a href="https://delphi.cmu.edu/signals/">
+  <img src="gfx/signal_discover_screenshot.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;">
+</a>
 
+## Example - NCHS Weekly Flu Mortality Data in States
+
+<a href="https://delphi.cmu.edu/signals/">
+  <img src="gfx/signal_discover_screenshot_ex.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;">
+</a>
+
+<!-- To reproduce: Pathogen/Syndrom = flu, Severity pyramid = Dead (top of pyramid), Geo-level = ADM1 (e.g. U.S. states) -->
 
 ## Interactive tooling
 <div style="font-size: 0.8em;">
@@ -398,7 +520,7 @@ Here `value` is the requested signal – in this case, the smoothed estimate of 
 * `stderr`: standard error of the estimate, usually referring to the sampling error.
 * `sample_size`: number of events used in the estimation.
 </div>
-<!--  For example, a number of COVID-19 antigen tests were performed in the state of New York on August 1. The `time_value`ould be August 1, with `geo_value` indicating the state of New York, while the remaining fields would give the estimated test positivity rate (the percentage of tests that were positive for COVID-19), its standard error, and the number of tests used to calculate the estimate. -->
+<!--For example, a number of COVID-19 antigen tests were performed in the state of New York on August 1. The `time_value` would be August 1, with `geo_value` indicating the state of New York, while the remaining fields would give the estimated test positivity rate (the percentage of tests that were positive for COVID-19), its standard error, and the number of tests used to calculate the estimate.-->
 
 ## Returned data - COVIDcast main endpoint 
 Crucially—and unlike most other sources of COVID-19 data—our API reports two additional fields with each record:
@@ -462,9 +584,9 @@ The `covidcast` endpoint supports `*` in its time and geo fields. Try to obtain 
 
 ## Example queries - Other endpoints <br> Hospitalizations
 
-1. **COVID-19 Hospitalization: Facility Lookup**
+**COVID-19 Hospitalization: Facility Lookup**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html> </small>
 
 ```{r hosp-facility-lookup}
 #| echo: true
@@ -477,9 +599,9 @@ pub_covid_hosp_facility_lookup(city = "southlake")
 
 ## Example queries - Other endpoints <br> Hospitalizations
 
-2. **COVID-19 Hospitalization by Facility**
+**COVID-19 Hospitalization by Facility**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html> </small>
 ```{r hosp by facility}
 #| echo: true
 #| results: hide
@@ -489,9 +611,9 @@ pub_covid_hosp_facility(
 )
 ```
 
-3. **COVID-19 Hospitalization by State**
+**COVID-19 Hospitalization by State**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html> </small>
 ```{r hosp-by-state}
 #| echo: true
 #| results: hide
@@ -500,27 +622,27 @@ pub_covid_hosp_state_timeseries(states = "MA", dates = "20200510")
 
 ## Example queries - Other endpoints <br> Flu endpoints
 
-1. **FluSurv hospitalization data**
+**FluSurv hospitalization data**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html> </small>
 ```{r flusurv}
 #| echo: true
 #| results: hide
 pub_flusurv(locations = "ca", epiweeks = 202001)
 ```
 
-2. **Fluview data**
+**Fluview data**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/fluview.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/fluview.html> </small>
 ```{r fluview}
 #| echo: true
 #| results: hide
 pub_fluview(regions = "nat", epiweeks = epirange(201201, 202001))
 ```
 
-3. **NIDSS Flu**
+**NIDSS Flu**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html> </small>
 ```{r NIDSS flu}
 #| echo: true
 #| results: hide
@@ -529,27 +651,27 @@ pub_nidss_flu(regions = "taipei", epiweeks = epirange(200901, 201301))
 
 ## Example queries - Other endpoints <br> Dengue endpoints
 
-1. **Delphi’s Dengue Nowcast**
+**Delphi’s Dengue Nowcast**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html> </small>
 ```{r Delphi-dengue-nowcast}
 #| echo: true
 #| results: hide
 pub_dengue_nowcast(locations = "pr", epiweeks = epirange(201401, 202301))
 ```
 
-2. **NIDSS dengue**
+**NIDSS dengue**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html> </small>
 ```{r NIDSS-dengue}
 #| echo: true
 #| results: hide
 pub_nidss_dengue(locations = "taipei", epiweeks = epirange(200301, 201301))
 ```
 
-3. **PAHO Dengue**
+**PAHO Dengue**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html> </small>
 ```{r PAHO Dengue}
 #| echo: true
 #| results: hide
@@ -560,7 +682,7 @@ pub_paho_dengue(regions = "ca", epiweeks = epirange(200201, 202319))
 
 **Wikipedia access**
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/wiki.html>
+<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/wiki.html> </small>
 ```{r pub wiki}
 #| echo: true
 pub_wiki(
@@ -782,8 +904,11 @@ ggplot(rescaled_df, aes(x = time_value, y = value, color = signal)) +
 
 #ggsave("fig_covidcast_signals/time_trends_national.pdf", width = 5, height = 3)
 ```
+<div style="text-align: center;">
+<small>[Figure 1 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
+</div>
 
-The auxiliary signals track changes in officially reported cases quite well. This is more clear when they have all been placed on the same range as reported cases per 100,000 people.
+**Takeaway:** The auxiliary signals track changes in the official reported cases quite well. This is clearer when they have all been placed on the same range as reported cases per 100,000 people.
  
 ## COVID-19 cases and deaths in CA example
 * **Takeaway**: Cases appear to strongly correlate with deaths several weeks later.
@@ -863,6 +988,9 @@ dv_as_of %>%
 
 #ggsave("fig_covidcast_signals/dv_as_of.pdf", width = 5, height = 4)
 ```
+<div style="text-align: center;">
+<small>[Figure 5 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
+</div>
 
 ## Latency and revision in signals
 
@@ -880,14 +1008,14 @@ Example: COVID-19 case reports are revised frequently after initial publication 
 
 <!-- on the % of COVID-related outpatient visits in MA during 2021. -->
 
-* This signal is 3 days latent (`version` - `time_value`) & clearly undergoes revision over time (ex. consider March 1's `percent_cli` across `version`).
+* This signal is 3 days **latent** (`version` - `time_value`) & clearly undergoes **revision** over time (ex. consider March 1's `percent_cli` across `version`).
 
 ```{r latency-ma-smooth-adj-cli}
 #| echo: false
 head(x$DT)
 ```
 
-* The amount of lag in reporting can vary, and not all visits are reported with the same lag.
+* The amount of **lag in reporting** can vary, and not all visits are reported with the same lag:
 
 ```{r latency-ma-smooth-adj-cli-revision-summary}
 #| echo: false
@@ -896,7 +1024,9 @@ cat(head(output, 2), sep = "\n")
 ```
 </div>
 
-<!-- min_lag: the minimum time to any value  -->
+<!-- min_lag: the minimum time to any value min(as.integer(version) - as.integer(time_value)  -->
+<!-- max_lag: the amount of time until the final (new) version -->
+<!-- revision_summary computes some basic statistics about the revision behavior of an archive, returning a tibble summarizing the revisions per time_value+epi_key features. -->
 
 ## Revisions
 Many data sources are subject to revisions:
@@ -922,7 +1052,7 @@ Many data sources are subject to revisions:
 1. **Revisions that are large and erratic to predict** - Ex. COVID cases and deaths 
 
 ## Types of revisions - Comparison between 2. and 3.
-<div style="font-size: 0.8em;">
+<div style="font-size: 0.75em;">
 * Revision behavior for two indicators in the HRR containing Charlotte, NC.
 
 <!-- Each colored line corresponds to the data as reported on a particular date (as of dates varying from 28 September through 19 October). -->
@@ -1019,7 +1149,9 @@ grid_arrange_shared_legend <- function(...,
 p3 <- grid_arrange_shared_legend(p1, p2)
 invisible(p3)
 ```
-
+<div style="text-align: center;">
+<small>[Figure 1 from McDonald et al. (2021)](https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118)</small>
+</div>
 
 ## Key takeaways
 
@@ -1030,10 +1162,11 @@ invisible(p3)
     + **Changes in case definitions** are implemented.
 
 ## Reporting backlogs - Example
-
+<div style="font-size: 0.8em;">
 * **Left**: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 **backlogged cases** were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.
 
 * **Right**: CTIS estimates of CLI-in-community showed more stable underlying trends.
+</div>
 
 ```{r figure-4}
 # |echo: false
@@ -1082,6 +1215,9 @@ invisible(g)
 
 # ggsave("../paper/fig/bexar_compare.pdf", g, width = 6, height = 4)
 ```
+<div style="text-align: center;">
+<small>[Figure 4 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
+</div>
 
 ## Reporting backlogs - Key takeaways
 
@@ -1120,7 +1256,7 @@ head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, valu
 </div>
 
 ## Understanding data "as of" a specific date
-<div style="font-size: 0.7em;">
+<div style="font-size: 0.8em;">
 * Requesting Specific Data Versions:
     + Use `as_of`, `issues`, or `lag` arguments to specify data availability.
     + Only one argument can be used at a time; not all endpoints support all three.
@@ -1145,7 +1281,7 @@ head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, valu
 </div>
 
 ## Understanding data "as of" a specific date
-<div style="font-size: 0.7em;">
+<div style="font-size: 0.8em;">
 **Default behaviour:** If we don't specify `as_of`, we get the most recent estimate:
 
 ```{r pa-may-1st-most-recent}
