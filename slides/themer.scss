@@ -6,21 +6,26 @@
 // @import url("https://fonts.googleapis.com/css2?family=EB+Garamond");
 // @import url("https://fonts.googleapis.com/css2?family=Commissioner");
 
-$primary: #a8201a;
-$secondary: #f9c80e;
-$tertiary: #2a76dd;
-$fourth-colour: #311847;
+$primary: #002676;
+$secondary: #941120;
+$tertiary: #f9c80e;
+$fourth-colour: #45ba6c;
+
 // $font-family-sans-serif:  "Commissioner", "Source Sans Pro", Helvetica, sans-serif, !default;
 // $presentation-font-size-root: 40px;
 $body-bg: #fefefe;
 $presentation-heading-color: $primary;
 $presentation-font-size-root: 36px;
 
-$link-color: $primary;
+$link-color: $secondary;
 
 /*-- scss:rules --*/
 
-.primary {color: $primary;}
-.secondary {color: $secondary;}
-.tertiary {color: $tertiary;}
+.primary {color: $secondary;}
+.secondary {color: $tertiary;}
+.tertiary {color: $primary;}
 .fourth-colour {color: $fourth-colour;}
+
+.reveal code {
+  color: #1E90FF;
+}
