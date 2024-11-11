@@ -2,21 +2,18 @@
 toc: false
 ---
 
-::: column-page
-::: {layout=[45,10,45]}
-::: {#first-column}
+::: {.grid}
 
-<br><br><br>
 
-![](assets/img/cover-art.svg)
+::: {.g-col-12 .g-col-lg-6 .mr-3}
 
-:::
+<br><br>
 
-::: {#second-column}
+![](assets/img/cover-art.svg){fig-align="center"}
 
 :::
 
-::: {#third-column}
+::: {.g-col-12 .g-col-lg-6 .mr-big .ml-big}
 
 ## Schedule
 
@@ -36,5 +33,6 @@ Short description
 * Rachel Lobay
 
 :::
-:::
+
+
 :::
