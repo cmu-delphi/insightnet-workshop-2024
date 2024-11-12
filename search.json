@@ -518,6 +518,377 @@
     "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting and Time-Series Models — cmu-delphi/insightnet-workshop-2024"
   },
   {
+    "objectID": "slides/day1-afternoon.html#section",
+    "href": "slides/day1-afternoon.html#section",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Explore, clean & transform data",
+    "text": "Explore, clean & transform data"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#outline",
+    "href": "slides/day1-afternoon.html#outline",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Outline",
+    "text": "Outline\n\nEssentials of dplyr and tidyr\nEpiverse software ecosystem\nPanel and versioned data in the epiverse\nBasic Nowcasting using epiprocess\nMotivating case study"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#down-with-spreadsheets-for-data-manipulation",
+    "href": "slides/day1-afternoon.html#down-with-spreadsheets-for-data-manipulation",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Down with Spreadsheets for Data Manipulation",
+    "text": "Down with Spreadsheets for Data Manipulation\n\nSpreadsheets make it difficult to rerun analyses consistently.\nUsing R (and dplyr) allows for:\n\nReproducibility\nEase of modification\n\nRecommendation: Avoid manual edits; instead, use code for transformations."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#introduction-to-dplyr",
+    "href": "slides/day1-afternoon.html#introduction-to-dplyr",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Introduction to dplyr",
+    "text": "Introduction to dplyr\n\ndplyr is a powerful package in R for data manipulation.\nIt is part of the tidyverse, which includes a collection of packages designed to work together.\nWe focus on basic operations like selecting and filtering data.\nMake sure to load the necessary libraries before using dplyr."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#meet-the-palmers",
+    "href": "slides/day1-afternoon.html#meet-the-palmers",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Meet the Palmers",
+    "text": "Meet the Palmers\n\nIllustration from the palmerpenguins website"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#working-with-the-palmerpenguins-dataset",
+    "href": "slides/day1-afternoon.html#working-with-the-palmerpenguins-dataset",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Working with the palmerpenguins Dataset",
+    "text": "Working with the palmerpenguins Dataset\n\nThe palmerpenguins dataset is included in the palmerpenguins package.\nLoad both the tidyverse and palmerpenguins libraries to access and explore the dataset.\nThe dataset includes measurements of penguins such as species, bill length, flipper length, and body mass.\n\n\n\n# A tibble: 344 × 8\n   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n 1 Adelie  Torgersen           39.1          18.7               181        3750\n 2 Adelie  Torgersen           39.5          17.4               186        3800\n 3 Adelie  Torgersen           40.3          18                 195        3250\n 4 Adelie  Torgersen           NA            NA                  NA          NA\n 5 Adelie  Torgersen           36.7          19.3               193        3450\n 6 Adelie  Torgersen           39.3          20.6               190        3650\n 7 Adelie  Torgersen           38.9          17.8               181        3625\n 8 Adelie  Torgersen           39.2          19.6               195        4675\n 9 Adelie  Torgersen           34.1          18.1               193        3475\n10 Adelie  Torgersen           42            20.2               190        4250\n# ℹ 334 more rows\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#ways-to-inspect-the-dataset",
+    "href": "slides/day1-afternoon.html#ways-to-inspect-the-dataset",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Ways to Inspect the Dataset",
+    "text": "Ways to Inspect the Dataset\n\nUse head() to view the first 6 row of the data (tail() to view the last 6 rows)\n\n\nhead(penguins)  # First 6 rows\n\n# A tibble: 6 × 8\n  species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n  &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n1 Adelie  Torgersen           39.1          18.7               181        3750\n2 Adelie  Torgersen           39.5          17.4               186        3800\n3 Adelie  Torgersen           40.3          18                 195        3250\n4 Adelie  Torgersen           NA            NA                  NA          NA\n5 Adelie  Torgersen           36.7          19.3               193        3450\n6 Adelie  Torgersen           39.3          20.6               190        3650\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;\n\n#tail(penguins)  # Last 6 rows"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#ways-to-inspect-the-dataset-1",
+    "href": "slides/day1-afternoon.html#ways-to-inspect-the-dataset-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Ways to Inspect the Dataset",
+    "text": "Ways to Inspect the Dataset\n\nglimpse() to get a compact overview of the dataset.\n\n\nglimpse(penguins)\n\nRows: 344\nColumns: 8\n$ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel…\n$ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse…\n$ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, …\n$ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, …\n$ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186…\n$ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, …\n$ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male…\n$ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#creating-tibbles",
+    "href": "slides/day1-afternoon.html#creating-tibbles",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating Tibbles",
+    "text": "Creating Tibbles\n\nTibbles: Modern data frames with enhanced features.\nRows represent observations (or cases).\nColumns represent variables (or features).\nYou can create tibbles manually using the tibble() function.\n\n\ntibble(x = letters, y = 1:26)\n\n# A tibble: 26 × 2\n   x         y\n   &lt;chr&gt; &lt;int&gt;\n 1 a         1\n 2 b         2\n 3 c         3\n 4 d         4\n 5 e         5\n 6 f         6\n 7 g         7\n 8 h         8\n 9 i         9\n10 j        10\n# ℹ 16 more rows"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#selecting-columns-with-select",
+    "href": "slides/day1-afternoon.html#selecting-columns-with-select",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Selecting Columns with select()",
+    "text": "Selecting Columns with select()\n\nThe select() function is used to pick specific columns from your dataset.\n\n\nselect(penguins, species, body_mass_g)  # Select the 'species' and 'body_mass_g' columns\n\n# A tibble: 344 × 2\n   species body_mass_g\n   &lt;fct&gt;         &lt;int&gt;\n 1 Adelie         3750\n 2 Adelie         3800\n 3 Adelie         3250\n 4 Adelie           NA\n 5 Adelie         3450\n 6 Adelie         3650\n 7 Adelie         3625\n 8 Adelie         4675\n 9 Adelie         3475\n10 Adelie         4250\n# ℹ 334 more rows"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#selecting-columns-with-select-1",
+    "href": "slides/day1-afternoon.html#selecting-columns-with-select-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Selecting Columns with select()",
+    "text": "Selecting Columns with select()\n\nYou can exclude columns by prefixing the column names with a minus sign -.\n\n\nselect(penguins, -species)  # Exclude the 'species' column from the dataset\n\n# A tibble: 344 × 7\n   island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g sex    year\n   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt; &lt;int&gt;\n 1 Torge…           39.1          18.7               181        3750 male   2007\n 2 Torge…           39.5          17.4               186        3800 fema…  2007\n 3 Torge…           40.3          18                 195        3250 fema…  2007\n 4 Torge…           NA            NA                  NA          NA &lt;NA&gt;   2007\n 5 Torge…           36.7          19.3               193        3450 fema…  2007\n 6 Torge…           39.3          20.6               190        3650 male   2007\n 7 Torge…           38.9          17.8               181        3625 fema…  2007\n 8 Torge…           39.2          19.6               195        4675 male   2007\n 9 Torge…           34.1          18.1               193        3475 &lt;NA&gt;   2007\n10 Torge…           42            20.2               190        4250 &lt;NA&gt;   2007\n# ℹ 334 more rows\n\n\n\nSo, this is useful when you want to keep only certain columns or remove unnecessary ones."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#extracting-columns-with-pull",
+    "href": "slides/day1-afternoon.html#extracting-columns-with-pull",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Extracting Columns with pull()",
+    "text": "Extracting Columns with pull()\n\npull(): Extract a column as a vector.\nLet’s try this with the species column…\n\n\npull(penguins, species)\n\n  [1] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n  [8] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [15] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [22] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [29] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [36] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [43] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [50] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [57] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [64] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [71] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [78] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [85] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [92] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [99] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[106] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[113] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[120] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[127] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[134] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[141] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[148] Adelie    Adelie    Adelie    Adelie    Adelie    Gentoo    Gentoo   \n[155] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[162] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[169] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[176] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[183] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[190] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[197] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[204] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[211] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[218] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[225] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[232] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[239] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[246] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[253] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[260] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[267] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[274] Gentoo    Gentoo    Gentoo    Chinstrap Chinstrap Chinstrap Chinstrap\n[281] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[288] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[295] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[302] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[309] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[316] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[323] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[330] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[337] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[344] Chinstrap\nLevels: Adelie Chinstrap Gentoo"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#filtering-rows-with-filter",
+    "href": "slides/day1-afternoon.html#filtering-rows-with-filter",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Filtering Rows with filter()",
+    "text": "Filtering Rows with filter()\n\nThe filter() function allows you to select rows that meet specific conditions.\nConditions can involve column values, such as selecting only “Gentoo” penguins or filtering based on measurements like flipper length.\nThis enables you to narrow down your dataset to focus on relevant data.\n\n\nfilter(penguins, species == \"Gentoo\", flipper_length_mm &lt; 208)  # Filter Gentoo penguins with flipper length &lt; 208mm\n\n# A tibble: 2 × 8\n  species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n  &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n1 Gentoo  Biscoe           45.1          14.5               207        5050\n2 Gentoo  Biscoe           48.4          14.4               203        4625\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#combining-select-and-filter-functions",
+    "href": "slides/day1-afternoon.html#combining-select-and-filter-functions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Combining select() and filter() Functions",
+    "text": "Combining select() and filter() Functions\n\nYou can combine select() and filter() functions to refine the dataset further.\nUse select() to choose columns and filter() to narrow rows based on conditions.\nThis helps in extracting the exact data needed for analysis.\n\n\nselect(filter(penguins, species == \"Gentoo\", flipper_length_mm &lt; 208), species, flipper_length_mm)\n\n# A tibble: 2 × 2\n  species flipper_length_mm\n  &lt;fct&gt;               &lt;int&gt;\n1 Gentoo                207\n2 Gentoo                203"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#using-the-pipe-operator",
+    "href": "slides/day1-afternoon.html#using-the-pipe-operator",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Using the Pipe Operator %>%",
+    "text": "Using the Pipe Operator %&gt;%\n\nThe pipe operator (%&gt;%) makes code more readable by chaining multiple operations together.\nThe output of one function is automatically passed to the next function.\nThis allows you to perform multiple steps (e.g., select() followed by filter()) in a clear and concise manner.\n\n\n# This code reads more like poetry!\npenguins %&gt;% \n  select(species, flipper_length_mm) %&gt;%\n  filter(species == \"Gentoo\", flipper_length_mm &lt; 208)\n\n# A tibble: 2 × 2\n  species flipper_length_mm\n  &lt;fct&gt;               &lt;int&gt;\n1 Gentoo                207\n2 Gentoo                203"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#key-practices-in-dplyr",
+    "href": "slides/day1-afternoon.html#key-practices-in-dplyr",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Key Practices in dplyr",
+    "text": "Key Practices in dplyr\n\nUse tibbles for easier data handling.\nUse select() and filter() for data manipulation.\nUse pull() to extract columns as vectors.\nUse head(), tail(), and glimpse() for quick data inspection.\nChain functions with %&gt;% for cleaner code."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#grouping-data-with-group_by",
+    "href": "slides/day1-afternoon.html#grouping-data-with-group_by",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Grouping Data with group_by()",
+    "text": "Grouping Data with group_by()\n\nUse group_by() to group data by one or more columns.\nAllows performing operations on specific groups of data.\n\n\npenguins %&gt;%\n  group_by(species) %&gt;%\n  filter(body_mass_g == min(body_mass_g, na.rm = TRUE))\n\n# A tibble: 4 × 8\n# Groups:   species [3]\n  species   island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n  &lt;fct&gt;     &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n1 Adelie    Biscoe           36.5          16.6               181        2850\n2 Adelie    Biscoe           36.4          17.1               184        2850\n3 Gentoo    Biscoe           42.7          13.7               208        3950\n4 Chinstrap Dream            46.9          16.6               192        2700\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#penguin-bill-length-and-depth",
+    "href": "slides/day1-afternoon.html#penguin-bill-length-and-depth",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Penguin bill length and depth",
+    "text": "Penguin bill length and depth\n\n\nIllustration from the palmerpenguins website"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#creating-new-columns-with-mutate",
+    "href": "slides/day1-afternoon.html#creating-new-columns-with-mutate",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating New Columns with mutate()",
+    "text": "Creating New Columns with mutate()\n\nmutate() is used to create new columns.\nPerform calculations using existing columns and assign to new columns.\n\n\npenguins %&gt;%\n  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm) %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, sex)) # too many cols to print\n\n# A tibble: 344 × 6\n   species island    bill_length_mm bill_depth_mm  year bill_size_mm2\n   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;         &lt;dbl&gt;\n 1 Adelie  Torgersen           39.1          18.7  2007          731.\n 2 Adelie  Torgersen           39.5          17.4  2007          687.\n 3 Adelie  Torgersen           40.3          18    2007          725.\n 4 Adelie  Torgersen           NA            NA    2007           NA \n 5 Adelie  Torgersen           36.7          19.3  2007          708.\n 6 Adelie  Torgersen           39.3          20.6  2007          810.\n 7 Adelie  Torgersen           38.9          17.8  2007          692.\n 8 Adelie  Torgersen           39.2          19.6  2007          768.\n 9 Adelie  Torgersen           34.1          18.1  2007          617.\n10 Adelie  Torgersen           42            20.2  2007          848.\n# ℹ 334 more rows"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#creating-new-columns-with-mutate-1",
+    "href": "slides/day1-afternoon.html#creating-new-columns-with-mutate-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating New Columns with mutate()",
+    "text": "Creating New Columns with mutate()\n\nmutate() can create multiple new columns in one step.\nLogical comparisons (e.g., sex == \"male\") can be used within mutate().\n\n\npenguins %&gt;%\n  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm, \n         TF = sex == \"male\") %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, year)) \n\n# A tibble: 344 × 7\n   species island    bill_length_mm bill_depth_mm sex    bill_size_mm2 TF   \n   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;fct&gt;          &lt;dbl&gt; &lt;lgl&gt;\n 1 Adelie  Torgersen           39.1          18.7 male            731. TRUE \n 2 Adelie  Torgersen           39.5          17.4 female          687. FALSE\n 3 Adelie  Torgersen           40.3          18   female          725. FALSE\n 4 Adelie  Torgersen           NA            NA   &lt;NA&gt;             NA  NA   \n 5 Adelie  Torgersen           36.7          19.3 female          708. FALSE\n 6 Adelie  Torgersen           39.3          20.6 male            810. TRUE \n 7 Adelie  Torgersen           38.9          17.8 female          692. FALSE\n 8 Adelie  Torgersen           39.2          19.6 male            768. TRUE \n 9 Adelie  Torgersen           34.1          18.1 &lt;NA&gt;            617. NA   \n10 Adelie  Torgersen           42            20.2 &lt;NA&gt;            848. NA   \n# ℹ 334 more rows"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#combining-group_by-and-mutate",
+    "href": "slides/day1-afternoon.html#combining-group_by-and-mutate",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Combining group_by() and mutate()",
+    "text": "Combining group_by() and mutate()\n\nFirst, group data using group_by().\nThen, use drop_na() from tidyr to exclude rows with missing values.\nFinally, mutate to perform calculations for each group.\n\n\npenguins %&gt;%\n  drop_na() %&gt;% # Remove all non-complete rows\n  group_by(species) %&gt;%\n  mutate(body_mass_median = median(body_mass_g)) %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, sex)) %&gt;% \n  head()\n\n# A tibble: 6 × 6\n# Groups:   species [1]\n  species island    bill_length_mm bill_depth_mm  year body_mass_median\n  &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;            &lt;dbl&gt;\n1 Adelie  Torgersen           39.1          18.7  2007             3700\n2 Adelie  Torgersen           39.5          17.4  2007             3700\n3 Adelie  Torgersen           40.3          18    2007             3700\n4 Adelie  Torgersen           36.7          19.3  2007             3700\n5 Adelie  Torgersen           39.3          20.6  2007             3700\n6 Adelie  Torgersen           38.9          17.8  2007             3700"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#conditional-calculations-in-mutate-with-if_else",
+    "href": "slides/day1-afternoon.html#conditional-calculations-in-mutate-with-if_else",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Conditional Calculations in mutate() with if_else()",
+    "text": "Conditional Calculations in mutate() with if_else()\n\nif_else() allows conditional logic within mutate().\nPerform different operations depending on conditions, like “big” or “small.”\n\n\nt &lt;- 800\npenguins %&gt;%\n  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm, \n         TF = sex == \"male\",\n         bill_size_binary = if_else(bill_size_mm2 &gt; t, \"big\", \"small\")) %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, sex)) %&gt;% # too many cols to print\n  head()\n\n# A tibble: 6 × 8\n  species island    bill_length_mm bill_depth_mm  year bill_size_mm2 TF   \n  &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;         &lt;dbl&gt; &lt;lgl&gt;\n1 Adelie  Torgersen           39.1          18.7  2007          731. TRUE \n2 Adelie  Torgersen           39.5          17.4  2007          687. FALSE\n3 Adelie  Torgersen           40.3          18    2007          725. FALSE\n4 Adelie  Torgersen           NA            NA    2007           NA  NA   \n5 Adelie  Torgersen           36.7          19.3  2007          708. FALSE\n6 Adelie  Torgersen           39.3          20.6  2007          810. TRUE \n# ℹ 1 more variable: bill_size_binary &lt;chr&gt;"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#summarizing-data-with-summarise",
+    "href": "slides/day1-afternoon.html#summarizing-data-with-summarise",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Summarizing Data with summarise()",
+    "text": "Summarizing Data with summarise()\n\nsummarise() reduces data to summary statistics (e.g., mean, median).\nTypically used after group_by() to summarize each group.\n\n\npenguins %&gt;%\n  drop_na() %&gt;%\n  group_by(species) %&gt;%\n  summarise(body_mass_median = median(body_mass_g))\n\n# A tibble: 3 × 2\n  species   body_mass_median\n  &lt;fct&gt;                &lt;dbl&gt;\n1 Adelie                3700\n2 Chinstrap             3700\n3 Gentoo                5050"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#using-summarise-with-multiple-calculations",
+    "href": "slides/day1-afternoon.html#using-summarise-with-multiple-calculations",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Using summarise() with Multiple Calculations",
+    "text": "Using summarise() with Multiple Calculations\n\nUse summarise() to calculate multiple summary statistics at once.\nInclude multiple columns and functions in a single call.\n\n\npenguins %&gt;%\n  drop_na() %&gt;%\n  group_by(species) %&gt;%\n  summarise(body_mass_median = median(body_mass_g), \n            bill_depth_median = median(bill_depth_mm),\n            flipper_length_median = median(flipper_length_mm),\n            bill_length_mm = median(bill_length_mm))\n\n# A tibble: 3 × 5\n  species   body_mass_median bill_depth_median flipper_length_median\n  &lt;fct&gt;                &lt;dbl&gt;             &lt;dbl&gt;                 &lt;dbl&gt;\n1 Adelie                3700              18.4                   190\n2 Chinstrap             3700              18.4                   196\n3 Gentoo                5050              15                     216\n# ℹ 1 more variable: bill_length_mm &lt;dbl&gt;\n\n\n\nYikes! This can get long. Is there a way to condense this?"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#using-across-to-apply-functions-to-multiple-columns-in-one-swoop",
+    "href": "slides/day1-afternoon.html#using-across-to-apply-functions-to-multiple-columns-in-one-swoop",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Using across() to Apply Functions to Multiple Columns in one Swoop",
+    "text": "Using across() to Apply Functions to Multiple Columns in one Swoop\n\nacross() applies a function (e.g., median) to multiple columns.\nIt’s especially useful for summarizing multiple numeric columns in one step.\n\n\npenguins %&gt;%\n  drop_na() %&gt;% \n  group_by(species) %&gt;%\n  summarise(across(where(is.numeric), median))\n\n# A tibble: 3 × 6\n  species   bill_length_mm bill_depth_mm flipper_length_mm body_mass_g  year\n  &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;\n1 Adelie              38.8          18.4               190        3700  2008\n2 Chinstrap           49.6          18.4               196        3700  2008\n3 Gentoo              47.4          15                 216        5050  2008"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#using-count-to-aggregate-data",
+    "href": "slides/day1-afternoon.html#using-count-to-aggregate-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Using count() to Aggregate Data",
+    "text": "Using count() to Aggregate Data\n\ncount() is a shortcut for grouping and summarizing the data:\n\nFor example, if we want to count the number of penguins by species, then\n\npenguins_count &lt;- penguins %&gt;%\n  group_by(species) %&gt;%\n  summarize(count = n())\n\nis equivalent to\n\npenguins_count &lt;- penguins %&gt;%\n  count(species)\n\npenguins_count # Let's see what the counts are.\n\n# A tibble: 3 × 2\n  species       n\n  &lt;fct&gt;     &lt;int&gt;\n1 Adelie      152\n2 Chinstrap    68\n3 Gentoo      124"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#tidy-data",
+    "href": "slides/day1-afternoon.html#tidy-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidy Data",
+    "text": "Tidy Data\n\n“Happy families are all alike; every unhappy family is unhappy in its own way.” — Leo Tolstoy\n\n\nTidy datasets are like happy families: consistent, standardized, and easy to work with.\n\nMessy datasets are like unhappy families: each one messy in its own unique way.\nIn this section:\nWe’ll define what makes data tidy and how to transform between the tidy and messy formats."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#what-is-tidy-data",
+    "href": "slides/day1-afternoon.html#what-is-tidy-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "What is Tidy Data?",
+    "text": "What is Tidy Data?\n\nTidy data follows a consistent structure: each row represents one observation, and each column represents one variable.\n\n\n\n# Simple example of messy data (wide format)\npenguins_wide &lt;- tibble(\n  island = c(\"Biscoe\", \"Biscoe\", \"Dream\"),\n  year = c(2007, 2008, 2007),\n  Adelie = c(10, 18, 20),\n  Gentoo = c(34, 46, 0)\n)\npenguins_wide\n\n# A tibble: 3 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer",
+    "href": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidying Messy Data with pivot_longer()",
+    "text": "Tidying Messy Data with pivot_longer()\n\nTo turn messy data into tidy data, we often use the tidyr package in the tidyverse.\nUse pivot_longer() to convert data from wide format (multiple columns for the same variable) to long format (one column per variable).\nThis makes it easier to perform group-based calculations or create visualizations.\n\n\n\n# A tibble: 6 × 4\n  island  year species count\n  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;\n1 Biscoe  2007 Adelie     10\n2 Biscoe  2007 Gentoo     34\n3 Biscoe  2008 Adelie     18\n4 Biscoe  2008 Gentoo     46\n5 Dream   2007 Adelie     20\n6 Dream   2007 Gentoo      0"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#making-data-wider-with-pivot_wider",
+    "href": "slides/day1-afternoon.html#making-data-wider-with-pivot_wider",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Making Data Wider with pivot_wider()",
+    "text": "Making Data Wider with pivot_wider()\n\nSometimes, you need to convert data from long format to wide format using pivot_wider().\nThis can be useful when you want to separate variables into individual columns.\nLet’s try converting penguins_tidy back to penguins_wide!\n\n\n# Pivoting long data back to wide format\npenguins_wide_back &lt;- penguins_tidy %&gt;%\n  pivot_wider(names_from = species, values_from = count)\n\npenguins_wide_back\n\n# A tibble: 3 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#complete-and-fill-to-handle-missing-data",
+    "href": "slides/day1-afternoon.html#complete-and-fill-to-handle-missing-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "complete() and fill() to Handle Missing Data",
+    "text": "complete() and fill() to Handle Missing Data\n\n\ncomplete(): Adds missing rows for combinations of specified variables.\nfill(): Fills missing values in columns, typically from previous or next available values (default is LOCF).\n\n\n\n# First, use complete() to add missing year (2008 for Dream)\npenguins_complete &lt;- penguins_wide %&gt;%\n  complete(island, year)\npenguins_complete\n\n# A tibble: 4 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0\n4 Dream   2008     NA     NA\n\n\n\n# Then, use fill() to fill the missing penguin counts\npenguins_complete %&gt;%\n  fill(Adelie, Gentoo)\n\n# A tibble: 4 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0\n4 Dream   2008     20      0"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#introduction-to-joins-in-dplyr",
+    "href": "slides/day1-afternoon.html#introduction-to-joins-in-dplyr",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Introduction to Joins in dplyr",
+    "text": "Introduction to Joins in dplyr\n\n\nJoining datasets is a powerful tool for combining info. from multiple sources.\nIn R, dplyr provides several functions to perform different types of joins.\nWe’ll demonstrate joining penguins_complete (our penguin counts dataset) with island_info (dataset containing additional info. about the islands).\n\n\n# Island information dataset\nisland_info &lt;- tibble(\n  island = c(\"Biscoe\", \"Dream\", \"Torgersen\"),\n  location = c(\"Antarctica\", \"Antarctica\", \"Antarctica\"),\n  region = c(\"West\", \"East\", \"East\")\n)\n\nisland_info\n\n# A tibble: 3 × 3\n  island    location   region\n  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe    Antarctica West  \n2 Dream     Antarctica East  \n3 Torgersen Antarctica East  \n\n\n\nNotice that the island_info dataset includes an island, Torgersen, that is not in penguins_complete."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#left-join-keep-all-rows-from-the-first-dataset",
+    "href": "slides/day1-afternoon.html#left-join-keep-all-rows-from-the-first-dataset",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Left Join: Keep All Rows from the First Dataset",
+    "text": "Left Join: Keep All Rows from the First Dataset\n\nA left join keeps all rows from the first dataset (penguins_complete), and adds matching data from the second dataset (island_info).\nSo all rows from the first dataset (penguins_complete) will be preserved.\nThe datasets are joined by matching the island column, specified by the by argument.\n\n\n# Left join: combining penguins data with island info\npenguins_with_info &lt;- penguins_complete %&gt;%\n  left_join(island_info, by = \"island\")\n\npenguins_with_info\n\n# A tibble: 4 × 6\n  island  year Adelie Gentoo location   region\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe  2007     10     34 Antarctica West  \n2 Biscoe  2008     18     46 Antarctica West  \n3 Dream   2007     20      0 Antarctica East  \n4 Dream   2008     NA     NA Antarctica East"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#right-join-keep-all-rows-from-the-second-dataset",
+    "href": "slides/day1-afternoon.html#right-join-keep-all-rows-from-the-second-dataset",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Right Join: Keep All Rows from the Second Dataset",
+    "text": "Right Join: Keep All Rows from the Second Dataset\n\nA right join keeps all rows from the second dataset (island_info), and adds matching data from the first dataset (penguins_complete).\nIf a row in the second dataset doesn’t have a match in the first, then the columns from the first will be filled with NA.\nWe can see this for the Torgersen row from island_info…\n\n\n# Right join: keep all rows from island_info\npenguins_right_join &lt;- penguins_complete %&gt;%\n  right_join(island_info, by = \"island\")\n\npenguins_right_join\n\n# A tibble: 5 × 6\n  island     year Adelie Gentoo location   region\n  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe     2007     10     34 Antarctica West  \n2 Biscoe     2008     18     46 Antarctica West  \n3 Dream      2007     20      0 Antarctica East  \n4 Dream      2008     NA     NA Antarctica East  \n5 Torgersen    NA     NA     NA Antarctica East"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#inner-join-only-keeping-matching-rows",
+    "href": "slides/day1-afternoon.html#inner-join-only-keeping-matching-rows",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Inner Join: Only Keeping Matching Rows",
+    "text": "Inner Join: Only Keeping Matching Rows\n\nAn inner join will only keep rows where there is a match in both datasets.\nSo, if an island in island_info does not have a corresponding entry in penguins_complete, then that row will be excluded.\n\n\n# Inner join: only matching rows are kept\npenguins_inner_join &lt;- penguins_complete %&gt;%\n  inner_join(island_info, by = \"island\")\n\npenguins_inner_join\n\n# A tibble: 4 × 6\n  island  year Adelie Gentoo location   region\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe  2007     10     34 Antarctica West  \n2 Biscoe  2008     18     46 Antarctica West  \n3 Dream   2007     20      0 Antarctica East  \n4 Dream   2008     NA     NA Antarctica East"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#full-join-keeping-all-rows-from-both-datasets",
+    "href": "slides/day1-afternoon.html#full-join-keeping-all-rows-from-both-datasets",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Full Join: Keeping All Rows from Both Datasets",
+    "text": "Full Join: Keeping All Rows from Both Datasets\n\nA full join will keep all rows from both datasets.\nIf an island in either dataset has no match in the other, the missing values will be filled with NA.\n\n\n# Full join: keep all rows from both datasets\npenguins_full_join &lt;- penguins_complete %&gt;%\n  full_join(island_info, by = \"island\")\n\npenguins_full_join\n\n# A tibble: 5 × 6\n  island     year Adelie Gentoo location   region\n  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe     2007     10     34 Antarctica West  \n2 Biscoe     2008     18     46 Antarctica West  \n3 Dream      2007     20      0 Antarctica East  \n4 Dream      2008     NA     NA Antarctica East  \n5 Torgersen    NA     NA     NA Antarctica East"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#summary-of-the-four-join-functions",
+    "href": "slides/day1-afternoon.html#summary-of-the-four-join-functions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Summary of the Four Join Functions",
+    "text": "Summary of the Four Join Functions\n\nLeft join: All rows from the left dataset and matching rows from the right dataset.\nRight join: All rows from the right dataset and matching rows from the left dataset.\nInner join: Only matching rows from both datasets.\nFull join: All rows from both datasets, with NA where no match exists."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#final-thoughts-on-joins",
+    "href": "slides/day1-afternoon.html#final-thoughts-on-joins",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Final thoughts on joins",
+    "text": "Final thoughts on joins\n\nJoins are an essential part of data wrangling in R.\nThe choice of join depends on the analysis you need to perform:\n\nUse left joins when you want to keep all data from the first dataset.\nUse right joins when you want to keep all data from the second dataset.\nUse inner joins when you’re only interested in matching rows.\nUse full joins when you want to preserve all information from both datasets."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#goodbye-palmer-penguins",
+    "href": "slides/day1-afternoon.html#goodbye-palmer-penguins",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Goodbye palmer penguins",
+    "text": "Goodbye palmer penguins\n\nWhat’s a penguin’s favorite tool?\n%&gt;% — to keep the fish moving, from one catch to the next! 🐧\n\n\nLogo from the palmerpenguins website"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epiverse-software-ecosystem",
+    "href": "slides/day1-afternoon.html#epiverse-software-ecosystem",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Epiverse software ecosystem",
+    "text": "Epiverse software ecosystem\n\n\n\n\n\n\nflowchart LR\nA(\"{epidatr}\") --&gt; C(\"{epiprocess}\")\nB(\"{epidatpy}\") --&gt; C\nD(\"{other sources}\") --&gt; C\nC --&gt; E(\"{epipredict}\")\n\nclassDef smallText fill:#fff,stroke:#000,stroke-width:1px,font-size:14px,font-weight:bold,color:royalblue;\n  class A,B,C,D,E smallText;"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#what-is-panel-data",
+    "href": "slides/day1-afternoon.html#what-is-panel-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "What is panel data?",
+    "text": "What is panel data?\n\n\nRecall that panel data, or longitudinal data, contain cross-sectional measurements of subjects over time.\nBuilt-in example: covid_case_death_rates dataset, which is a snapshot as of May 31, 2022 that contains daily state-wise measures of case_rate and death_rate for COVID-19 in 2021:\n\n\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 6 × 4\n  geo_value time_value case_rate death_rate\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ak        2020-12-31      35.9      0.158\n2 al        2020-12-31      65.1      0.438\n3 ar        2020-12-31      66.0      1.27 \n4 as        2020-12-31       0        0    \n5 az        2020-12-31      76.8      1.10 \n6 ca        2020-12-31      96.0      0.751\n\n\n\nQuestion: How do we store & work with such snapshots in the epiverse software ecosystem?\n\n\n\nepi_df: snapshot of a data set\n\na tibble that requires columns geo_value and time_value.\narbitrary additional columns containing measured values\nadditional keys to index (age_group, ethnicity, etc.)\n\n\n\n\n\n\n\nepi_df\n\n\nRepresents a snapshot that contains the most up-to-date values of the signal variables, as of a given time.\n\n\n\n\n\nepi_df: snapshot of a data set\n\n\n\n\n\n\nExample data object documentation, license, attribution\n\n\nNo documentation for ‘covid_case_death_rates’ in specified packages and libraries: you could try ‘??covid_case_death_rates’\n\n\n\n\n\nAn `epi_df` object, 20,496 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 20,496 × 4\n   geo_value time_value case_rate death_rate\n * &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n 1 ak        2020-12-31      35.9      0.158\n 2 al        2020-12-31      65.1      0.438\n 3 ar        2020-12-31      66.0      1.27 \n 4 as        2020-12-31       0        0    \n 5 az        2020-12-31      76.8      1.10 \n 6 ca        2020-12-31      96.0      0.751\n 7 co        2020-12-31      35.8      0.649\n 8 ct        2020-12-31      52.1      0.819\n 9 dc        2020-12-31      31.0      0.601\n10 de        2020-12-31      64.3      0.912\n# ℹ 20,486 more rows\n\n\n\n\nSliding examples on epi_df\nGrowth rates\n\nedf &lt;- filter(edf, geo_value %in% c(\"ut\", \"ca\")) %&gt;%\n  group_by(geo_value) %&gt;%\n  mutate(gr_cases = growth_rate(time_value, case_rate, method = \"trend_filter\"))\n\n\n\n\nepi_archive: collection of epi_dfs\n\nfull version history of a data set\nacts like a bunch of epi_dfs — but stored compactly\nallows similar functionality as epi_df but using only data that would have been available at the time\n\n\n\n\n\n\n\nRevisions\n\n\nEpidemiology data gets revised frequently. (Happens in Economics as well.)\n\nWe may want to use the data as it looked in the past\nor we may want to examine the history of revisions.\n\n\n\n\n\n\nRevision patterns\n\n\n\nExample data object documentation, license, attribution\n\n\narchive_cases_dv_subset       package:epiprocess       R Documentation\n\nSubset of daily COVID-19 doctor visits and cases from 6 states in\narchive format\n\nDescription:\n\n     This data source is based on information about outpatient visits,\n     provided to us by health system partners, and also contains\n     confirmed COVID-19 cases based on reports made available by the\n     Center for Systems Science and Engineering at Johns Hopkins\n     University. This example data ranges from June 1, 2020 to December\n     1, 2021, issued on dates from June 1, 2020 to December 1, 2021. It\n     is limited to California, Florida, Texas, and New York.\n\n     It is used in the epiprocess 'compactify', 'epi_archive', and\n     advanced-use ('advanced') vignettes.\n\nUsage:\n\n     archive_cases_dv_subset\n     \nFormat:\n\n     An object of class 'epi_archive' of length 6.\n\nData dictionary:\n\n     The data in the 'epi_archive$DT' attribute has columns:\n\n     geo_value the geographic value associated with each row of\n          measurements.\n\n     time_value the time value associated with each row of\n          measurements.\n\n     version the time value specifying the version for each row of\n          measurements.\n\n     percent_cli percentage of doctor’s visits with CLI (COVID-like\n          illness) computed from medical insurance claims\n\n     case_rate_7d_av 7-day average signal of number of new confirmed\n          cases due to COVID-19 per 100,000 population, daily\n\nSource:\n\n     This object contains a modified part of the COVID-19 Data\n     Repository by the Center for Systems Science and Engineering\n     (CSSE) at Johns Hopkins University as republished in the COVIDcast\n     Epidata API. This data set is licensed under the terms of the\n     Creative Commons Attribution 4.0 International license by Johns\n     Hopkins University on behalf of its Center for Systems Science in\n     Engineering. Copyright Johns Hopkins University 2020.\n\n     Modifications:\n\n        • From the COVIDcast Epidata API: 'case_rate_7d_av' signal was\n          computed by Delphi from the original JHU-CSSE data by\n          calculating moving averages of the preceding 7 days, so the\n          signal for June 7 is the average of the underlying data for\n          June 1 through 7, inclusive.\n\n        • Furthermore, the data has been limited to a very small number\n          of rows, the signal names slightly altered, and formatted\n          into an 'epi_archive'.\n\n     This object contains a modified part of the Delphi 'doctor-visits'\n     indicator. This data source is computed by the Delphi Group from\n     information about outpatient visits, provided to Delphi by health\n     system partners, and published in the COVIDcast Epidata API. This\n     data set is licensed under the terms of the Creative Commons\n     Attribution 4.0 International license by the Delphi group.\n\n     Modifications:\n\n        • From the COVIDcast Doctor Visits signal: The signal\n          'smoothed_adj_cli' is taken directly from the API without\n          changes.\n\n        • Furthermore, the data has been limited to a very small number\n          of rows, the signal names slightly altered, and formatted\n          into an 'epi_archive'.\n\nExamples:\n\n     # Since this is a re-exported dataset, it cannot be loaded using\n     # the `data()` function. `data()` looks for a file of the same name\n     # in the `data/` directory, which doesn't exist in this package.\n     # works\n     epiprocess::archive_cases_dv_subset\n     \n     # works\n     library(epiprocess)\n     archive_cases_dv_subset\n     \n     # fails\n     ## Not run:\n     \n     data(archive_cases_dv_subset, package = \"epiprocess\")\n     ## End(Not run)\n     \n\n\n\n\n\n\n\nFinalized data\n\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\n\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)\n\n\n\n\nNowcasting with one time series\n\n\n\nBackfill Canadian edition\n\nEvery week the BC CDC releases COVID-19 hospitalization data.\nFollowing week they revise the number upward (by ~25%) due to lagged reports.\n\n \n\nTakeaway: Once the data is backfilled, hospitalizations rarely show a decline, challenging the common media narrative.\n\n\n\nAside on Nowcasting\n\nTo some Epis, “nowcasting” can be equated with “estimate the time-varying instantaneous reproduction number, \\(R_t\\)”\nExample using the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. \n\n\n\n\n\n\n\n\n\n\n\nGroup built {rtestim} doing for this nonparametrically.\nWe may come back to this later…\n\n\n\nMathematical setup\n\nSuppose today is time \\(t\\)\nLet \\(y_i\\) denote a series of interest observed at times \\(i=1,\\ldots, t\\).\n\n\n\n\nOur goal\n\n\n\nProduce a point nowcast for the finalized values of \\(y_t\\).\nAccompany with time-varying prediction intervals\n\n\n\n\n\nWe also have access to \\(p\\) other time series \\(x_{ij},\\; i=1,\\ldots,t, \\; j = 1,\\ldots,p\\)\nAll may be subject to revisions.\n\n\n\nFinal slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nExplore, clean & transform data — cmu-delphi/insightnet-workshop-2024"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set",
+    "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "epi_df: snapshot of a data set",
+    "text": "epi_df: snapshot of a data set\n\na tibble that requires columns geo_value and time_value.\narbitrary additional columns containing measured values\nadditional keys to index (age_group, ethnicity, etc.)\n\n\n\n\n\n\n\nepi_df\n\n\nRepresents a snapshot that contains the most up-to-date values of the signal variables, as of a given time."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set-1",
+    "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "epi_df: snapshot of a data set",
+    "text": "epi_df: snapshot of a data set\n\n\n\n\n\n\nExample data object documentation, license, attribution\n\n\nNo documentation for ‘covid_case_death_rates’ in specified packages and libraries: you could try ‘??covid_case_death_rates’\n\n\n\n\n\nAn `epi_df` object, 20,496 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 20,496 × 4\n   geo_value time_value case_rate death_rate\n * &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n 1 ak        2020-12-31      35.9      0.158\n 2 al        2020-12-31      65.1      0.438\n 3 ar        2020-12-31      66.0      1.27 \n 4 as        2020-12-31       0        0    \n 5 az        2020-12-31      76.8      1.10 \n 6 ca        2020-12-31      96.0      0.751\n 7 co        2020-12-31      35.8      0.649\n 8 ct        2020-12-31      52.1      0.819\n 9 dc        2020-12-31      31.0      0.601\n10 de        2020-12-31      64.3      0.912\n# ℹ 20,486 more rows"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#sliding-examples-on-epi_df",
+    "href": "slides/day1-afternoon.html#sliding-examples-on-epi_df",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Sliding examples on epi_df",
+    "text": "Sliding examples on epi_df\nGrowth rates\n\nedf &lt;- filter(edf, geo_value %in% c(\"ut\", \"ca\")) %&gt;%\n  group_by(geo_value) %&gt;%\n  mutate(gr_cases = growth_rate(time_value, case_rate, method = \"trend_filter\"))"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs",
+    "href": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "epi_archive: collection of epi_dfs",
+    "text": "epi_archive: collection of epi_dfs\n\nfull version history of a data set\nacts like a bunch of epi_dfs — but stored compactly\nallows similar functionality as epi_df but using only data that would have been available at the time\n\n\n\n\n\n\n\nRevisions\n\n\nEpidemiology data gets revised frequently. (Happens in Economics as well.)\n\nWe may want to use the data as it looked in the past\nor we may want to examine the history of revisions."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#revision-patterns",
+    "href": "slides/day1-afternoon.html#revision-patterns",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Revision patterns",
+    "text": "Revision patterns\n\n\n\nExample data object documentation, license, attribution\n\n\narchive_cases_dv_subset       package:epiprocess       R Documentation\n\nSubset of daily COVID-19 doctor visits and cases from 6 states in\narchive format\n\nDescription:\n\n     This data source is based on information about outpatient visits,\n     provided to us by health system partners, and also contains\n     confirmed COVID-19 cases based on reports made available by the\n     Center for Systems Science and Engineering at Johns Hopkins\n     University. This example data ranges from June 1, 2020 to December\n     1, 2021, issued on dates from June 1, 2020 to December 1, 2021. It\n     is limited to California, Florida, Texas, and New York.\n\n     It is used in the epiprocess 'compactify', 'epi_archive', and\n     advanced-use ('advanced') vignettes.\n\nUsage:\n\n     archive_cases_dv_subset\n     \nFormat:\n\n     An object of class 'epi_archive' of length 6.\n\nData dictionary:\n\n     The data in the 'epi_archive$DT' attribute has columns:\n\n     geo_value the geographic value associated with each row of\n          measurements.\n\n     time_value the time value associated with each row of\n          measurements.\n\n     version the time value specifying the version for each row of\n          measurements.\n\n     percent_cli percentage of doctor’s visits with CLI (COVID-like\n          illness) computed from medical insurance claims\n\n     case_rate_7d_av 7-day average signal of number of new confirmed\n          cases due to COVID-19 per 100,000 population, daily\n\nSource:\n\n     This object contains a modified part of the COVID-19 Data\n     Repository by the Center for Systems Science and Engineering\n     (CSSE) at Johns Hopkins University as republished in the COVIDcast\n     Epidata API. This data set is licensed under the terms of the\n     Creative Commons Attribution 4.0 International license by Johns\n     Hopkins University on behalf of its Center for Systems Science in\n     Engineering. Copyright Johns Hopkins University 2020.\n\n     Modifications:\n\n        • From the COVIDcast Epidata API: 'case_rate_7d_av' signal was\n          computed by Delphi from the original JHU-CSSE data by\n          calculating moving averages of the preceding 7 days, so the\n          signal for June 7 is the average of the underlying data for\n          June 1 through 7, inclusive.\n\n        • Furthermore, the data has been limited to a very small number\n          of rows, the signal names slightly altered, and formatted\n          into an 'epi_archive'.\n\n     This object contains a modified part of the Delphi 'doctor-visits'\n     indicator. This data source is computed by the Delphi Group from\n     information about outpatient visits, provided to Delphi by health\n     system partners, and published in the COVIDcast Epidata API. This\n     data set is licensed under the terms of the Creative Commons\n     Attribution 4.0 International license by the Delphi group.\n\n     Modifications:\n\n        • From the COVIDcast Doctor Visits signal: The signal\n          'smoothed_adj_cli' is taken directly from the API without\n          changes.\n\n        • Furthermore, the data has been limited to a very small number\n          of rows, the signal names slightly altered, and formatted\n          into an 'epi_archive'.\n\nExamples:\n\n     # Since this is a re-exported dataset, it cannot be loaded using\n     # the `data()` function. `data()` looks for a file of the same name\n     # in the `data/` directory, which doesn't exist in this package.\n     # works\n     epiprocess::archive_cases_dv_subset\n     \n     # works\n     library(epiprocess)\n     archive_cases_dv_subset\n     \n     # fails\n     ## Not run:\n     \n     data(archive_cases_dv_subset, package = \"epiprocess\")\n     ## End(Not run)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#finalized-data",
+    "href": "slides/day1-afternoon.html#finalized-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Finalized data",
+    "text": "Finalized data\n\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\n\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#backfill-canadian-edition",
+    "href": "slides/day1-afternoon.html#backfill-canadian-edition",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Backfill Canadian edition",
+    "text": "Backfill Canadian edition\n\nEvery week the BC CDC releases COVID-19 hospitalization data.\nFollowing week they revise the number upward (by ~25%) due to lagged reports.\n\n \n\nTakeaway: Once the data is backfilled, hospitalizations rarely show a decline, challenging the common media narrative."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#aside-on-nowcasting",
+    "href": "slides/day1-afternoon.html#aside-on-nowcasting",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Aside on Nowcasting",
+    "text": "Aside on Nowcasting\n\nTo some Epis, “nowcasting” can be equated with “estimate the time-varying instantaneous reproduction number, \\(R_t\\)”\nExample using the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. \n\n\n\n\n\n\n\n\n\n\n\nGroup built {rtestim} doing for this nonparametrically.\nWe may come back to this later…"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#mathematical-setup",
+    "href": "slides/day1-afternoon.html#mathematical-setup",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Mathematical setup",
+    "text": "Mathematical setup\n\nSuppose today is time \\(t\\)\nLet \\(y_i\\) denote a series of interest observed at times \\(i=1,\\ldots, t\\).\n\n\n\n\nOur goal\n\n\n\nProduce a point nowcast for the finalized values of \\(y_t\\).\nAccompany with time-varying prediction intervals\n\n\n\n\n\nWe also have access to \\(p\\) other time series \\(x_{ij},\\; i=1,\\ldots,t, \\; j = 1,\\ldots,p\\)\nAll may be subject to revisions."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#final-slide",
+    "href": "slides/day1-afternoon.html#final-slide",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Final slide",
+    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nExplore, clean & transform data — cmu-delphi/insightnet-workshop-2024"
+  },
+  {
+    "objectID": "index.html#schedule",
+    "href": "index.html#schedule",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Schedule",
+    "text": "Schedule\nShort description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon"
+  },
+  {
+    "objectID": "index.html#instructors",
+    "href": "index.html#instructors",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Instructors",
+    "text": "Instructors\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
+  },
+  {
     "objectID": "slides/day2-afternoon.html#section",
     "href": "slides/day2-afternoon.html#section",
     "title": "InsightNet EpiData Workshop 2024",
@@ -565,20 +936,6 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Thanks:",
     "text": "Thanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting with {epipredict} — cmu-delphi/insightnet-workshop-2024"
-  },
-  {
-    "objectID": "index.html#schedule",
-    "href": "index.html#schedule",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Schedule",
-    "text": "Schedule\nShort description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon"
-  },
-  {
-    "objectID": "index.html#instructors",
-    "href": "index.html#instructors",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Instructors",
-    "text": "Instructors\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
   },
   {
     "objectID": "slides/day1-morning.html#section",
@@ -672,6 +1029,13 @@
     "text": "Some of our Pre-Pandemic Data Sources\n\n\nFluView ILINet, by {state x week}\nFluView Clinical (% positive flu, PH and clinical labs)\nGoogle Health Trends (GHT), precursor to Google Symptoms\nGoogle Flu Trends (GFT), precursor to to GHT\nTwitter flu\nAccess counts for flu-related CDC pages, by {city x week}\nAccess counts for flu-related Wikipedia entries by {day x hour}\nFlu-surv (flu hosp rates, now expanded to RESP-NET)\nMisc signals for dengue, norovirus\nMisc signals for PAHO countries, ECDC, KCDC, Taiwan,…\nDelphi ILI nowcasts, by {state x week}, visualized in “ILI Nearby” website\nDelphi ILI forecasts, by {state x week}"
   },
   {
+    "objectID": "slides/day1-morning.html#severity-pyramid",
+    "href": "slides/day1-morning.html#severity-pyramid",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Severity pyramid",
+    "text": "Severity pyramid"
+  },
+  {
     "objectID": "slides/day1-morning.html#installing-epidatr",
     "href": "slides/day1-morning.html#installing-epidatr",
     "title": "InsightNet EpiData Workshop 2024",
@@ -711,14 +1075,21 @@
     "href": "slides/day1-morning.html#signal-dashboard---for-covid-19-flu-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Signal dashboard - For COVID-19 & flu data",
-    "text": "Signal dashboard - For COVID-19 & flu data\n\n\n\nThe signal dashboard displays a selection of our signals for COVID-19 and the flu.\nIncludes an “Advanced Data Export” to pull a selected signal & download as a CSV.\nBrowse by location or indicator to choose which signal you are interested in & then export the data for further analysis."
+    "text": "Signal dashboard - For COVID-19 & flu data\n\n\n\nThe signal dashboard displays a selection of signals for COVID-19 & flu.\nBrowse by location or indicator to choose which signal you are interested in & then export the data for analysis.\nExample: Symptom searches on Google in NC"
   },
   {
     "objectID": "slides/day1-morning.html#signal-discovery-app---browse-for-more-data",
     "href": "slides/day1-morning.html#signal-discovery-app---browse-for-more-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Signal discovery app - Browse for more data",
-    "text": "Signal discovery app - Browse for more data\n\nSignal discovery app: An easy way to find data sources and signals (no programming required).\n\nSearch tool that is a good to browse & find data.\n\nLet’s try it out together! {height=auto, width = 50%}"
+    "text": "Signal discovery app - Browse for more data\n\nSignal discovery app: An easy way to find data sources and signals (no programming required).\n\nSearch tool that is a good to browse & find data.\n\nLet’s try it out together!"
+  },
+  {
+    "objectID": "slides/day1-morning.html#example---nchs-weekly-flu-mortality-data-in-states",
+    "href": "slides/day1-morning.html#example---nchs-weekly-flu-mortality-data-in-states",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Example - NCHS Weekly Flu Mortality Data in States",
+    "text": "Example - NCHS Weekly Flu Mortality Data in States"
   },
   {
     "objectID": "slides/day1-morning.html#interactive-tooling",
@@ -781,35 +1152,35 @@
     "href": "slides/day1-morning.html#example-queries---other-endpoints-hospitalizations",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example queries - Other endpoints  Hospitalizations",
-    "text": "Example queries - Other endpoints  Hospitalizations\n\nCOVID-19 Hospitalization: Facility Lookup\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html\n\npub_covid_hosp_facility_lookup(city = \"southlake\")\n\n# A tibble: 2 × 10\n  hospital_pk state ccn    hospital_name    address city  zip   hospital_subtype\n  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;           \n1 450888      TX    450888 TEXAS HEALTH HA… 1545 E… SOUT… 76092 Short Term      \n2 670132      TX    670132 METHODIST SOUTH… 421 E … SOUT… 76092 Short Term      \n# ℹ 2 more variables: fips_code &lt;chr&gt;, is_metro_micro &lt;dbl&gt;\n\n# pub_covid_hosp_facility_lookup(state = \"WY\")\n# A non-example (there is no city called New York in Wyoming)\n# pub_covid_hosp_facility_lookup(state = \"WY\", city = \"New York\")"
+    "text": "Example queries - Other endpoints  Hospitalizations\nCOVID-19 Hospitalization: Facility Lookup\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html \n\npub_covid_hosp_facility_lookup(city = \"southlake\")\n\n# A tibble: 2 × 10\n  hospital_pk state ccn    hospital_name    address city  zip   hospital_subtype\n  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;           \n1 450888      TX    450888 TEXAS HEALTH HA… 1545 E… SOUT… 76092 Short Term      \n2 670132      TX    670132 METHODIST SOUTH… 421 E … SOUT… 76092 Short Term      \n# ℹ 2 more variables: fips_code &lt;chr&gt;, is_metro_micro &lt;dbl&gt;\n\n# pub_covid_hosp_facility_lookup(state = \"WY\")\n# A non-example (there is no city called New York in Wyoming)\n# pub_covid_hosp_facility_lookup(state = \"WY\", city = \"New York\")"
   },
   {
     "objectID": "slides/day1-morning.html#example-queries---other-endpoints-hospitalizations-1",
     "href": "slides/day1-morning.html#example-queries---other-endpoints-hospitalizations-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example queries - Other endpoints  Hospitalizations",
-    "text": "Example queries - Other endpoints  Hospitalizations\n\nCOVID-19 Hospitalization by Facility\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html\n\npub_covid_hosp_facility(\n  hospital_pks = \"100075\",\n  collection_weeks = epirange(20200101, 20200501)\n)\n\n\nCOVID-19 Hospitalization by State\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html\n\npub_covid_hosp_state_timeseries(states = \"MA\", dates = \"20200510\")"
+    "text": "Example queries - Other endpoints  Hospitalizations\nCOVID-19 Hospitalization by Facility\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html \n\npub_covid_hosp_facility(\n  hospital_pks = \"100075\",\n  collection_weeks = epirange(20200101, 20200501)\n)\n\nCOVID-19 Hospitalization by State\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html \n\npub_covid_hosp_state_timeseries(states = \"MA\", dates = \"20200510\")"
   },
   {
     "objectID": "slides/day1-morning.html#example-queries---other-endpoints-flu-endpoints",
     "href": "slides/day1-morning.html#example-queries---other-endpoints-flu-endpoints",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example queries - Other endpoints  Flu endpoints",
-    "text": "Example queries - Other endpoints  Flu endpoints\n\nFluSurv hospitalization data\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html\n\npub_flusurv(locations = \"ca\", epiweeks = 202001)\n\n\nFluview data\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/fluview.html\n\npub_fluview(regions = \"nat\", epiweeks = epirange(201201, 202001))\n\n\nNIDSS Flu\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html\n\npub_nidss_flu(regions = \"taipei\", epiweeks = epirange(200901, 201301))"
+    "text": "Example queries - Other endpoints  Flu endpoints\nFluSurv hospitalization data\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html \n\npub_flusurv(locations = \"ca\", epiweeks = 202001)\n\nFluview data\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/fluview.html \n\npub_fluview(regions = \"nat\", epiweeks = epirange(201201, 202001))\n\nNIDSS Flu\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html \n\npub_nidss_flu(regions = \"taipei\", epiweeks = epirange(200901, 201301))"
   },
   {
     "objectID": "slides/day1-morning.html#example-queries---other-endpoints-dengue-endpoints",
     "href": "slides/day1-morning.html#example-queries---other-endpoints-dengue-endpoints",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example queries - Other endpoints  Dengue endpoints",
-    "text": "Example queries - Other endpoints  Dengue endpoints\n\nDelphi’s Dengue Nowcast\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html\n\npub_dengue_nowcast(locations = \"pr\", epiweeks = epirange(201401, 202301))\n\n\nNIDSS dengue\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html\n\npub_nidss_dengue(locations = \"taipei\", epiweeks = epirange(200301, 201301))\n\n\nPAHO Dengue\n\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html\n\npub_paho_dengue(regions = \"ca\", epiweeks = epirange(200201, 202319))"
+    "text": "Example queries - Other endpoints  Dengue endpoints\nDelphi’s Dengue Nowcast\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html \n\npub_dengue_nowcast(locations = \"pr\", epiweeks = epirange(201401, 202301))\n\nNIDSS dengue\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html \n\npub_nidss_dengue(locations = \"taipei\", epiweeks = epirange(200301, 201301))\n\nPAHO Dengue\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html \n\npub_paho_dengue(regions = \"ca\", epiweeks = epirange(200201, 202319))"
   },
   {
     "objectID": "slides/day1-morning.html#example-queries---other-endpoints-wikipedia",
     "href": "slides/day1-morning.html#example-queries---other-endpoints-wikipedia",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example queries - Other endpoints  Wikipedia",
-    "text": "Example queries - Other endpoints  Wikipedia\nWikipedia access\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/wiki.html\n\npub_wiki(\n  language = \"en\",\n  articles = \"influenza\",\n  time_type = \"week\",\n  time_values = epirange(202001, 202319)\n)\n\n# A tibble: 64 × 6\n   article   count     total  hour epiweek     value\n   &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;      &lt;dbl&gt;\n 1 influenza  6516 663604044    -1 2019-12-29   9.82\n 2 influenza 10244 789885521    -1 2020-01-05  13.0 \n 3 influenza 10728 783760384    -1 2020-01-12  13.7 \n 4 influenza 24843 785222292    -1 2020-01-19  31.6 \n 5 influenza 62850 780291898    -1 2020-01-26  80.5 \n 6 influenza 41768 778222703    -1 2020-02-02  53.7 \n 7 influenza 29434 767244708    -1 2020-02-09  38.4 \n 8 influenza 22714 764074572    -1 2020-02-16  29.7 \n 9 influenza 88758 767718009    -1 2020-02-23 116.  \n10 influenza 62433 759825311    -1 2020-03-01  82.2 \n# ℹ 54 more rows\n\n\n\n\n\n\n\n\nTip - public vs private methods\n\n\nAside from these public methods we’ve gone through (these start with pub_), there are private methods (these start with pvt_ when you type avail_endpoints()). These require private access keys to use (separate from the Delphi Epidata API key). To run these locally, you will need to store these secrets in your .Reviron file, or set them as environmental variables. See Private methods for examples of using private endpoints."
+    "text": "Example queries - Other endpoints  Wikipedia\nWikipedia access\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/wiki.html \n\npub_wiki(\n  language = \"en\",\n  articles = \"influenza\",\n  time_type = \"week\",\n  time_values = epirange(202001, 202319)\n)\n\n# A tibble: 64 × 6\n   article   count     total  hour epiweek     value\n   &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;      &lt;dbl&gt;\n 1 influenza  6516 663604044    -1 2019-12-29   9.82\n 2 influenza 10244 789885521    -1 2020-01-05  13.0 \n 3 influenza 10728 783760384    -1 2020-01-12  13.7 \n 4 influenza 24843 785222292    -1 2020-01-19  31.6 \n 5 influenza 62850 780291898    -1 2020-01-26  80.5 \n 6 influenza 41768 778222703    -1 2020-02-02  53.7 \n 7 influenza 29434 767244708    -1 2020-02-09  38.4 \n 8 influenza 22714 764074572    -1 2020-02-16  29.7 \n 9 influenza 88758 767718009    -1 2020-02-23 116.  \n10 influenza 62433 759825311    -1 2020-03-01  82.2 \n# ℹ 54 more rows\n\n\n\n\n\n\n\n\nTip - public vs private methods\n\n\nAside from these public methods we’ve gone through (these start with pub_), there are private methods (these start with pvt_ when you type avail_endpoints()). These require private access keys to use (separate from the Delphi Epidata API key). To run these locally, you will need to store these secrets in your .Reviron file, or set them as environmental variables. See Private methods for examples of using private endpoints."
   },
   {
     "objectID": "slides/day1-morning.html#signal-metadata",
@@ -823,7 +1194,7 @@
     "href": "slides/day1-morning.html#panel-data-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Panel data",
-    "text": "Panel data\n\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nIn table form, panel data is a time index + one or more locations/keys.\nFor example: The estimated percentage of outpatient doctor visits that are COVID-related in MA over 2021 (docs):\n\n\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2021-12-17\n\n# A tibble: 6 × 3\n  geo_value time_value percent_cli\n* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 ma        2021-03-01        3.31\n2 ma        2021-03-02        2.87\n3 ma        2021-03-03        2.95\n4 ma        2021-03-04        3.17\n5 ma        2021-03-05        3.35\n6 ma        2021-03-06        3.38"
+    "text": "Panel data\n\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nIn table form, panel data is a time index + one or more locations/keys.\nFor example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 (docs):\n\n\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-02-01\n\n# A tibble: 6 × 3\n  geo_value time_value percent_cli\n* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01        4.70\n2 wa        2021-12-02        4.60\n3 wa        2021-12-03        4.56\n4 wa        2021-12-04        4.93\n5 wa        2021-12-05        4.17\n6 wa        2021-12-06        4.12"
   },
   {
     "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
@@ -865,7 +1236,7 @@
     "href": "slides/day1-morning.html#all-together---visualizing-multiple-panel-data-signals-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "All together - Visualizing multiple panel data signals",
-    "text": "All together - Visualizing multiple panel data signals\nExample: gathering different signals + scaling + visualizing panel data\n\nThe auxiliary signals track changes in officially reported cases quite well. This is more clear when they have all been placed on the same range as reported cases per 100,000 people."
+    "text": "All together - Visualizing multiple panel data signals\nExample: gathering different signals + scaling + visualizing panel data\n\n\nFigure 1 from Reinhart et al. (2021)\n\nTakeaway: The auxiliary signals track changes in the official reported cases quite well. This is clearer when they have all been placed on the same range as reported cases per 100,000 people."
   },
   {
     "objectID": "slides/day1-morning.html#covid-19-cases-and-deaths-in-ca-example",
@@ -879,14 +1250,14 @@
     "href": "slides/day1-morning.html#intro-to-versioned-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Intro to versioned data",
-    "text": "Intro to versioned data\n\nIn panel data, we’ve seen that time is indicated by time_value.\nNow, we add a second time index to indicate the data version…\n\n\n\nKey: &lt;geo_value, time_value, version&gt;\n   geo_value time_value    version percent_cli\n      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;\n1:        ma 2021-03-01 2021-03-04    6.470187\n2:        ma 2021-03-01 2021-03-05    6.207676\n3:        ma 2021-03-01 2021-03-06    5.664716\n4:        ma 2021-03-01 2021-03-07    5.636590\n5:        ma 2021-03-01 2021-03-08    5.665734\n6:        ma 2021-03-01 2021-03-09    5.537332\n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
+    "text": "Intro to versioned data\n\nIn panel data, we’ve seen that time is indicated by time_value.\nNow, we add a second time index to indicate the data version…\n\n\n\nKey: &lt;geo_value, time_value, version&gt;\n   geo_value time_value    version percent_cli\n      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;\n1:        wa 2021-12-01 2021-12-05    0.884362\n2:        wa 2021-12-01 2021-12-06    0.917057\n3:        wa 2021-12-01 2021-12-07    0.896221\n4:        wa 2021-12-01 2021-12-08    0.984512\n5:        wa 2021-12-01 2021-12-09    1.027853\n6:        wa 2021-12-01 2021-12-10    0.999755\n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
   },
   {
     "objectID": "slides/day1-morning.html#versioned-panel-data",
     "href": "slides/day1-morning.html#versioned-panel-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioned panel data",
-    "text": "Versioned panel data\nEstimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:"
+    "text": "Versioned panel data\nEstimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:\n\n\nFigure 5 from Reinhart et al. (2021)"
   },
   {
     "objectID": "slides/day1-morning.html#latency-and-revision-in-signals",
@@ -900,28 +1271,35 @@
     "href": "slides/day1-morning.html#latency-and-revision-in-signals---example",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Latency and revision in signals - Example",
-    "text": "Latency and revision in signals - Example\n\n\nRecall the first example of panel & versioned data we’ve seen.\n\n\n\nThis signal is 3 days latent (version - time_value) & clearly undergoes revision over time (ex. consider March 1’s percent_cli across version).\n\n\n\nKey: &lt;geo_value, time_value, version&gt;\n   geo_value time_value    version percent_cli\n      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;\n1:        ma 2021-03-01 2021-03-04    6.470187\n2:        ma 2021-03-01 2021-03-05    6.207676\n3:        ma 2021-03-01 2021-03-06    5.664716\n4:        ma 2021-03-01 2021-03-07    5.636590\n5:        ma 2021-03-01 2021-03-08    5.665734\n6:        ma 2021-03-01 2021-03-09    5.537332\n\n\n\nThe amount of lag in reporting can vary, and not all visits are reported with the same lag.\n\n\n\n     min median     mean     max\n  3 days 3 days 3.6 days 16 days"
+    "text": "Latency and revision in signals - Example\n\n\nRecall the first example of panel & versioned data we’ve seen…\nThis signal is 4 days latent (min(version - time_value))\n\n\n\n# A tibble: 6 × 5\n# Groups:   time_value [6]\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-02 2021-12-06       0.737 4 days           \n3 wa        2021-12-03 2021-12-07       0.662 4 days           \n4 wa        2021-12-04 2021-12-08       0.663 4 days           \n5 wa        2021-12-05 2021-12-09       0.872 4 days           \n6 wa        2021-12-06 2021-12-10       0.642 4 days           \n\n\n\nAnd clearly undergoes revision over time (ex. consider Dec. 1’s percent_cli across version):\n\n\n\nKey: &lt;geo_value, time_value, version&gt;\n   geo_value time_value    version percent_cli version_time_diff\n      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;        &lt;difftime&gt;\n1:        wa 2021-12-01 2021-12-05    0.884362            4 days\n2:        wa 2021-12-01 2021-12-06    0.917057            5 days\n3:        wa 2021-12-01 2021-12-07    0.896221            6 days\n4:        wa 2021-12-01 2021-12-08    0.984512            7 days\n5:        wa 2021-12-01 2021-12-09    1.027853            8 days\n6:        wa 2021-12-01 2021-12-10    0.999755            9 days"
+  },
+  {
+    "objectID": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
+    "href": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Revision triangle, Outpatient visits in WA 2022",
+    "text": "Revision triangle, Outpatient visits in WA 2022"
   },
   {
     "objectID": "slides/day1-morning.html#revisions",
     "href": "slides/day1-morning.html#revisions",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Revisions",
-    "text": "Revisions\nMany data sources are subject to revisions:\n\nCase and death counts are frequently corrected or adjusted by authorities.\nMedical claims data can take weeks to be submitted and processed.\n\n\n\nLab tests and medical records can be backlogged for a variety of reasons.\nSurveys are not always completed promptly.\nKey: An accurate revision log is crucial for researchers building forecasts of COVID-19 cases or outcomes. A forecast that is made today can should rely on information we have access to today."
+    "text": "Revisions\nMany data sources are subject to revisions:\n\nCase and death counts are frequently corrected or adjusted by authorities.\nMedical claims data can take weeks to be submitted and processed.\n\n\n\nLab tests and medical records can be backlogged for a variety of reasons.\nSurveys are not always completed promptly.\nKey: An accurate revision log is crucial for researchers building forecasts.\n\nA forecast that is made today can should rely on information we have access to today."
   },
   {
-    "objectID": "slides/day1-morning.html#types-of-revisions",
-    "href": "slides/day1-morning.html#types-of-revisions",
+    "objectID": "slides/day1-morning.html#three-types-of-revisions",
+    "href": "slides/day1-morning.html#three-types-of-revisions",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Types of revisions",
-    "text": "Types of revisions\n\nSources that don’t revise - Ex. Facebook or Google symptoms (provisional and final are the same)\nPredictable revisions - Ex. Claims data (CHNG) and public health reports aligned by observation/test, hosp, or death date\nRevisions that are large and erratic to predict - Ex. COVID cases and deaths"
+    "section": "Three types of revisions",
+    "text": "Three types of revisions\n\nSources that don’t revise - Ex. Facebook or Google symptoms (provisional and final are the same)\nPredictable revisions - Ex. Claims data (CHNG) and public health reports aligned by observation/test, hosp, or death date\nRevisions that are large and erratic to predict - Ex. COVID cases and deaths"
   },
   {
     "objectID": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
     "href": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Types of revisions - Comparison between 2. and 3.",
-    "text": "Types of revisions - Comparison between 2. and 3.\n\n\nRevision behavior for two indicators in the HRR containing Charlotte, NC.\n\n\n\nDV-CLI signal (left)  was regularly revised throughout the period, although effects fade farther back.\nJHU CSSE cases (right)  remain “as reported” on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data."
+    "text": "Types of revisions - Comparison between 2. and 3.\n\n\nRevision behavior for two indicators in the HRR containing Charlotte, NC.\n\n\n\nDV-CLI signal (left)  was regularly revised throughout the period, although effects fade farther back.\nJHU CSSE cases (right)  remain “as reported” on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data.\n\n\n\n\nFigure 1 from McDonald et al. (2021)"
   },
   {
     "objectID": "slides/day1-morning.html#key-takeaways",
@@ -935,7 +1313,7 @@
     "href": "slides/day1-morning.html#reporting-backlogs---example",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Reporting backlogs - Example",
-    "text": "Reporting backlogs - Example\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends."
+    "text": "Reporting backlogs - Example\n\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends.\n\n\n\n\nFigure 4 from Reinhart et al. (2021)"
   },
   {
     "objectID": "slides/day1-morning.html#reporting-backlogs---key-takeaways",

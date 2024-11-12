@@ -453,8 +453,31 @@
 </section>
 <section id="what-we-provide" class="slide level2">
 <h2>What we provide</h2>
+<style>
+/* Move the external link icon (square with arrow) to the right of the link */
+a[target="_blank"] {
+  position: relative; /* Make the link a positioned container */
+}
 
-<img data-src="gfx/web_of_parts.jpg" class="r-stretch"></section>
+/* Style for the external link icon */
+a[target="_blank"]::after {
+  font-size: 16px;   /* Adjust the size of the icon */
+  position: absolute; /* Position the icon absolutely inside the link */
+  right: 0;           /* Move the icon to the right side of the link */
+  top: 80%;           /* Vertically at bottom */
+}
+</style>
+<div style="position: relative; width: 80%; height: auto; margin: 0 auto;">
+<p><!-- Embed the JPG image with 80% width --> <img src="gfx/web_of_parts.jpg" width="100%" height="auto"></p>
+<p><!-- Create clickable areas on top of the JPG --> <!-- Signal discovery --> <a href="https://delphi.cmu.edu/signals/" style="position: absolute; top: 30px; left: 12px; width: 310px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><a href="https://cmu-delphi.github.io/epiprocess/" style="position: absolute; top: 30px; left: 362px; width: 290px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><a href="https://cmu-delphi.github.io/delphi-tooling-book/" style="position: absolute; top: 30px; left: 682px; width: 270px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+</div>
+<p><a href="https://cmu-delphi.github.io/delphi-epidata/" style="position: absolute; top: 242px; left: 182px; width: 370px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><a href="https://cmu-delphi.github.io/epidatr/" style="position: absolute; top: 222px; left: 582px; width: 260px; height: 140px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><a href="https://cmu-delphi.github.io/epipredict/" style="position: absolute; top: 222px; left: 866px; width: 170px; height: 150px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/" style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+</section>
 <section id="goals-of-delphi-epidata-platform-and-repository" class="slide level2">
 <h2>Goals of Delphi Epidata platform and repository</h2>
 <div style="font-size: 0.9em;">
@@ -577,9 +600,21 @@
 </ul>
 </div>
 </section>
-<section id="section-3" class="slide level2">
-<h2></h2>
-<p><img data-src="gfx/severity_pyramid.jpg" style="height:75.0%"></p>
+<section id="severity-pyramid" class="slide level2">
+<h2>Severity pyramid</h2>
+<div style="position: relative; width: 90%; height: auto; margin: 0 auto;">
+<p><!-- Embed the JPG image with 80% width --> <img src="gfx/severity_pyramid.jpg" width="100%" height="auto"></p>
+<p><!-- Create clickable areas on top of the JPG --> <!-- NCHS mortality --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nchs-mortality.html" style="position: absolute; top: 85px; left: 685px; width: 170px; height: 25px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- Hospital admissions - medical insurance claims --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hospital-admissions.html" style="position: absolute; top: 165px; left: 685px; width: 245px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- Hospital reporting --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html" style="position: absolute; top: 215px; left: 685px; width: 188px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- Reported cases --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html" style="position: absolute; top: 275px; left: 685px; width: 160px; height: 13px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- Quidel --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/quidel.html" style="position: absolute; top: 295px; left: 685px; width: 227px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- Doctor visits --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html" style="position: absolute; top: 335px; left: 685px; width: 245px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- Google search trends --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/google-symptoms.html" style="position: absolute; top: 390px; left: 685px; width: 209px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- FB survey --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html" style="position: absolute; top: 410px; left: 685px; width: 158px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- SafeGraph --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/safegraph.html" style="position: absolute; top: 530px; left: 685px; width: 175px; height: 18px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+<p><!-- FB survey --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html" style="position: absolute; top: 550px; left: 685px; width: 158px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+</div>
 </section></section>
 <section>
 <section id="epidatr" class="title-slide slide level1 center">
@@ -704,15 +739,17 @@
 <section id="signal-dashboard---for-covid-19-flu-data" class="slide level2">
 <h2>Signal dashboard - For COVID-19 &amp; flu data</h2>
 <div class="flex">
-<div class="w-50">
+<div class="w-40">
 <ul>
-<li><p>The <a href="https://delphi.cmu.edu/covidcast/">signal dashboard</a> displays a selection of our signals for COVID-19 and the flu.</p></li>
-<li><p>Includes an “Advanced Data Export” to pull a selected signal &amp; download as a CSV.</p></li>
-<li><p>Browse by location or indicator to choose which signal you are interested in &amp; then export the data for further analysis.</p></li>
+<li><p>The <a href="https://delphi.cmu.edu/covidcast/">signal dashboard</a> displays a selection of signals for COVID-19 &amp; flu.</p></li>
+<li><p>Browse by location or indicator to choose which signal you are interested in &amp; then export the data for analysis.</p></li>
+<li><p>Example: Symptom searches on Google in NC</p></li>
 </ul>
+<!-- 
+* Includes "Data Export" to pull a selected signal & download as a CSV. -->
 </div>
-<div class="w-50">
-<p><img data-src="gfx/covid_hosp_admissions.jpg"></p>
+<div class="w-60">
+<p><a href="https://delphi.cmu.edu/covidcast/indicator/?date=20240426&amp;region=NC"> <img src="gfx/google_symptoms_signal_dash.jpg" alt="Signal Discover Screenshot"> </a></p>
 </div>
 </div>
 </section>
@@ -723,8 +760,13 @@
 <ul>
 <li>Search tool that is a good to browse &amp; find data.</li>
 </ul></li>
-<li><a href="https://delphi.cmu.edu/signals/">Let’s try it out together!</a> <img data-src="gfx/signal_discover_screenshot.jpg">{height=auto, width = 50%}</li>
+<li><a href="https://delphi.cmu.edu/signals/">Let’s try it out together!</a> <a href="https://delphi.cmu.edu/signals/"> <img src="gfx/signal_discover_screenshot.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;"> </a></li>
 </ul>
+</section>
+<section id="example---nchs-weekly-flu-mortality-data-in-states" class="slide level2">
+<h2>Example - NCHS Weekly Flu Mortality Data in States</h2>
+<p><a href="https://delphi.cmu.edu/signals/"> <img src="gfx/signal_discover_screenshot_ex.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;"> </a></p>
+<!-- To reproduce: Pathogen/Syndrom = flu, Severity pyramid = Dead (top of pyramid), Geo-level = ADM1 (e.g. U.S. states) -->
 </section>
 <section id="interactive-tooling" class="slide level2">
 <h2>Interactive tooling</h2>
@@ -834,7 +876,7 @@
 <li><p><code>sample_size</code>: number of events used in the estimation.</p></li>
 </ul>
 </div>
-<!--  For example, a number of COVID-19 antigen tests were performed in the state of New York on August 1. The `time_value`ould be August 1, with `geo_value` indicating the state of New York, while the remaining fields would give the estimated test positivity rate (the percentage of tests that were positive for COVID-19), its standard error, and the number of tests used to calculate the estimate. -->
+<!--For example, a number of COVID-19 antigen tests were performed in the state of New York on August 1. The `time_value` would be August 1, with `geo_value` indicating the state of New York, while the remaining fields would give the estimated test positivity rate (the percentage of tests that were positive for COVID-19), its standard error, and the number of tests used to calculate the estimate.-->
 </section>
 <section id="returned-data---covidcast-main-endpoint-1" class="slide level2">
 <h2>Returned data - COVIDcast main endpoint</h2>
@@ -919,10 +961,8 @@
 </section>
 <section id="example-queries---other-endpoints-hospitalizations" class="slide level2">
 <h2>Example queries - Other endpoints <br> Hospitalizations</h2>
-<ol type="1">
-<li><strong>COVID-19 Hospitalization: Facility Lookup</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html</a></p>
+<p><strong>COVID-19 Hospitalization: Facility Lookup</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility_lookup.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">pub_covid_hosp_facility_lookup</span>(<span class="at">city =</span> <span class="st">"southlake"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -940,68 +980,52 @@
 </section>
 <section id="example-queries---other-endpoints-hospitalizations-1" class="slide level2">
 <h2>Example queries - Other endpoints <br> Hospitalizations</h2>
-<ol start="2" type="1">
-<li><strong>COVID-19 Hospitalization by Facility</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html</a></p>
+<p><strong>COVID-19 Hospitalization by Facility</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">pub_covid_hosp_facility</span>(</span>
 <span id="cb16-2"><a></a>  <span class="at">hospital_pks =</span> <span class="st">"100075"</span>,</span>
 <span id="cb16-3"><a></a>  <span class="at">collection_weeks =</span> <span class="fu">epirange</span>(<span class="dv">20200101</span>, <span class="dv">20200501</span>)</span>
 <span id="cb16-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<ol start="3" type="1">
-<li><strong>COVID-19 Hospitalization by State</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html</a></p>
+<p><strong>COVID-19 Hospitalization by State</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">pub_covid_hosp_state_timeseries</span>(<span class="at">states =</span> <span class="st">"MA"</span>, <span class="at">dates =</span> <span class="st">"20200510"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="example-queries---other-endpoints-flu-endpoints" class="slide level2">
 <h2>Example queries - Other endpoints <br> Flu endpoints</h2>
-<ol type="1">
-<li><strong>FluSurv hospitalization data</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html</a></p>
+<p><strong>FluSurv hospitalization data</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">pub_flusurv</span>(<span class="at">locations =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="dv">202001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<ol start="2" type="1">
-<li><strong>Fluview data</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/fluview.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/fluview.html</a></p>
+<p><strong>Fluview data</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/fluview.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/fluview.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">pub_fluview</span>(<span class="at">regions =</span> <span class="st">"nat"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201201</span>, <span class="dv">202001</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<ol start="3" type="1">
-<li><strong>NIDSS Flu</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html</a></p>
+<p><strong>NIDSS Flu</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">pub_nidss_flu</span>(<span class="at">regions =</span> <span class="st">"taipei"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200901</span>, <span class="dv">201301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="example-queries---other-endpoints-dengue-endpoints" class="slide level2">
 <h2>Example queries - Other endpoints <br> Dengue endpoints</h2>
-<ol type="1">
-<li><strong>Delphi’s Dengue Nowcast</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html</a></p>
+<p><strong>Delphi’s Dengue Nowcast</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="fu">pub_dengue_nowcast</span>(<span class="at">locations =</span> <span class="st">"pr"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201401</span>, <span class="dv">202301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<ol start="2" type="1">
-<li><strong>NIDSS dengue</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html</a></p>
+<p><strong>NIDSS dengue</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">pub_nidss_dengue</span>(<span class="at">locations =</span> <span class="st">"taipei"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200301</span>, <span class="dv">201301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<ol start="3" type="1">
-<li><strong>PAHO Dengue</strong></li>
-</ol>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html</a></p>
+<p><strong>PAHO Dengue</strong></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">pub_paho_dengue</span>(<span class="at">regions =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200201</span>, <span class="dv">202319</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1009,7 +1033,7 @@
 <section id="example-queries---other-endpoints-wikipedia" class="slide level2">
 <h2>Example queries - Other endpoints <br> Wikipedia</h2>
 <p><strong>Wikipedia access</strong></p>
-<p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/wiki.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/wiki.html</a></p>
+<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/wiki.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/wiki.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">pub_wiki</span>(</span>
 <span id="cb24-2"><a></a>  <span class="at">language =</span> <span class="st">"en"</span>,</span>
@@ -1071,28 +1095,28 @@
 </section>
 <section id="panel-data-1" class="slide level2">
 <h2>Panel data</h2>
-<div style="font-size: 0.91em;">
+<div style="font-size: 0.85em;">
 <ul>
 <li><p><a href="https://en.wikipedia.org/wiki/Panel_data">Panel data</a> or longitudinal data, contain cross-sectional measurements of subjects over time.</p></li>
 <li><p>In table form, panel data is a time index + one or more locations/keys.</p></li>
-<li><p>For example: The estimated percentage of outpatient doctor visits that are COVID-related in MA over 2021 (<a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">docs</a>):</p></li>
+<li><p>For example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec.&nbsp;2021 to Feb.&nbsp;2022 (<a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">docs</a>):</p></li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>An `epi_df` object, 6 x 3 with metadata:
 * geo_type  = state
 * time_type = day
-* as_of     = 2021-12-17
+* as_of     = 2022-02-01
 
 # A tibble: 6 × 3
   geo_value time_value percent_cli
 * &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;
-1 ma        2021-03-01        3.31
-2 ma        2021-03-02        2.87
-3 ma        2021-03-03        2.95
-4 ma        2021-03-04        3.17
-5 ma        2021-03-05        3.35
-6 ma        2021-03-06        3.38</code></pre>
+1 wa        2021-12-01        4.70
+2 wa        2021-12-02        4.60
+3 wa        2021-12-03        4.56
+4 wa        2021-12-04        4.93
+5 wa        2021-12-05        4.17
+6 wa        2021-12-06        4.12</code></pre>
 </div>
 </div>
 </div>
@@ -1130,7 +1154,10 @@
 <h2>All together - Visualizing multiple panel data signals</h2>
 <p>Example: gathering different signals + <strong>scaling</strong> + visualizing panel data</p>
 
-<img data-src="day1-morning_files/figure-revealjs/scaled-signals-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>The auxiliary signals track changes in officially reported cases quite well. This is more clear when they have all been placed on the same range as reported cases per 100,000 people.</p>
+<img data-src="day1-morning_files/figure-revealjs/scaled-signals-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
+<p><small><a href="https://www.pnas.org/doi/10.1073/pnas.2111452118">Figure 1 from Reinhart et al.&nbsp;(2021)</a></small></p>
+</div>
+<p><strong>Takeaway:</strong> The auxiliary signals track changes in the official reported cases quite well. This is clearer when they have all been placed on the same range as reported cases per 100,000 people.</p>
 </section>
 <section id="covid-19-cases-and-deaths-in-ca-example" class="slide level2">
 <h2>COVID-19 cases and deaths in CA example</h2>
@@ -1155,12 +1182,12 @@
 <pre><code>Key: &lt;geo_value, time_value, version&gt;
    geo_value time_value    version percent_cli
       &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;
-1:        ma 2021-03-01 2021-03-04    6.470187
-2:        ma 2021-03-01 2021-03-05    6.207676
-3:        ma 2021-03-01 2021-03-06    5.664716
-4:        ma 2021-03-01 2021-03-07    5.636590
-5:        ma 2021-03-01 2021-03-08    5.665734
-6:        ma 2021-03-01 2021-03-09    5.537332</code></pre>
+1:        wa 2021-12-01 2021-12-05    0.884362
+2:        wa 2021-12-01 2021-12-06    0.917057
+3:        wa 2021-12-01 2021-12-07    0.896221
+4:        wa 2021-12-01 2021-12-08    0.984512
+5:        wa 2021-12-01 2021-12-09    1.027853
+6:        wa 2021-12-01 2021-12-10    0.999755</code></pre>
 </div>
 </div>
 <ul>
@@ -1171,7 +1198,10 @@
 <h2>Versioned panel data</h2>
 <p>Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:</p>
 
-<img data-src="day1-morning_files/figure-revealjs/versioned-panel-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-morning_files/figure-revealjs/versioned-panel-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
+<p><small><a href="https://www.pnas.org/doi/10.1073/pnas.2111452118">Figure 5 from Reinhart et al.&nbsp;(2021)</a></small></p>
+</div>
+</section>
 <section id="latency-and-revision-in-signals" class="slide level2">
 <h2>Latency and revision in signals</h2>
 <ul>
@@ -1185,39 +1215,50 @@
 </section>
 <section id="latency-and-revision-in-signals---example" class="slide level2">
 <h2>Latency and revision in signals - Example</h2>
-<div style="font-size: 0.9em;">
+<div style="font-size: 0.75em;">
 <ul>
-<li>Recall the first example of panel &amp; versioned data we’ve seen.</li>
+<li><p>Recall the first example of panel &amp; versioned data we’ve seen…</p></li>
+<li><p>This signal is 4 days <strong>latent</strong> (min(<code>version</code> - <code>time_value</code>))</p></li>
 </ul>
-<!-- on the % of COVID-related outpatient visits in MA during 2021. -->
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+# Groups:   time_value [6]
+  geo_value time_value version    percent_cli version_time_diff
+  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           
+1 wa        2021-12-01 2021-12-05       0.884 4 days           
+2 wa        2021-12-02 2021-12-06       0.737 4 days           
+3 wa        2021-12-03 2021-12-07       0.662 4 days           
+4 wa        2021-12-04 2021-12-08       0.663 4 days           
+5 wa        2021-12-05 2021-12-09       0.872 4 days           
+6 wa        2021-12-06 2021-12-10       0.642 4 days           </code></pre>
+</div>
+</div>
 <ul>
-<li>This signal is 3 days latent (<code>version</code> - <code>time_value</code>) &amp; clearly undergoes revision over time (ex. consider March 1’s <code>percent_cli</code> across <code>version</code>).</li>
+<li>And clearly undergoes <strong>revision</strong> over time (ex. consider Dec.&nbsp;1’s <code>percent_cli</code> across <code>version</code>):</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>Key: &lt;geo_value, time_value, version&gt;
-   geo_value time_value    version percent_cli
-      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;
-1:        ma 2021-03-01 2021-03-04    6.470187
-2:        ma 2021-03-01 2021-03-05    6.207676
-3:        ma 2021-03-01 2021-03-06    5.664716
-4:        ma 2021-03-01 2021-03-07    5.636590
-5:        ma 2021-03-01 2021-03-08    5.665734
-6:        ma 2021-03-01 2021-03-09    5.537332</code></pre>
-</div>
-</div>
-<ul>
-<li>The amount of lag in reporting can vary, and not all visits are reported with the same lag.</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<div class="cell-output cell-output-stdout">
-<pre><code>     min median     mean     max
-  3 days 3 days 3.6 days 16 days</code></pre>
+   geo_value time_value    version percent_cli version_time_diff
+      &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;        &lt;difftime&gt;
+1:        wa 2021-12-01 2021-12-05    0.884362            4 days
+2:        wa 2021-12-01 2021-12-06    0.917057            5 days
+3:        wa 2021-12-01 2021-12-07    0.896221            6 days
+4:        wa 2021-12-01 2021-12-08    0.984512            7 days
+5:        wa 2021-12-01 2021-12-09    1.027853            8 days
+6:        wa 2021-12-01 2021-12-10    0.999755            9 days</code></pre>
 </div>
 </div>
 </div>
-<!-- min_lag: the minimum time to any value  -->
+<!-- min_lag: the minimum time to any value min(as.integer(version) - as.integer(time_value)  -->
+<!-- max_lag: the amount of time until the final (new) version -->
+<!-- revision_summary computes some basic statistics about the revision behavior of an archive, returning a tibble summarizing the revisions per time_value+epi_key features. -->
 </section>
+<section id="revision-triangle-outpatient-visits-in-wa-2022" class="slide level2">
+<h2>Revision triangle, Outpatient visits in WA 2022</h2>
+
+<img data-src="day1-morning_files/figure-revealjs/revision-triangle-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="revisions" class="slide level2">
 <h2>Revisions</h2>
 <p>Many data sources are subject to revisions:</p>
@@ -1229,11 +1270,12 @@
 <ul>
 <li><p>Lab tests and medical records can be backlogged for a variety of reasons.</p></li>
 <li><p>Surveys are not always completed promptly.</p></li>
-<li><p><strong>Key</strong>: An accurate revision log is crucial for researchers building forecasts of COVID-19 cases or outcomes. <strong>A forecast that is made today can should rely on information we have access to today.</strong></p></li>
+<li><p><strong>Key</strong>: An accurate revision log is crucial for researchers building forecasts.</p></li>
 </ul>
+<p><strong>A forecast that is made today can should rely on information we have access to today.</strong></p>
 </section>
-<section id="types-of-revisions" class="slide level2">
-<h2>Types of revisions</h2>
+<section id="three-types-of-revisions" class="slide level2">
+<h2>Three types of revisions</h2>
 <ol type="1">
 <li><p><strong>Sources that don’t revise</strong> - Ex. Facebook or Google symptoms (provisional and final are the same)</p></li>
 <li><p><strong>Predictable revisions</strong> - Ex. Claims data (CHNG) and public health reports aligned by observation/test, hosp, or death date</p></li>
@@ -1242,7 +1284,7 @@
 </section>
 <section id="types-of-revisions---comparison-between-2.-and-3." class="slide level2">
 <h2>Types of revisions - Comparison between 2. and 3.</h2>
-<div style="font-size: 0.8em;">
+<div style="font-size: 0.75em;">
 <ul>
 <li>Revision behavior for two indicators in the HRR containing Charlotte, NC.</li>
 </ul>
@@ -1253,7 +1295,10 @@
 </ul>
 </div>
 
-<img data-src="day1-morning_files/figure-revealjs/figure-1-revisions-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-morning_files/figure-revealjs/figure-1-revisions-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
+<p><small><a href="https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118">Figure 1 from McDonald et al.&nbsp;(2021)</a></small></p>
+</div>
+</section>
 <section id="key-takeaways" class="slide level2">
 <h2>Key takeaways</h2>
 <ul>
@@ -1268,12 +1313,17 @@
 </section>
 <section id="reporting-backlogs---example" class="slide level2">
 <h2>Reporting backlogs - Example</h2>
+<div style="font-size: 0.8em;">
 <ul>
 <li><p><strong>Left</strong>: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 <strong>backlogged cases</strong> were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.</p></li>
 <li><p><strong>Right</strong>: CTIS estimates of CLI-in-community showed more stable underlying trends.</p></li>
 </ul>
+</div>
 
-<img data-src="day1-morning_files/figure-revealjs/figure-4-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-morning_files/figure-revealjs/figure-4-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
+<p><small><a href="https://www.pnas.org/doi/10.1073/pnas.2111452118">Figure 4 from Reinhart et al.&nbsp;(2021)</a></small></p>
+</div>
+</section>
 <section id="reporting-backlogs---key-takeaways" class="slide level2">
 <h2>Reporting backlogs - Key takeaways</h2>
 <ul>
@@ -1322,7 +1372,7 @@
 </section>
 <section id="understanding-data-as-of-a-specific-date" class="slide level2">
 <h2>Understanding data “as of” a specific date</h2>
-<div style="font-size: 0.7em;">
+<div style="font-size: 0.8em;">
 <ul>
 <li>Requesting Specific Data Versions:
 <ul>
@@ -1357,7 +1407,7 @@
 </section>
 <section id="understanding-data-as-of-a-specific-date-1" class="slide level2">
 <h2>Understanding data “as of” a specific date</h2>
-<div style="font-size: 0.7em;">
+<div style="font-size: 0.8em;">
 <p><strong>Default behaviour:</strong> If we don’t specify <code>as_of</code>, we get the most recent estimate:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
@@ -1733,15 +1783,12 @@
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          // dispatch for htmlwidgets
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -1752,6 +1799,13 @@
               window.jQuery(currentSlide).trigger("shown");
             }
           }
+        }
+
+        // hookup for reveal
+        if (window.Reveal) {
+          window.Reveal.addEventListener("slidechanged", function(event) {
+            fireSlideChanged(event.previousSlide, event.currentSlide);
+          });
         }
 
         // hookup for slidy
