@@ -1,0 +1,807 @@
+---
+talk-title: "Explore, clean & transform data"
+talk-short-title: "{{< meta talk-title >}}"
+talk-subtitle: ""
+author: ""
+other-authors: ""
+repo-address: "cmu-delphi/insightnet-workshop-2024"
+talk-date: ""
+format: revealjs
+execute:
+  cache: false
+---
+  
+  <!-- Set any of the above to "" to omit them -->
+  
+  <!-- Or adjust the formatting in _titleslide.qmd -->
+  {{< include _titleslide.qmd >}}
+
+```{r theme}
+theme_set(theme_bw())
+
+library(tidyverse)
+library(epidatr)
+library(epiprocess)
+library(epipredict)
+library(epidatasets)
+# install.packages("remotes")
+# remotes::install_github("UBC-STAT/stat-406-rpackage", dependencies = TRUE)
+library(Stat406)
+```
+
+## Outline
+
+1. Essentials of `dplyr` and `tidyr` 
+
+1. Epiverse software ecosystem
+
+1. Panel and versioned data in the epiverse
+
+1. Basic Nowcasting using `epiprocess`
+
+1. Motivating case study 
+
+
+## Down with Spreadsheets for Data Manipulation
+
+* Spreadsheets make it difficult to rerun analyses consistently.
+* Using R (and `dplyr`) allows for:
+  * Reproducibility 
+  * Ease of modification
+* **Recommendation**: Avoid manual edits; instead, use code for transformations.
+
+
+## Introduction to `dplyr`
+
+* `dplyr` is a powerful package in R for data manipulation.
+* It is part of the **tidyverse**, which includes a collection of packages designed to work together.
+* We focus on basic operations like selecting and filtering data.
+* Make sure to load the necessary libraries before using `dplyr`.
+
+```{r load-tidyverse}
+library(tidyverse)  # Load tidyverse, which includes dplyr
+```
+
+## Meet the Palmers
+![](gfx/meet_the_palmers.png){style="width: 70%;"}
+
+<small>[Illustration from the palmerpenguins website](https://allisonhorst.github.io/palmerpenguins/)</small>
+
+## Working with the `palmerpenguins` Dataset
+
+* The `palmerpenguins` dataset is included in the `palmerpenguins` package.
+* Load both the `tidyverse` and `palmerpenguins` libraries to access and explore the dataset.
+* The dataset includes measurements of penguins such as species, bill length, flipper length, and body mass.
+
+```{r load-penguins}
+library(tidyverse)
+library(palmerpenguins)
+penguins # View the dataset 
+```
+
+## Ways to Inspect the Dataset
+
+* Use `head()` to view the first 6 row of the data (`tail()` to view the last 6 rows)
+```{r head-tail-funs}
+#| echo: true
+head(penguins)  # First 6 rows
+#tail(penguins)  # Last 6 rows
+```
+
+## Ways to Inspect the Dataset
+* `glimpse()` to get a compact overview of the dataset.
+
+```{r glimpse-ex}
+#| echo: true
+glimpse(penguins)
+```
+
+
+## Creating Tibbles
+
+* **Tibbles**: Modern data frames with enhanced features.
+* Rows represent **observations** (or cases).
+* Columns represent **variables** (or features).
+* You can create tibbles manually using the `tibble()` function.
+
+```{r create-tibble}
+#| echo: true
+tibble(x = letters, y = 1:26)
+```
+
+## Selecting Columns with `select()`
+
+* The `select()` function is used to pick specific columns from your dataset.
+
+```{r select-columns}
+#| echo: true
+select(penguins, species, body_mass_g)  # Select the 'species' and 'body_mass_g' columns
+```
+
+## Selecting Columns with `select()`
+
+* You can exclude columns by prefixing the column names with a minus sign `-`.
+
+```{r select-columns-exclude}
+#| echo: true
+select(penguins, -species)  # Exclude the 'species' column from the dataset
+```
+
+* So, this is useful when you want to keep only certain columns or remove unnecessary ones.
+
+## Extracting Columns with `pull()`
+
+* `pull()`: Extract a column as a vector.
+* Let's try this with the `species` column...
+
+```{r pull-column-direct}
+#| echo: true
+pull(penguins, species)
+```
+
+
+## Filtering Rows with `filter()`
+
+* The `filter()` function allows you to select rows that meet specific conditions.
+* Conditions can involve column values, such as selecting only "Gentoo" penguins or filtering based on measurements like flipper length.
+* This enables you to narrow down your dataset to focus on relevant data.
+
+```{r filter-rows}
+#| echo: true
+filter(penguins, species == "Gentoo", flipper_length_mm < 208)  # Filter Gentoo penguins with flipper length < 208mm
+```
+
+## Combining `select()` and `filter()` Functions
+
+* You can combine `select()` and `filter()` functions to refine the dataset further.
+* Use `select()` to choose columns and `filter()` to narrow rows based on conditions.
+* This helps in extracting the exact data needed for analysis.
+
+```{r select-filter-combine}
+#| echo: true
+select(filter(penguins, species == "Gentoo", flipper_length_mm < 208), species, flipper_length_mm)
+```
+
+## Using the Pipe Operator `%>%`
+
+* The pipe operator (`%>%`) makes code more readable by chaining multiple operations together.
+* The output of one function is automatically passed to the next function.
+* This allows you to perform multiple steps (e.g., `select()` followed by `filter()`) in a clear and concise manner.
+
+```{r pipe-operator}
+#| echo: true
+# This code reads more like poetry!
+penguins %>% 
+  select(species, flipper_length_mm) %>%
+  filter(species == "Gentoo", flipper_length_mm < 208)
+```
+
+## Key Practices in `dplyr`
+
+* Use **tibbles** for easier data handling.
+* Use **`select()`** and **`filter()`** for data manipulation.
+* Use **`pull()`** to extract columns as vectors.
+* Use **`head()`**, **`tail()`**, and **`glimpse()`** for quick data inspection.
+* Chain functions with **`%>%`** for cleaner code.
+
+## Grouping Data with `group_by()`
+
+* Use `group_by()` to group data by one or more columns.
+* Allows performing operations on specific groups of data.
+
+```{r group-by-ex}
+#| echo: true
+penguins %>%
+  group_by(species) %>%
+  filter(body_mass_g == min(body_mass_g, na.rm = TRUE))
+```
+
+## Penguin bill length and depth
+<div style="text-align: center;">
+![](gfx/bill_length_depth.png){style="width: 60%;"}
+
+<small>[Illustration from the palmerpenguins website](https://allisonhorst.github.io/palmerpenguins/)</small>
+</div>
+
+## Creating New Columns with `mutate()`
+
+* `mutate()` is used to create new columns.
+* Perform calculations using existing columns and assign to new columns.
+
+```{r mutate-one-var-ex}
+#| echo: true
+penguins %>%
+  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm) %>% 
+  select(-c(flipper_length_mm, body_mass_g, sex)) # too many cols to print
+```
+
+## Creating New Columns with `mutate()`
+
+* `mutate()` can create multiple new columns in one step.
+* Logical comparisons (e.g., `sex == "male"`) can be used within `mutate()`.
+
+```{r mutate-two-var-ex}
+#| echo: true
+penguins %>%
+  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm, 
+         TF = sex == "male") %>% 
+  select(-c(flipper_length_mm, body_mass_g, year)) 
+```
+
+## Combining `group_by()` and `mutate()`
+
+* First, group data using `group_by()`.
+* Then, use `drop_na()` from `tidyr` to exclude rows with missing values.
+* Finally, `mutate` to perform calculations for each group.
+
+```{r group-by-mutate-combo}
+#| echo: true
+penguins %>%
+  drop_na() %>% # Remove all non-complete rows
+  group_by(species) %>%
+  mutate(body_mass_median = median(body_mass_g)) %>% 
+  select(-c(flipper_length_mm, body_mass_g, sex)) %>% 
+  head()
+```
+
+## Conditional Calculations in `mutate()` with `if_else()`
+* `if_else()` allows conditional logic within `mutate()`.
+* Perform different operations depending on conditions, like "big" or "small."
+
+```{r cond-calc-if-else}
+#| echo: true
+t <- 800
+penguins %>%
+  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm, 
+         TF = sex == "male",
+         bill_size_binary = if_else(bill_size_mm2 > t, "big", "small")) %>% 
+  select(-c(flipper_length_mm, body_mass_g, sex)) %>% # too many cols to print
+  head()
+         
+```
+
+## Summarizing Data with `summarise()`
+* `summarise()` reduces data to summary statistics (e.g., mean, median).
+* Typically used after `group_by()` to summarize each group.
+
+```{r summarise-median-one-var}
+#| echo: true
+penguins %>%
+  drop_na() %>%
+  group_by(species) %>%
+  summarise(body_mass_median = median(body_mass_g))
+```
+
+
+## Using `summarise()` with Multiple Calculations
+* Use `summarise()` to calculate multiple summary statistics at once.
+* Include multiple columns and functions in a single call.
+
+```{r summarise-median-multiple-var}
+#| echo: true
+penguins %>%
+  drop_na() %>%
+  group_by(species) %>%
+  summarise(body_mass_median = median(body_mass_g), 
+            bill_depth_median = median(bill_depth_mm),
+            flipper_length_median = median(flipper_length_mm),
+            bill_length_mm = median(bill_length_mm))
+```
+* Yikes! This can get long. Is there a way to condense this?
+
+## Using `across()` to Apply Functions to Multiple Columns in one Swoop
+* `across()` applies a function (e.g., median) to multiple columns.
+* It's especially useful for summarizing multiple numeric columns in one step.
+
+```{r across-fun-ex}
+#| echo: true
+penguins %>%
+  drop_na() %>% 
+  group_by(species) %>%
+  summarise(across(where(is.numeric), median))
+```  
+
+## Using `count()` to Aggregate Data
+* `count()` is a shortcut for grouping and summarizing the data:
+
+For example, if we want to count the number of penguins by species, then
+```{r summarise-count}
+#| echo: true
+penguins_count <- penguins %>%
+  group_by(species) %>%
+  summarize(count = n())
+```
+
+is equivalent to 
+
+```{r count-fun}
+#| echo: true
+penguins_count <- penguins %>%
+  count(species)
+
+penguins_count # Let's see what the counts are.
+```
+
+## Tidy Data
+
+> "Happy families are all alike; every unhappy family is unhappy in its own way." — Leo Tolstoy  
+
+* **Tidy datasets** are like happy families: consistent, standardized, and easy to work with.  
+* **Messy datasets** are like unhappy families: each one messy in its own unique way.  
+In this section:
+* We'll define what makes data *tidy* and how to transform between the tidy and messy formats.
+
+## What is Tidy Data?
+
+* Tidy data follows a consistent structure: **each row represents one observation, and each column represents one variable.**
+
+<!-- * **Example:** Suppose we have the following messy/wide dataset of the counts of two species of penguins on two islands: -->
+```{r tidy-data-example}
+#| echo: true
+# Simple example of messy data (wide format)
+penguins_wide <- tibble(
+  island = c("Biscoe", "Biscoe", "Dream"),
+  year = c(2007, 2008, 2007),
+  Adelie = c(10, 18, 20),
+  Gentoo = c(34, 46, 0)
+)
+penguins_wide
+```
+
+##  Tidying Messy Data with `pivot_longer()`
+* To turn messy data into tidy data, we often use the `tidyr` package in the tidyverse.
+* Use `pivot_longer()` to convert data from **wide format** (multiple columns for the same variable) to **long format** (one column per variable).
+* This makes it easier to perform group-based calculations or create visualizations.
+
+```{r messy-to-tidy-ex}
+# Tidying the data
+penguins_tidy <- penguins_wide %>%
+  pivot_longer(
+    cols = Adelie:Gentoo, 
+    names_to = "species", 
+    values_to = "count"
+  ) 
+
+# Display the tidy data
+penguins_tidy
+```
+
+## Making Data Wider with `pivot_wider()`
+
+* Sometimes, you need to convert data from long format to wide format using `pivot_wider()`.
+* This can be useful when you want to separate variables into individual columns.
+* Let's try converting `penguins_tidy` back to `penguins_wide`!
+
+```{r pivoting-wide-ex}
+#| echo: true
+# Pivoting long data back to wide format
+penguins_wide_back <- penguins_tidy %>%
+  pivot_wider(names_from = species, values_from = count)
+
+penguins_wide_back
+```
+
+## `complete()` and `fill()` to Handle Missing Data
+<div style="font-size: 0.7em;">
+1. **`complete()`**: Adds missing rows for combinations of specified variables.
+2. **`fill()`**: Fills missing values in columns, typically from previous or next available values (default is LOCF).
+</div>
+```{r complete-fill-ex}
+#| echo: true
+# First, use complete() to add missing year (2008 for Dream)
+penguins_complete <- penguins_wide %>%
+  complete(island, year)
+penguins_complete
+```
+
+```{r fill-ex}
+#| echo: true
+# Then, use fill() to fill the missing penguin counts
+penguins_complete %>%
+  fill(Adelie, Gentoo)
+```
+
+## Introduction to Joins in `dplyr`
+<div style="font-size: 0.8em;">
+* Joining datasets is a powerful tool for combining info. from multiple sources.
+* In R, `dplyr` provides several functions to perform different types of joins.
+* We'll demonstrate joining `penguins_complete` (our penguin counts dataset) with `island_info` (dataset containing additional info. about the islands).
+```{r island-info}
+#| echo: true
+# Island information dataset
+island_info <- tibble(
+  island = c("Biscoe", "Dream", "Torgersen"),
+  location = c("Antarctica", "Antarctica", "Antarctica"),
+  region = c("West", "East", "East")
+)
+
+island_info
+```
+* Notice that the `island_info` dataset includes an island, Torgersen, that is not in `penguins_complete`.
+</div>
+
+## Left Join: Keep All Rows from the First Dataset
+
+* A **left join** keeps all rows from the **first dataset** (`penguins_complete`), and adds matching data from the second dataset (`island_info`).
+* So **all rows from the first dataset** (`penguins_complete`) will be preserved.
+* The datasets are joined by matching the `island` column, specified by the by argument.
+
+```{r left-join}
+#| echo: true
+# Left join: combining penguins data with island info
+penguins_with_info <- penguins_complete %>%
+  left_join(island_info, by = "island")
+
+penguins_with_info
+```
+
+## Right Join: Keep All Rows from the Second Dataset
+
+* A **right join** keeps all rows from the **second dataset** (`island_info`), and adds matching data from the first dataset (`penguins_complete`).
+* If a row in the second dataset doesn't have a match in the first, then the columns from the first will be filled with NA. 
+* We can see this for the `Torgersen` row from `island_info`...
+
+```{r right-join}
+#| echo: true
+# Right join: keep all rows from island_info
+penguins_right_join <- penguins_complete %>%
+  right_join(island_info, by = "island")
+
+penguins_right_join
+```
+
+## Inner Join: Only Keeping Matching Rows
+* An inner join will only keep rows where there is a match in both datasets.
+* So, if an island in `island_info` does not have a corresponding entry in `penguins_complete`, then that row will be excluded.
+```{r inner-join}
+#| echo: true
+# Inner join: only matching rows are kept
+penguins_inner_join <- penguins_complete %>%
+  inner_join(island_info, by = "island")
+
+penguins_inner_join
+```
+
+## Full Join: Keeping All Rows from Both Datasets
+
+* A full join will keep all rows from both datasets.
+* If an island in either dataset has no match in the other, the missing values will be filled with NA.
+```{r full-join}
+#| echo: true
+# Full join: keep all rows from both datasets
+penguins_full_join <- penguins_complete %>%
+  full_join(island_info, by = "island")
+
+penguins_full_join
+```
+
+## Summary of the Four Join Functions
+
+* **Left join:** All rows from the left dataset and matching rows from the right dataset.
+* **Right join:** All rows from the right dataset and matching rows from the left dataset.
+* **Inner join:** Only matching rows from both datasets.
+* **Full join:** All rows from both datasets, with NA where no match exists.
+
+## Final thoughts on joins
+* Joins are an essential part of data wrangling in R.
+* The choice of join depends on the analysis you need to perform:
+    + Use **left joins** when you want to keep all data from the first dataset.
+    + Use **right joins** when you want to keep all data from the second dataset.
+    + Use **inner joins** when you're only interested in matching rows.
+    + Use **full joins** when you want to preserve all information from both datasets.
+
+## Goodbye palmer penguins
+<!-- Penguins are great at `group_by()` – they always know how to stick together in a `summarize()`d form! 🐧 -->
+**What's a penguin's favorite tool?** 
+
+%>% — to keep the fish moving, from one catch to the next! 🐧 
+
+<div style="text-align: center;">
+![](gfx/penguins_logo.png){style="width: 30%;"}
+
+<small>[Logo from the palmerpenguins website](https://allisonhorst.github.io/palmerpenguins/)</small>
+</div>
+
+## Epiverse software ecosystem
+<!-- Interworking, community-driven, packages for epi tracking & forecasting. -->
+```{mermaid}
+%%| fig-width: 9
+%%| fig-height: 6
+flowchart LR
+A("{epidatr}") --> C("{epiprocess}")
+B("{epidatpy}") --> C
+D("{other sources}") --> C
+C --> E("{epipredict}")
+
+classDef smallText fill:#fff,stroke:#000,stroke-width:1px,font-size:14px,font-weight:bold,color:royalblue;
+  class A,B,C,D,E smallText;
+```
+
+<!-- 1. Fetch data: epidatr, epidatpy, and other sources, 2. Explore, clean, transform & backtest 3. Pre-built forecasters, modular forecasting framework: epipredict -->
+  
+  
+  
+# Data structures
+  
+## What is panel data?
+<div style="font-size: 0.8em;">
+* Recall that [panel data](https://en.wikipedia.org/wiki/Panel_data), or longitudinal data, 
+contain cross-sectional measurements of subjects over time. 
+* Built-in example: [`covid_case_death_rates`](
+  https://cmu-delphi.github.io/epidatasets/reference/covid_case_death_rates.html) 
+dataset, which is a snapshot **as of** May 31, 2022 that contains daily state-wise measures of `case_rate` and  `death_rate` for COVID-19 in 2021:
+  
+```{r}
+#| echo: false
+edf <- covid_case_death_rates
+head(edf)
+```
+
+* **Question:** How do we store & work with such snapshots in the epiverse software ecosystem?
+  </div>
+  
+## `epi_df`: snapshot of a data set
+  
+* a tibble that requires columns `geo_value` and `time_value`.
+* arbitrary additional columns containing [measured values]{.primary}
+* additional [keys]{.primary} to index (`age_group`, `ethnicity`, etc.)
+
+::: {.callout-note}
+## `epi_df`
+
+Represents a [snapshot]{.primary} that
+contains the most [up-to-date values]{.primary} of the signal variables, [as of]{.primary} a given time.
+:::
+  
+## `epi_df`: snapshot of a data set
+  
+```{css}
+.withscroll {
+  height: 55vh;
+  overflow-y: auto !important;
+}
+```
+
+```{r}
+#| output: asis
+
+withr::with_options(
+  code={
+    cat("<details><summary>Example data object documentation, license, attribution</summary>")
+    cat('<div class="withscroll">')
+    print(help("covid_case_death_rates", package="epipredict", help_type="text"))
+    cat("</div>")
+    cat("</details>")
+  },
+  list(pager=function(files, header, title, delete.file) {
+    on.exit({
+      unlink(files)
+    })
+    cat(paste(c("<pre>",purrr::reduce(purrr::map(files, function(file) {
+      # gsub("</?u>","_",gsub("</u>( *)<u>","\\1",
+      gsub("_\b(.)", "<u>\\1</u>", readLines(file))
+      # ))
+    }), function(x, y) c(x,"\n\n\n",y)), "</pre>"), collapse="\n"))
+  })
+)
+```
+
+```{r}
+edf <- covid_case_death_rates
+edf
+```
+
+## Sliding examples on `epi_df`
+
+### Growth rates
+
+```{r, echo=TRUE}
+edf <- filter(edf, geo_value %in% c("ut", "ca")) %>%
+  group_by(geo_value) %>%
+  mutate(gr_cases = growth_rate(time_value, case_rate, method = "trend_filter"))
+```
+
+```{r}
+#| fig-align: center
+ggplot(edf, aes(x = time_value, y = gr_cases)) +
+  geom_hline(yintercept = 0, size = 1.5) +
+  geom_line(aes(col = geo_value), size = 1.5) +
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_color_manual(values = c(3, 6)) +
+  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
+  labs(x = "Date", y = "Growth rate", col = "State")
+```
+
+
+## `epi_archive`: collection of `epi_df`s
+
+* full version history of a data set
+* acts like a bunch of `epi_df`s --- but stored [compactly]{.primary}
+* allows similar functionality as `epi_df` but using only [data that would have been available at the time]{.primary}
+
+::: {.callout-note}
+## Revisions
+
+Epidemiology data gets revised frequently. (Happens in Economics as well.) 
+
+* We may want to use the data [as it looked in the past]{.primary} 
+* or we may want to examine [the history of revisions]{.primary}.
+:::
+  
+  
+## Revision patterns
+  
+```{r}
+#| output: asis
+
+withr::with_options(
+  code={
+    cat("<details><summary>Example data object documentation, license, attribution</summary>")
+    cat('<div class="withscroll">')
+    print(help("archive_cases_dv_subset", package="epiprocess", help_type="text"))
+    cat("</div>")
+    cat("</details>")
+  },
+  list(pager=function(files, header, title, delete.file) {
+    on.exit({
+      unlink(files)
+    })
+    cat(paste(c("<pre>",purrr::reduce(purrr::map(files, function(file) {
+      # gsub("</?u>","_",gsub("</u>( *)<u>","\\1",
+      gsub("_\b(.)", "<u>\\1</u>", readLines(file))
+      # ))
+    }), function(x, y) c(x,"\n\n\n",y)), "</pre>"), collapse="\n"))
+  })
+)
+```
+
+```{r}
+ggplot(snapshots %>% filter(!latest),
+       aes(x = time_value, y = percent_cli)) +  
+  geom_line(aes(color = factor(version))) + 
+  geom_vline(aes(color = factor(version), xintercept = version), lty = 3) +
+  facet_wrap(~ geo_value, scales = "free_y", nrow = 1) +
+  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
+  labs(x = "", y = "% of doctor's visits with\n Covid-like illness") + 
+  scale_color_viridis_d(option = "B", end = .8) +
+  theme(legend.position = "none") +
+  geom_line(data = snapshots %>% filter(latest),
+            aes(x = time_value, y = percent_cli), 
+            inherit.aes = FALSE, color = "black")
+```
+
+## Finalized data
+<div style="font-size: 0.9em;">
+  * Counts are revised as time proceeds
+* Want to know the [final]{.primary} value 
+* Often not available until weeks/months later
+</div>
+  Forecasting
+: At time $t$, predict the final value for time $t+h$, $h > 0$
+  
+  <br>
+  
+  Backcasting
+: At time $t$, predict the final value for time $t-h$, $h < 0$
+
+  <br>
+  
+  Nowcasting
+: At time $t$, predict the final value for time $t$
+  
+# Nowcasting with one time series
+
+<!-- predicting a finalized value from a provisional value and making predictions. -->
+## Backfill Canadian edition
+  
+* Every week the BC CDC releases COVID-19 hospitalization data.
+
+* Following week they revise the number upward (by ~25%) due to lagged reports.
+
+![](gfx/bc_hosp_admissions_ex.jpg){style="width: 60%;"}
+<!-- Newest iteration of "backfill”, Canada edition. Every week the BC CDC releases hospitalization data. The following week they revise the number upward (by about 25%) due to lagging reports. Every single week, the newspaper says “hospitalizations have declined”. This week the BC CDC’s own report said “hospitalizations have declined”. The takeaway in the news is that hospitalizations ALWAYS fall from the previous week, but once backfilled, they’re rarely down -->
+
+* **Takeaway**: Once the data is backfilled, hospitalizations rarely show a decline, challenging the common media narrative.
+
+## Aside on Nowcasting
+
+* To some Epis, "nowcasting" can be equated with "estimate the time-varying instantaneous reproduction number, $R_t$"
+
+* Example using the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. 
+<!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. -->
+```{r}
+#| fig-width: 9
+#| fig-height: 3
+#| out-height: "400px"
+#| label: nowcasting
+library(rtestim)
+p1 <- Stat406::bccovid |>
+  ggplot(aes(date, cases)) + 
+  geom_line(colour = primary) +
+  geom_vline(xintercept = ymd("2023-04-15"), colour = secondary,
+             linewidth = 2) +
+  labs(y = "BC Covid-19 cases", x = "Date") +
+  scale_y_continuous(expand = expansion(c(0, NA)))
+bc_rt <- estimate_rt(Stat406::bccovid$cases, x = Stat406::bccovid$date, 
+                     lambda = c(1e6, 1e5))
+p2 <- plot(confband(bc_rt, lambda = 1e5)) + 
+  coord_cartesian(ylim = c(0.5, 2)) +
+  scale_y_continuous(expand = expansion(0))
+cowplot::plot_grid(p1, p2)
+```
+
+* Group built [`{rtestim}`](https://dajmcdon.github.io/rtestim) doing for this nonparametrically.
+
+* We may come back to this later...
+
+## Mathematical setup
+
+* Suppose today is time $t$
+
+* Let $y_i$ denote a series of interest observed at times $i=1,\ldots, t$.
+
+::: {.callout-important icon="false"}
+## Our goal
+
+* Produce a **point nowcast** for the finalized values of $y_t$.
+* Accompany with time-varying prediction intervals
+
+:::
+
+* We also have access to $p$ other time series 
+$x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
+
+* All may be subject to revisions.
+
+## Final slide {.smaller}
+
+### Thanks:
+
+```{r qr-codes}
+#| include: false
+#| fig-format: png
+# Code to generate QR codes to link to any external sources
+qrdat <- function(text, ecl = c("L", "M", "Q", "H")) {
+  x <- qrcode::qr_code(text, ecl)
+  n <- nrow(x)
+  s <- seq_len(n)
+  tib <- tidyr::expand_grid(x = s, y = rev(s))
+  tib$z <- c(x)
+  tib
+}
+qr1 <- qrdat("https://cmu-delphi.github.io/epiprocess/")
+qr2 <- qrdat("https://cmu-delphi.github.io/epipredict/")
+ggplot(qr1, aes(x, y, fill = z)) +
+  geom_raster() +
+  ggtitle("{epiprocess}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+ggplot(qr2, aes(x, y, fill = z)) +
+  geom_raster() +
+  labs(title = "{epipredict}") +
+  coord_equal(expand = FALSE) +
+  scale_fill_manual(values = c("white", "black"), guide = "none") +
+  theme_void(base_size = 18) +
+  theme(plot.title = element_text(hjust = .5))
+```
+
+- The whole [CMU Delphi Team](https://delphi.cmu.edu/about/team/) (across many institutions)
+- Optum/UnitedHealthcare, Change Healthcare.
+- Google, Facebook, Amazon Web Services.
+- Quidel, SafeGraph, Qualtrics.
+- Centers for Disease Control and Prevention.
+- Council of State and Territorial Epidemiologists
+
+
+::: {layout-row=1 fig-align="center"}
+![](gfx/delphi.jpg){height="100px"}
+![](gfx/berkeley.jpg){height="100px"}
+![](gfx/cmu.jpg){height="100px"}
+![](gfx/ubc.jpg){width="250px"}
+![](gfx/stanford.jpg){width="250px"}
+:::
+
+

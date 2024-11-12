@@ -23,6 +23,7 @@ theme_set(theme_bw())
 library(tidyverse)
 library(tidymodels)
 library(gridExtra)
+library(grid)
 library(epidatasets)
 library(epidatr)
 library(epiprocess)
@@ -70,12 +71,7 @@ library(epipredict)
 
 * Make it all production-grade, maximally-accessible, and open-source (to serve CDC, state and local public health agencies, epi-forecasting researchers, data journalists, the public)
 
-
 ## What we provide
-
-![](gfx/web_of_parts.jpg)
-
-## What we provide NEW
 
 <style>
 /* Move the external link icon (square with arrow) to the right of the link */
@@ -717,12 +713,12 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 # Panel data
 
 ## Panel data
-<div style="font-size: 0.91em;">
+<div style="font-size: 0.85em;">
 * [Panel data](https://en.wikipedia.org/wiki/Panel_data) or longitudinal data, contain cross-sectional measurements of subjects over time.
 
 * In table form, panel data is a time index + one or more locations/keys.
 
-* For example: The estimated percentage of outpatient doctor visits that are COVID-related in MA over 2021 ([docs](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html)):
+* For example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 ([docs](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html)):
 ```{r ex-panel-data}
 #| echo: false
 x1 <- pub_covidcast(
@@ -730,9 +726,9 @@ x1 <- pub_covidcast(
   signals = "smoothed_adj_cli",
   geo_type = "state",
   time_type = "day",
-  geo_values = "ma", # Just for MA to keep it simple (& to go with the case data by test date for that state)
-  time_value = epirange(20210301, 20212101), 
-  issues = epirange(20210301, 20212101)
+  geo_values = "wa", # Just for WA to keep it simple (& to go with the case data by test date for that state)
+  time_value = epirange(20211201, 20220201), 
+  issues = epirange(20211201, 20220201)
 )
 
 x <- x1 %>%
@@ -1003,30 +999,97 @@ Example: A signal based on medical insurance claims may take several days to app
 Example: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared.
 
 ## Latency and revision in signals - Example
-<div style="font-size: 0.9em;">
-* Recall the first example of panel & versioned data we've seen.
+<div style="font-size: 0.75em;">
+* Recall the first example of panel & versioned data we've seen... 
 
-<!-- on the % of COVID-related outpatient visits in MA during 2021. -->
+* This signal is 4 days **latent** (min(`version` - `time_value`))
 
-* This signal is 3 days **latent** (`version` - `time_value`) & clearly undergoes **revision** over time (ex. consider March 1's `percent_cli` across `version`).
-
-```{r latency-ma-smooth-adj-cli}
+```{r latency-wa-ex}
 #| echo: false
-head(x$DT)
+x_dt_with_diff = x$DT %>% mutate(version_time_diff = version - time_value) 
+head(x_dt_with_diff %>% group_by(time_value) %>% slice(1))
 ```
 
-* The amount of **lag in reporting** can vary, and not all visits are reported with the same lag:
+* And clearly undergoes **revision** over time (ex. consider Dec. 1's `percent_cli` across `version`):
 
-```{r latency-ma-smooth-adj-cli-revision-summary}
+```{r revision-wa-ex}
 #| echo: false
-output <- capture.output(revision_summary(x, print_inform = TRUE))
-cat(head(output, 2), sep = "\n")
+head(x_dt_with_diff)
 ```
+
+
 </div>
 
 <!-- min_lag: the minimum time to any value min(as.integer(version) - as.integer(time_value)  -->
 <!-- max_lag: the amount of time until the final (new) version -->
 <!-- revision_summary computes some basic statistics about the revision behavior of an archive, returning a tibble summarizing the revisions per time_value+epi_key features. -->
+
+## Revision triangle, Outpatient visits in WA 2022
+
+```{r revision-triangle}
+#| echo: false
+#| dpi: 300
+dv_cli <- pub_covidcast(
+  source = "doctor-visits",
+  signals = "smoothed_cli",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "wa",
+  time_values = epirange(20211201, 20220201),
+  issues = epirange(20211201, 20220201)
+) |>
+  select(time_value, value, issue)
+
+dv_cli_finalized <- pub_covidcast(
+  source = "doctor-visits",
+  signals = "smoothed_cli",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "wa",
+  time_values = epirange(20211201, 20220201),
+  as_of = "2022-02-01"
+) |>
+  select(time_value, final_value = value)
+
+dv_cli <- left_join(dv_cli, dv_cli_finalized, by = "time_value")
+
+
+p1 <- dv_cli |>
+  filter(time_value > ymd("2021-12-31"), issue >= "2021-12-31") |>
+  ggplot(aes(time_value, issue, fill = value / final_value * 100)) +
+  geom_tile() +
+  scale_x_date(expand = expansion(), name = "Date") +
+  scale_y_date(expand = expansion(), name = "Report date") +
+  scale_fill_viridis_c(
+    name = "% final", 
+    option = "B",
+    direction = -1
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.key.width = unit(1, "cm")) 
+
+p2 <- dv_cli |>
+  filter(issue >= "2021-12-31", time_value > ymd("2021-12-31")) |>
+  ggplot(aes(time_value)) +
+  geom_line(aes(y = value, colour = issue, group = issue)) +
+  scale_x_date(expand = expansion(), name = "Date") +
+  scale_y_continuous(
+    expand = expansion(), 
+    name = "% Outpatient visits b/c CLI",
+  ) +
+  scale_colour_viridis_c(
+    name = "Report Date", 
+    direction = -1,
+    trans = "date",
+    labels = scales::label_date("%b %d"),
+    option = "B"
+  ) +
+  geom_line(aes(y = final_value), color = "black") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.key.width = unit(1, "cm")) 
+
+cowplot::plot_grid(p1, p2)
+```
 
 ## Revisions
 Many data sources are subject to revisions:
@@ -1041,10 +1104,11 @@ Many data sources are subject to revisions:
 
 * Surveys are not always completed promptly.
 
-* **Key**: An accurate revision log is crucial for researchers building forecasts of COVID-19 cases or outcomes. 
+* **Key**: An accurate revision log is crucial for researchers building forecasts. 
+
 **A forecast that is made today can should rely on information we have access to today.**
 
-## Types of revisions
+## Three types of revisions
 1. **Sources that don't revise** - Ex. Facebook or Google symptoms (provisional and final are the same)
 
 1. **Predictable revisions** - Ex. Claims data (CHNG) and public health reports aligned by observation/test, hosp, or death date
@@ -1064,9 +1128,6 @@ Many data sources are subject to revisions:
 ```{r figure-1-revisions}
 #| echo: false
 # This is Figure 1 from https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118
-library(tidyverse)
-library(gridExtra)
-library(grid)
 res <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
                      time_values = c(20200401, 20200405:20200414))
 
@@ -1087,6 +1148,7 @@ dv_as_of <-  map_dfr(as_ofs, function(as_of) {
                 geo_type = "hrr",
                 time_type = "day",
                 geo_values = "311", 
+                as_of = as_of,
                 time_values = epirange(20200815, 20200926)) %>%
     mutate(as_of = as_of)
 })
@@ -1209,9 +1271,6 @@ g2 <- ggplot(sa_cli, aes(x = time_value, y = value)) +
   theme_bw()
 
 grid.arrange(g1, g2, ncol = 2)
-
-g <- arrangeGrob(g1, g2, ncol = 2)
-invisible(g)
 
 # ggsave("../paper/fig/bexar_compare.pdf", g, width = 6, height = 4)
 ```
