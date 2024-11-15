@@ -504,18 +504,8 @@ penguins_full_join
 
 ## Epiverse software ecosystem
 <!-- Interworking, community-driven, packages for epi tracking & forecasting. -->
-```{mermaid}
-%%| fig-width: 9
-%%| fig-height: 6
-flowchart LR
-A("{epidatr}") --> C("{epiprocess}")
-B("{epidatpy}") --> C
-D("{other sources}") --> C
-C --> E("{epipredict}")
 
-classDef smallText fill:#fff,stroke:#000,stroke-width:1px,font-size:14px,font-weight:bold,color:royalblue;
-  class A,B,C,D,E smallText;
-```
+![](gfx/epiverse_packages_flow.jpg){style="width: 60%;"}
 
 <!-- 1. Fetch data: epidatr, epidatpy, and other sources, 2. Explore, clean, transform & backtest 3. Pre-built forecasters, modular forecasting framework: epipredict -->
   
@@ -537,7 +527,7 @@ edf <- covid_case_death_rates
 head(edf)
 ```
 
-* **Question:** How do we store & work with such snapshots in the epiverse software ecosystem?
+* How do we store & work with such snapshots in the epiverse software ecosystem?
   </div>
   
 ## `epi_df`: snapshot of a data set
@@ -753,6 +743,968 @@ cowplot::plot_grid(p1, p2)
 $x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
 
 * All may be subject to revisions.
+
+# Nowcasting with one variable
+
+## Nowcasting Simple Ratio Ex: HHS Admissions
+
+* In this example, we will demonstrate the concept of nowcasting using **HHS influenza admissions data**
+(All confirmed influenza hospital admissions occurring each day).
+* We will work with **provisional** data (real-time reports) and compare them to **finalized** data (final reports).
+* The goal is to estimate or **nowcast** the admissions values for days when only provisional data is available.
+  
+## Fetch Versioned Data
+
+Let's fetch versioned admissions data from the API (`pub_covidcast`) for Georgia (`geo_values = "ga"`) and the signal of interest (`confirmed_admissions_influenza_1d`) over February 2023.
+```{r admissions-archive-construct}
+#| echo: true
+# Set the start and end dates for the analysis
+start_time = as.Date("2023-02-01")
+end_time = as.Date("2023-02-28")
+
+admissions_archive <- pub_covidcast(
+  source = "hhs",
+  signals = "confirmed_admissions_influenza_1d",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "ga",
+  time_values = "*", # all time values
+  issues = "*"
+) %>% 
+  filter(time_value >= start_time & time_value <= end_time) %>%
+  select(geo_value, time_value, version = issue, admissions = value) %>%
+  as_epi_archive(compactify = TRUE)
+
+```
+
+## Latency in Reporting - Minimum Lag
+
+* A quick inspection reveals that admissions are systematically 2 days latent (**fixed lag**).
+
+```{r inspect-latency-dplyr-way}
+#| echo: true
+admissions_revision_inspect = admissions_archive$DT %>% mutate(version_time_diff = version - time_value)
+admissions_revision_inspect %>% group_by(time_value) %>% slice(1) %>% head()
+```
+
+* Use `revision_summary()` from `epiprocess` to generate basic statistics about the revision behavior for the dataset.
+
+```{r revision-summary-ex}
+#| eval: false
+revision_summary(admissions_archive, print_inform = TRUE) 
+```
+
+## Latency in Reporting - Finalized Value Attainment
+<div style="font-size: 0.8em;">
+* When is the **finalized value** first attained for each date?
+(we wouldn't have access to this in real-time)
+* How fast are the final values attained & what's the pattern for these times, if any?
+
+```{r finalized-value-first-attained-fun}
+#| echo: false
+check_when_finalized <- function(epi_archive, start_date = NULL, end_date = NULL) {
+  # Extract the admissions archive data
+  dt <- epi_archive$DT
+
+  # Extract the latest (finalized) version
+  admissions_latest <- epix_as_of(epi_archive, max_version = max(dt$version))
+
+  # Merge the finalized admissions with all versions from the archive
+  merged_data <- dt %>%
+    filter(geo_value %in% admissions_latest$geo_value &
+             time_value %in% admissions_latest$time_value) %>%
+    inner_join(admissions_latest, by = c("geo_value", "time_value"), suffix = c("", "_finalized"))
+
+  # Find the minimal version where the finalized admissions first occurred
+  finalized_version_data <- merged_data %>%
+    filter(admissions == admissions_finalized) %>%
+    group_by(geo_value, time_value) %>%
+    summarize(min_version = min(version), .groups = 'drop') %>%
+    mutate(diff = min_version - time_value)
+
+  return(finalized_version_data)
+}
+```
+
+```{r check-when-finalized-run}
+#| echo: false
+res <- check_when_finalized(admissions_archive, start_date = start_time, end_date = end_time)
+head(res)
+```
+And here's a numerical summary:
+```{r summary-diff}
+#| echo: false
+summary(as.numeric(res$diff))
+```
+
+* **Conclusion**: Varies somewhat. Even for this relatively small time period... Could be as low as 2 days or as high as 320 days. Yikes.
+* So if we were doing this in real-time, then we don't necessarily have access to finalized data until much later in time.
+</div>
+
+## Comparison of Final vs. Multiple Revisions
+This figure shows the finalized admissions in comparison to **multiple revisions** to see how the data changes over time:
+
+```{r admissions-by-revision-date}
+#| echo: false
+
+# Visualize the admissions values for different "as_of" on one plot
+# Assuming that we have a list of dates we want to plot for different versions
+revision_dates <- seq(min(admissions_archive$DT$version), end_time, by = "1 day")
+
+# Create a data frame for each version and label them by the version date
+admissions_revisions <- map_dfr(revision_dates, function(date) {
+  epix_as_of(admissions_archive, max_version = date) %>%
+    mutate(revision_date = date)  # Add a column for the revision date
+})
+
+# Extract the latest/finalized version
+admissions_latest <- epix_as_of(admissions_archive, max_version = max(admissions_archive$DT$version))
+
+```
+
+```{r final-vs-revisions-plot}
+#| echo: false
+#| fig-width: 9
+#| fig-height: 4
+#| out-height: "500px"
+ggplot() +
+  geom_line(data = admissions_latest, aes(x = time_value, y = admissions), color = "black", size = 1) +
+  geom_line(data = admissions_revisions, aes(x = time_value, y = admissions, color = as.factor(revision_date))) +
+  geom_point(data = admissions_revisions, aes(x = time_value, y = admissions, color = as.factor(revision_date)), size = 2) +
+  labs(color = "Revision Date")  + 
+  ggtitle(paste0("Hospital Admissions, GA: finalized (black) vs various revisions"))
+
+```
+
+## Comparison of Final vs. One Revision
+<div style="font-size: 0.8em;">
+The below figure compares the finalized admissions (in black) to **one revision** (in yellow) for Feb. 16, 2023.
+
+```{r one-revision-final-plot}
+#| out-height: "400px"
+as_of_date = as.Date("2023-02-16")
+ggplot() +
+  geom_line(data = admissions_latest, aes(x = time_value, y = admissions), color = "black", size = 1) +
+  geom_line(data = admissions_revisions %>% filter(revision_date == as_of_date), aes(x = time_value, y = admissions), color = "#FFB300") +
+  ggtitle(paste0("Hospital Admissions, GA: finalized (black) vs ", as_of_date, " revision (yellow)"))
+```
+The real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions.
+</div>
+
+## Calculate One Ratio: Provisional vs. Finalized Data
+<!-- * Let's start simple with computing one ratio. -->
+<div style="font-size: 0.8em;">
+* Suppose that the day is February 16, 2023. Then, because the data is 2 days latent, we can compute the ratio between provisional and finalized data for **February 14, 2023**.
+
+```{r one-ratio-calc}
+#| echo: true
+date_under_investigation = as.Date("2023-02-14")
+
+# Load the finalized influenza data for GA
+ga_finalized <- admissions_latest %>%
+  filter(time_value == date_under_investigation) %>%
+  dplyr::select(admissions)
+
+# Look at the same data but "as_of" "2023-02-16"
+# Load the provisional case data (reported on "2023-02-16" but for "2022-02-14")
+admissions_old = epix_as_of(admissions_archive, max_version = (date_under_investigation + 2L))
+
+ga_provisional <- admissions_old %>%
+  filter(time_value == date_under_investigation) %>%
+  dplyr::select(admissions)
+
+# Calculate ratio between provisional and finalized cases for 2022-02-14
+ratio <- ga_provisional$admissions / ga_finalized$admissions
+ratio
+```
+
+**Conclusion**: The real-time counts tend to be far below the finalized counts for this time (5 vs 14 here).
+
+**Question**: Can we generalize this over many days? 
+</div>
+
+## Calculating the Ratio over Multiple Dates
+* Let's move from calculating the ratio for one day to multiple day with the goal to use it to nowcast for Feb. 27, which has a **provisional value** of 6
+```{r provisional-val-feb27}
+#| echo: true
+as_of_date = as.Date("2023-03-01")
+
+provisional_feb_27 <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
+  filter(time_value == as_of_date - 2L) %>%
+  pull(admissions)
+provisional_feb_27
+```
+
+and a **finalized value** of 8
+
+```{r finalized-val-feb27}
+#| echo: true
+finalized_value <- admissions_latest %>%
+  filter(time_value == as_of_date - 2L) %>%
+  pull(admissions)
+finalized_value
+```
+
+## Calculating the Ratio over Multiple Dates
+First, let's download the real-time number of cases for GA in February 2023, and compare them to their finalized version.
+
+```{r real-time-admissions}
+#| echo: true
+dates <- seq(as.Date("2023-02-01"), as.Date("2023-02-26"), by = "day")
+admissions_real_time <- function(date) {
+  epix_as_of(admissions_archive, max_version = (date + 2L)) %>%
+    filter(time_value == date)
+}
+admissions_ga_real_time <- map_dfr(dates, admissions_real_time)
+head(admissions_ga_real_time)
+```
+
+## Calculating the Ratio over Multiple Dates
+Now, let's plot the real-time vs the finalized number of admissions:
+```{r real-time-vs-finalized}
+ggplot() +
+  geom_line(data = admissions_latest, aes(x = time_value, y = admissions)) +
+  geom_line(data = admissions_ga_real_time, aes(x = time_value, y = admissions),
+            col = 'red') +
+  ggtitle("Admissions, GA: finalized (black) vs real-time (red)")
+```
+* **Takeaways**: Aside from two major overreporting spikes near the beginning, the real-time counts are generally biased **below** the finalized counts.
+* Systematic underreporting begins around Feb. 6, where the bias becomes more consistent.
+
+
+## Calculating the Ratio over Multiple Dates
+Since we expect that this pattern in bias continues going forward (and the massive overreporting near the beginning may drown this out), we'll start estimating the ratio from Feb. 6 and beyond.
+
+```{r admissions-real-time}
+#| echo: true
+admissions_ga_real_time = admissions_ga_real_time %>% filter(time_value >= "2023-02-06")
+head(admissions_ga_real_time)
+```
+
+## Realistic Limitation of Nowcasting - Finalized Data
+* Recall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Feb 10 finalized 320 days later).
+* To nowcast accurately, we must rely on the **best available approximation of finalized data** at the time of estimation (March 1).
+
+```{r finalized-data-as-of-March-1}
+#| echo: true
+admissions_as_of_mar_1 <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
+  filter(time_value >= "2023-02-06" & time_value <= "2023-02-26")
+```
+
+## Ratio calculation & summary
+We then use the "finalized" and real-time counts to compute the mean ratio.
+```{r ratio-calc-summary}
+#| echo: true
+ratio_real_time_to_mar1 <- admissions_ga_real_time$admissions / admissions_as_of_mar_1$admissions
+summary(ratio_real_time_to_mar1)
+```
+On average, the real-time counts are ~78.1% of the finalized counts.
+
+```{r boxplot-ratio}
+#| echo: false
+ratio_df <- data.frame(ratio_real_time_to_mar1, mean_ratio = mean(ratio_real_time_to_mar1))
+
+# Create the boxplot with mean marked as a bold cross
+ggplot(ratio_df, aes(y = ratio_real_time_to_mar1)) +
+  geom_boxplot(fill = "lightblue", color = "black") +
+  geom_point(
+    aes(x = 0, y = mean_ratio),  # Place point at the mean
+    shape = 4,                  # Cross shape
+    size = 7,                   # Size of the cross
+    color = "darkblue",         # Color of the cross
+    stroke = 2                  # Boldness of the cross
+  ) +
+  labs(
+    title = "Distribution of Real-Time to Finalized Admission Ratios",
+    y = "Real-Time to Finalized Ratio"
+  ) +
+  theme_minimal() +  # Minimal theme for clean look
+  theme(
+    plot.title = element_text(hjust = 0.5)  # Center the title
+  ) +
+  coord_cartesian(ylim = c(0, 1.25))  # Limit y-axis between 0 and 1.5
+```
+
+## Nowcasting on March 1 
+Since the **average ratio** between real-time and finalized values is **0.781** (i.e., real-time counts are typically 78% of the finalized counts), then the nowcast is
+```{r nowcast-feb-27}
+#| echo: true
+# Now we can nowcast properly:
+nowcast <- provisional_feb_27 *
+  1 / mean(ratio_real_time_to_mar1)
+nowcast
+```
+So, this **nowcast is 7.68**, which is closer to the true finalized value of 8 than the provisional value of 6.
+
+## Summary of three main steps 
+So the main steps for this type of fixed lag nowcasting are...
+
+1. Obtain the **provisional value** for the target.
+
+2. Estimate the ratio using the **real-time** and **"finalized"** data (for all previous dates that follow a consistent pattern in reporting). 
+
+3. Profit.
+
+```{r summary-steps}
+#| echo: true
+#| eval: false
+#| code-fold: true
+#| code-summary: "Expand for the accompanying code"
+# Today
+as_of_date = as.Date("2023-03-01")
+
+# 1. Obtain the provisional value
+provisional_feb_27 <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
+  filter(time_value == as_of_date - 2L) %>%
+  pull(admissions)
+provisional_feb_27
+
+# 2. Estimate the ratio 
+admissions_ga_real_time = admissions_ga_real_time %>% filter(time_value >= "2023-02-06") # Real-time data
+admissions_as_of_mar_1 <- epix_as_of(admissions_archive, max_version = as_of_date) %>% # "Finalized" data
+  filter(time_value >= "2023-02-06" & time_value <= "2023-02-26")
+
+mean_ratio <- mean(admissions_ga_real_time$admissions / admissions_as_of_mar_1$admissions) # Mean ratio
+
+# 3. Profit.
+nowcast <- provisional_feb_27 *
+  1 / mean(ratio_real_time_to_mar1)
+nowcast
+```
+
+## Nowcasting Admissions Data for Multiple Dates
+
+* **Define Nowcast Function**:
+  * **Input**: Takes in the dates to nowcast and the fixed lag
+  * **Output**: The nowcasted admissions based on the ratio of real-time to finalized data.
+```{r nowcasting-function}
+#| echo: true
+#| code-fold: true
+nowcast_function <- function(nowcast_date, fixed_lag) {
+  as_of_date = nowcast_date + fixed_lag
+  
+  # 1. Obtain the provisional value for the target.
+  provisional <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
+  filter(time_value == as_of_date - 2L) %>%
+  pull(admissions)
+  
+  #2. Estimate the ratio multiplier using
+  # real-time
+  dates <- seq(as.Date("2023-02-06"), nowcast_date - 1, by = "day")
+  admissions_ga_real_time <- map_dfr(dates, admissions_real_time)
+  
+  # and "finalized" data
+  finalized <- epix_as_of(admissions_archive, max_version = as_of_date) %>% filter(time_value >= "2023-02-06" & time_value <= (nowcast_date - 1)) 
+
+  ratios <- admissions_ga_real_time$admissions / finalized$admissions
+  
+  # Remove infinite or NaN ratios (i.e., keep only finite values)
+  mean_ratio <- mean(ratios[is.finite(ratios)])
+
+  #3. Profit.
+  nowcast <- provisional * (1 / mean_ratio)
+  
+  # Return a dataframe with the nowcast and date
+  tibble(
+    time_value = nowcast_date,
+    nowcast_admissions = nowcast
+  )
+}
+```
+
+## Map Nowcast Over Multiple Dates
+* We can use `map2_df()` to apply the function to a series of dates (e.g., Feb 27–28).
+* Returns a **dataframe** with nowcasted results.
+
+```{r apply-nowcast-fun}
+#| echo: true
+# Apply Nowcast Function Over Multiple Dates
+nowcast_dates <- seq(as.Date("2023-02-27"), as.Date("2023-02-28"), by = "day")
+fixed_lag <- 2
+nowcast_results_df <- map2_df(nowcast_dates, fixed_lag, nowcast_function)
+
+# View Nowcast Results
+nowcast_results_df
+```
+
+## Visualize nowcast, real-time, and finalized values
+Finally, we can compare these nowcast results to the real-time and finalized values:
+```{r nowcast-fun-plot-results}
+#| echo: false
+ggplot() +
+  geom_line(data = nowcast_results_df, aes(x = time_value, y = nowcast_admissions), col = 'blue') + # nowcast
+  geom_line(data =  map_dfr(nowcast_dates, admissions_real_time), aes(x = time_value, y = admissions), col = 'red') + # real-time
+  geom_line(data = admissions_latest %>% filter(time_value %in% nowcast_dates), aes(x = time_value, y = admissions), col = 'black') + # finalized
+  ggtitle("Admissions, GA: Nowcast results (blue) vs real-time (red) and finalized (black)")
+```
+The real-time counts tend to be biased slightly below the finalized counts.
+Nowcasted values tend to provide a better approximation of the truth
+(at least for these dates).
+
+# Nowcasting with two variables
+
+## Nowcasting: Moving from One Signal to Two
+
+* Recall that in nowcasting the goal is to predict a finalized value from a provisional value.
+* Now, we'll move from one signal to two, creating a simple linear model to nowcast.
+* Exogenous features (predictors) could include relevant signals, such as Google symptom search trends.
+* We will use these signals to nowcast hospital admissions related to influenza.
+
+
+## Data Sources: Google Search Trends & Hospital Admissions
+
+* **Google Search Trends**: Symptoms like cough, fever, and shortness of breath.
+  * **s01**: Cough, Phlegm, Sputum, Upper respiratory tract infection
+  * **s03**: Fever, Hyperthermia, Chills, Shivering
+
+* **Hospital Admissions**: Data from the Department of Health & Human Services on confirmed influenza admissions.
+
+* Using these, we will **nowcast** hospital admissions by using Google symptom search trends for GA from April to June 2023.
+
+* The first step is to fetch this data...
+
+## Data Sources: Google Search Trends & Hospital Admissions
+
+```{r fetch-google-data}
+#| echo: true
+#| code-fold: true
+# Fetch Google symptom data for s01 and s03
+x1 <- pub_covidcast(
+  source = "google-symptoms",
+  signals = "s01_smoothed_search", 
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "ga",
+  time_values = epirange(20230401, 20230701),
+  issues = "*"
+) %>%
+  select(geo_value, time_value, version = issue, avg_search_vol_s01 = value) %>%
+  as_epi_archive(compactify = FALSE)
+
+x2 <- pub_covidcast(
+  source = "google-symptoms",
+  signals = "s03_smoothed_search",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "ga",
+  time_values = epirange(20230401, 20230701),
+  issues = "*"
+) %>%
+  select(geo_value, time_value, version = issue, avg_search_vol_s03 = value) %>%
+  as_epi_archive(compactify = FALSE)
+
+# Fetch hospital admissions data
+y1 <- pub_covidcast(
+  source = "hhs",
+  signals = "confirmed_admissions_influenza_1d",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "ga",
+  time_values = epirange(20230401, 20230701),
+  issues = "*"
+) %>%
+  select(geo_value, time_value, version = issue, admissions = value) %>%
+  as_epi_archive(compactify = FALSE)
+```
+
+## Merging the Archives
+
+* We'll merge the symptom search trends (`x1`, `x2`) with hospital admissions data (`y`) using `epix_merge()` from `epiprocess`.
+* This allows us to match data by time and geography, & fill any missing values with the most recent observation (LOCF).
+
+```{r}
+#| echo: false
+# Merge the Google trends data (x1, x2) with hospital admissions data (y)
+archive <- epix_merge(x1, y1, sync = "locf", compactify = FALSE)
+archive <- epix_merge(archive, x2, sync = "locf", compactify = FALSE)
+```
+
+## Linear Model: A Simple Approach for Nowcasting
+
+* Aside from ratios, one of the simplest approach to nowcasting is to use a **linear regression model**.
+* We model the relationship between provisional (predictor) data and response data.
+* This model helps us make **predictions** for the finalized data based on the current (provisional) signals.
+
+## Linear Regression
+* **Goal**: Estimate the coefficients $\beta_0$ and $\beta_1$ that describe the relationship between the predictor $x_i$ and the outcome $y_i$.
+* **Linear Model**: The relationship is assumed to be:
+
+  $$y_i \approx \beta_0 + \beta_1 x_i $$
+  
+  where
+  $\beta_0$ is the intercept,
+  $\beta_1$ is the slope.
+* **In R**: Use `lm(y ~ x)` to estimate the coefficients, where `y` is the outcome variable and `x` is the predictor.
+
+## Multiple Linear Regression
+* **Goal**: Estimate coefficients $\beta_0, \beta_1, \dots, \beta_p$ that describe the relationship between multiple predictors $x_{i1}, x_{i2}, \dots, x_{ip}$ and the outcome $y_i$.
+* **Model**: The relationship is assumed to be:
+
+  $$y_i \approx \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \dots + \beta_p x_{ip}$$
+  
+  where:
+  $\beta_0$ is the intercept,
+  $\beta_1, \dots, \beta_p$ are the coefficients.
+* **In R**: Use `lm(y ~ x1 + x2 + ... + xp)` to estimate the coefficients, where `y` is the outcome and `x1, x2, ..., xp` are the predictors.
+
+## Multiple Linear Regression Model
+
+* A linear model is a good choice to describe the relationship between search trends and hospital admissions.
+* The model will include two predictors (s01 and s03).
+* We'll use these two search trend signals to predict hospital admissions (response).
+
+<!-- A linear regression model will be used to predict hospital admissions from search trends (s01 and s03). -->
+
+## Multiple Linear Regression Model
+```{r}
+#| echo: true
+# Define the function for lm model fit and prediction
+lm_mod_pred <- function(data, gk, rtv, ...) {
+  
+  # Fit the linear model
+  model <- lm(admissions ~ avg_search_vol_s01 + avg_search_vol_s03, data = data)
+  
+  # Make predictions
+  predictions = predict(model,
+                        newdata = data %>%
+                          # Use tidyr::fill() for LOCF if predictor data is incomplete 
+                          fill(avg_search_vol_s01, .direction = "down") %>% 
+                          fill(avg_search_vol_s03, .direction = "down") %>%
+                          filter(time_value == max(time_value)),
+                        interval = "prediction", level = 0.9
+  )
+
+  # Pull off true time value for comparison to target
+  real_time_val = data %>% filter(time_value == max(time_value)) %>% pull(admissions)
+
+  return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val))
+}
+```
+Note that this code is intentionally simple; while it can be refined to handle cases like negatives or other boundary conditions, we aim to avoid unnecessary complexity.
+
+## Nowcasting with `epix_slide()`
+
+* We will use `epix_slide()` to create a sliding window of training data.
+* The model will be trained on a 14-day window before the target date, and predictions will be made for the target date.
+* The beauty of this function is that it is version-aware - the sliding computation at any given reference time **t** is performed on data that would have been available as of **t** automatically. 
+
+## Nowcasting with `epix_slide()`
+```{r}
+#| echo: true
+# Define the reference time points for nowcasting
+targeted_nowcast_dates <- seq(as.Date("2023-04-15"), as.Date("2023-06-15"), by = "1 week")
+ref_time_values = targeted_nowcast_dates + 2  # Adjust for the systematic 2-day latency in the response
+# Determine this from revision_summary(y1, print_inform = TRUE) 
+
+# Perform nowcasting using epix_slide
+nowcast_res <- archive %>%
+  group_by(geo_value) %>%
+  epix_slide(
+    .f = lm_mod_pred,
+    .before = 14,  # 14-day training period
+    .versions = ref_time_values, 
+    .new_col_name = "res"
+  ) %>%
+  unnest() %>% # Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. 
+  mutate(targeted_nowcast_date = targeted_nowcast_dates, time_value = actual_nowcast_date) %>%
+  ungroup()
+
+# View results
+head(nowcast_res, n=2)
+```
+
+## Compare with the Actual Admissions 
+
+* After making predictions, we compare them to the actual hospital admissions.
+```{r}
+#| echo: true
+# Left join with latest results 
+# Latest snapshot of data (with the latest/finalized admissions)
+x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) %>% select(-c(avg_search_vol_s01, avg_search_vol_s03))
+
+res <- nowcast_res %>% left_join(x_latest, by = c("geo_value", "time_value"))
+head(res)
+```
+
+## Visualizing the Nowcast Results
+<div style="font-size: 0.9em;">
+We can then visualize the nowcast results alongside the true values using `ggplot2`:
+</div>
+```{r plot-lr-nowcast-res}
+#| echo: false
+# Plot the predictions vs real-time vs actual admissions
+ggplot(res, aes(x = time_value)) +
+  geom_line(aes(y = admissions, color = "Finalized Admissions"), size = 1.2) +
+  geom_point(aes(y = fit, color = "Nowcast"), size = 3) +
+  geom_point(aes(y = real_time_val, color = "Real Time"), size = 3) +
+  geom_line(aes(y = fit, color = "Nowcast"), size = 1.2, linetype = "dashed") +
+  geom_ribbon(aes(ymin = lwr, ymax = upr, fill = "Pred. Interval"), alpha = 0.3) +
+  labs(title = "",
+       x = "Date", y = "Hospital Admissions", color = "Legend", fill = "Legend") +
+  scale_color_manual(values = c("Finalized Admissions" = "black", "Nowcast" = "#1f78b4", "Real Time" = "darkred")) +
+  scale_fill_manual(values = c("Pred. Interval" = "#a6cee3")) +
+  theme_minimal() +
+  theme(legend.position = "top", legend.title = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Key Takeaways: Linear Regression Nowcasting Example
+
+* **Provisional Data as Predictors**: Using Google symptom search trends (`s01`, `s03`) to predict **influenza hospital admissions**.
+* **Simple Linear Model**: A linear regression model captures the relationship between symptom searches and hospital admissions.
+* **Actionable Predictions**: Nowcasts provide **timely insights** for hospital admissions, even before data is finalized.
+* **Sliding Window Approach**: Predictions are based on **data up to the current time**, ensuring no future information influences the nowcast.
+* **Evaluation**: Predictions are compared with actual admissions visually.
+
+# Case Study - Nowcasting in MA
+
+## Goal of this Case Study
+
+**Goal**: Nowcast COVID-19 Case Rates in Massachusetts using %CLI.
+
+* %CLI is contained in the Epidata API.
+* Case rates by specimen collection date are not. They are from the MA gov website.
+* Case rates in the API (JHU) are aligned by report date, not specimen collection/test date.
+* Aligning by **test date** allows us to avoid the more unpredictable delays introduced by the **report date**.
+
+## Summary of main steps
+<div style="font-size: 0.8em;">
+The workflow is similar to the previous example where we nowcasted using two variables, only more involved. 
+The main steps are...
+
+1. **Fetch Data**: Retrieve %CLI and COVID-19 case data (by specimen collection date) for MA.
+
+2. **Merge Data**: Align %CLI and case rate data using `epix_merge`, filling missing values via last observation carried forward (LOCF).
+
+3. **Model & Prediction**: Fit a linear model to predict case rates based on %CLI, trained on a 30-day rolling window.
+
+4. **Nowcast Execution**: Use `epix_slide` to nowcast the case rates dynamically. 
+
+5. **Visualization**: Plot actual vs. nowcasted case rates with confidence intervals to assess model accuracy.
+
+So the first step is to fetch the data...
+</div>
+
+## Construct an `epi_archive` from scratch
+<div style="font-size: 0.9em;">
+[Here's]("https://www.mass.gov/info-details/archive-of-covid-19-cases-2020-2021") the archive of COVID-19 case excel files from the MA gov website, which we'll use to construct our own `epi_archive`.
+<br>
+Brief summary of this data:
+
+* **First release**: Raw .xlsx data was first released early January 2021.
+
+* **Change in reporting**: Starting **July 1, 2021**, the dashboard shifted from **7 days/week** to **5 days/week** (Monday-Friday).
+
+* **Friday, Saturday, and Sunday** data is included in the **Monday** dashboard.
+
+* When **Monday** is a holiday, the **Friday through Monday** data is posted on **Tuesday**.
+</div>
+
+## Construct an `epi_archive` from scratch
+<div style="font-size: 0.8em;">
+* **Purpose**: To create an `epi_archive` object for storing versioned time series data.
+* **Required Columns**:
+  * `geo_value`: Geographic data (e.g., region).
+  * `time_value`: Time-related data (e.g., date, time).
+  * `version`: Tracks when the data was available (enables version-aware forecasting).
+* **Constructor**:
+  * `new_epi_archive()`: For manual construction of `epi_archive` (assumes validation of inputs).
+* **Recommended Method**:
+  * `as_epi_archive()`: Simplifies the creation process, ensuring proper formatting and validation. We'll use this one when we download some data from the MA gov website!
+</div>
+
+## Main steps to construct the `epi_archive`
+<div style="font-size: 0.8em;">
+1. **Load necessary Libraries**: Such as `tidyverse`, `readxl`, `epiprocess`.
+2. **Process Each Date's Data**: 
+   * A function we'll make (`process_covid_data`) downloads and processes daily COVID-19 data from the MA gov Excel files on their website.
+   * The data is cleaned and formatted with columns: `geo_value`, `time_value`, `version`, and values.
+3. **Handle Missing Data**: Checks if a date's data is available (handle 404 errors).
+4. **Create `epi_archive`**: 
+   * Combine processed data into a tibble.
+   * Convert the tibble to an `epi_archive` object using `as_epi_archive()`.
+</div>
+
+## Fetch Data - Code for one date
+```{r}
+#| echo: true
+# Load required libraries
+library(tidyverse)
+library(readxl)
+library(httr)
+library(tibble)
+library(epiprocess)
+
+# Function to download and process each Excel file for a given date
+process_covid_data <- function(Date) {
+  # Generate the URL for the given date
+  url <- paste0("https://www.mass.gov/doc/covid-19-raw-data-", tolower(gsub("-0", "-", format(Date, "%B-%d-%Y"))), "/download") 
+  # Applies gsub("-0", "-", ...) to replace any occurrence of -0 (such as in "April-01") with just - (resulting in "April-1").
+  
+  # Check if the URL exists (handle the 404 error by skipping that date)
+  response <- GET(url)
+  
+  if (status_code(response) != 200) {
+    return(NULL)  # Skip if URL doesn't exist (404)
+  }
+  
+  # Define the destination file path for the Excel file
+  file_path <- tempfile(fileext = ".xlsx")
+  
+  # Download the Excel file
+  GET(url, write_disk(file_path, overwrite = TRUE))
+  
+  # Read the relevant sheet from the Excel file
+  data <- read_excel(file_path, sheet = "CasesByDate (Test Date)")
+  
+  # Process the data: rename columns and convert Date
+  data <- data %>%
+    rename(
+      Date = `Date`,
+      Positive_Total = `Positive Total`,
+      Positive_New = `Positive New`,
+      Case_Average_7day = `7-day confirmed case average`
+    ) %>%
+    mutate(Date = as.Date(Date))  # Convert to Date class
+  
+  # Create a tibble with the required columns for the epi_archive
+  tib <- tibble(
+    geo_value = "ma",  # Massachusetts (geo_value)
+    time_value = data$Date,  # Date from the data
+    version = Date,  # The extracted version date
+    case_rate_7d_av = data$Case_Average_7day  # 7-day average case value
+  )
+  
+  return(tib)
+}
+```
+
+## Fetch Data - Code breakdown 
+<div style="font-size: 0.8em;">
+* This purpose of this function is to download and process each Excel file as of a date.
+* **URL Creation**: Dynamically generates the URL based on the date, removing leading zeros in day values (e.g., "April-01" → "April-1").
+* **Check URL**: Sends a request (`GET(url)`) and skips the date if the URL returns a non-200 status (e.g., 404 error).
+* **Download File**: Saves the Excel file to a temporary path using `tempfile()` and `GET()`.
+* **Read Data**: Loads the relevant sheet ("CasesByDate") from the Excel file using `read_excel()`.
+* **Tibble Creation**: Constructs a tibble with `geo_value`, `time_value`, `version`, and `case_rate_7d_av` to later compile into an `epi_archive` (you can think of an `epi_archive` as being a comprised of many `epi_df`s).
+</div>
+
+## Fetch Data - Process range of dates
+* Note that `process_covid_data()` works on one date at a time.
+* So now, we need a function that iterates over a date range and applies `process_covid_data()` to each date & combines the resulting tibbles into an `epi_archive`.
+* We call this function `process_data_for_date_range()`...
+
+## Fetch Data - Process range of dates
+```{r}
+#| echo: true
+# Function to process data for a range of dates
+process_data_for_date_range <- function(start_date, end_date) {
+  # Generate a sequence of dates between start_date and end_date
+  date_sequence <- seq(as.Date(start_date), as.Date(end_date), by = "day")
+  
+  # Process data for each date and combine results
+  covid_data_list <- lapply(date_sequence, function(Date) {
+    process_covid_data(Date)  # Skip over dates with no data (NULLs will be ignored)
+  })
+  
+  # Combine all non-null individual tibbles into one data frame
+  combined_data <- bind_rows(covid_data_list[!sapply(covid_data_list, is.null)])
+  
+  # Convert the combined data into an epi_archive object
+  if (nrow(combined_data) > 0) {
+    epi_archive_data <- combined_data %>%
+      as_epi_archive(compactify = FALSE)
+    
+    return(epi_archive_data)
+  } else {
+    message("No valid data available for the given date range.")
+    return(NULL)
+  }
+}
+```
+
+## Fetch Data - Code breakdown
+Here's a summary of what `process_data_for_date_range()` does:
+1. **Generates Date Range**: Creates a sequence of dates between `start_date` and `end_date`.
+
+2. **Processes Data**: Applies the `process_covid_data` function to each date in the range (skip over dates with no data).
+
+3. **Combines Results**: Combines all valid (non-NULL) tibbles into one single data frame.
+
+4. **Creates `epi_archive`**: Converts the combined data into an `epi_archive` object.
+
+## Fetch Data - Run the function & inspect archive
+<div style="font-size: 0.75em;">
+* Now, let's run the function & inspect the resulting `epi_archive` of 7-day averaged COVID-19 case counts:
+* Expect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to meditate on life).
+</div>
+<!-- To wonder why you chose Expect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to wonder why you chose coding in the first place). -->
+```{r}
+#| echo: true
+# Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021
+y <- process_data_for_date_range("2021-01-10", "2021-12-01")  # Raw .xlsx data is first released on Jan. 4, 2021
+y
+```
+
+## Fetch Data - % Outpatient Doctors Visits for CLI
+<div style="font-size: 0.9em;">
+* Now, from the Epidata API, let's download the [estimated percentage of outpatient doctor visits]("https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html") primarily for COVID-related symptoms, based on health system data.
+* Comes pre-smoothed in time using a Gaussian linear smoother
+* This will be the predictor when we nowcast COVID-19 Case Rates in MA.
+</div>
+```{r}
+#| echo: true
+# Step 1: Fetch Versioned Data 
+x <- pub_covidcast(
+  source = "doctor-visits",
+  signals = "smoothed_adj_cli",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "ma", # Just for MA to keep it simple (& to go with the case data by test date for that state)
+  time_value = epirange(20210301, 20212101), 
+  issues = epirange(20210301, 20212101)
+) %>%
+  select(geo_value, time_value,
+         version = issue,
+         percent_cli = value
+  ) %>%
+  as_epi_archive(compactify = FALSE)
+```
+
+## Use `epix_merge()` to merge the two archives
+Now we'll use `epix_merge()` to combine the two `epi_archive`s that share the same `geo_value` & `time_value`.
+
+<!-- LOCF is used to ensure missing data is handled by filling forward. -->
+```{r}
+#| echo: true
+archive <- epix_merge(
+  x, y,
+  sync = "locf",
+  compactify = FALSE
+)
+archive
+```
+
+## Fitting and Predicting with Linear Model
+<div style="font-size: 0.8em;">
+* Define `lm_mod_pred()`: A function that fits a linear model to forecast case rates based on the `percent_cli` predictor.
+* Use `predict()` with a 90% prediction interval.
+* Save the actual case rates to compare to the nowcasts later.
+</div>
+```{r}
+#| echo: true
+lm_mod_pred <- function(data, ...) {
+  # Linear model
+  model <- lm(case_rate_7d_av ~ percent_cli, data = data)
+
+  # Make predictions
+  predictions = predict(model,
+                        newdata = data %>%
+                          fill(percent_cli, .direction = "down") %>% 
+                          filter(time_value == max(time_value)),
+                        interval = "prediction", level = 0.9)
+  
+  # Pull off real-time value for later comparison to the nowcast value
+  real_time_val = data %>% filter(time_value == max(time_value)) %>% pull(case_rate_7d_av)
+  
+  # Could clip predictions and bounds at 0
+  return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val)) 
+}
+```
+
+## Nowcasting with `epix_slide()`
+* **Specify targets**: Define the target dates for nowcasting (e.g., 1st of each month) & adjust training data to include the lag for the latent case data.
+* **Sliding window**: Use `epix_slide()` to apply the linear model across a sliding window of data for each region.
+* **Training-test split**: Use the last 30 days of data to train and predict case rates for each target nowcast date.
+
+## Nowcasting with `epix_slide()`
+```{r}
+#| echo: true
+# Define the reference time points (to give the training/test split)
+targeted_nowcast_dates <- seq(as.Date("2021-04-01"), as.Date("2021-11-01"), by = "1 month") 
+ref_time_values = targeted_nowcast_dates + 1 # + 1 because the case data is 1 day latent. 
+# Determine this from revision_summary(y)
+
+# Use epix_slide to perform the nowcasting with a training-test split
+nowcast_res <- archive %>%
+  group_by(geo_value) %>%
+  epix_slide(
+    .f = lm_mod_pred,  # Pass the function defined above
+    .before = 30,   # Training period of 30 days
+    .versions = ref_time_values, # Determines the day where training data goes up to (not inclusive)
+    .new_col_name = "res"
+  ) %>%
+  unnest() %>%
+  mutate(targeted_nowcast_date = targeted_nowcast_dates,
+         time_value = actual_nowcast_date)
+
+# Take a peek at the results
+head(nowcast_res, n = 1)
+```
+
+## Visualizing Nowcasts vs. Actual Values
+Merge the nowcast results with the latest data for more direct comparison:
+
+```{r}
+#| echo: true
+x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) %>%
+  select(-percent_cli) 
+
+res <- nowcast_res %>% left_join(x_latest, by = c("geo_value", "time_value"))
+
+res
+```
+
+## Visualizing Nowcasts vs. Actual Values
+<div style="font-size: 0.9em;">
+Finally, plot the predictions & real-time values on top of latest COVID-19 case rates using `ggplot2`:
+</div>
+```{r}
+#| echo: false
+ggplot(res, aes(x = time_value)) +
+  geom_line(aes(y = case_rate_7d_av, color = "Finalized Cases (7-dav)"), size = 1.2) +
+  geom_point(aes(y = fit, color = "Nowcast"), size = 3) +
+  # Plot the real-time values
+  geom_point(aes(y = real_time_val, color = "Real Time"), size = 3) +
+  geom_line(aes(y = fit, color = "Nowcast"), size = 1.2, linetype = "dashed") +
+  geom_ribbon(aes(ymin = lwr, ymax = upr, fill = "Pred. Interval"), alpha = 0.3) +
+  # Title and labels
+  labs(title = "",
+       x = "Date",
+       y = "Rate",
+       color = "Legend",
+       fill = "Legend") +
+  # Adjust colors
+  scale_color_manual(values = c("Finalized Cases (7-dav)" = "black",
+                                "Nowcast" = "#1f78b4",
+                                "Real Time" = "darkred")) + 
+  scale_fill_manual(values = c("Pred. Interval" = "#a6cee3")) + # Light blue
+  # Improve the theme
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+## Takeaways
+
+**Goal**: Predict COVID-19 case rates using %CLI, overcoming delays in report data.
+
+Main Steps:
+
+1. **Fetch Data**: Collect case rates and %CLI data.
+
+2. **Merge Data**: Align datasets with epix_merge() and fill missing values.
+
+3. **Model**: Fit a linear model to predict case rates.
+
+4. **Nowcast**: Apply dynamic forecasting with epix_slide().
+
+5. **Visualize**: Plot nowcasts vs. actual case rates with confidence intervals.
+
+Overall, nowcasting, based on the linear model, provided a closer approximation of true case rates compared to the real-time values.
 
 ## Final slide {.smaller}
 
