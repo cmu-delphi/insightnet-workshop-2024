@@ -7,6 +7,8 @@ other-authors: ""
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "Venue -- dd Somemonth yyyy"
 format: revealjs
+execute:
+  cache: true
 ---
 
 <!-- Set any of the above to "" to omit them -->
@@ -14,128 +16,646 @@ format: revealjs
 <!-- Or adjust the formatting in _titleslide.qmd -->
 {{< include _titleslide.qmd >}}
 
+<style>
+.scrollable-output {
+  max-height: 500px; /* Adjust the height as needed */
+  overflow-y: auto;  /* Enables vertical scrolling */
+}
+</style>
 
+<style>
+.inner-list {
+  font-size: 0.85em; /* Adjust size as needed */
+}
+</style>
+
+```{r theme}
+library(tidyverse)
+theme_set(theme_bw())
+```
 
 ## Outline
 
 1. `{epipredict}`
 
-1. ARX Models
+1. Fit and Predict with `arx_forecaster`
+
+1. Customizing `arx_forecaster`
 
 1. Forecasting with Versioned Data
 
+1. Building a Forecaster
+
 # `{epipredict}` 
 
-# ARX Models
+## `{epipredict}` 
+
+<https://cmu-delphi.github.io/epipredict>
+
+#### Installation 
+
+```{r install, eval=FALSE}
+#| echo: true
+# Stable version
+pak::pkg_install("cmu-delphi/epipredict@main")
+# Development version
+# pak::pkg_install("cmu-delphi/epipredict@dev")
+```
+
+
+## What `{epipredict}` provides (i)
+
+Basic and easy to use ["canned" forecasters]{.primary}: 
+
+  * Baseline flat forecaster
+  
+  * Autoregressive forecaster (ARX)
+  
+  * Autoregressive classifier
+  
+  * CDC FluSight flatline forecaster
+  
+## What `{epipredict}` provides (ii)
+
+* A framework for creating [custom forecasters]{.primary} out of [modular]{.primary} components. 
+
+* There are four types of components:
+
+  1. [Preprocessor]{.primary}: do things to the data before model training
+  
+  1. [Trainer]{.primary}: train a model on data, resulting in a fitted model object
+
+  1. [Predictor]{.primary}: make predictions, using a fitted model object
+
+  1. [Postprocessor]{.primary}: do things to the predictions before returning
+  
+
+# Fit and Predict with `arx_forecaster`
 
 ## Fit ARX on training set
 
-```{r}
+```{r libraries and data}
 source(here::here("_code/ca_cases_deaths.R"))
-library(epipredict)
-library(workflows)
+#library(workflows)
 ```
 
-```{r epipredict-lagged-reg}
+* Back to the ARX model for COVID deaths:
+$\quad \hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$
+
+* Using `{epipredict}`
+
+```{r epipredict-arx}
 #| echo: true
-# Split into train and test (before/after t0_date)
-t0_date <- as.Date('2021-03-01')
-train <- ca %>% filter(time_value <= t0_date)
-test <- ca %>% filter(time_value > t0_date)
+#| code-line-numbers: "|8-14"
+library(epipredict)
 
-h <- 28 
+# split into train and test 
+t0_date <- as.Date('2021-04-01')
+train <- ca |> filter(time_value <= t0_date)
+test <- ca |> filter(time_value > t0_date)
 
-epi_arx <- arx_forecaster(epi_data = train %>% as_epi_df(), 
+# fit ARX
+epi_arx <- arx_forecaster(epi_data = train |> as_epi_df(), 
                           outcome = "deaths", 
                           predictors = c("cases", "deaths"),
-                          trainer = linear_reg() %>% set_engine("lm"),
-                          args_list = arx_args_list(lags = 0, 
-                                                    ahead = h))
-epi_arx
+                          trainer = linear_reg() |> set_engine("lm"),
+                          args_list = arx_args_list(lags = 0, ahead = 28,
+                                                    quantile_levels = c(0.025, 0.975)))
 ```
 
-## Extract workflow
+## `arx_forecaster` output
 
-```{r epi-workflow-arx}
+* A [fitted model]{.primary} object which can be used any time in the future to create forecasts (`$epi_workflows`).
+
+* A [forecast]{.primary} (point prediction + interval) 
+for 28 days after the last available time value in the data (`$predictions`).
+
+
+## `arx_forecaster` output
+
+```{r output-arx, message=TRUE}
+#| echo: true
+epi_arx 
+```
+
+
+## Extract fitted object
+
+<div class="scrollable-output">
+
+```{r epi-workflow-arx, message=TRUE}
 #| echo: true
 epi_arx$epi_workflow
 ```
 
 
-## Extract prediction
+## Extract predictions
 
 ```{r epi-pred-arx}
 #| echo: true
 epi_arx$predictions
 ```
 
+::: {.callout-important icon="false"}
+## Note 
+
+`.pred_dstn` is actually a “distribution”, parameterized by its quantiles. 
+:::
+
+
+## Extract predictions
+
+We can extract the distribution into a “long” `epi_df`: 
+
+* one row per quantile
+
+* `values` = value associated to that quantile
+
 ```{r epi-pred-arx-unnest}
 #| echo: true
-epi_arx$predictions %>%
-  # first create a "nested" list-column
-  mutate(.pred_distn = nested_quantiles(.pred_distn)) %>%
-  unnest(.pred_distn) # then unnest it
+epi_arx$predictions |>
+  mutate(.pred_distn = nested_quantiles(.pred_distn)) |>  # create a "nested" list-column
+  unnest(.pred_distn)                                     # then unnest it
 ```
 
-## ARX on trailing window
 
-```{r epipredict-cv-trailing, eval=FALSE}
+## Predict with fitted ARX (split-sample)
+
+* `arx_forecaster` fits a model to the training set, and outputs only one prediction (for time $t_0 +h$).
+
+* To get [predictions]{.primary} for the [test]{.primary} set:
+
+```{r arx-test-predict}
 #| echo: true
+predict(epi_arx$epi_workflow, test)
+```
+
+## Predict with ARX (when re-fitting)
+
+In practice, if we want to [re-train]{.primary} the forecasters as [new data]{.primary} arrive,
+we fit and predict combining `arx_forecaster` with `epi_slide`.
+
+
+## Predict with ARX (re-fitting on trailing window)
+
+```{r epipredict-cv-trailing}
+#| echo: true
+h <- 28         #horizon
+w <- 120 + h    #trailing window length
+n <- nrow(ca)   #time-series length
+
 # Specify the forecast dates
-fc_time_values <- seq(
-  from = t0_date,
-  to = tail(ca$time_value, 1) - h,
-  by = "1 day"
-)
+fc_time_values <- seq(from = t0_date, to = ca$time_value[n]-h, by = "1 day")
 
-w <- 200  # trailing window length
-
-# Slide an arx_forecaster with appropriate outcome, predictions, lags, and trailing window
-epi_pred_cv_trailing <- ca %>%
+# Slide the arx_forecaster 
+epi_pred_trailing <- ca |>
   epi_slide(
     ~ arx_forecaster(epi_data = .x,
-                   outcome = "deaths", 
-                   predictors = c("cases", "deaths"), 
-                   trainer = linear_reg() %>% set_engine("lm"),
-                   args_list = arx_args_list(lags = 0, ahead = h)
-                   )$predictions %>%
-      pivot_quantiles_wider(.pred_distn),
-  # notice that `before` is not simply equal to w-1. That's because previously, 
-  # when considering a window from t to t+w, we had access to y_t, ..., y_{t+w} 
-  # and also to x_{t-h}, ..., x_{t+w-h}. (That's because of how we structured 
-  # the dataframe after manually lagging x.) So we were "cheating" by saying that 
-  # the trailing window had length w, as its actual size was w+h! 
-  .window_size = (w+h-1), 
-  .ref_time_values = fc_time_values,
-  .new_col_name = "fc"
+                     outcome = "deaths", 
+                     predictors = c("cases", "deaths"), 
+                     trainer = linear_reg() |> set_engine("lm"),
+                     args_list = arx_args_list(lags = 0, ahead = h,
+                                               quantile_levels = c(0.025, 0.975))
+                     )$predictions |>
+        pivot_quantiles_wider(.pred_distn),
+  .window_size = w, 
+  .ref_time_values = fc_time_values
 )
-
-# they match exactly
-head(epi_pred_cv_trailing %>% select(fc))
-head(test %>% select(pred_trailing_cv, time_value))
 ```
 
-The method fitting on all past data up to the forecasting date can be 
-implemented by changing `before = Inf` in `epi_slide`.
+## Predict with ARX 
+
+::: {.callout-important icon="false"}
+## Note (window length)
+
+We set $w = 120 + h$ to match the window size of the ARX model we fitted manually.
+Previously, when considering a window from $t-w$ to $t$, 
+we had access to all outcomes in that window, and to all predictors between 
+$t-w-h$ and $t-h$. 
+(That's because we lagged $x$ before applying the window.) 
+So we were "cheating" by saying that 
+the trailing window had length $w=120$, as its actual size was $120+h$! 
+:::
+  
+::: {.callout-important icon="false"}
+## Note (all past)
+
+The method [fitting on all past data]{.primary} up to the forecasting date can be 
+implemented by setting:
+
+`.window_size = Inf` in `epi_slide`.
+:::
 
 ```{r epipredict-cv, eval=FALSE}
 # slide an arx_forecaster with appropriate outcome, predictions and lags
-epi_pred_cv <- epi_slide(
+epi_pred <- epi_slide(
   ca, 
   ~ arx_forecaster(epi_data = .x,
                    outcome = "deaths", 
-                   predictors = "cases", 
-                   trainer = linear_reg() %>% set_engine("lm"),
-                   args_list = arx_args_list(lags = h-1, ahead = 1L)
+                   predictors = c("cases", "deaths"), 
+                   trainer = linear_reg() |> set_engine("lm"),
+                   args_list = arx_args_list(lags = 0, ahead = h,
+                                             quantile_levels = c(0.025, 0.975))
                    )$predictions,
-  before = Inf, 
-  ref_time_values = fc_time_values,
-  new_col_name = "fc"
+  .window_size = Inf, 
+  .ref_time_values = fc_time_values
 )
+```
 
-# they match exactly
-head(epi_pred_cv %>% select(fc_.pred, fc_target_date))
-head(test %>% select(pred_cv, time_value))
+
+## Predict with ARX (re-fitting on trailing window)
+
+<div class="large-output">
+
+```{r epipredict-cv-trailing-head}
+#| echo: true
+epi_pred_trailing 
+```
+
+## Predict with ARX (re-fitting on trailing window)
+
+```{r arx-plot-cv-predictions}
+#| fig-align: left
+ca |> 
+  full_join(epi_pred_trailing |> select(!c(cases, deaths, time_value)), 
+            join_by(time_value == target_date, geo_value == geo_value)) |>
+  mutate(observed = deaths, 
+         predicted = .pred) |>
+  pivot_longer(cols = c(observed, predicted), names_to = 'Deaths') |>
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = `0.025`, ymax = `0.975`), alpha = .3, fill = "#00BFC4") +
+  geom_line(aes(col = Deaths, alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+```
+
+```{r function errors}
+MSE <- function(truth, prediction) {
+  mean((truth - prediction)^2)}
+
+MAE <- function(truth, prediction) {
+  mean(abs(truth - prediction))}
+
+MAPE <- function(truth, prediction) {
+  100 * mean(abs(truth - prediction) / truth)}
+
+MASE <- function(truth, prediction) {
+  100 * MAE(truth, prediction) / mean(abs(diff(truth)))}
+
+getErrors <- function(truth, prediction, type) {
+  return(data.frame(#"MSE" = MSE(truth, prediction), 
+                    "MAE"= MAE(truth, prediction), 
+                    #"MAPE" = MAPE(truth, prediction), 
+                    "MASE" = MASE(truth, prediction), 
+                    row.names = type))
+}
+```
+
+```{r error-arx}
+test_h <- test[-(1:h-1), ] 
+getErrors(test_h$deaths, epi_pred_trailing$.pred, "time series CV + trailing")
+```
+
+
+# Customizing `arx_forecaster`
+
+## Simple adjustments
+
+```{r print-model-1}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "|3"
+arx_forecaster(epi_data = train |> as_epi_df(), 
+               outcome = "deaths", 
+               predictors = c("cases", "deaths"),
+               trainer = linear_reg() |> set_engine("lm"),
+               args_list = arx_args_list(lags = 0, ahead = 28,
+                                         quantile_levels = c(0.025, 0.975)))
+```
+
+::: {.fragment .fade-in}
+* Modify `predictors` to add/drop predictors 
+
+  * <span class="inner-list">e.g. drop `deaths` for regression with a 
+  lagged predictor, or drop `cases` to get AR model</span>
+
+  * <span class="inner-list">default: `predictors = outcome`</span>
+
+:::  
+  
+## Simple adjustments
+
+```{r print-model-2}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "4"
+arx_forecaster(epi_data = train |> as_epi_df(), 
+               outcome = "deaths", 
+               predictors = c("cases", "deaths"),
+               trainer = linear_reg() |> set_engine("lm"),
+               args_list = arx_args_list(lags = 0, ahead = 28,
+                                         quantile_levels = c(0.025, 0.975)))
+```
+
+* Modify `trainer` to use a model that is not `lm` (default)
+
+  * <span class="inner-list"> e.g. `trainer = quantile_reg()`</span>
+  
+  * <span class="inner-list">can use any `{parsnip}` models, 
+  see [list](https://www.tidymodels.org/find/parsnip/)</span>
+  
+   
+
+
+## Simple adjustments
+
+```{r print-model-3}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "5-6"
+arx_forecaster(epi_data = train |> as_epi_df(), 
+               outcome = "deaths", 
+               predictors = c("cases", "deaths"),
+               trainer = linear_reg() |> set_engine("lm"),
+               args_list = arx_args_list(lags = 0, ahead = 28,
+                                         quantile_levels = c(0.025, 0.975)))
+```
+
+* Modify `arx_args_list` to change lags, horizon, quantile levels, ...
+
+::: {.fragment .fade-in}
+```{r arx_args_list}
+#| echo: true
+#| eval: false
+arx_args_list(
+  lags = c(0L, 7L, 14L),
+  ahead = 7L,
+  n_training = Inf,
+  forecast_date = NULL,
+  target_date = NULL,
+  adjust_latency = c("none", "extend_ahead", "extend_lags", "locf"),
+  warn_latency = TRUE,
+  quantile_levels = c(0.05, 0.95),
+  symmetrize = TRUE,
+  nonneg = TRUE,
+  quantile_by_key = character(0L),
+  check_enough_data_n = NULL,
+  check_enough_data_epi_keys = NULL,
+  ...
+)
+```
+:::
+
+
+```{r get-us-data, eval = FALSE}
+## Geo-pooling (or not)
+
+* So far, predicting COVID deaths in California using only California past data.
+
+* If we have US-level data, we can use the same code to get geo-pooled estimates for every state.
+
+* To avoid geo-pooling: simply introduce `group_by = geo_value` in `epi_slide`.
+
+source(here::here("_code/us_cases_deaths.R"))
+```
+
+```{r geo-pool-usa, eval = FALSE}
+n <- nrow(us)   
+
+# Specify the forecast dates
+fc_time_values <- seq(from = t0_date, to = us$time_value[n]-h, by = "1 month")
+
+# Slide the arx_forecaster 
+pred_geo_pool <- us |>
+  epi_slide(
+    ~ arx_forecaster(epi_data = .x,
+                     outcome = "deaths", 
+                     predictors = c("cases", "deaths"), 
+                     trainer = linear_reg() |> set_engine("lm"),
+                     args_list = arx_args_list(lags = 0, ahead = h,
+                                               quantile_levels = c(0.025, 0.975))
+                     )$predictions |>
+        pivot_quantiles_wider(.pred_distn),
+  .window_size = w, 
+  .ref_time_values = fc_time_values
+)
+```
+
+```{r epipredict-cv-trailing-usa, eval = FALSE}
+# Slide the arx_forecaster 
+pred_separate <- us |>
+  epi_slide(
+    ~ arx_forecaster(epi_data = .x,
+                     outcome = "deaths", 
+                     predictors = c("cases", "deaths"), 
+                     trainer = linear_reg() |> set_engine("lm"),
+                     args_list = arx_args_list(lags = 0, ahead = h,
+                                               quantile_levels = c(0.025, 0.975))
+                     )$predictions |>
+        pivot_quantiles_wider(.pred_distn),
+  .window_size = w, 
+  .ref_time_values = fc_time_values
+)
+```
+
+# Forecasting with Versioned Data
+
+```{r get-versioned-data}
+source(here::here("_code/versioned_data.R"))
+```
+
+```{r versioned-weekly-avg}
+forecast_dates <- seq(from = t0_date, to = as.Date("2023-02-01"), by = "1 month")
+
+data_archive <- data_archive |>
+  epix_slide(
+    .before = Inf, 
+    .versions = forecast_dates,
+    function(x, gk, rtv) {
+      x |>
+        group_by(geo_value) |>
+        epi_slide_mean(case_rate, .window_size = 7L) |>
+        epi_slide_mean(death_rate, .window_size = 7L) |>
+        ungroup() |>
+        rename(case_rate_7d_av = slide_value_case_rate,
+               death_rate_7d_av = slide_value_death_rate)
+    }
+  ) |>
+  rename(
+    cases = case_rate_7d_av,
+    deaths = death_rate_7d_av
+  ) |>
+  select(version, time_value, geo_value, cases, deaths) |>
+  as_epi_archive(compactify = TRUE)
+
+us_data <- data_archive$DT |> 
+  #filter(geo_value == "ca") |>
+  as_epi_archive()
+```
+
+## Versioned data
+
+```{r print-versioned-data}
+#| echo: true
+us_data
+```
+
+## Version-aware forecasting with geo-pooling
+
+```{r predict-version-aware}
+#| echo: true
+#| code-line-numbers: "|5-17"
+forecast_dates <- seq(from = t0_date, to = as.Date("2023-02-01"), by = "1 month")
+h <- c(7, 14, 21, 28)
+
+forecast_k_days_ahead <- function(epi_archive, forecast_dates, ahead = 7) {
+  epi_archive |>
+    epix_slide(
+      ~ arx_forecaster(
+        .x, 
+        outcome = "deaths", 
+        predictors = c("cases", "deaths"),
+        trainer = linear_reg() |> set_engine("lm"),
+        args_list = arx_args_list(lags = 0, ahead = ahead,
+                                  quantile_levels = c(0.025, 0.975))
+      )$predictions |> pivot_quantiles_wider(.pred_distn),
+      .before = 120,
+      .versions = forecast_dates
+    )
+}
+
+forecasts <- bind_rows(map(h, ~ forecast_k_days_ahead(us_data, forecast_dates, ahead = .x)))
+```
+
+## Version-aware forecasting with geo-pooling
+
+```{r plot-version-aware}
+#| fig-width: 10
+#| fig-height: 5
+geo <- "ca"
+forecasts_filtered <- forecasts |>
+  filter(geo_value == geo) |>
+  mutate(time_value = version)
+
+data_at_fc <- bind_rows(
+  map(forecast_dates,
+      ~ us_data |>
+        epix_as_of(.x) |>
+        mutate(version = .x)
+  )) |>
+  filter(geo_value == geo)
+
+ggplot(data = forecasts_filtered, aes(x = target_date, group = time_value)) +
+  geom_ribbon(aes(ymin = `0.025`, ymax = `0.975`, fill = factor(time_value)), alpha = 0.4) +
+  geom_vline(data = data_at_fc, aes(color = factor(version), xintercept = version), lty = 2) +
+  geom_line(
+    data = data_at_fc,
+    aes(x = time_value, y = deaths, color = factor(version)),
+    inherit.aes = FALSE, na.rm = TRUE, alpha = .5
+  ) +
+  geom_line(aes(y = .pred, color = factor(time_value))) +
+  geom_point(aes(y = .pred, color = factor(time_value))) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "none")
+```
+
+# Building a forecaster
+
+## Philosophy of forecasting
+
+::: {.fragment .fade-in-then-semi-out}
+
+We should build up modular components
+
+Be able to add/remove layers of complexity sequentially
+
+:::
+
+::: {.fragment .fade-in-then-semi-out}
+
+  1. [Preprocessor]{.primary}: do things to the data before model training
+  
+  1. [Trainer]{.primary}: train a model on data, resulting in a fitted model object
+
+  1. [Predictor]{.primary}: make predictions, using a fitted model object
+
+  1. [Postprocessor]{.primary}: do things to the predictions before returning
+  
+:::
+
+
+## Examples of preprocessing{.smaller}
+
+::: {.fragment .fade-in-then-semi-out}
+
+### EDA type stuff
+
+1. Making locations/signals commensurate (scaling)
+1. Dealing with revisions 
+1. Detecting and removing outliers
+1. Imputing or removing missing data
+
+:::
+
+::: {.fragment .fade-in-then-semi-out}
+
+### Feature engineering
+
+1. Creating lagged predictors
+1. Day of Week effects
+1. Rolling averages for smoothing 
+1. Lagged differences
+1. Growth rates instead of raw signals
+1. The sky's the limit
+
+:::
+
+## Examples of postprocessing {.incremental}
+
+* Impute missing features
+* Nowcast current values of features
+* Bootstrap to get predictive intervals
+* Invert scaling or other transforms
+* Threshold predictions, `[0, max_population]`
+
+## Fit a forecaster 
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "1-6|8-9|11-16|18-20|21-29"
+# A preprocessing "recipe" that turns raw data into features / response
+r <- epi_recipe(ca) |>
+  step_epi_lag(cases, lag = c(0, 7, 14)) |>
+  step_epi_lag(deaths, lag = c(0, 7, 14)) |>
+  step_epi_ahead(deaths, ahead = 28) |>
+  step_epi_naomit()
+
+# Training engine
+e <- quantile_reg(quantile_levels = c(.025, .5, .975))
+
+# A postprocessing routine describing what to do to the predictions
+f <- frosting() |>
+  layer_predict() |>
+  layer_threshold(.pred, lower = 0) |> # predictions / intervals should be non-negative
+  layer_add_target_date() |>
+  layer_add_forecast_date()
+
+# Bundle up the preprocessor, training engine, and postprocessor
+# We use quantile regression
+ewf <- epi_workflow(r, e, f)
+
+# Fit it to data (we could fit this to ANY data that has the same format)
+trained_ewf <- ewf |> fit(ca)
+
+# examines the recipe to determine what we need to make the prediction
+latest <- get_test_data(r, ca)
+
+# we could make predictions using the same model on ANY test data
+preds <- trained_ewf |> predict(new_data = latest)
 ```
 
 
