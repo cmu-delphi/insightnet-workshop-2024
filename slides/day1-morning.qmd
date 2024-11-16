@@ -742,19 +742,17 @@ head(epix_as_of(x, max_version = max(x$DT$version)))
 
 ## Examples of panel data - COVID-19 cases
 
-**JHU CSSE COVID cases in the U.S.** (smoothed with a 7-day trailing average) over the year of the pandemic (April 15, 2020 – April 15, 2021).
+**JHU CSSE COVID cases per 100k ** estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.
 
 API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html>
 
 ```{r examples-jhu-csse}
 #| echo: false
-SOURCES <- c("jhu-csse", "chng", "chng", "fb-survey")
+SOURCES <- c("jhu-csse", "chng", "chng", "hhs")
 SIGNALS <- c("confirmed_7dav_incidence_prop",
              "smoothed_adj_outpatient_cli",
              "smoothed_adj_outpatient_covid",
-             "smoothed_wcli")
-
-# why is "smoothed_whh_cmnty_cli" not available?
+             "confirmed_admissions_covid_1d_prop_7dav")
 
 data_list <- list()
 
@@ -762,23 +760,23 @@ for (i in seq_along(SOURCES)) {
   data_list[[i]] <- pub_covidcast(
     source = SOURCES[i],
     signals = SIGNALS[i],
-    geo_type = "nation",
+    geo_type = "state",
+    geo_values = c("ca", "fl", "nc", "wa"), 
     time_type = "day",
     time_values = epirange(20200415, 20210415)
   )
 }
 
 colors <- c("black", scales::hue_pal()(4))
-names <- c("COVID-19 cases", "CHNG-CLI", "CHNG-COVID", "CTIS-CLI")
+names <- c("COVID-19 cases", "CHNG-CLI", "CHNG-COVID", "COVID-19 hospital admissions")
 units <- c("Reported cases per 100k people",
            "% doctor's visits due to CLI",
            "% doctor's visits due to COVID-19",
-           "% of people with CLI")
+           "Hospital admissions per 100k people")
 
 
-ggplot(data_list[[1]], aes(x = time_value, y = value, color = colors[1])) +
+ggplot(data_list[[1]], aes(x = time_value, y = value, color = geo_value)) +
   geom_line() +
-  scale_color_manual(breaks = names[1], values = colors[1]) +
   labs(x = "Date", y = units[1]) +
   scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
                date_minor_breaks = "1 month") +
@@ -793,8 +791,8 @@ ggplot(data_list[[1]], aes(x = time_value, y = value, color = colors[1])) +
 API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html>
 ```{r examples-chng-cli}
 #| echo: false
-ggplot(data_list[[2]], aes(x = time_value, y = value)) +
-  geom_line(color = colors[2]) +
+ggplot(data_list[[2]], aes(x = time_value, y = value, color = geo_value)) +
+  geom_line() +
   labs(x = "Date", y = units[2]) +
   scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
                date_minor_breaks = "1 month") +
@@ -806,11 +804,11 @@ ggplot(data_list[[2]], aes(x = time_value, y = value)) +
 
 **Change Healthcare COVID (CHNG-COVID)** reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html>
+API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html>
 ```{r examples-chng-covid}
 #| echo: false
-ggplot(data_list[[3]], aes(x = time_value, y = value)) +
-  geom_line(color = colors[3]) +
+ggplot(data_list[[3]], aes(x = time_value, y = value, color = geo_value)) +
+  geom_line() +
   labs(x = "Date", y = units[3]) +
   scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
                date_minor_breaks = "1 month") +
@@ -818,16 +816,18 @@ ggplot(data_list[[3]], aes(x = time_value, y = value)) +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
-## Examples of panel data - CTIS-CLI
+<!--  Numerator = denote the Covid counts. Denominator be the total count of visits. Scaling by population is not necessary here because the signal is already normalized to the total number of visits, which acts as a proxy for population size. -->
 
-**COVID-19 Trends and Impact Survey CLI (CTIS-CLI)** estimates the percentage of the population with COVID-like illness based on Delphi's Facebook user surveys.
+## Examples of panel data - HHS Admissions
 
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html>
-```{r examples-ctis-cli}
+**Confirmed COVID-19 Hospital Admissions per 100k** estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days.
+
+API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html>
+
+```{r examples-hhs-admissions}
 #| echo: false
-ggplot(data_list[[4]], aes(x = time_value, y = value)) +
-  geom_line(color = colors[4]) +
-  scale_color_manual(breaks = names[4], values = colors[4]) +
+ggplot(data_list[[4]], aes(x = time_value, y = value, color = geo_value)) +
+  geom_line() +
   labs(x = "Date", y = units[4]) +
   scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
                date_minor_breaks = "1 month") +
@@ -835,6 +835,7 @@ ggplot(data_list[[4]], aes(x = time_value, y = value)) +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
+<!-- 
 ## All together - Visualizing multiple panel data signals
 Example: gathering different signals + visualizing panel data
 
@@ -903,9 +904,11 @@ ggplot(rescaled_df, aes(x = time_value, y = value, color = signal)) +
 </div>
 
 **Takeaway:** The auxiliary signals track changes in the official reported cases quite well. This is clearer when they have all been placed on the same range as reported cases per 100,000 people.
- 
-## COVID-19 cases and deaths in CA example
+-->
+
+## Examples of panel data - COVID-19 cases and deaths in CA
 * **Takeaway**: Cases appear to strongly correlate with deaths several weeks later.
+* We'll see this again in an upcoming session...
 
 ```{r plot-ca-cases-deaths}
 #| echo: false
