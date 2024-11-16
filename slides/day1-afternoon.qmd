@@ -528,7 +528,8 @@ head(edf)
 ```
 
 * How do we store & work with such snapshots in the epiverse software ecosystem?
-  </div>
+</div>
+  
   
 ## `epi_df`: snapshot of a data set
   
@@ -543,40 +544,11 @@ Represents a [snapshot]{.primary} that
 contains the most [up-to-date values]{.primary} of the signal variables, [as of]{.primary} a given time.
 :::
   
-## `epi_df`: snapshot of a data set
   
-```{css}
-.withscroll {
-  height: 55vh;
-  overflow-y: auto !important;
-}
-```
+## `epi_df`: snapshot of a data set
 
 ```{r}
-#| output: asis
-
-withr::with_options(
-  code={
-    cat("<details><summary>Example data object documentation, license, attribution</summary>")
-    cat('<div class="withscroll">')
-    print(help("covid_case_death_rates", package="epipredict", help_type="text"))
-    cat("</div>")
-    cat("</details>")
-  },
-  list(pager=function(files, header, title, delete.file) {
-    on.exit({
-      unlink(files)
-    })
-    cat(paste(c("<pre>",purrr::reduce(purrr::map(files, function(file) {
-      # gsub("</?u>","_",gsub("</u>( *)<u>","\\1",
-      gsub("_\b(.)", "<u>\\1</u>", readLines(file))
-      # ))
-    }), function(x, y) c(x,"\n\n\n",y)), "</pre>"), collapse="\n"))
-  })
-)
-```
-
-```{r}
+#| echo: true
 edf <- covid_case_death_rates
 edf
 ```
@@ -613,38 +585,21 @@ ggplot(edf, aes(x = time_value, y = gr_cases)) +
 ::: {.callout-note}
 ## Revisions
 
-Epidemiology data gets revised frequently. (Happens in Economics as well.) 
+Epidemiology data gets revised frequently.
 
 * We may want to use the data [as it looked in the past]{.primary} 
 * or we may want to examine [the history of revisions]{.primary}.
 :::
-  
+
+## `epi_archive`: collection of `epi_df`s
+
+```{r}
+#| echo: true
+archive_cases_dv_subset
+```
   
 ## Revision patterns
-  
-```{r}
-#| output: asis
 
-withr::with_options(
-  code={
-    cat("<details><summary>Example data object documentation, license, attribution</summary>")
-    cat('<div class="withscroll">')
-    print(help("archive_cases_dv_subset", package="epiprocess", help_type="text"))
-    cat("</div>")
-    cat("</details>")
-  },
-  list(pager=function(files, header, title, delete.file) {
-    on.exit({
-      unlink(files)
-    })
-    cat(paste(c("<pre>",purrr::reduce(purrr::map(files, function(file) {
-      # gsub("</?u>","_",gsub("</u>( *)<u>","\\1",
-      gsub("_\b(.)", "<u>\\1</u>", readLines(file))
-      # ))
-    }), function(x, y) c(x,"\n\n\n",y)), "</pre>"), collapse="\n"))
-  })
-)
-```
 
 ```{r}
 ggplot(snapshots %>% filter(!latest),
