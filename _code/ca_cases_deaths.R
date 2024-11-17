@@ -38,6 +38,12 @@ if (!file.exists(file_path)) {
     select(-pop)
 
   ca <- ca %>%
+    #group_by(geo_value) %>%
+    #epi_slide(cases_7dav = mean(cases),
+    #          deaths_7dav = mean(deaths),
+    #          .window_size = 7) %>%
+    #slice_tail(n = -6L) %>%
+    #ungroup() %>%
     epi_slide(cases_7dav = mean(cases, na.rm = T),
               deaths_7dav = mean(deaths, na.rm = T),
               .window_size = 7) %>%
@@ -62,3 +68,4 @@ range1 = range(ca$cases)
 range2 = range(ca$deaths)
 trans12 = function(x) trans(x, range1, range2)
 trans21 = function(x) trans(x, range2, range1)
+

@@ -120,7 +120,7 @@ epi_arx <- arx_forecaster(epi_data = train |> as_epi_df(),
                           predictors = c("cases", "deaths"),
                           trainer = linear_reg() |> set_engine("lm"),
                           args_list = arx_args_list(lags = 0, ahead = 28,
-                                                    quantile_levels = c(0.025, 0.975)))
+                                                    quantile_levels = c(0.1, 0.9)))
 ```
 
 ## `arx_forecaster` output
@@ -148,6 +148,7 @@ epi_arx
 epi_arx$epi_workflow
 ```
 
+</div>
 
 ## Extract predictions
 
@@ -167,9 +168,9 @@ epi_arx$predictions
 
 We can extract the distribution into a “long” `epi_df`: 
 
-* one row per quantile
+* <span class="inner-list"> one row per quantile </span>
 
-* `values` = value associated to that quantile
+* <span class="inner-list">`values` = value associated to that quantile</span>
 
 ```{r epi-pred-arx-unnest}
 #| echo: true
@@ -181,7 +182,7 @@ epi_arx$predictions |>
 
 ## Predict with fitted ARX (split-sample)
 
-* `arx_forecaster` fits a model to the training set, and outputs only one prediction (for time $t_0 +h$).
+* `arx_forecaster` fits a model to the training set, and outputs only one prediction (for time $t_0+h$).
 
 * To get [predictions]{.primary} for the [test]{.primary} set:
 
@@ -215,7 +216,7 @@ epi_pred_trailing <- ca |>
                      predictors = c("cases", "deaths"), 
                      trainer = linear_reg() |> set_engine("lm"),
                      args_list = arx_args_list(lags = 0, ahead = h,
-                                               quantile_levels = c(0.025, 0.975))
+                                               quantile_levels = c(0.01, 0.9))
                      )$predictions |>
         pivot_quantiles_wider(.pred_distn),
   .window_size = w, 
@@ -255,7 +256,7 @@ epi_pred <- epi_slide(
                    predictors = c("cases", "deaths"), 
                    trainer = linear_reg() |> set_engine("lm"),
                    args_list = arx_args_list(lags = 0, ahead = h,
-                                             quantile_levels = c(0.025, 0.975))
+                                             quantile_levels = c(0.01, 0.9))
                    )$predictions,
   .window_size = Inf, 
   .ref_time_values = fc_time_values
@@ -333,7 +334,7 @@ arx_forecaster(epi_data = train |> as_epi_df(),
                predictors = c("cases", "deaths"),
                trainer = linear_reg() |> set_engine("lm"),
                args_list = arx_args_list(lags = 0, ahead = 28,
-                                         quantile_levels = c(0.025, 0.975)))
+                                         quantile_levels = c(0.01, 0.9)))
 ```
 
 ::: {.fragment .fade-in}
@@ -357,7 +358,7 @@ arx_forecaster(epi_data = train |> as_epi_df(),
                predictors = c("cases", "deaths"),
                trainer = linear_reg() |> set_engine("lm"),
                args_list = arx_args_list(lags = 0, ahead = 28,
-                                         quantile_levels = c(0.025, 0.975)))
+                                         quantile_levels = c(0.01, 0.9)))
 ```
 
 * Modify `trainer` to use a model that is not `lm` (default)
@@ -381,7 +382,7 @@ arx_forecaster(epi_data = train |> as_epi_df(),
                predictors = c("cases", "deaths"),
                trainer = linear_reg() |> set_engine("lm"),
                args_list = arx_args_list(lags = 0, ahead = 28,
-                                         quantile_levels = c(0.025, 0.975)))
+                                         quantile_levels = c(0.01, 0.9)))
 ```
 
 * Modify `arx_args_list` to change lags, horizon, quantile levels, ...
@@ -436,7 +437,7 @@ pred_geo_pool <- us |>
                      predictors = c("cases", "deaths"), 
                      trainer = linear_reg() |> set_engine("lm"),
                      args_list = arx_args_list(lags = 0, ahead = h,
-                                               quantile_levels = c(0.025, 0.975))
+                                               quantile_levels = c(0.01, 0.9))
                      )$predictions |>
         pivot_quantiles_wider(.pred_distn),
   .window_size = w, 
@@ -453,7 +454,7 @@ pred_separate <- us |>
                      predictors = c("cases", "deaths"), 
                      trainer = linear_reg() |> set_engine("lm"),
                      args_list = arx_args_list(lags = 0, ahead = h,
-                                               quantile_levels = c(0.025, 0.975))
+                                               quantile_levels = c(0.01, 0.9))
                      )$predictions |>
         pivot_quantiles_wider(.pred_distn),
   .window_size = w, 
@@ -520,7 +521,7 @@ forecast_k_days_ahead <- function(epi_archive, forecast_dates, ahead = 7) {
         predictors = c("cases", "deaths"),
         trainer = linear_reg() |> set_engine("lm"),
         args_list = arx_args_list(lags = 0, ahead = ahead,
-                                  quantile_levels = c(0.025, 0.975))
+                                  quantile_levels = c(0.01, 0.9))
       )$predictions |> pivot_quantiles_wider(.pred_distn),
       .before = 120,
       .versions = forecast_dates
@@ -635,7 +636,7 @@ r <- epi_recipe(ca) |>
   step_epi_naomit()
 
 # Training engine
-e <- quantile_reg(quantile_levels = c(.025, .5, .975))
+e <- quantile_reg(quantile_levels = c(.1, .5, .9))
 
 # A postprocessing routine describing what to do to the predictions
 f <- frosting() |>
