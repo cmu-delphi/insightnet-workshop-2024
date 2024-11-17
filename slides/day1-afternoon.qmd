@@ -708,89 +708,91 @@ $x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
 
 # Nowcasting with one variable
 
-## Nowcasting Simple Ratio Ex: HHS Admissions
+## Nowcasting Simple Ratio Ex: NCHS Mortality 
 
-* In this example, we will demonstrate the concept of nowcasting using **HHS influenza admissions data**
-(All confirmed influenza hospital admissions occurring each day).
+* In this example, we'll demonstrate the concept of nowcasting using **NHCS mortality data**
+(the number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population).
 * We will work with **provisional** data (real-time reports) and compare them to **finalized** data (final reports).
-* The goal is to estimate or **nowcast** the admissions values for days when only provisional data is available.
+* The goal is to estimate or **nowcast the mortality rate** for weeks when only provisional data is available.
   
 ## Fetch Versioned Data
 
-Let's fetch versioned admissions data from the API (`pub_covidcast`) for Georgia (`geo_values = "ga"`) and the signal of interest (`confirmed_admissions_influenza_1d`) over February 2023.
-```{r admissions-archive-construct}
+Let's fetch versioned mortality data from the API (`pub_covidcast`) for CA (`geo_values = "ca"`) and the signal of interest (`deaths_covid_incidence_num`) over early 2024.
+```{r mortality-archive-construct}
 #| echo: true
-# Set the start and end dates for the analysis
-start_time = as.Date("2023-02-01")
-end_time = as.Date("2023-02-28")
-
-admissions_archive <- pub_covidcast(
-  source = "hhs",
-  signals = "confirmed_admissions_influenza_1d",
+# Fetch the versioned NCHS mortality data (weekly)
+mortality_archive <- pub_covidcast(
+  source = "nchs-mortality",
+  signals = "deaths_covid_incidence_num",
   geo_type = "state",
-  time_type = "day",
-  geo_values = "ga",
-  time_values = "*", # all time values
+  time_type = "week",
+  geo_values = "ca",  # California (CA)
+  time_values = epirange(202401, 202413),  
   issues = "*"
 ) %>% 
-  filter(time_value >= start_time & time_value <= end_time) %>%
-  select(geo_value, time_value, version = issue, admissions = value) %>%
+  select(geo_value, time_value, version = issue, mortality = value) %>% 
   as_epi_archive(compactify = TRUE)
 
+# Set the start and end days for the analysis 
+# corresponding to the weeks entered in time_values
+start_time = as.Date("2023-12-31")
+end_time = as.Date("2024-03-24")
 ```
 
 ## Latency in Reporting - Minimum Lag
 
-* A quick inspection reveals that admissions are systematically 2 days latent (**fixed lag**).
+* A quick inspection reveals that mortality rates are systematically 7 days latent (**fixed lag**).
 
 ```{r inspect-latency-dplyr-way}
 #| echo: true
-admissions_revision_inspect = admissions_archive$DT %>% mutate(version_time_diff = version - time_value)
-admissions_revision_inspect %>% group_by(time_value) %>% slice(1) %>% head()
+mortality_revision_inspect = mortality_archive$DT %>% mutate(version_time_diff = version - time_value)
+
+# Look at the first revision for each week
+mortality_revision_inspect %>% group_by(time_value) %>% slice(1) %>% head()
 ```
 
 * Use `revision_summary()` from `epiprocess` to generate basic statistics about the revision behavior for the dataset.
 
 ```{r revision-summary-ex}
 #| eval: false
-revision_summary(admissions_archive, print_inform = TRUE) 
+revision_summary(mortality_archive, print_inform = TRUE)
 ```
 
 ## Latency in Reporting - Finalized Value Attainment
 <div style="font-size: 0.8em;">
-* When is the **finalized value** first attained for each date?
-(we wouldn't have access to this in real-time)
+* **Question:** When is the **finalized value** first attained for each date? Would we have access to any in real-time?
 * How fast are the final values attained & what's the pattern for these times, if any?
+
 
 ```{r finalized-value-first-attained-fun}
 #| echo: false
 check_when_finalized <- function(epi_archive, start_date = NULL, end_date = NULL) {
-  # Extract the admissions archive data
+  # Extract the mortality archive data
   dt <- epi_archive$DT
-
+  
   # Extract the latest (finalized) version
-  admissions_latest <- epix_as_of(epi_archive, max_version = max(dt$version))
-
-  # Merge the finalized admissions with all versions from the archive
+  mortality_latest <- epix_as_of(epi_archive, max_version = max(dt$version))
+  
+  # Merge the finalized mortality data with all versions
   merged_data <- dt %>%
-    filter(geo_value %in% admissions_latest$geo_value &
-             time_value %in% admissions_latest$time_value) %>%
-    inner_join(admissions_latest, by = c("geo_value", "time_value"), suffix = c("", "_finalized"))
-
-  # Find the minimal version where the finalized admissions first occurred
+    filter(geo_value %in% mortality_latest$geo_value &
+             time_value %in% mortality_latest$time_value) %>%
+    inner_join(mortality_latest, by = c("geo_value", "time_value"), suffix = c("", "_finalized"))
+  
+  # Find the minimal version where the finalized mortality first occurred
   finalized_version_data <- merged_data %>%
-    filter(admissions == admissions_finalized) %>%
+    filter(mortality == mortality_finalized) %>%
     group_by(geo_value, time_value) %>%
     summarize(min_version = min(version), .groups = 'drop') %>%
     mutate(diff = min_version - time_value)
-
+  
   return(finalized_version_data)
 }
 ```
 
 ```{r check-when-finalized-run}
 #| echo: false
-res <- check_when_finalized(admissions_archive, start_date = start_time, end_date = end_time)
+res <- check_when_finalized(mortality_archive, start_date = start_time, end_date = end_time)
 head(res)
 ```
 And here's a numerical summary:
@@ -799,28 +801,27 @@ And here's a numerical summary:
 summary(as.numeric(res$diff))
 ```
 
-* **Conclusion**: Varies somewhat. Even for this relatively small time period... Could be as low as 2 days or as high as 320 days. Yikes.
-* So if we were doing this in real-time, then we don't necessarily have access to finalized data until much later in time.
+* **Conclusion**: Tends to take a long time & varies. Even for this relatively small time period... Goes as low as 84 days or as high as 294 days. Yikes.
+* So if we were doing this in real-time, then we wouldn't have access to the finalized data.
 </div>
 
 ## Comparison of Final vs. Multiple Revisions
-This figure shows the finalized admissions in comparison to **multiple revisions** to see how the data changes over time:
+This figure shows the finalized rates in comparison to **multiple revisions** to see how the data changes over time:
 
-```{r admissions-by-revision-date}
+```{r mortality-by-revision-date}
 #| echo: false
 
-# Visualize the admissions values for different "as_of" on one plot
-# Assuming that we have a list of dates we want to plot for different versions
-revision_dates <- seq(min(admissions_archive$DT$version), end_time, by = "1 day")
+# Visualize the mortality values for different revisions
+revision_dates <- seq(min(mortality_archive$DT$version), end_time, by = "1 week")
 
-# Create a data frame for each version and label them by the version date
-admissions_revisions <- map_dfr(revision_dates, function(date) {
-  epix_as_of(admissions_archive, max_version = date) %>%
+# Create a data frame for each version and label them by revision date
+mortality_revisions <- map_dfr(revision_dates, function(date) {
+  epix_as_of(mortality_archive, max_version = date) %>%
     mutate(revision_date = date)  # Add a column for the revision date
 })
 
 # Extract the latest/finalized version
-admissions_latest <- epix_as_of(admissions_archive, max_version = max(admissions_archive$DT$version))
+mortality_latest <- epix_as_of(mortality_archive, max_version = max(mortality_archive$DT$version))
 
 ```
 
@@ -830,25 +831,26 @@ admissions_latest <- epix_as_of(admissions_archive, max_version = max(admissions
 #| fig-height: 4
 #| out-height: "500px"
 ggplot() +
-  geom_line(data = admissions_latest, aes(x = time_value, y = admissions), color = "black", size = 1) +
-  geom_line(data = admissions_revisions, aes(x = time_value, y = admissions, color = as.factor(revision_date))) +
-  geom_point(data = admissions_revisions, aes(x = time_value, y = admissions, color = as.factor(revision_date)), size = 2) +
-  labs(color = "Revision Date")  + 
-  ggtitle(paste0("Hospital Admissions, GA: finalized (black) vs various revisions"))
+  geom_line(data = mortality_latest, aes(x = time_value, y = mortality), color = "black", size = 1) +
+  geom_line(data = mortality_revisions, aes(x = time_value, y = mortality, color = as.factor(revision_date))) +
+  geom_point(data = mortality_revisions, aes(x = time_value, y = mortality, color = as.factor(revision_date)), size = 2) +
+  labs(color = "Revision Date") + 
+  ggtitle("COVID-19 Mortality in CA: Finalized (black) vs Various Revisions")
 
 ```
 
 ## Comparison of Final vs. One Revision
 <div style="font-size: 0.8em;">
-The below figure compares the finalized admissions (in black) to **one revision** (in yellow) for Feb. 16, 2023.
+The below figure compares the finalized rates (in black) to **one revision** (in yellow) for March 3, 2024.
 
 ```{r one-revision-final-plot}
 #| out-height: "400px"
-as_of_date = as.Date("2023-02-16")
+as_of_date = as.Date("2024-03-03")
+
 ggplot() +
-  geom_line(data = admissions_latest, aes(x = time_value, y = admissions), color = "black", size = 1) +
-  geom_line(data = admissions_revisions %>% filter(revision_date == as_of_date), aes(x = time_value, y = admissions), color = "#FFB300") +
-  ggtitle(paste0("Hospital Admissions, GA: finalized (black) vs ", as_of_date, " revision (yellow)"))
+  geom_line(data = mortality_latest, aes(x = time_value, y = mortality), color = "black", size = 1) +
+  geom_line(data = mortality_revisions %>% filter(revision_date == as_of_date), aes(x = time_value, y = mortality), color = "#FFB300") +
+  ggtitle(paste0("COVID-19 Mortality, CA: Finalized (black) vs ", as_of_date, " Revision (yellow)"))
 ```
 The real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions.
 </div>
@@ -856,118 +858,110 @@ The real-time data is biased downwards (systematically below the true value). Th
 ## Calculate One Ratio: Provisional vs. Finalized Data
 <!-- * Let's start simple with computing one ratio. -->
 <div style="font-size: 0.8em;">
-* Suppose that the day is February 16, 2023. Then, because the data is 2 days latent, we can compute the ratio between provisional and finalized data for **February 14, 2023**.
+* Suppose that the day is March 10, 2024. Then, because the data is 7 days latent, we can compute the ratio between provisional and finalized data for **March 3, 2024**.
 
 ```{r one-ratio-calc}
 #| echo: true
-date_under_investigation = as.Date("2023-02-14")
+as_of_date = as.Date("2024-03-10"); fixed_lag = 7
 
-# Load the finalized influenza data for GA
-ga_finalized <- admissions_latest %>%
-  filter(time_value == date_under_investigation) %>%
-  dplyr::select(admissions)
+# Load the finalized mortality data for CA
+ca_finalized <- mortality_latest %>%
+  filter(time_value == (as_of_date - fixed_lag)) %>%
+  dplyr::select(mortality)
 
-# Look at the same data but "as_of" "2023-02-16"
-# Load the provisional case data (reported on "2023-02-16" but for "2022-02-14")
-admissions_old = epix_as_of(admissions_archive, max_version = (date_under_investigation + 2L))
+# Load the provisional mortality data for the same week
+mortality_old = epix_as_of(mortality_archive, max_version = as_of_date)
 
-ga_provisional <- admissions_old %>%
-  filter(time_value == date_under_investigation) %>%
-  dplyr::select(admissions)
+ca_provisional <- mortality_old %>%
+  filter(time_value == (as_of_date - fixed_lag)) %>%
+  dplyr::select(mortality)
 
-# Calculate ratio between provisional and finalized cases for 2022-02-14
-ratio <- ga_provisional$admissions / ga_finalized$admissions
+# Calculate ratio between provisional and finalized cases for the week of interest
+ratio <- ca_provisional$mortality / ca_finalized$mortality
 ratio
 ```
 
-**Conclusion**: The real-time counts tend to be far below the finalized counts for this time (5 vs 14 here).
+**Conclusion**: The real-time rate tend to be far below the finalized for this time (26 vs 72 here).
 
 **Question**: Can we generalize this over many days? 
 </div>
 
 ## Calculating the Ratio over Multiple Dates
-* Let's move from calculating the ratio for one day to multiple day with the goal to use it to nowcast for Feb. 27, which has a **provisional value** of 6
+* Let's move from calculating the ratio for one day to multiple day with the goal to use it to nowcast for Mar. 10, which has a **provisional value** of 11
 ```{r provisional-val-feb27}
 #| echo: true
-as_of_date = as.Date("2023-03-01")
+as_of_date = as.Date("2024-03-17")
 
-provisional_feb_27 <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
-  filter(time_value == as_of_date - 2L) %>%
-  pull(admissions)
-provisional_feb_27
+provisional <- epix_as_of(mortality_archive, max_version = as_of_date) %>%
+  filter(time_value == as_of_date - 7) %>%
+  pull(mortality)
+provisional
 ```
 
-and a **finalized value** of 8
+and a **finalized value** of 73
 
 ```{r finalized-val-feb27}
 #| echo: true
-finalized_value <- admissions_latest %>%
-  filter(time_value == as_of_date - 2L) %>%
-  pull(admissions)
-finalized_value
+finalized <- mortality_latest %>%
+  filter(time_value == as_of_date - 7) %>%
+  pull(mortality)
+finalized
 ```
 
 ## Calculating the Ratio over Multiple Dates
-First, let's download the real-time number of cases for GA in February 2023, and compare them to their finalized version.
+First, let's download the real-time rates for CA up to Mar. 3, and compare them to their finalized version.
 
-```{r real-time-admissions}
+```{r real-time-mortality}
 #| echo: true
-dates <- seq(as.Date("2023-02-01"), as.Date("2023-02-26"), by = "day")
-admissions_real_time <- function(date) {
-  epix_as_of(admissions_archive, max_version = (date + 2L)) %>%
+dates <- seq(start_time, (as_of_date - 7), by = "day")
+mortality_real_time <- function(date) {
+  epix_as_of(mortality_archive, max_version = (date + 7L)) %>%
     filter(time_value == date)
 }
-admissions_ga_real_time <- map_dfr(dates, admissions_real_time)
-head(admissions_ga_real_time)
+mortality_real_time_df <- map_dfr(dates, mortality_real_time)
+head(mortality_real_time_df)
 ```
 
 ## Calculating the Ratio over Multiple Dates
-Now, let's plot the real-time vs the finalized number of admissions:
+Now, let's plot the real-time vs the finalized mortality rates:
 ```{r real-time-vs-finalized}
 ggplot() +
-  geom_line(data = admissions_latest, aes(x = time_value, y = admissions)) +
-  geom_line(data = admissions_ga_real_time, aes(x = time_value, y = admissions),
+  geom_line(data = mortality_latest, aes(x = time_value, y = mortality)) +
+  geom_line(data = mortality_real_time_df, aes(x = time_value, y = mortality),
             col = 'red') +
-  ggtitle("Admissions, GA: finalized (black) vs real-time (red)")
+  ggtitle("Mortality, CA: finalized (black) vs real-time (red)")
 ```
-* **Takeaways**: Aside from two major overreporting spikes near the beginning, the real-time counts are generally biased **below** the finalized counts.
-* Systematic underreporting begins around Feb. 6, where the bias becomes more consistent.
-
-
-## Calculating the Ratio over Multiple Dates
-Since we expect that this pattern in bias continues going forward (and the massive overreporting near the beginning may drown this out), we'll start estimating the ratio from Feb. 6 and beyond.
-
-```{r admissions-real-time}
-#| echo: true
-admissions_ga_real_time = admissions_ga_real_time %>% filter(time_value >= "2023-02-06")
-head(admissions_ga_real_time)
-```
+* **Takeaways**: The real-time counts are biased **well below** the finalized counts.
+* Systematic underreporting tends to lessen over time (the gap between the lines decreases).
 
 ## Realistic Limitation of Nowcasting - Finalized Data
-* Recall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Feb 10 finalized 320 days later).
-* To nowcast accurately, we must rely on the **best available approximation of finalized data** at the time of estimation (March 1).
+* Recall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Jan. 7 is finalized 294 days later).
+* To nowcast accurately, we must rely on the **best available approximation of finalized data** at the time of estimation (March 10).
 
-```{r finalized-data-as-of-March-1}
+```{r finalized-data-as-of-March-10}
 #| echo: true
-admissions_as_of_mar_1 <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
-  filter(time_value >= "2023-02-06" & time_value <= "2023-02-26")
+mortality_as_of_mar10 <- epix_as_of(mortality_archive, max_version = (as_of_date - 7))
+head(mortality_as_of_mar10)
 ```
 
 ## Ratio calculation & summary
-We then use the "finalized" and real-time counts to compute the mean ratio.
+<div style="font-size: 0.8em;">
+We then use the "finalized" and real-time values to compute the mean ratio:
 ```{r ratio-calc-summary}
 #| echo: true
-ratio_real_time_to_mar1 <- admissions_ga_real_time$admissions / admissions_as_of_mar_1$admissions
-summary(ratio_real_time_to_mar1)
+mortality_real_time_df = mortality_real_time_df %>% filter(time_value != "2024-03-10") # exclude date we're nowcasting for
+ratio_real_time_to_mar10 <- mortality_real_time_df$mortality / mortality_as_of_mar10$mortality
+summary(ratio_real_time_to_mar10)
 ```
-On average, the real-time counts are ~78.1% of the finalized counts.
+On average, the real-time rates are ~33.9% of the finalized.
+</div>
 
 ```{r boxplot-ratio}
 #| echo: false
-ratio_df <- data.frame(ratio_real_time_to_mar1, mean_ratio = mean(ratio_real_time_to_mar1))
+ratio_df <- data.frame(ratio_real_time_to_mar10, mean_ratio = mean(ratio_real_time_to_mar10))
 
 # Create the boxplot with mean marked as a bold cross
-ggplot(ratio_df, aes(y = ratio_real_time_to_mar1)) +
+ggplot(ratio_df, aes(y = ratio_real_time_to_mar10)) +
   geom_boxplot(fill = "lightblue", color = "black") +
   geom_point(
     aes(x = 0, y = mean_ratio),  # Place point at the mean
@@ -977,26 +971,29 @@ ggplot(ratio_df, aes(y = ratio_real_time_to_mar1)) +
     stroke = 2                  # Boldness of the cross
   ) +
   labs(
-    title = "Distribution of Real-Time to Finalized Admission Ratios",
+    title = "Distribution of Real-Time to Finalized Mortality Ratios",
     y = "Real-Time to Finalized Ratio"
   ) +
   theme_minimal() +  # Minimal theme for clean look
   theme(
     plot.title = element_text(hjust = 0.5)  # Center the title
   ) +
-  coord_cartesian(ylim = c(0, 1.25))  # Limit y-axis between 0 and 1.5
+  coord_cartesian(ylim = c(0, 0.5))  # Limit y-axis between 0 and 0.5 to zoom in
 ```
+<div style="font-size: 0.8em;">
+Tells us the distribution is right-skewed (mean > median) and so we should opt for the median.
+</div>
 
-## Nowcasting on March 1 
-Since the **average ratio** between real-time and finalized values is **0.781** (i.e., real-time counts are typically 78% of the finalized counts), then the nowcast is
+## Nowcasting on March 10
+Since the **median ratio** between real-time and finalized values is **0.264** (i.e., real-time values are typically 26.4% of the finalized), then the nowcast is
 ```{r nowcast-feb-27}
 #| echo: true
 # Now we can nowcast properly:
-nowcast <- provisional_feb_27 *
-  1 / mean(ratio_real_time_to_mar1)
+nowcast <- provisional *
+  1 / median(ratio_real_time_to_mar10)
 nowcast
 ```
-So, this **nowcast is 7.68**, which is closer to the true finalized value of 8 than the provisional value of 6.
+So, this **nowcast is 41.63**, which is closer to the **finalized value of 73** than the **provisional value of 11**.
 
 ## Summary of three main steps 
 So the main steps for this type of fixed lag nowcasting are...
@@ -1013,32 +1010,31 @@ So the main steps for this type of fixed lag nowcasting are...
 #| code-fold: true
 #| code-summary: "Expand for the accompanying code"
 # Today
-as_of_date = as.Date("2023-03-01")
+as_of_date = as.Date("2024-03-17")
 
 # 1. Obtain the provisional value
-provisional_feb_27 <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
-  filter(time_value == as_of_date - 2L) %>%
-  pull(admissions)
-provisional_feb_27
+provisional <- epix_as_of(mortality_archive, max_version = as_of_date) %>%
+  filter(time_value == as_of_date - 7) %>%
+  pull(mortality)
+provisional
 
 # 2. Estimate the ratio 
-admissions_ga_real_time = admissions_ga_real_time %>% filter(time_value >= "2023-02-06") # Real-time data
-admissions_as_of_mar_1 <- epix_as_of(admissions_archive, max_version = as_of_date) %>% # "Finalized" data
-  filter(time_value >= "2023-02-06" & time_value <= "2023-02-26")
+mortality_real_time_df <- map_dfr(dates, mortality_real_time) %>% filter(time_value != "2024-03-10") # Real-time data
+mortality_as_of_mar10 <- epix_as_of(mortality_archive, max_version = (as_of_date - 7))  # "Finalized" data
 
-mean_ratio <- mean(admissions_ga_real_time$admissions / admissions_as_of_mar_1$admissions) # Mean ratio
+ratio_real_time_to_mar10 <- mortality_real_time_df$mortality / mortality_as_of_mar10$mortality
 
 # 3. Profit.
-nowcast <- provisional_feb_27 *
-  1 / mean(ratio_real_time_to_mar1)
+nowcast <- provisional *
+  1 / median(ratio_real_time_to_mar10)
 nowcast
 ```
 
-## Nowcasting Admissions Data for Multiple Dates
+## Nowcasting Mortality for Multiple Dates
 
 * **Define Nowcast Function**:
   * **Input**: Takes in the dates to nowcast and the fixed lag
-  * **Output**: The nowcasted admissions based on the ratio of real-time to finalized data.
+  * **Output**: The nowcasted mortality rates based on the ratio of real-time to finalized data.
 ```{r nowcasting-function}
 #| echo: true
 #| code-fold: true
@@ -1046,46 +1042,53 @@ nowcast_function <- function(nowcast_date, fixed_lag) {
   as_of_date = nowcast_date + fixed_lag
   
   # 1. Obtain the provisional value for the target.
-  provisional <- epix_as_of(admissions_archive, max_version = as_of_date) %>%
-  filter(time_value == as_of_date - 2L) %>%
-  pull(admissions)
+  provisional <- epix_as_of(mortality_archive, max_version = as_of_date) %>%
+    filter(time_value == as_of_date - fixed_lag) %>%
+    pull(mortality)
   
   #2. Estimate the ratio multiplier using
   # real-time
-  dates <- seq(as.Date("2023-02-06"), nowcast_date - 1, by = "day")
-  admissions_ga_real_time <- map_dfr(dates, admissions_real_time)
+  dates_seq <- seq(start_time, (nowcast_date - fixed_lag), by = "week")
+  mortality_real_time <- map_dfr(dates_seq, mortality_real_time)
   
   # and "finalized" data
-  finalized <- epix_as_of(admissions_archive, max_version = as_of_date) %>% filter(time_value >= "2023-02-06" & time_value <= (nowcast_date - 1)) 
-
-  ratios <- admissions_ga_real_time$admissions / finalized$admissions
+  finalized <- epix_as_of(mortality_archive, max_version = as_of_date) %>% filter(time_value >= start_time & time_value <= (nowcast_date - fixed_lag)) 
+  
+  ratios <- mortality_real_time$mortality / finalized$mortality
   
   # Remove infinite or NaN ratios (i.e., keep only finite values)
-  mean_ratio <- mean(ratios[is.finite(ratios)])
-
+  median_ratio <- median(ratios[is.finite(ratios)])
+  
   #3. Profit.
-  nowcast <- provisional * (1 / mean_ratio)
+  nowcast <- provisional * (1 / median_ratio)
   
   # Return a dataframe with the nowcast and date
   tibble(
     time_value = nowcast_date,
-    nowcast_admissions = nowcast
+    nowcast_mortality = nowcast
   )
 }
 ```
 
 ## Map Nowcast Over Multiple Dates
-* We can use `map2_df()` to apply the function to a series of dates (e.g., Feb 27–28).
+* We can use `map2()` to apply the function to a series of weeks (e.g., Jan. 28 to Mar. 24).
 * Returns a **dataframe** with nowcasted results.
 
 ```{r apply-nowcast-fun}
 #| echo: true
 # Apply Nowcast Function Over Multiple Dates
-nowcast_dates <- seq(as.Date("2023-02-27"), as.Date("2023-02-28"), by = "day")
-fixed_lag <- 2
-nowcast_results_df <- map2_df(nowcast_dates, fixed_lag, nowcast_function)
+nowcast_dates <- seq(as.Date("2024-01-28"), as.Date("2024-03-24"), by = "week")
+fixed_lag <- 7
+nowcast_results_df <- map2(nowcast_dates, fixed_lag, nowcast_function) %>% list_rbind()
+```
 
-# View Nowcast Results
+## Map Nowcast Over Multiple Dates
+Let's smooth with a rolling trailing mean (window size 4) & see the results:
+```{r}
+# Smooth results: Apply rolling median to nowcast_mortality with a window size of 4
+nowcast_results_df$nowcast_mortality <- zoo::rollapply(nowcast_results_df$nowcast_mortality, width = 4, FUN = mean, partial = TRUE, align = "right")
+# nowcast_results_df$nowcast_mortality[1:3] %>% median()
+
 nowcast_results_df
 ```
 
@@ -1094,14 +1097,17 @@ Finally, we can compare these nowcast results to the real-time and finalized val
 ```{r nowcast-fun-plot-results}
 #| echo: false
 ggplot() +
-  geom_line(data = nowcast_results_df, aes(x = time_value, y = nowcast_admissions), col = 'blue') + # nowcast
-  geom_line(data =  map_dfr(nowcast_dates, admissions_real_time), aes(x = time_value, y = admissions), col = 'red') + # real-time
-  geom_line(data = admissions_latest %>% filter(time_value %in% nowcast_dates), aes(x = time_value, y = admissions), col = 'black') + # finalized
-  ggtitle("Admissions, GA: Nowcast results (blue) vs real-time (red) and finalized (black)")
+  geom_line(data = nowcast_results_df, aes(x = time_value, y = nowcast_mortality), col = 'blue') + # nowcast
+  geom_line(data =  map_dfr(nowcast_dates, mortality_real_time), aes(x = time_value, y = mortality), col = 'red') + # real-time
+  # Add points for nowcast data (blue points)
+  geom_point(data = nowcast_results_df, aes(x = time_value, y = nowcast_mortality), col = 'blue', shape = 16) + # shape 16 for solid points
+  # Add points for real-time data (red points)
+  geom_point(data = map_dfr(nowcast_dates, mortality_real_time), aes(x = time_value, y = mortality), col = 'red', shape = 16) + 
+  geom_line(data = mortality_latest %>% filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality), col = 'black') + # finalized
+  geom_point(data = mortality_latest %>% filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality), col = 'black', shape = 16) + 
+  ggtitle("Mortality, CA: Nowcast results (blue) vs real-time (red) and finalized (black)")
 ```
-The real-time counts tend to be biased slightly below the finalized counts.
-Nowcasted values tend to provide a better approximation of the truth
-(at least for these dates).
+The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).
 
 # Nowcasting with two variables
 
@@ -1116,8 +1122,8 @@ Nowcasted values tend to provide a better approximation of the truth
 ## Data Sources: Google Search Trends & Hospital Admissions
 
 * **Google Search Trends**: Symptoms like cough, fever, and shortness of breath.
-  * **s01**: Cough, Phlegm, Sputum, Upper respiratory tract infection
-  * **s03**: Fever, Hyperthermia, Chills, Shivering
+  * **s01**: Cough, Phlegm, Sputum, Upper respiratory tract infection  
+  * **s02**: Nasal congestion, Post nasal drip, Sinusitis, Common cold
 
 * **Hospital Admissions**: Data from the Department of Health & Human Services on confirmed influenza admissions.
 
@@ -1130,7 +1136,7 @@ Nowcasted values tend to provide a better approximation of the truth
 ```{r fetch-google-data}
 #| echo: true
 #| code-fold: true
-# Fetch Google symptom data for s01 and s03
+# Fetch Google symptom data for s01 and s02
 x1 <- pub_covidcast(
   source = "google-symptoms",
   signals = "s01_smoothed_search", 
@@ -1145,14 +1151,14 @@ x1 <- pub_covidcast(
 
 x2 <- pub_covidcast(
   source = "google-symptoms",
-  signals = "s03_smoothed_search",
+  signals = "s02_smoothed_search",
   geo_type = "state",
   time_type = "day",
   geo_values = "ga",
   time_values = epirange(20230401, 20230701),
   issues = "*"
 ) %>%
-  select(geo_value, time_value, version = issue, avg_search_vol_s03 = value) %>%
+  select(geo_value, time_value, version = issue, avg_search_vol_s02 = value) %>%
   as_epi_archive(compactify = FALSE)
 
 # Fetch hospital admissions data
@@ -1212,10 +1218,10 @@ archive <- epix_merge(archive, x2, sync = "locf", compactify = FALSE)
 ## Multiple Linear Regression Model
 
 * A linear model is a good choice to describe the relationship between search trends and hospital admissions.
-* The model will include two predictors (s01 and s03).
+* The model will include two predictors (s01 and s02).
 * We'll use these two search trend signals to predict hospital admissions (response).
 
-<!-- A linear regression model will be used to predict hospital admissions from search trends (s01 and s03). -->
+<!-- A linear regression model will be used to predict hospital admissions from search trends (s01 and s02). -->
 
 ## Multiple Linear Regression Model
 ```{r}
@@ -1224,14 +1230,14 @@ archive <- epix_merge(archive, x2, sync = "locf", compactify = FALSE)
 lm_mod_pred <- function(data, gk, rtv, ...) {
   
   # Fit the linear model
-  model <- lm(admissions ~ avg_search_vol_s01 + avg_search_vol_s03, data = data)
+  model <- lm(admissions ~ avg_search_vol_s01 + avg_search_vol_s02, data = data)
   
   # Make predictions
   predictions = predict(model,
                         newdata = data %>%
                           # Use tidyr::fill() for LOCF if predictor data is incomplete 
                           fill(avg_search_vol_s01, .direction = "down") %>% 
-                          fill(avg_search_vol_s03, .direction = "down") %>%
+                          fill(avg_search_vol_s02, .direction = "down") %>%
                           filter(time_value == max(time_value)),
                         interval = "prediction", level = 0.9
   )
@@ -1282,7 +1288,7 @@ head(nowcast_res, n=2)
 #| echo: true
 # Left join with latest results 
 # Latest snapshot of data (with the latest/finalized admissions)
-x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) %>% select(-c(avg_search_vol_s01, avg_search_vol_s03))
+x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) %>% select(-c(avg_search_vol_s01, avg_search_vol_s02))
 
 res <- nowcast_res %>% left_join(x_latest, by = c("geo_value", "time_value"))
 head(res)
@@ -1312,7 +1318,7 @@ ggplot(res, aes(x = time_value)) +
 
 ## Key Takeaways: Linear Regression Nowcasting Example
 
-* **Provisional Data as Predictors**: Using Google symptom search trends (`s01`, `s03`) to predict **influenza hospital admissions**.
+* **Provisional Data as Predictors**: Using **Google symptom search trends** to predict **influenza hospital admissions**.
 * **Simple Linear Model**: A linear regression model captures the relationship between symptom searches and hospital admissions.
 * **Actionable Predictions**: Nowcasts provide **timely insights** for hospital admissions, even before data is finalized.
 * **Sliding Window Approach**: Predictions are based on **data up to the current time**, ensuring no future information influences the nowcast.
@@ -1327,7 +1333,7 @@ ggplot(res, aes(x = time_value)) +
 * %CLI is contained in the Epidata API.
 * Case rates by specimen collection date are not. They are from the MA gov website.
 * Case rates in the API (JHU) are aligned by report date, not specimen collection/test date.
-* Aligning by **test date** allows us to avoid the more unpredictable delays introduced by the **report date**.
+* Working with cases aligned by **test date** allows us to avoid the more unpredictable delays introduced by the **report date**.
 
 ## Summary of main steps
 <div style="font-size: 0.8em;">
