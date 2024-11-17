@@ -42,6 +42,8 @@ library(Stat406)
 1. Motivating case study 
 
 
+# Essentials of `dplyr` and `tidyr` 
+
 ## Down with Spreadsheets for Data Manipulation
 
 * Spreadsheets make it difficult to rerun analyses consistently.
@@ -502,8 +504,10 @@ penguins_full_join
 <small>[Logo from the palmerpenguins website](https://allisonhorst.github.io/palmerpenguins/)</small>
 </div>
 
-## Epiverse software ecosystem
-<!-- Interworking, community-driven, packages for epi tracking & forecasting. -->
+# Epiverse software ecosystem
+
+## The epiverse ecosystem
+Interworking, community-driven, packages for epi tracking & forecasting.
 
 ![](gfx/epiverse_packages_flow.jpg){style="width: 60%;"}
 
@@ -511,7 +515,7 @@ penguins_full_join
   
   
   
-# Data structures
+# Panel and versioned data in the epiverse
   
 ## What is panel data?
 <div style="font-size: 0.8em;">
@@ -519,7 +523,7 @@ penguins_full_join
 contain cross-sectional measurements of subjects over time. 
 * Built-in example: [`covid_case_death_rates`](
   https://cmu-delphi.github.io/epidatasets/reference/covid_case_death_rates.html) 
-dataset, which is a snapshot **as of** May 31, 2022 that contains daily state-wise measures of `case_rate` and  `death_rate` for COVID-19 in 2021:
+dataset, which is a snapshot **as of** May 31, 2022 that contains daily state-wise measures of `case_rate` and `death_rate` for COVID-19 in 2021:
   
 ```{r}
 #| echo: false
@@ -532,7 +536,10 @@ head(edf)
   
   
 ## `epi_df`: snapshot of a data set
-  
+
+* You can convert panel data into an `epi_df` with the required `geo_value` and `time_value` columns
+
+Therefore, an `epi_df` is...
 * a tibble that requires columns `geo_value` and `time_value`.
 * arbitrary additional columns containing [measured values]{.primary}
 * additional [keys]{.primary} to index (`age_group`, `ethnicity`, etc.)
@@ -634,8 +641,8 @@ ggplot(snapshots %>% filter(!latest),
   
   Nowcasting
 : At time $t$, predict the final value for time $t$
-  
-# Nowcasting with one time series
+
+# Basic Nowcasting in the epiverse
 
 <!-- predicting a finalized value from a provisional value and making predictions. -->
 ## Backfill Canadian edition
@@ -1311,11 +1318,11 @@ ggplot(res, aes(x = time_value)) +
 * **Sliding Window Approach**: Predictions are based on **data up to the current time**, ensuring no future information influences the nowcast.
 * **Evaluation**: Predictions are compared with actual admissions visually.
 
-# Case Study - Nowcasting in MA
+# Case Study - Nowcasting case rates using %CLI 
 
 ## Goal of this Case Study
 
-**Goal**: Nowcast COVID-19 Case Rates in Massachusetts using %CLI.
+**Goal**: Nowcast COVID-19 Case Rates using %CLI for Massachusetts.
 
 * %CLI is contained in the Epidata API.
 * Case rates by specimen collection date are not. They are from the MA gov website.
