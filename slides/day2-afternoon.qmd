@@ -273,7 +273,7 @@ epi_pred <- epi_slide(
 epi_pred_trailing 
 ```
 
-<div>
+</div>
 
 ## Predict with ARX (re-fitting on trailing window)
 
