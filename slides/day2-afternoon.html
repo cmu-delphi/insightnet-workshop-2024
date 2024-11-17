@@ -483,7 +483,7 @@
 <li><p>Back to the ARX model for COVID deaths: <span class="math inline">\(\quad \hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}\)</span></p></li>
 <li><p>Using <code>{epipredict}</code></p></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epipredict-arx_666d1fac3373931409c0d47d3707896f">
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epipredict-arx_76fe1819adf8693a6264987eb3ab9141">
 <div class="sourceCode cell-code" id="cb2" data-code-line-numbers="|8-14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(epipredict)</span>
 <span id="cb2-2"><a></a></span>
 <span id="cb2-3"><a></a><span class="co"># split into train and test </span></span>
@@ -497,7 +497,7 @@
 <span id="cb2-11"><a></a>                          <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
 <span id="cb2-12"><a></a>                          <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
 <span id="cb2-13"><a></a>                          <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> <span class="dv">28</span>,</span>
-<span id="cb2-14"><a></a>                                                    <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-14"><a></a>                                                    <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="arx_forecaster-output" class="slide level2">
@@ -663,6 +663,8 @@ Coefficients:
 <pre><code></code></pre>
 </div>
 </div>
+</div>
+</section>
 <section id="extract-predictions" class="slide level2">
 <h2>Extract predictions</h2>
 <div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epi-pred-arx_43331ea99d1bd2a1364e1cb26a52cc55">
@@ -689,8 +691,8 @@ Coefficients:
 <h2>Extract predictions</h2>
 <p>We can extract the distribution into a “long” <code>epi_df</code>:</p>
 <ul>
-<li><p>one row per quantile</p></li>
-<li><p><code>values</code> = value associated to that quantile</p></li>
+<li><p><span class="inner-list"> one row per quantile </span></p></li>
+<li><p><span class="inner-list"><code>values</code> = value associated to that quantile</span></p></li>
 </ul>
 <div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epi-pred-arx-unnest_d4fa8230f21b34c968c84806601cf647">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a></a>epi_arx<span class="sc">$</span>predictions <span class="sc">|&gt;</span></span>
@@ -708,7 +710,7 @@ Coefficients:
 <section id="predict-with-fitted-arx-split-sample" class="slide level2">
 <h2>Predict with fitted ARX (split-sample)</h2>
 <ul>
-<li><p><code>arx_forecaster</code> fits a model to the training set, and outputs only one prediction (for time <span class="math inline">\(t_0 +h\)</span>).</p></li>
+<li><p><code>arx_forecaster</code> fits a model to the training set, and outputs only one prediction (for time <span class="math inline">\(t_0+h\)</span>).</p></li>
 <li><p>To get <span class="primary">predictions</span> for the <span class="primary">test</span> set:</p></li>
 </ul>
 <div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx-test-predict_72ce8500b03398a5db44ed3744123776">
@@ -742,7 +744,7 @@ Coefficients:
 </section>
 <section id="predict-with-arx-re-fitting-on-trailing-window" class="slide level2">
 <h2>Predict with ARX (re-fitting on trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epipredict-cv-trailing_0514716b3cd2d66a340b06b3f7192513">
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epipredict-cv-trailing_552d4d66b9b1159bf0aaf04f716f7edb">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>         <span class="co">#horizon</span></span>
 <span id="cb57-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span> <span class="sc">+</span> h    <span class="co">#trailing window length</span></span>
 <span id="cb57-3"><a></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ca)   <span class="co">#time-series length</span></span>
@@ -758,7 +760,7 @@ Coefficients:
 <span id="cb57-13"><a></a>                     <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>), </span>
 <span id="cb57-14"><a></a>                     <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
 <span id="cb57-15"><a></a>                     <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> h,</span>
-<span id="cb57-16"><a></a>                                               <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
+<span id="cb57-16"><a></a>                                               <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.9</span>))</span>
 <span id="cb57-17"><a></a>                     )<span class="sc">$</span>predictions <span class="sc">|&gt;</span></span>
 <span id="cb57-18"><a></a>        <span class="fu">pivot_quantiles_wider</span>(.pred_distn),</span>
 <span id="cb57-19"><a></a>  <span class="at">.window_size =</span> w, </span>
@@ -835,13 +837,13 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 </section>
 <section id="simple-adjustments" class="slide level2">
 <h2>Simple adjustments</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-1_420427695fe94f052203dc99d39a91c8">
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-1_a3dd3bf68bd012ed7c42f2a99eb0b322">
 <div class="sourceCode cell-code" id="cb61" data-code-line-numbers="|3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a></a><span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> train <span class="sc">|&gt;</span> <span class="fu">as_epi_df</span>(), </span>
 <span id="cb61-2"><a></a>               <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
 <span id="cb61-3"><a></a>               <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
 <span id="cb61-4"><a></a>               <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
 <span id="cb61-5"><a></a>               <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> <span class="dv">28</span>,</span>
-<span id="cb61-6"><a></a>                                         <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb61-6"><a></a>                                         <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.9</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="fragment fade-in">
 <ul>
@@ -855,13 +857,13 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 </section>
 <section id="simple-adjustments-1" class="slide level2">
 <h2>Simple adjustments</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-2_bc1ca0038e063353c6e5dac29644b860">
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-2_0cc5c4d4ea6f7331b91a6b81489b5b8b">
 <div class="sourceCode cell-code" id="cb62" data-code-line-numbers="4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a></a><span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> train <span class="sc">|&gt;</span> <span class="fu">as_epi_df</span>(), </span>
 <span id="cb62-2"><a></a>               <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
 <span id="cb62-3"><a></a>               <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
 <span id="cb62-4"><a></a>               <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
 <span id="cb62-5"><a></a>               <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> <span class="dv">28</span>,</span>
-<span id="cb62-6"><a></a>                                         <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb62-6"><a></a>                                         <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.9</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li><p>Modify <code>trainer</code> to use a model that is not <code>lm</code> (default)</p>
@@ -873,13 +875,13 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 </section>
 <section id="simple-adjustments-2" class="slide level2">
 <h2>Simple adjustments</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-3_c90a16ab5aecdeac7aae3877c4948438">
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-3_e733fef7301c7bb25808b112d4ad2b65">
 <div class="sourceCode cell-code" id="cb63" data-code-line-numbers="5-6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a></a><span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> train <span class="sc">|&gt;</span> <span class="fu">as_epi_df</span>(), </span>
 <span id="cb63-2"><a></a>               <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
 <span id="cb63-3"><a></a>               <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
 <span id="cb63-4"><a></a>               <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
 <span id="cb63-5"><a></a>               <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> <span class="dv">28</span>,</span>
-<span id="cb63-6"><a></a>                                         <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb63-6"><a></a>                                         <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.9</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>Modify <code>arx_args_list</code> to change lags, horizon, quantile levels, …</li>
@@ -937,7 +939,7 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 </section>
 <section id="version-aware-forecasting-with-geo-pooling" class="slide level2">
 <h2>Version-aware forecasting with geo-pooling</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/predict-version-aware_6bcdc947b1cc83474b4073dadc395cc9">
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/predict-version-aware_dd45d2a193e4725ad2aadd8f2bf9f4eb">
 <div class="sourceCode cell-code" id="cb67" data-code-line-numbers="|5-17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a>forecast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>)</span>
 <span id="cb67-2"><a></a>h <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">28</span>)</span>
 <span id="cb67-3"><a></a></span>
@@ -950,7 +952,7 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 <span id="cb67-10"><a></a>        <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
 <span id="cb67-11"><a></a>        <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
 <span id="cb67-12"><a></a>        <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> ahead,</span>
-<span id="cb67-13"><a></a>                                  <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
+<span id="cb67-13"><a></a>                                  <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.9</span>))</span>
 <span id="cb67-14"><a></a>      )<span class="sc">$</span>predictions <span class="sc">|&gt;</span> <span class="fu">pivot_quantiles_wider</span>(.pred_distn),</span>
 <span id="cb67-15"><a></a>      <span class="at">.before =</span> <span class="dv">120</span>,</span>
 <span id="cb67-16"><a></a>      <span class="at">.versions =</span> forecast_dates</span>
@@ -1021,7 +1023,7 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 </section>
 <section id="fit-a-forecaster" class="slide level2">
 <h2>Fit a forecaster</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/unnamed-chunk-2_560072ccf494785e165e020b46ca7a01">
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/unnamed-chunk-2_43e54e136766eca447ff44f618a52419">
 <div class="sourceCode cell-code" id="cb68" data-code-line-numbers="1-6|8-9|11-16|18-20|21-29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a></a><span class="co"># A preprocessing "recipe" that turns raw data into features / response</span></span>
 <span id="cb68-2"><a></a>r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(ca) <span class="sc">|&gt;</span></span>
 <span id="cb68-3"><a></a>  <span class="fu">step_epi_lag</span>(cases, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
@@ -1030,7 +1032,7 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 <span id="cb68-6"><a></a>  <span class="fu">step_epi_naomit</span>()</span>
 <span id="cb68-7"><a></a></span>
 <span id="cb68-8"><a></a><span class="co"># Training engine</span></span>
-<span id="cb68-9"><a></a>e <span class="ot">&lt;-</span> <span class="fu">quantile_reg</span>(<span class="at">quantile_levels =</span> <span class="fu">c</span>(.<span class="dv">025</span>, .<span class="dv">5</span>, .<span class="dv">975</span>))</span>
+<span id="cb68-9"><a></a>e <span class="ot">&lt;-</span> <span class="fu">quantile_reg</span>(<span class="at">quantile_levels =</span> <span class="fu">c</span>(.<span class="dv">1</span>, .<span class="dv">5</span>, .<span class="dv">9</span>))</span>
 <span id="cb68-10"><a></a></span>
 <span id="cb68-11"><a></a><span class="co"># A postprocessing routine describing what to do to the predictions</span></span>
 <span id="cb68-12"><a></a>f <span class="ot">&lt;-</span> <span class="fu">frosting</span>() <span class="sc">|&gt;</span></span>
@@ -1075,8 +1077,6 @@ time series CV + trailing 0.07852942 731.6178</code></pre>
 </div>
 </section>
 
-</div>
-</section>
 </div>
 </section></section>
     </div>
