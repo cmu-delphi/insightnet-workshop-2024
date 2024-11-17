@@ -422,6 +422,11 @@
 <li><p>Motivating case study</p></li>
 </ol>
 </section>
+<section>
+<section id="essentials-of-dplyr-and-tidyr" class="title-slide slide level1 center">
+<h1>Essentials of <code>dplyr</code> and <code>tidyr</code></h1>
+
+</section>
 <section id="down-with-spreadsheets-for-data-manipulation" class="slide level2">
 <h2>Down with Spreadsheets for Data Manipulation</h2>
 <ul>
@@ -1248,16 +1253,21 @@ In this section:</li>
 <p><img data-src="gfx/penguins_logo.png" style="width: 30%;"></p>
 <p><small><a href="https://allisonhorst.github.io/palmerpenguins/">Logo from the palmerpenguins website</a></small></p>
 </div>
+</section></section>
+<section>
+<section id="epiverse-software-ecosystem" class="title-slide slide level1 center">
+<h1>Epiverse software ecosystem</h1>
+
 </section>
-<section id="epiverse-software-ecosystem" class="slide level2">
-<h2>Epiverse software ecosystem</h2>
-<!-- Interworking, community-driven, packages for epi tracking & forecasting. -->
+<section id="the-epiverse-ecosystem" class="slide level2">
+<h2>The epiverse ecosystem</h2>
+<p>Interworking, community-driven, packages for epi tracking &amp; forecasting.</p>
 
 <!-- 1. Fetch data: epidatr, epidatpy, and other sources, 2. Explore, clean, transform & backtest 3. Pre-built forecasters, modular forecasting framework: epipredict -->
-<img data-src="gfx/epiverse_packages_flow.jpg" style="width: 60%;" class="r-stretch"></section>
+<img data-src="gfx/epiverse_packages_flow.jpg" style="width: 60%;" class="r-stretch"></section></section>
 <section>
-<section id="data-structures" class="title-slide slide level1 center">
-<h1>Data structures</h1>
+<section id="panel-and-versioned-data-in-the-epiverse" class="title-slide slide level1 center">
+<h1>Panel and versioned data in the epiverse</h1>
 
 </section>
 <section id="what-is-panel-data" class="slide level2">
@@ -1293,10 +1303,9 @@ In this section:</li>
 <section id="epi_df-snapshot-of-a-data-set" class="slide level2">
 <h2><code>epi_df</code>: snapshot of a data set</h2>
 <ul>
-<li>a tibble that requires columns <code>geo_value</code> and <code>time_value</code>.</li>
-<li>arbitrary additional columns containing <span class="primary">measured values</span></li>
-<li>additional <span class="primary">keys</span> to index (<code>age_group</code>, <code>ethnicity</code>, etc.)</li>
+<li>You can convert panel data into an <code>epi_df</code> with the required <code>geo_value</code> and <code>time_value</code> columns</li>
 </ul>
+<p>Therefore, an <code>epi_df</code> is… * a tibble that requires columns <code>geo_value</code> and <code>time_value</code>. * arbitrary additional columns containing <span class="primary">measured values</span> * additional <span class="primary">keys</span> to index (<code>age_group</code>, <code>ethnicity</code>, etc.)</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1436,8 +1445,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </dl>
 </section></section>
 <section>
-<section id="nowcasting-with-one-time-series" class="title-slide slide level1 center">
-<h1>Nowcasting with one time series</h1>
+<section id="basic-nowcasting-in-the-epiverse" class="title-slide slide level1 center">
+<h1>Basic Nowcasting in the epiverse</h1>
 <!-- predicting a finalized value from a provisional value and making predictions. -->
 </section>
 <section id="backfill-canadian-edition" class="slide level2">
@@ -2116,13 +2125,13 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </ul>
 </section></section>
 <section>
-<section id="case-study---nowcasting-in-ma" class="title-slide slide level1 center">
-<h1>Case Study - Nowcasting in MA</h1>
+<section id="case-study---nowcasting-case-rates-using-cli" class="title-slide slide level1 center">
+<h1>Case Study - Nowcasting case rates using %CLI</h1>
 
 </section>
 <section id="goal-of-this-case-study" class="slide level2">
 <h2>Goal of this Case Study</h2>
-<p><strong>Goal</strong>: Nowcast COVID-19 Case Rates in Massachusetts using %CLI.</p>
+<p><strong>Goal</strong>: Nowcast COVID-19 Case Rates using %CLI for Massachusetts.</p>
 <ul>
 <li>%CLI is contained in the Epidata API.</li>
 <li>Case rates by specimen collection date are not. They are from the MA gov website.</li>
