@@ -1417,14 +1417,16 @@ for (t in t0:(n-h)) {
   yhat_ridge_mat[t+h, ] = predict(ridge_trail, newx = as.matrix(X[(t+h), ]))
   yhat_lasso_mat[t+h, ] = predict(lasso_trail, newx = as.matrix(X[(t+h), ]))
   # Save prediction corresponding to best lambda so far
-  yhat_ridge[t+h] = yhat_ridge_mat[t+h, ridge_index]
-  yhat_lasso[t+h] = yhat_lasso_mat[t+h, lasso_index]
-  # Prediction error
-  mae_ridge = colMeans(abs(yhat_ridge_mat - y), na.rm = T)
-  mae_lasso = colMeans(abs(yhat_lasso_mat - y), na.rm = T)
-  # Select index of lambda vector which gives lowest MAE so far
-  ridge_index <- which.min(mae_ridge)
-  lasso_index <- which.min(mae_lasso)
+  yhat_ridge[t+h] = max(0, yhat_ridge_mat[t+h, ridge_index])
+  yhat_lasso[t+h] = max(0, yhat_lasso_mat[t+h, lasso_index])
+  if (t >= t0+h) {
+    # Prediction error
+    mae_ridge = colMeans(abs(yhat_ridge_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    mae_lasso = colMeans(abs(yhat_lasso_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    # Select index of lambda vector which gives lowest MAE so far
+    ridge_index <- which.min(mae_ridge)
+    lasso_index <- which.min(mae_lasso)
+  }
 }
 ```
 
@@ -1590,15 +1592,11 @@ quantiles <- c(0.1, 0.5, 0.9)
 # Fit quantile regression to training set
 q_reg <- rq(deaths ~ lagged_deaths + lagged_cases, data = train, tau = quantiles)
 
-# Estimated coefficients
-coef(q_reg)
-
 # Sort estimated coefficients 
 coefs_sorted <- t(apply(coef(q_reg), 1, sort))
 colnames(coefs_sorted) <- colnames(coef(q_reg))
-coefs_sorted
-
 q_reg$coefficients <- coefs_sorted
+coefs_sorted
 ```
 
 
@@ -1670,7 +1668,7 @@ getErrors(y_test, pmax(0, pred_trailing[!is.na(pred_trailing)]), "rq.trailing")
 ## Actual Coverage
 
 * We would expect the ARX model fitted via `lm` and via `rq` to cover the truth
-about 95\% of the times. Is this actually true in practice?
+about 80\% of the times. Is this actually true in practice?
 
 * The actual coverage of each predictive interval is lower:
 
@@ -1809,9 +1807,9 @@ ca_archive <- data_archive$DT |>
 ```{r versioned-quantile-reg}
 #| echo: true
 # initialize dataframe for predictions
-# 5 columns: forecast date, target date, 2.5%, 50%, and 97.5% quantiles
+# 5 columns: forecast date, target date, 10%, 50%, and 90% quantiles
 pred_trailing <- data.frame(matrix(NA, ncol = 5, nrow = 0))
-colnames(pred_trailing) <- c("forecast_date", "target_date", 'tau..0.025', 'tau..0.500', 'tau..0.975')
+colnames(pred_trailing) <- c("forecast_date", "target_date", 'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -1831,7 +1829,7 @@ for (fc_date in fc_time_values) {
                     data = data |> filter(time_value > (max(time_value) - w))) 
   # sort estimated coefficients 
   coefs_sorted <- t(apply(coef(rq_trailing), 1, sort))
-  colnames(coefs_sorted) <- c('tau..0.025', 'tau..0.500', 'tau..0.975')
+  colnames(coefs_sorted) <- c('tau..0.1', 'tau..0.5', 'tau..0.9')
   rq_trailing$coefficients <- coefs_sorted
   # construct data.frame with the right predictors for the target date
   predictors <- data.frame(lagged_deaths = tail(data$deaths, 1), 
@@ -1850,9 +1848,9 @@ for (fc_date in fc_time_values) {
 ```{r clean-data-output}
 # clean output and join it with finalized values (`ca` dataset)
 pred_trailing <- pred_trailing |>
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) |>
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) |>
   full_join(ca |> select(time_value, deaths), join_by(target_date == time_value)) |>
   arrange(target_date)
 ```
@@ -1897,10 +1895,10 @@ usa_archive <- data_archive$DT |>
   as_epi_archive()
 
 # initialize dataframe for predictions
-# 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles
+# 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles
 pred_trailing <- data.frame(matrix(NA, ncol = 6, nrow = 0))
 colnames(pred_trailing) <- c('geo_value', 'forecast_date', 'target_date',
-                             'tau..0.025', 'tau..0.500', 'tau..0.975')
+                             'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -1923,7 +1921,7 @@ for (fc_date in fc_time_values) {
                     data = data |> filter(time_value > (max(time_value) - w))) 
   # sort estimated coefficients 
   coefs_sorted <- t(apply(coef(rq_trailing), 1, sort))
-  colnames(coefs_sorted) <- c('tau..0.025', 'tau..0.500', 'tau..0.975')
+  colnames(coefs_sorted) <- c('tau..0.1', 'tau..0.5', 'tau..0.9')
   rq_trailing$coefficients <- coefs_sorted
   
   # construct dataframe with the right predictors for the target date
@@ -1957,9 +1955,9 @@ for (fc_date in fc_time_values) {
 # geo-pooled predictions for California
 pred_ca <- pred_trailing |>
   filter(geo_value == 'ca') |>
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) |>
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) |>
   full_join(ca |> select(time_value, deaths), join_by(target_date == time_value)) |>
   arrange(target_date)
 
@@ -1980,10 +1978,10 @@ pred_ca |>
 #| echo: true
 
 # initialize dataframe for predictions
-# 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles
+# 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles
 pred_trailing <- data.frame(matrix(NA, ncol = 6, nrow = 0))
 colnames(pred_trailing) <- c('geo_value', 'forecast_date', 'target_date',
-                             'tau..0.025', 'tau..0.500', 'tau..0.975')
+                             'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -2011,7 +2009,7 @@ for (fc_date in fc_time_values) {
   
   # sort estimated coefficients 
   coefs_sorted <- t(apply(coef(rq_trailing), 1, sort))
-  colnames(coefs_sorted) <- c('tau..0.025', 'tau..0.500', 'tau..0.975')
+  colnames(coefs_sorted) <- c('tau..0.1', 'tau..0.5', 'tau..0.9')
   rq_trailing$coefficients <- coefs_sorted
   
   # construct data.frame with the right predictors for the target date
@@ -2049,9 +2047,9 @@ for (fc_date in fc_time_values) {
 # partially geo-pooled predictions for California
 pred_ca <- pred_trailing |>
   filter(geo_value == 'ca') |>
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) |>
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) |>
   full_join(ca |> select(time_value, deaths), join_by(target_date == time_value)) |>
   arrange(target_date)
 
