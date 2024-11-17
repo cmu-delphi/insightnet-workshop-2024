@@ -495,7 +495,7 @@
 <h2>Example: COVID cases and deaths in California</h2>
 <div class="flex">
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/plot-ca-cases-deaths_a562944f5a72d4fc6dc22f0397608010">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -506,7 +506,7 @@
 </div>
 </div>
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/ca data_d58c0b46dc30f17ef16918a6be1c2787">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">head</span>(ca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `epi_df` object, 6 x 4 with metadata:
@@ -555,7 +555,7 @@
 </section>
 <section id="preparing-the-data" class="slide level2">
 <h2>Preparing the data</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lag-cases_eaeaaf716788d8c8a535ad61cd66fdeb">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="co"># Add column with cases lagged by k</span></span>
 <span id="cb3-2"><a></a>ca<span class="sc">$</span>lagged_cases <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(ca<span class="sc">$</span>cases, <span class="at">n =</span> k)</span>
 <span id="cb3-3"><a></a></span>
@@ -569,7 +569,7 @@
 <img data-src="day2-morning_files/figure-revealjs/plot-lag-cases-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="fitting-lagged-linear-regression-in-r" class="slide level2">
 <h2>Fitting lagged linear regression in R</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lagged-lm_2d30155983f6626cb7f3300a6672b590">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>reg_lagged <span class="ot">=</span> <span class="fu">lm</span>(deaths <span class="sc">~</span> lagged_cases, <span class="at">data =</span> train)</span>
 <span id="cb4-2"><a></a><span class="fu">coef</span>(reg_lagged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -634,7 +634,7 @@
 </div>
 <div class="flex">
 <div class="w-70">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/mae-mape-example_845e7367e48f292d634bd82f2a4954f1">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -645,7 +645,7 @@
 </div>
 </div>
 <div class="w-30 align-end">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/mae-mape-error_1d6ee0e334ebb4c1f175862f2b00a055">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>           MAE     MAPE
 yhat1 2.873328 43.14008
@@ -674,7 +674,7 @@ yhat2 5.382247 36.08279</code></pre>
 <h2>Comparing MAE, MAPE and MASE</h2>
 <div class="flex">
 <div class="w-65">
-<div class="cell" data-layout-align="left" data-hash="day2-morning_cache/revealjs/mae-mape-mase-example_e716e69a872942350933545dec1edf54">
+<div class="cell" data-layout-align="left">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-left">
 <figure>
@@ -685,7 +685,7 @@ yhat2 5.382247 36.08279</code></pre>
 </div>
 </div>
 <div class="w-35">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/mae-mape-mase-error_bea6056c0fd01f68e025e60d3e8af270">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>           MAE     MAPE      MASE
 yhat1 2.873328 43.14008  66.10004
@@ -697,7 +697,7 @@ yhat2 5.382247 36.08279 123.81696</code></pre>
 </section>
 <section id="defining-the-error-metrics-in-r" class="slide level2">
 <h2>Defining the error metrics in R</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/error functions_f9ba612b26f03abc7c1c9e7cbd74fd67">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>MSE <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, prediction) {</span>
 <span id="cb8-2"><a></a>  <span class="fu">mean</span>((truth <span class="sc">-</span> prediction)<span class="sc">^</span><span class="dv">2</span>)}</span>
 <span id="cb8-3"><a></a></span>
@@ -737,12 +737,12 @@ yhat2 5.382247 36.08279 123.81696</code></pre>
 <section id="training-error-1" class="slide level2">
 <h2>Training error</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/pred-train_d09534d0ab2730714b382752c8a8f59a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="co"># Getting the predictions for the training set</span></span>
 <span id="cb9-2"><a></a>pred_train <span class="ot">&lt;-</span> <span class="fu">predict</span>(reg_lagged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-train-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/training-error_3ce06b4bb3245dee01bb231638f2aa6e">
+<img data-src="day2-morning_files/figure-revealjs/plot-train-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>               MAE     MASE
 training 0.0740177 380.9996</code></pre>
@@ -778,14 +778,14 @@ training 0.0740177 380.9996</code></pre>
 <section id="split-sample-error-1" class="slide level2">
 <h2>Split-sample error</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-1">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/test-pred_f3959e07fba7133d1d162ed09b11c3e1">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="co"># Getting h-step ahead predictions for the test set</span></span>
 <span id="cb11-2"><a></a>h <span class="ot">&lt;-</span> k</span>
 <span id="cb11-3"><a></a>test_h <span class="ot">&lt;-</span> test[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span>h<span class="dv">-1</span>), ] <span class="co"># drop first h-1 rows to avoid data leakage</span></span>
 <span id="cb11-4"><a></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(reg_lagged, <span class="at">newdata =</span> test_h)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-test-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/test-error_2d4266d1f023b6291008d0a11ab9bcd9">
+<img data-src="day2-morning_files/figure-revealjs/plot-test-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                   MAE      MASE
 training     0.0740177  380.9996
@@ -834,7 +834,7 @@ split-sample 0.3116854 2914.4575</code></pre>
 <section id="time-series-cross-validation-cv-1" class="slide level2">
 <h2>Time-series cross-validation (CV)</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-2">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/time-series-cv_c1ad0b9ba9d94aaf29782393034ea165">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ca)                               <span class="co">#length of time series</span></span>
 <span id="cb13-2"><a></a>h <span class="ot">&lt;-</span> k                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
 <span id="cb13-3"><a></a>pred_all_past <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="at">length =</span> n)        <span class="co">#initialize vector of predictions</span></span>
@@ -860,7 +860,7 @@ split-sample 0.3116854 2914.4575</code></pre>
 <h2>Time-series cross-validation (CV)</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-3">Linear regression of COVID deaths on lagged cases</h4>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/cv-error_f1ea8db5ff09a13cda0429bc6085c8fc">
+<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                     MAE      MASE
 training       0.0740177  380.9996
@@ -918,7 +918,7 @@ time series CV 0.2374931 2212.5992</code></pre>
 <section id="trailing-window" class="slide level2">
 <h2>Trailing window</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-4">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/time-series-cv-trailing_c7ca1e634e62a116bf6794c8b340951e">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="co"># Getting the predictions through CV with trailing window</span></span>
 <span id="cb15-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>                                    <span class="co">#trailing window size</span></span>
 <span id="cb15-3"><a></a>h <span class="ot">&lt;-</span> k                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
@@ -936,7 +936,7 @@ time series CV 0.2374931 2212.5992</code></pre>
 <h2>Time-series CV: all past vs trailing window</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-5">Linear regression of COVID deaths on lagged cases</h4>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/cv-trailing-error_c6a50b47b17fd008e0115f3e9142e197">
+<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                 MAE      MASE
 training                  0.07401770  380.9996
@@ -983,7 +983,7 @@ time series CV + trailing 0.09932651  925.3734</code></pre>
 <li>Let’s add lagged deaths as a predictor to our previous forecaster:</li>
 </ul>
 <p><span class="math display">\[\hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}\]</span></p>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-lm_9071eb8bb25ff7ae5724738710e54d44">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="co"># Prepare data: add column with deaths lagged by 28</span></span>
 <span id="cb17-2"><a></a>ca<span class="sc">$</span>lagged_deaths <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(ca<span class="sc">$</span>deaths, <span class="at">n =</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -994,11 +994,11 @@ time series CV + trailing 0.09932651  925.3734</code></pre>
 <section id="time-series-cv-all-past-and-trailing-arx-model" class="slide level2">
 <h2>Time-Series CV: all past and trailing (ARX model)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/arx-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-cv-error_9a47a508c2b57e809e44e0d9a67fed7e">
+<img data-src="day2-morning_files/figure-revealjs/arx-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                 MAE      MASE
 time series CV            0.16204381 1509.6779
-time series CV + trailing 0.07872895  733.4767</code></pre>
+time series CV + trailing 0.07852942  731.6178</code></pre>
 </div>
 </div>
 <aside class="notes">
@@ -1036,7 +1036,7 @@ time series CV + trailing 0.07872895  733.4767</code></pre>
 </section>
 <section id="predictions-for-different-h-1" class="slide level2">
 <h2>Predictions for different <span class="math inline">\(h\)</span></h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/different-h-pred_13c88138f4e1c5559412358913082f17">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>h_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">28</span>)  <span class="co">#horizons </span></span>
 <span id="cb19-2"><a></a>pred_m1 <span class="ot">=</span> pred_m2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> <span class="dv">0</span>, <span class="at">ncol =</span> <span class="dv">3</span>))  <span class="co">#initialize df for predictions</span></span>
 <span id="cb19-3"><a></a><span class="fu">colnames</span>(pred_m1) <span class="ot">=</span> <span class="fu">colnames</span>(pred_m2) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"forecast_date"</span>, <span class="st">"target_date"</span>, <span class="st">"prediction"</span>)</span>
@@ -1080,7 +1080,7 @@ time series CV + trailing 0.07872895  733.4767</code></pre>
 <section id="predictions-for-different-h-model-1" class="slide level2">
 <h2>Predictions for different <span class="math inline">\(h\)</span> (Model 1)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-m1-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/m1-error_39deba148206cf8a20c56c4212d04123">
+<img data-src="day2-morning_files/figure-revealjs/plot-m1-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>              MAE    MASE
 Model 1 0.1049742 304.007</code></pre>
@@ -1090,7 +1090,7 @@ Model 1 0.1049742 304.007</code></pre>
 <section id="predictions-for-different-h-model-2" class="slide level2">
 <h2>Predictions for different <span class="math inline">\(h\)</span> (Model 2)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-m2-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/m2-error_2a31fd3489726b0453c30e74d2f7e1ec">
+<img data-src="day2-morning_files/figure-revealjs/plot-m2-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>               MAE     MASE
 Model 2 0.04463132 129.2531</code></pre>
@@ -1129,7 +1129,7 @@ Model 2 0.04463132 129.2531</code></pre>
 </section>
 <section id="preparing-the-data-1" class="slide level2">
 <h2>Preparing the data</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/overfit-data_26414659227b5640a50ca5f697076aa8">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>y <span class="ot">&lt;-</span> ca<span class="sc">$</span>deaths  <span class="co">#outcome</span></span>
 <span id="cb22-2"><a></a>lags <span class="ot">&lt;-</span> <span class="dv">28</span><span class="sc">:</span><span class="dv">87</span>   <span class="co">#lags used for predictors (deaths and cases)</span></span>
 <span id="cb22-3"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span></span>
@@ -1148,7 +1148,7 @@ Model 2 0.04463132 129.2531</code></pre>
 </section>
 <section id="fitting-the-arx-model" class="slide level2">
 <h2>Fitting the ARX model</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/overfit-lm_0df87aad67843b85dd31cc80911401bb">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="co"># Train/test split</span></span>
 <span id="cb23-2"><a></a>y_train <span class="ot">&lt;-</span> y[<span class="dv">1</span><span class="sc">:</span>t0]</span>
 <span id="cb23-3"><a></a>X_train <span class="ot">&lt;-</span> X[<span class="dv">1</span><span class="sc">:</span>t0, ]</span>
@@ -1215,7 +1215,7 @@ Model 2 0.04463132 129.2531</code></pre>
 <section id="predictions-on-training-and-test-set" class="slide level2">
 <h2>Predictions on training and test set</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/overfit-plot-train-test-trunc-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/overfit-train-test-error-trunc_fdaf4724d1bdda710782e4b08db0d503">
+<img data-src="day2-morning_files/figure-revealjs/overfit-plot-train-test-trunc-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                             MAE    MASE
 split-sample truncated 0.3978198 3706.28</code></pre>
@@ -1247,7 +1247,7 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 </section>
 <section id="fit-arx-with-2-and-3-lags-on-trailing-window" class="slide level2">
 <h2>Fit ARX with 2 and 3 lags on trailing window</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-multiple-lags_b1714516e5dfd2ebb04b55a0fa170ac8">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>pred_m3 <span class="ot">=</span> pred_m4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> <span class="dv">0</span>, <span class="at">ncol =</span> <span class="dv">3</span>))  <span class="co">#initialize df for predictions</span></span>
 <span id="cb26-2"><a></a><span class="fu">colnames</span>(pred_m3) <span class="ot">=</span> <span class="fu">colnames</span>(pred_m4) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"forecast_date"</span>, <span class="st">"target_date"</span>, <span class="st">"prediction"</span>)</span>
 <span id="cb26-3"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>     <span class="co">#trailing window size</span></span>
@@ -1285,7 +1285,7 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 <section id="predictions-using-arx-with-2-lags" class="slide level2">
 <h2>Predictions using ARX with 2 lags</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-m3-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/m3-error_42bcab3bc653f3ccf94f3e68b8f58935">
+<img data-src="day2-morning_files/figure-revealjs/plot-m3-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>       MAE     MASE
  0.0495936 143.6239</code></pre>
@@ -1295,7 +1295,7 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 <section id="predictions-using-arx-with-3-lags" class="slide level2">
 <h2>Predictions using ARX with 3 lags</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-m4-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/m4-error_6afd054116e67772e3f7372611b03919">
+<img data-src="day2-morning_files/figure-revealjs/plot-m4-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>        MAE     MASE
  0.05800799 167.9921</code></pre>
@@ -1329,7 +1329,7 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 </section>
 <section id="fit-arx-3-lags-ridgelasso-for-covid-deaths" class="slide level2">
 <h2>Fit ARX (3 lags) + ridge/lasso for COVID deaths</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/ridge-lasso-fit_105d92cfe8b28f972f0725f1f0f7f32f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">library</span>(glmnet) <span class="co"># Implements ridge and lasso</span></span>
 <span id="cb29-2"><a></a></span>
 <span id="cb29-3"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span></span>
@@ -1358,7 +1358,7 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 </section>
 <section id="predictions-on-test-set-and-best-lambda" class="slide level2">
 <h2>Predictions on test set and best <span class="math inline">\(\lambda\)</span></h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lasso-ridge-predictions_609774011698189be8c9719daf472e08">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a>X_test <span class="ot">&lt;-</span> X[(t0<span class="sc">+</span>h)<span class="sc">:</span>n, ]</span>
 <span id="cb31-2"><a></a>y_test <span class="ot">&lt;-</span> y[(t0<span class="sc">+</span>h)<span class="sc">:</span>n]</span>
 <span id="cb31-3"><a></a></span>
@@ -1385,29 +1385,21 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 <h2>Estimated coefficients: shrinkage vs sparsity</h2>
 <div class="flex">
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lasso-ridge-coeff_30fbde250a11d9a902ca90316c26b681">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                    ridge       lasso
-(Intercept)  0.2978514823 0.124915807
-X1           0.0433892112 0.069300307
-X2           0.0292256563 0.000000000
-X3           0.0179647838 0.000000000
-X4           0.0083918680 0.000000000
-X5          -0.0015177021 0.000000000
-X6          -0.0125786976 0.000000000
-X7          -0.0191532557 0.000000000
-X8           0.0010586265 0.008320956
-X9           0.0009417383 0.000000000
-X10          0.0008208805 0.001690258
-X11          0.0006535137 0.000000000
-X12          0.0004488789 0.000000000
-X13          0.0002816751 0.000000000
-X14          0.0001839354 0.000000000</code></pre>
+<pre><code>                       ridge        lasso
+(Intercept)      0.245113034 0.0793942146
+lagged_deaths_28 0.073031163 0.1210091477
+lagged_cases_28  0.001708898 0.0095486227
+lagged_deaths_35 0.050223031 0.0000000000
+lagged_cases_35  0.001511386 0.0000000000
+lagged_deaths_42 0.033045185 0.0382093257
+lagged_cases_42  0.001332843 0.0007931385</code></pre>
 </div>
 </div>
 </div>
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/plot-ridge-lasso-coeff_0c663626609454a2f099ffae150629fe">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1422,19 +1414,19 @@ X14          0.0001839354 0.000000000</code></pre>
 <section id="predictions-arx-ridgelasso-train-and-test-set" class="slide level2">
 <h2>Predictions: ARX + ridge/lasso (train and test set)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/shrinkage-sparsity-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/regularization-train-test-errors_dbf32d5e0dc411e6b5a914e5a977cf3c">
+<img data-src="day2-morning_files/figure-revealjs/shrinkage-sparsity-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                         MAE      MASE
-ridge training     0.1975073  924.4584
-ridge split-sample 0.2923452 2723.6281
-lasso training     0.0790951  370.2149
-lasso split-sample 0.2945295 2743.9784</code></pre>
+<pre><code>                          MAE      MASE
+ridge training     0.16518033  821.1417
+ridge split-sample 0.26018165 2423.9771
+lasso training     0.06410243  318.6649
+lasso split-sample 0.27402469 2552.9454</code></pre>
 </div>
 </div>
 </section>
 <section id="time-series-cv-for-arx-ridgelasso-trailing" class="slide level2">
 <h2>Time-series CV for ARX + ridge/lasso (trailing)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/regularization-cv_d7d135faee5eaa4e817e52317283b25a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>  <span class="co"># number of days ahead </span></span>
 <span id="cb34-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span> <span class="co"># window length</span></span>
 <span id="cb34-3"><a></a></span>
@@ -1457,25 +1449,27 @@ lasso split-sample 0.2945295 2743.9784</code></pre>
 <span id="cb34-20"><a></a>  yhat_ridge_mat[t<span class="sc">+</span>h, ] <span class="ot">=</span> <span class="fu">predict</span>(ridge_trail, <span class="at">newx =</span> <span class="fu">as.matrix</span>(X[(t<span class="sc">+</span>h), ]))</span>
 <span id="cb34-21"><a></a>  yhat_lasso_mat[t<span class="sc">+</span>h, ] <span class="ot">=</span> <span class="fu">predict</span>(lasso_trail, <span class="at">newx =</span> <span class="fu">as.matrix</span>(X[(t<span class="sc">+</span>h), ]))</span>
 <span id="cb34-22"><a></a>  <span class="co"># Save prediction corresponding to best lambda so far</span></span>
-<span id="cb34-23"><a></a>  yhat_ridge[t<span class="sc">+</span>h] <span class="ot">=</span> yhat_ridge_mat[t<span class="sc">+</span>h, ridge_index]</span>
-<span id="cb34-24"><a></a>  yhat_lasso[t<span class="sc">+</span>h] <span class="ot">=</span> yhat_lasso_mat[t<span class="sc">+</span>h, lasso_index]</span>
-<span id="cb34-25"><a></a>  <span class="co"># Prediction error</span></span>
-<span id="cb34-26"><a></a>  mae_ridge <span class="ot">=</span> <span class="fu">colMeans</span>(<span class="fu">abs</span>(yhat_ridge_mat <span class="sc">-</span> y), <span class="at">na.rm =</span> T)</span>
-<span id="cb34-27"><a></a>  mae_lasso <span class="ot">=</span> <span class="fu">colMeans</span>(<span class="fu">abs</span>(yhat_lasso_mat <span class="sc">-</span> y), <span class="at">na.rm =</span> T)</span>
-<span id="cb34-28"><a></a>  <span class="co"># Select index of lambda vector which gives lowest MAE so far</span></span>
-<span id="cb34-29"><a></a>  ridge_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(mae_ridge)</span>
-<span id="cb34-30"><a></a>  lasso_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(mae_lasso)</span>
-<span id="cb34-31"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb34-23"><a></a>  yhat_ridge[t<span class="sc">+</span>h] <span class="ot">=</span> <span class="fu">max</span>(<span class="dv">0</span>, yhat_ridge_mat[t<span class="sc">+</span>h, ridge_index])</span>
+<span id="cb34-24"><a></a>  yhat_lasso[t<span class="sc">+</span>h] <span class="ot">=</span> <span class="fu">max</span>(<span class="dv">0</span>, yhat_lasso_mat[t<span class="sc">+</span>h, lasso_index])</span>
+<span id="cb34-25"><a></a>  <span class="cf">if</span> (t <span class="sc">&gt;=</span> t0<span class="sc">+</span>h) {</span>
+<span id="cb34-26"><a></a>    <span class="co"># Prediction error</span></span>
+<span id="cb34-27"><a></a>    mae_ridge <span class="ot">=</span> <span class="fu">colMeans</span>(<span class="fu">abs</span>(yhat_ridge_mat[<span class="dv">1</span><span class="sc">:</span>(t<span class="sc">+</span><span class="dv">1</span>), ] <span class="sc">-</span> y[<span class="dv">1</span><span class="sc">:</span>(t<span class="sc">+</span><span class="dv">1</span>)]), <span class="at">na.rm =</span> T)</span>
+<span id="cb34-28"><a></a>    mae_lasso <span class="ot">=</span> <span class="fu">colMeans</span>(<span class="fu">abs</span>(yhat_lasso_mat[<span class="dv">1</span><span class="sc">:</span>(t<span class="sc">+</span><span class="dv">1</span>), ] <span class="sc">-</span> y[<span class="dv">1</span><span class="sc">:</span>(t<span class="sc">+</span><span class="dv">1</span>)]), <span class="at">na.rm =</span> T)</span>
+<span id="cb34-29"><a></a>    <span class="co"># Select index of lambda vector which gives lowest MAE so far</span></span>
+<span id="cb34-30"><a></a>    ridge_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(mae_ridge)</span>
+<span id="cb34-31"><a></a>    lasso_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(mae_lasso)</span>
+<span id="cb34-32"><a></a>  }</span>
+<span id="cb34-33"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="predictions-time-series-cv-for-arx-ridgelasso-trailing" class="slide level2">
 <h2>Predictions: time-series CV for ARX + ridge/lasso (trailing)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-regularization-cv-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/regularization-cv-errors_59a1e3cbe816261acb3c0e795c21d032">
+<img data-src="day2-morning_files/figure-revealjs/plot-regularization-cv-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                           MAE      MASE
-ridge CV + trailing 0.09264327  863.1092
-lasso CV + trailing 0.12042184 1121.9076</code></pre>
+<pre><code>                           MAE     MASE
+ridge CV + trailing 0.08555066 797.0310
+lasso CV + trailing 0.07633053 711.1318</code></pre>
 </div>
 </div>
 </section></section>
@@ -1519,7 +1513,7 @@ lasso CV + trailing 0.12042184 1121.9076</code></pre>
 </section>
 <section id="prediction-intervals-for-arx-cv-trailing-window" class="slide level2">
 <h2>Prediction intervals for ARX (CV, trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-intervals-time-series-cv_ba2d88af3eba74ebb3083ed936103d0a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="co"># Initialize matrices to store predictions </span></span>
 <span id="cb36-2"><a></a><span class="co"># 3 columns: point estimate, lower limit, and upper limit</span></span>
 <span id="cb36-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
@@ -1538,10 +1532,10 @@ lasso CV + trailing 0.12042184 1121.9076</code></pre>
 <section id="prediction-intervals-for-arx-cv-trailing-window-1" class="slide level2">
 <h2>Prediction intervals for ARX (CV, trailing window)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot arx-intervals-cv-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lm-errors-arx_4566534dc0a4693c32db4e981c99e6eb">
+<img data-src="day2-morning_files/figure-revealjs/plot arx-intervals-cv-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                 MAE     MASE
-lm.trailing 0.104397 972.6125</code></pre>
+<pre><code>                   MAE     MASE
+lm.trailing 0.08932857 832.2278</code></pre>
 </div>
 </div>
 </section>
@@ -1570,7 +1564,7 @@ lm.trailing 0.104397 972.6125</code></pre>
 </section>
 <section id="arx-model-for-covid-deaths-via-quantile-regression" class="slide level2">
 <h2>ARX model for COVID deaths via quantile regression</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/q-reg_895ff883724e89fb4b12843810e7d1c4">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="co">#install.packages("quantreg")</span></span>
 <span id="cb38-2"><a></a><span class="fu">library</span>(quantreg)  <span class="co">#library to perform quantile regression</span></span>
 <span id="cb38-3"><a></a></span>
@@ -1580,69 +1574,61 @@ lm.trailing 0.104397 972.6125</code></pre>
 <span id="cb38-7"><a></a><span class="co"># Fit quantile regression to training set</span></span>
 <span id="cb38-8"><a></a>q_reg <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">data =</span> train, <span class="at">tau =</span> quantiles)</span>
 <span id="cb38-9"><a></a></span>
-<span id="cb38-10"><a></a><span class="co"># Estimated coefficients</span></span>
-<span id="cb38-11"><a></a><span class="fu">coef</span>(q_reg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb38-10"><a></a><span class="co"># Sort estimated coefficients </span></span>
+<span id="cb38-11"><a></a>coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(q_reg), <span class="dv">1</span>, sort))</span>
+<span id="cb38-12"><a></a><span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(<span class="fu">coef</span>(q_reg))</span>
+<span id="cb38-13"><a></a>q_reg<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
+<span id="cb38-14"><a></a>coefs_sorted</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 tau= 0.1   tau= 0.5   tau= 0.9
 (Intercept)   0.023886410 0.06896010 0.11680538
 lagged_deaths 0.173198197 0.19821254 0.30706290
 lagged_cases  0.008602685 0.01022547 0.01135643</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="co"># Sort estimated coefficients </span></span>
-<span id="cb40-2"><a></a>coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(q_reg), <span class="dv">1</span>, sort))</span>
-<span id="cb40-3"><a></a><span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(<span class="fu">coef</span>(q_reg))</span>
-<span id="cb40-4"><a></a>coefs_sorted</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                 tau= 0.1   tau= 0.5   tau= 0.9
-(Intercept)   0.023886410 0.06896010 0.11680538
-lagged_deaths 0.173198197 0.19821254 0.30706290
-lagged_cases  0.008602685 0.01022547 0.01135643</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>q_reg<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="predictions-via-quantile-regression-cv-trailing" class="slide level2">
 <h2>Predictions via quantile regression (CV, trailing)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/q-reg-time-series-cv_bf81594ac8eb59c8a77635d3882d6108">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a><span class="co"># Initialize matrix to store predictions </span></span>
-<span id="cb43-2"><a></a><span class="co"># 3 columns: lower limit, median, and upper limit</span></span>
-<span id="cb43-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
-<span id="cb43-4"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'lower'</span>, <span class="st">'median'</span>, <span class="st">'upper'</span>)</span>
-<span id="cb43-5"><a></a></span>
-<span id="cb43-6"><a></a><span class="cf">for</span> (t <span class="cf">in</span> t0<span class="sc">:</span>(n<span class="sc">-</span>h)) {</span>
-<span id="cb43-7"><a></a>  <span class="co"># Fit quantile regression</span></span>
-<span id="cb43-8"><a></a>  rq_trailing <span class="ot">=</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles,</span>
-<span id="cb43-9"><a></a>                   <span class="at">data =</span> ca, <span class="at">subset =</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&lt;=</span> t <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&gt;</span> (t<span class="sc">-</span>w)) </span>
-<span id="cb43-10"><a></a>  </span>
-<span id="cb43-11"><a></a>  <span class="co"># Sort estimated coefficients </span></span>
-<span id="cb43-12"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
-<span id="cb43-13"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
-<span id="cb43-14"><a></a>  </span>
-<span id="cb43-15"><a></a>  <span class="co"># Predict</span></span>
-<span id="cb43-16"><a></a>  pred_trailing[t<span class="sc">+</span>h, ] <span class="ot">=</span> <span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> <span class="fu">data.frame</span>(ca[t<span class="sc">+</span>h, ])))</span>
-<span id="cb43-17"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="co"># Initialize matrix to store predictions </span></span>
+<span id="cb40-2"><a></a><span class="co"># 3 columns: lower limit, median, and upper limit</span></span>
+<span id="cb40-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb40-4"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'lower'</span>, <span class="st">'median'</span>, <span class="st">'upper'</span>)</span>
+<span id="cb40-5"><a></a></span>
+<span id="cb40-6"><a></a><span class="cf">for</span> (t <span class="cf">in</span> t0<span class="sc">:</span>(n<span class="sc">-</span>h)) {</span>
+<span id="cb40-7"><a></a>  <span class="co"># Fit quantile regression</span></span>
+<span id="cb40-8"><a></a>  rq_trailing <span class="ot">=</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles,</span>
+<span id="cb40-9"><a></a>                   <span class="at">data =</span> ca, <span class="at">subset =</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&lt;=</span> t <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&gt;</span> (t<span class="sc">-</span>w)) </span>
+<span id="cb40-10"><a></a>  </span>
+<span id="cb40-11"><a></a>  <span class="co"># Sort estimated coefficients </span></span>
+<span id="cb40-12"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
+<span id="cb40-13"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
+<span id="cb40-14"><a></a>  </span>
+<span id="cb40-15"><a></a>  <span class="co"># Predict</span></span>
+<span id="cb40-16"><a></a>  pred_trailing[t<span class="sc">+</span>h, ] <span class="ot">=</span> <span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> <span class="fu">data.frame</span>(ca[t<span class="sc">+</span>h, ])))</span>
+<span id="cb40-17"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="predictions-via-quantile-regression-cv-trailing-1" class="slide level2">
 <h2>Predictions via quantile regression (CV, trailing)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/q-reg-plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/qr-errors-arx_61c27a50ff196a4abe08f8094bf0db62">
+<img data-src="day2-morning_files/figure-revealjs/q-reg-plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                  MAE     MASE
-rq.trailing 0.1244401 1159.343</code></pre>
+rq.trailing 0.1016452 946.9752</code></pre>
 </div>
 </div>
 </section>
 <section id="actual-coverage" class="slide level2">
 <h2>Actual Coverage</h2>
 <ul>
-<li><p>We would expect the ARX model fitted via <code>lm</code> and via <code>rq</code> to cover the truth about 95% of the times. Is this actually true in practice?</p></li>
+<li><p>We would expect the ARX model fitted via <code>lm</code> and via <code>rq</code> to cover the truth about 80% of the times. Is this actually true in practice?</p></li>
 <li><p>The actual coverage of each predictive interval is lower:</p></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lm-coverage-all-past_25c195cf169b67b9dd7ff03f4a5fa6b3">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>         lm.trailing rq.trailing
-Coverage   0.8294118   0.8117647</code></pre>
+Coverage   0.6029412   0.6544118</code></pre>
 </div>
 </div>
 </section>
@@ -1662,14 +1648,14 @@ Coverage   0.8294118   0.8117647</code></pre>
 </section>
 <section id="computing-the-wis" class="slide level2">
 <h2>Computing the WIS</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/wis-function_f9777239a2900a70030d179a61d6796e">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>WIS <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, estimates, quantiles) {</span>
-<span id="cb46-2"><a></a>  <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pmax</span>(</span>
-<span id="cb46-3"><a></a>    quantiles <span class="sc">*</span> (truth <span class="sc">-</span> estimates),</span>
-<span id="cb46-4"><a></a>    (<span class="dv">1</span> <span class="sc">-</span> quantiles) <span class="sc">*</span> (estimates <span class="sc">-</span> truth),</span>
-<span id="cb46-5"><a></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
-<span id="cb46-6"><a></a>  ))</span>
-<span id="cb46-7"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a>WIS <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, estimates, quantiles) {</span>
+<span id="cb43-2"><a></a>  <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pmax</span>(</span>
+<span id="cb43-3"><a></a>    quantiles <span class="sc">*</span> (truth <span class="sc">-</span> estimates),</span>
+<span id="cb43-4"><a></a>    (<span class="dv">1</span> <span class="sc">-</span> quantiles) <span class="sc">*</span> (estimates <span class="sc">-</span> truth),</span>
+<span id="cb43-5"><a></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb43-6"><a></a>  ))</span>
+<span id="cb43-7"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-important no-icon callout-titled callout-style-default">
 <div class="callout-body">
@@ -1685,10 +1671,10 @@ Coverage   0.8294118   0.8117647</code></pre>
 <section id="wis-for-arx-fitted-via-lm-and-rq" class="slide level2">
 <h2>WIS for ARX fitted via <code>lm</code> and <code>rq</code></h2>
 <p>The lowest mean WIS is attained by quantile regression.</p>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/wis-lm_cd7f877d327b6a2f86c7011a7b7aef95">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>  Mean WIS lm Mean WIS rq
-1   0.1335326   0.1056215</code></pre>
+1   0.1670436   0.1578256</code></pre>
 </div>
 </div>
 </section></section>
@@ -1710,8 +1696,8 @@ Coverage   0.8294118   0.8117647</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/versioned-data_b634dc778fc576276d517dc6d46fb863">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a>data_archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>data_archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
 ℹ Min/max time values: 2020-04-01 / 2023-03-09
@@ -1739,41 +1725,41 @@ Coverage   0.8294118   0.8117647</code></pre>
 </section>
 <section id="version-aware-forecasting-1" class="slide level2">
 <h2>Version-aware forecasting</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/versioned-quantile-reg_31a6c8faf2fb834620f3db36ee9328d4">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
-<span id="cb50-2"><a></a><span class="co"># 5 columns: forecast date, target date, 2.5%, 50%, and 97.5% quantiles</span></span>
-<span id="cb50-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">5</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
-<span id="cb50-4"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"forecast_date"</span>, <span class="st">"target_date"</span>, <span class="st">'tau..0.025'</span>, <span class="st">'tau..0.500'</span>, <span class="st">'tau..0.975'</span>)</span>
-<span id="cb50-5"><a></a></span>
-<span id="cb50-6"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
-<span id="cb50-7"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
-<span id="cb50-8"><a></a></span>
-<span id="cb50-9"><a></a><span class="co"># dates when predictions are made (set to be 1 month apart)</span></span>
-<span id="cb50-10"><a></a>fc_time_values <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>)</span>
-<span id="cb50-11"><a></a></span>
-<span id="cb50-12"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
-<span id="cb50-13"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
-<span id="cb50-14"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(ca_archive, <span class="at">max_version =</span> <span class="fu">as.Date</span>(fc_date))</span>
-<span id="cb50-15"><a></a>  <span class="co"># create lagged predictors</span></span>
-<span id="cb50-16"><a></a>  data<span class="sc">$</span>lagged_deaths <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>deaths, h) </span>
-<span id="cb50-17"><a></a>  data<span class="sc">$</span>lagged_cases <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>cases, h)</span>
-<span id="cb50-18"><a></a>  <span class="co"># perform quantile regression</span></span>
-<span id="cb50-19"><a></a>  rq_trailing <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles, </span>
-<span id="cb50-20"><a></a>                    <span class="co"># only consider window of data</span></span>
-<span id="cb50-21"><a></a>                    <span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;</span> (<span class="fu">max</span>(time_value) <span class="sc">-</span> w))) </span>
-<span id="cb50-22"><a></a>  <span class="co"># sort estimated coefficients </span></span>
-<span id="cb50-23"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
-<span id="cb50-24"><a></a>  <span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'tau..0.025'</span>, <span class="st">'tau..0.500'</span>, <span class="st">'tau..0.975'</span>)</span>
-<span id="cb50-25"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
-<span id="cb50-26"><a></a>  <span class="co"># construct data.frame with the right predictors for the target date</span></span>
-<span id="cb50-27"><a></a>  predictors <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lagged_deaths =</span> <span class="fu">tail</span>(data<span class="sc">$</span>deaths, <span class="dv">1</span>), </span>
-<span id="cb50-28"><a></a>                           <span class="at">lagged_cases =</span> <span class="fu">tail</span>(data<span class="sc">$</span>cases, <span class="dv">1</span>))</span>
-<span id="cb50-29"><a></a>  <span class="co"># make predictions for target date and add them to matrix of predictions</span></span>
-<span id="cb50-30"><a></a>  pred_trailing <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_trailing, </span>
-<span id="cb50-31"><a></a>                         <span class="fu">data.frame</span>(<span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
-<span id="cb50-32"><a></a>                                    <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
-<span id="cb50-33"><a></a>                                    <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> predictors)))</span>
-<span id="cb50-34"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
+<span id="cb47-2"><a></a><span class="co"># 5 columns: forecast date, target date, 10%, 50%, and 90% quantiles</span></span>
+<span id="cb47-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">5</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
+<span id="cb47-4"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"forecast_date"</span>, <span class="st">"target_date"</span>, <span class="st">'tau..0.1'</span>, <span class="st">'tau..0.5'</span>, <span class="st">'tau..0.9'</span>)</span>
+<span id="cb47-5"><a></a></span>
+<span id="cb47-6"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
+<span id="cb47-7"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
+<span id="cb47-8"><a></a></span>
+<span id="cb47-9"><a></a><span class="co"># dates when predictions are made (set to be 1 month apart)</span></span>
+<span id="cb47-10"><a></a>fc_time_values <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>)</span>
+<span id="cb47-11"><a></a></span>
+<span id="cb47-12"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
+<span id="cb47-13"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
+<span id="cb47-14"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(ca_archive, <span class="at">max_version =</span> <span class="fu">as.Date</span>(fc_date))</span>
+<span id="cb47-15"><a></a>  <span class="co"># create lagged predictors</span></span>
+<span id="cb47-16"><a></a>  data<span class="sc">$</span>lagged_deaths <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>deaths, h) </span>
+<span id="cb47-17"><a></a>  data<span class="sc">$</span>lagged_cases <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>cases, h)</span>
+<span id="cb47-18"><a></a>  <span class="co"># perform quantile regression</span></span>
+<span id="cb47-19"><a></a>  rq_trailing <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles, </span>
+<span id="cb47-20"><a></a>                    <span class="co"># only consider window of data</span></span>
+<span id="cb47-21"><a></a>                    <span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;</span> (<span class="fu">max</span>(time_value) <span class="sc">-</span> w))) </span>
+<span id="cb47-22"><a></a>  <span class="co"># sort estimated coefficients </span></span>
+<span id="cb47-23"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
+<span id="cb47-24"><a></a>  <span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'tau..0.1'</span>, <span class="st">'tau..0.5'</span>, <span class="st">'tau..0.9'</span>)</span>
+<span id="cb47-25"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
+<span id="cb47-26"><a></a>  <span class="co"># construct data.frame with the right predictors for the target date</span></span>
+<span id="cb47-27"><a></a>  predictors <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lagged_deaths =</span> <span class="fu">tail</span>(data<span class="sc">$</span>deaths, <span class="dv">1</span>), </span>
+<span id="cb47-28"><a></a>                           <span class="at">lagged_cases =</span> <span class="fu">tail</span>(data<span class="sc">$</span>cases, <span class="dv">1</span>))</span>
+<span id="cb47-29"><a></a>  <span class="co"># make predictions for target date and add them to matrix of predictions</span></span>
+<span id="cb47-30"><a></a>  pred_trailing <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_trailing, </span>
+<span id="cb47-31"><a></a>                         <span class="fu">data.frame</span>(<span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
+<span id="cb47-32"><a></a>                                    <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
+<span id="cb47-33"><a></a>                                    <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> predictors)))</span>
+<span id="cb47-34"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="version-aware-predictions-cv-trailing" class="slide level2">
@@ -1799,62 +1785,62 @@ Coverage   0.8294118   0.8117647</code></pre>
 </section>
 <section id="geo-pooling-trailing-window" class="slide level2">
 <h2>Geo-pooling (trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/geo-pooling_710c6c6e6a6ba04a6894f235d0fcfff0">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>usa_archive <span class="ot">&lt;-</span> data_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> </span>
-<span id="cb51-2"><a></a>  <span class="fu">as_epi_archive</span>()</span>
-<span id="cb51-3"><a></a></span>
-<span id="cb51-4"><a></a><span class="co"># initialize dataframe for predictions</span></span>
-<span id="cb51-5"><a></a><span class="co"># 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles</span></span>
-<span id="cb51-6"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
-<span id="cb51-7"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'geo_value'</span>, <span class="st">'forecast_date'</span>, <span class="st">'target_date'</span>,</span>
-<span id="cb51-8"><a></a>                             <span class="st">'tau..0.025'</span>, <span class="st">'tau..0.500'</span>, <span class="st">'tau..0.975'</span>)</span>
-<span id="cb51-9"><a></a></span>
-<span id="cb51-10"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
-<span id="cb51-11"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
-<span id="cb51-12"><a></a></span>
-<span id="cb51-13"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
-<span id="cb51-14"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
-<span id="cb51-15"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(usa_archive, <span class="at">max_version =</span> <span class="fu">as.Date</span>(fc_date))</span>
-<span id="cb51-16"><a></a>  </span>
-<span id="cb51-17"><a></a>  <span class="co"># create lagged predictors for each state </span></span>
-<span id="cb51-18"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb51-19"><a></a>    <span class="fu">arrange</span>(geo_value, time_value) <span class="sc">|&gt;</span>  </span>
-<span id="cb51-20"><a></a>    <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
-<span id="cb51-21"><a></a>    <span class="fu">mutate</span>(<span class="at">lagged_deaths =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(deaths, h),</span>
-<span id="cb51-22"><a></a>           <span class="at">lagged_cases =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(cases, h)) <span class="sc">|&gt;</span></span>
-<span id="cb51-23"><a></a>    <span class="fu">ungroup</span>()</span>
-<span id="cb51-24"><a></a>  </span>
-<span id="cb51-25"><a></a>  <span class="co"># perform quantile regression</span></span>
-<span id="cb51-26"><a></a>  rq_trailing <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles, </span>
-<span id="cb51-27"><a></a>                    <span class="co"># only consider window of data</span></span>
-<span id="cb51-28"><a></a>                    <span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;</span> (<span class="fu">max</span>(time_value) <span class="sc">-</span> w))) </span>
-<span id="cb51-29"><a></a>  <span class="co"># sort estimated coefficients </span></span>
-<span id="cb51-30"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
-<span id="cb51-31"><a></a>  <span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'tau..0.025'</span>, <span class="st">'tau..0.500'</span>, <span class="st">'tau..0.975'</span>)</span>
-<span id="cb51-32"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
-<span id="cb51-33"><a></a>  </span>
-<span id="cb51-34"><a></a>  <span class="co"># construct dataframe with the right predictors for the target date</span></span>
-<span id="cb51-35"><a></a>  new_lagged_deaths <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
-<span id="cb51-36"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
-<span id="cb51-37"><a></a>    <span class="fu">select</span>(geo_value, deaths)</span>
-<span id="cb51-38"><a></a>  </span>
-<span id="cb51-39"><a></a>  new_lagged_cases <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
-<span id="cb51-40"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
-<span id="cb51-41"><a></a>    <span class="fu">select</span>(geo_value, cases)</span>
-<span id="cb51-42"><a></a>  </span>
-<span id="cb51-43"><a></a>  predictors <span class="ot">&lt;-</span> new_lagged_deaths <span class="sc">|&gt;</span></span>
-<span id="cb51-44"><a></a>    <span class="fu">inner_join</span>(new_lagged_cases, <span class="fu">join_by</span>(geo_value)) <span class="sc">|&gt;</span></span>
-<span id="cb51-45"><a></a>    <span class="fu">rename</span>(<span class="at">lagged_deaths =</span> deaths,</span>
-<span id="cb51-46"><a></a>           <span class="at">lagged_cases =</span> cases)</span>
-<span id="cb51-47"><a></a>  </span>
-<span id="cb51-48"><a></a>  <span class="co"># make predictions for target date and add them to matrix of predictions</span></span>
-<span id="cb51-49"><a></a>  pred_trailing <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_trailing, </span>
-<span id="cb51-50"><a></a>                         <span class="fu">data.frame</span>(</span>
-<span id="cb51-51"><a></a>                           <span class="st">'geo_value'</span> <span class="ot">=</span> predictors<span class="sc">$</span>geo_value,</span>
-<span id="cb51-52"><a></a>                           <span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
-<span id="cb51-53"><a></a>                           <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
-<span id="cb51-54"><a></a>                           <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> predictors)))</span>
-<span id="cb51-55"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a>usa_archive <span class="ot">&lt;-</span> data_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> </span>
+<span id="cb48-2"><a></a>  <span class="fu">as_epi_archive</span>()</span>
+<span id="cb48-3"><a></a></span>
+<span id="cb48-4"><a></a><span class="co"># initialize dataframe for predictions</span></span>
+<span id="cb48-5"><a></a><span class="co"># 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles</span></span>
+<span id="cb48-6"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
+<span id="cb48-7"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'geo_value'</span>, <span class="st">'forecast_date'</span>, <span class="st">'target_date'</span>,</span>
+<span id="cb48-8"><a></a>                             <span class="st">'tau..0.1'</span>, <span class="st">'tau..0.5'</span>, <span class="st">'tau..0.9'</span>)</span>
+<span id="cb48-9"><a></a></span>
+<span id="cb48-10"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
+<span id="cb48-11"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
+<span id="cb48-12"><a></a></span>
+<span id="cb48-13"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
+<span id="cb48-14"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
+<span id="cb48-15"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(usa_archive, <span class="at">max_version =</span> <span class="fu">as.Date</span>(fc_date))</span>
+<span id="cb48-16"><a></a>  </span>
+<span id="cb48-17"><a></a>  <span class="co"># create lagged predictors for each state </span></span>
+<span id="cb48-18"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb48-19"><a></a>    <span class="fu">arrange</span>(geo_value, time_value) <span class="sc">|&gt;</span>  </span>
+<span id="cb48-20"><a></a>    <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb48-21"><a></a>    <span class="fu">mutate</span>(<span class="at">lagged_deaths =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(deaths, h),</span>
+<span id="cb48-22"><a></a>           <span class="at">lagged_cases =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(cases, h)) <span class="sc">|&gt;</span></span>
+<span id="cb48-23"><a></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb48-24"><a></a>  </span>
+<span id="cb48-25"><a></a>  <span class="co"># perform quantile regression</span></span>
+<span id="cb48-26"><a></a>  rq_trailing <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles, </span>
+<span id="cb48-27"><a></a>                    <span class="co"># only consider window of data</span></span>
+<span id="cb48-28"><a></a>                    <span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;</span> (<span class="fu">max</span>(time_value) <span class="sc">-</span> w))) </span>
+<span id="cb48-29"><a></a>  <span class="co"># sort estimated coefficients </span></span>
+<span id="cb48-30"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
+<span id="cb48-31"><a></a>  <span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'tau..0.1'</span>, <span class="st">'tau..0.5'</span>, <span class="st">'tau..0.9'</span>)</span>
+<span id="cb48-32"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
+<span id="cb48-33"><a></a>  </span>
+<span id="cb48-34"><a></a>  <span class="co"># construct dataframe with the right predictors for the target date</span></span>
+<span id="cb48-35"><a></a>  new_lagged_deaths <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb48-36"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
+<span id="cb48-37"><a></a>    <span class="fu">select</span>(geo_value, deaths)</span>
+<span id="cb48-38"><a></a>  </span>
+<span id="cb48-39"><a></a>  new_lagged_cases <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb48-40"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
+<span id="cb48-41"><a></a>    <span class="fu">select</span>(geo_value, cases)</span>
+<span id="cb48-42"><a></a>  </span>
+<span id="cb48-43"><a></a>  predictors <span class="ot">&lt;-</span> new_lagged_deaths <span class="sc">|&gt;</span></span>
+<span id="cb48-44"><a></a>    <span class="fu">inner_join</span>(new_lagged_cases, <span class="fu">join_by</span>(geo_value)) <span class="sc">|&gt;</span></span>
+<span id="cb48-45"><a></a>    <span class="fu">rename</span>(<span class="at">lagged_deaths =</span> deaths,</span>
+<span id="cb48-46"><a></a>           <span class="at">lagged_cases =</span> cases)</span>
+<span id="cb48-47"><a></a>  </span>
+<span id="cb48-48"><a></a>  <span class="co"># make predictions for target date and add them to matrix of predictions</span></span>
+<span id="cb48-49"><a></a>  pred_trailing <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_trailing, </span>
+<span id="cb48-50"><a></a>                         <span class="fu">data.frame</span>(</span>
+<span id="cb48-51"><a></a>                           <span class="st">'geo_value'</span> <span class="ot">=</span> predictors<span class="sc">$</span>geo_value,</span>
+<span id="cb48-52"><a></a>                           <span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
+<span id="cb48-53"><a></a>                           <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
+<span id="cb48-54"><a></a>                           <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> predictors)))</span>
+<span id="cb48-55"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="geo-pooled-predictions-for-california" class="slide level2">
@@ -1863,68 +1849,68 @@ Coverage   0.8294118   0.8117647</code></pre>
 <img data-src="day2-morning_files/figure-revealjs/plot-geo-pooling-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="partial-geo-pooling-trailing-window" class="slide level2">
 <h2>Partial geo-pooling (trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/partial-geo-pooling_706f5567104b4124d57c795ab9ada173">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
-<span id="cb52-2"><a></a><span class="co"># 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles</span></span>
-<span id="cb52-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
-<span id="cb52-4"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'geo_value'</span>, <span class="st">'forecast_date'</span>, <span class="st">'target_date'</span>,</span>
-<span id="cb52-5"><a></a>                             <span class="st">'tau..0.025'</span>, <span class="st">'tau..0.500'</span>, <span class="st">'tau..0.975'</span>)</span>
-<span id="cb52-6"><a></a></span>
-<span id="cb52-7"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
-<span id="cb52-8"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
-<span id="cb52-9"><a></a></span>
-<span id="cb52-10"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
-<span id="cb52-11"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
-<span id="cb52-12"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(usa_archive, <span class="at">max_version =</span> <span class="fu">as.Date</span>(fc_date))</span>
-<span id="cb52-13"><a></a>  </span>
-<span id="cb52-14"><a></a>  <span class="co"># create lagged predictors </span></span>
-<span id="cb52-15"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb52-16"><a></a>    <span class="fu">arrange</span>(geo_value, time_value) <span class="sc">|&gt;</span>  </span>
-<span id="cb52-17"><a></a>    <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
-<span id="cb52-18"><a></a>    <span class="fu">mutate</span>(<span class="at">lagged_deaths =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(deaths, h),</span>
-<span id="cb52-19"><a></a>           <span class="at">lagged_cases =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(cases, h)) <span class="sc">|&gt;</span></span>
-<span id="cb52-20"><a></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb52-21"><a></a>    <span class="fu">group_by</span>(time_value) <span class="sc">|&gt;</span></span>
-<span id="cb52-22"><a></a>    <span class="fu">mutate</span>(<span class="at">avg_lagged_deaths =</span> <span class="fu">mean</span>(lagged_deaths, <span class="at">na.rm =</span> T),</span>
-<span id="cb52-23"><a></a>           <span class="at">avg_lagged_cases =</span> <span class="fu">mean</span>(lagged_cases, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span></span>
-<span id="cb52-24"><a></a>    <span class="fu">ungroup</span>() </span>
-<span id="cb52-25"><a></a>  </span>
-<span id="cb52-26"><a></a>  <span class="co"># perform quantile regression</span></span>
-<span id="cb52-27"><a></a>  rq_trailing <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases <span class="sc">+</span> avg_lagged_deaths <span class="sc">+</span></span>
-<span id="cb52-28"><a></a>                      avg_lagged_cases, <span class="at">tau =</span> quantiles, </span>
-<span id="cb52-29"><a></a>                    <span class="at">data =</span> (data <span class="sc">|&gt;</span> <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">'ca'</span>))) </span>
-<span id="cb52-30"><a></a>  </span>
-<span id="cb52-31"><a></a>  <span class="co"># sort estimated coefficients </span></span>
-<span id="cb52-32"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
-<span id="cb52-33"><a></a>  <span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'tau..0.025'</span>, <span class="st">'tau..0.500'</span>, <span class="st">'tau..0.975'</span>)</span>
-<span id="cb52-34"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
-<span id="cb52-35"><a></a>  </span>
-<span id="cb52-36"><a></a>  <span class="co"># construct data.frame with the right predictors for the target date</span></span>
-<span id="cb52-37"><a></a>  new_lagged_deaths <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
-<span id="cb52-38"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
-<span id="cb52-39"><a></a>    <span class="fu">select</span>(geo_value, deaths) <span class="sc">|&gt;</span></span>
-<span id="cb52-40"><a></a>    <span class="fu">mutate</span>(<span class="at">avg_lagged_deaths =</span> <span class="fu">mean</span>(deaths, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span></span>
-<span id="cb52-41"><a></a>    <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">'ca'</span>)</span>
-<span id="cb52-42"><a></a>  </span>
-<span id="cb52-43"><a></a>  new_lagged_cases <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
-<span id="cb52-44"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
-<span id="cb52-45"><a></a>    <span class="fu">select</span>(geo_value, cases) <span class="sc">|&gt;</span></span>
-<span id="cb52-46"><a></a>    <span class="fu">mutate</span>(<span class="at">avg_lagged_cases =</span> <span class="fu">mean</span>(cases, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span></span>
-<span id="cb52-47"><a></a>    <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">'ca'</span>)</span>
-<span id="cb52-48"><a></a>  </span>
-<span id="cb52-49"><a></a>  predictors <span class="ot">&lt;-</span> new_lagged_deaths <span class="sc">|&gt;</span></span>
-<span id="cb52-50"><a></a>    <span class="fu">inner_join</span>(new_lagged_cases, <span class="fu">join_by</span>(geo_value)) <span class="sc">|&gt;</span></span>
-<span id="cb52-51"><a></a>    <span class="fu">rename</span>(<span class="at">lagged_deaths =</span> deaths,</span>
-<span id="cb52-52"><a></a>           <span class="at">lagged_cases =</span> cases)</span>
-<span id="cb52-53"><a></a>  </span>
-<span id="cb52-54"><a></a>  <span class="co"># make predictions for target date and add them to matrix of predictions</span></span>
-<span id="cb52-55"><a></a>  pred_trailing <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_trailing, </span>
-<span id="cb52-56"><a></a>                         <span class="fu">data.frame</span>(</span>
-<span id="cb52-57"><a></a>                           <span class="st">'geo_value'</span> <span class="ot">=</span> predictors<span class="sc">$</span>geo_value,</span>
-<span id="cb52-58"><a></a>                           <span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
-<span id="cb52-59"><a></a>                           <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
-<span id="cb52-60"><a></a>                           <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> predictors)))</span>
-<span id="cb52-61"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
+<span id="cb49-2"><a></a><span class="co"># 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles</span></span>
+<span id="cb49-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
+<span id="cb49-4"><a></a><span class="fu">colnames</span>(pred_trailing) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'geo_value'</span>, <span class="st">'forecast_date'</span>, <span class="st">'target_date'</span>,</span>
+<span id="cb49-5"><a></a>                             <span class="st">'tau..0.1'</span>, <span class="st">'tau..0.5'</span>, <span class="st">'tau..0.9'</span>)</span>
+<span id="cb49-6"><a></a></span>
+<span id="cb49-7"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
+<span id="cb49-8"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
+<span id="cb49-9"><a></a></span>
+<span id="cb49-10"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
+<span id="cb49-11"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
+<span id="cb49-12"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(usa_archive, <span class="at">max_version =</span> <span class="fu">as.Date</span>(fc_date))</span>
+<span id="cb49-13"><a></a>  </span>
+<span id="cb49-14"><a></a>  <span class="co"># create lagged predictors </span></span>
+<span id="cb49-15"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb49-16"><a></a>    <span class="fu">arrange</span>(geo_value, time_value) <span class="sc">|&gt;</span>  </span>
+<span id="cb49-17"><a></a>    <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb49-18"><a></a>    <span class="fu">mutate</span>(<span class="at">lagged_deaths =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(deaths, h),</span>
+<span id="cb49-19"><a></a>           <span class="at">lagged_cases =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(cases, h)) <span class="sc">|&gt;</span></span>
+<span id="cb49-20"><a></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb49-21"><a></a>    <span class="fu">group_by</span>(time_value) <span class="sc">|&gt;</span></span>
+<span id="cb49-22"><a></a>    <span class="fu">mutate</span>(<span class="at">avg_lagged_deaths =</span> <span class="fu">mean</span>(lagged_deaths, <span class="at">na.rm =</span> T),</span>
+<span id="cb49-23"><a></a>           <span class="at">avg_lagged_cases =</span> <span class="fu">mean</span>(lagged_cases, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span></span>
+<span id="cb49-24"><a></a>    <span class="fu">ungroup</span>() </span>
+<span id="cb49-25"><a></a>  </span>
+<span id="cb49-26"><a></a>  <span class="co"># perform quantile regression</span></span>
+<span id="cb49-27"><a></a>  rq_trailing <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases <span class="sc">+</span> avg_lagged_deaths <span class="sc">+</span></span>
+<span id="cb49-28"><a></a>                      avg_lagged_cases, <span class="at">tau =</span> quantiles, </span>
+<span id="cb49-29"><a></a>                    <span class="at">data =</span> (data <span class="sc">|&gt;</span> <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">'ca'</span>))) </span>
+<span id="cb49-30"><a></a>  </span>
+<span id="cb49-31"><a></a>  <span class="co"># sort estimated coefficients </span></span>
+<span id="cb49-32"><a></a>  coefs_sorted <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">coef</span>(rq_trailing), <span class="dv">1</span>, sort))</span>
+<span id="cb49-33"><a></a>  <span class="fu">colnames</span>(coefs_sorted) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'tau..0.1'</span>, <span class="st">'tau..0.5'</span>, <span class="st">'tau..0.9'</span>)</span>
+<span id="cb49-34"><a></a>  rq_trailing<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> coefs_sorted</span>
+<span id="cb49-35"><a></a>  </span>
+<span id="cb49-36"><a></a>  <span class="co"># construct data.frame with the right predictors for the target date</span></span>
+<span id="cb49-37"><a></a>  new_lagged_deaths <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb49-38"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
+<span id="cb49-39"><a></a>    <span class="fu">select</span>(geo_value, deaths) <span class="sc">|&gt;</span></span>
+<span id="cb49-40"><a></a>    <span class="fu">mutate</span>(<span class="at">avg_lagged_deaths =</span> <span class="fu">mean</span>(deaths, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span></span>
+<span id="cb49-41"><a></a>    <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">'ca'</span>)</span>
+<span id="cb49-42"><a></a>  </span>
+<span id="cb49-43"><a></a>  new_lagged_cases <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb49-44"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span></span>
+<span id="cb49-45"><a></a>    <span class="fu">select</span>(geo_value, cases) <span class="sc">|&gt;</span></span>
+<span id="cb49-46"><a></a>    <span class="fu">mutate</span>(<span class="at">avg_lagged_cases =</span> <span class="fu">mean</span>(cases, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span></span>
+<span id="cb49-47"><a></a>    <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">'ca'</span>)</span>
+<span id="cb49-48"><a></a>  </span>
+<span id="cb49-49"><a></a>  predictors <span class="ot">&lt;-</span> new_lagged_deaths <span class="sc">|&gt;</span></span>
+<span id="cb49-50"><a></a>    <span class="fu">inner_join</span>(new_lagged_cases, <span class="fu">join_by</span>(geo_value)) <span class="sc">|&gt;</span></span>
+<span id="cb49-51"><a></a>    <span class="fu">rename</span>(<span class="at">lagged_deaths =</span> deaths,</span>
+<span id="cb49-52"><a></a>           <span class="at">lagged_cases =</span> cases)</span>
+<span id="cb49-53"><a></a>  </span>
+<span id="cb49-54"><a></a>  <span class="co"># make predictions for target date and add them to matrix of predictions</span></span>
+<span id="cb49-55"><a></a>  pred_trailing <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_trailing, </span>
+<span id="cb49-56"><a></a>                         <span class="fu">data.frame</span>(</span>
+<span id="cb49-57"><a></a>                           <span class="st">'geo_value'</span> <span class="ot">=</span> predictors<span class="sc">$</span>geo_value,</span>
+<span id="cb49-58"><a></a>                           <span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
+<span id="cb49-59"><a></a>                           <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
+<span id="cb49-60"><a></a>                           <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> predictors)))</span>
+<span id="cb49-61"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="partially-geo-pooled-predictions-for-california" class="slide level2">
