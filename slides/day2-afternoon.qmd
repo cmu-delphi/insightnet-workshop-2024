@@ -273,6 +273,8 @@ epi_pred <- epi_slide(
 epi_pred_trailing 
 ```
 
+<div>
+
 ## Predict with ARX (re-fitting on trailing window)
 
 ```{r arx-plot-cv-predictions}
