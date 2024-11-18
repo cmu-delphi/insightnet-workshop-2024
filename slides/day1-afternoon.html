@@ -497,7 +497,7 @@
 </div>
 <p>Now we only really need a few columns here…</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span> </span>
 <span id="cb3-2"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">raw_cases =</span> value) <span class="co"># We'll talk more about this soon :)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -676,7 +676,7 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <li>This helps in extracting the exact data needed for analysis.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">select</span>(<span class="fu">filter</span>(cases_df, geo_value <span class="sc">==</span> <span class="st">"nc"</span>, raw_cases <span class="sc">&gt;</span> <span class="dv">1000</span>), time_value, raw_cases) <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">select</span>(<span class="fu">filter</span>(cases_df, geo_value <span class="sc">==</span> <span class="st">"nc"</span>, raw_cases <span class="sc">&gt;</span> <span class="dv">1000</span>), time_value, raw_cases) <span class="sc">|&gt;</span> </span>
 <span id="cb19-2"><a></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
@@ -692,17 +692,17 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 </div>
 </section>
 <section id="using-the-pipe-operator" class="slide level2">
-<h2>Using the Pipe Operator <code>%&gt;%</code></h2>
+<h2>Using the Pipe Operator <code>|&gt;</code></h2>
 <ul>
-<li>The pipe operator (<code>%&gt;%</code>) makes code more readable by chaining multiple operations together.</li>
+<li>The pipe operator (<code>|&gt;</code>) makes code more readable by chaining multiple operations together.</li>
 <li>The output of one function is automatically passed to the next function.</li>
 <li>This allows you to perform multiple steps (e.g., <code>filter()</code> followed by <code>select()</code>) in a clear and concise manner.</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="co"># This code reads more like poetry!</span></span>
-<span id="cb21-2"><a></a>cases_df <span class="sc">%&gt;%</span> </span>
-<span id="cb21-3"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"nc"</span>, raw_cases <span class="sc">&gt;</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-4"><a></a>  <span class="fu">select</span>(time_value, raw_cases) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-2"><a></a>cases_df <span class="sc">|&gt;</span> </span>
+<span id="cb21-3"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"nc"</span>, raw_cases <span class="sc">&gt;</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb21-4"><a></a>  <span class="fu">select</span>(time_value, raw_cases) <span class="sc">|&gt;</span> </span>
 <span id="cb21-5"><a></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
@@ -724,7 +724,7 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <li>Use <strong><code>select()</code></strong> and <strong><code>filter()</code></strong> for data manipulation.</li>
 <li>Use <strong><code>pull()</code></strong> to extract columns as vectors.</li>
 <li>Use <strong><code>head()</code></strong>, <strong><code>tail()</code></strong>, and <strong><code>glimpse()</code></strong> for quick data inspection.</li>
-<li>Chain functions with <strong><code>%&gt;%</code></strong> for cleaner code.</li>
+<li>Chain functions with <strong><code>|&gt;</code></strong> for cleaner code.</li>
 </ul>
 </section>
 <section id="grouping-data-with-group_by" class="slide level2">
@@ -734,8 +734,8 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <li>Allows performing operations on specific groups of data.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb23-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>cases_df <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb23-3"><a></a>  <span class="fu">filter</span>(raw_cases <span class="sc">==</span> <span class="fu">max</span>(raw_cases, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
@@ -761,11 +761,11 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <li>Perform calculations using existing columns and assign to new columns.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>ny_subset <span class="ot">=</span> cases_df <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>ny_subset <span class="ot">=</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb25-2"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"ny"</span>)</span>
 <span id="cb25-3"><a></a></span>
-<span id="cb25-4"><a></a>ny_subset <span class="sc">%&gt;%</span> </span>
-<span id="cb25-5"><a></a>  <span class="fu">mutate</span>(<span class="at">cumulative_cases =</span> <span class="fu">cumsum</span>(raw_cases)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-4"><a></a>ny_subset <span class="sc">|&gt;</span> </span>
+<span id="cb25-5"><a></a>  <span class="fu">mutate</span>(<span class="at">cumulative_cases =</span> <span class="fu">cumsum</span>(raw_cases)) <span class="sc">|&gt;</span> </span>
 <span id="cb25-6"><a></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
@@ -787,9 +787,9 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <li>Logical comparisons (e.g., <code>over_5000 = raw_cases &gt; 5000</code>) can be used within <code>mutate()</code>.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>ny_subset <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>ny_subset <span class="sc">|&gt;</span> </span>
 <span id="cb27-2"><a></a>  <span class="fu">mutate</span>(<span class="at">over_5000 =</span> raw_cases <span class="sc">&gt;</span> <span class="dv">5000</span>,</span>
-<span id="cb27-3"><a></a>         <span class="at">cumulative_cases =</span> <span class="fu">cumsum</span>(raw_cases)) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a></a>         <span class="at">cumulative_cases =</span> <span class="fu">cumsum</span>(raw_cases)) <span class="sc">|&gt;</span> </span>
 <span id="cb27-4"><a></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 5
@@ -812,10 +812,10 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <li>Finally, use <code>arrange</code> to display the output by <code>geo_value</code>.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb29-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
-<span id="cb29-3"><a></a>  <span class="fu">mutate</span>(<span class="at">cumulative_cases =</span> <span class="fu">cumsum</span>(raw_cases)) <span class="sc">%&gt;%</span> </span>
-<span id="cb29-4"><a></a>  <span class="fu">arrange</span>(geo_value) <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>cases_df <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a></a>  <span class="fu">mutate</span>(<span class="at">cumulative_cases =</span> <span class="fu">cumsum</span>(raw_cases)) <span class="sc">|&gt;</span> </span>
+<span id="cb29-4"><a></a>  <span class="fu">arrange</span>(geo_value) <span class="sc">|&gt;</span> </span>
 <span id="cb29-5"><a></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
@@ -840,8 +840,8 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a>t <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
 <span id="cb31-2"><a></a></span>
-<span id="cb31-3"><a></a>cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb31-4"><a></a>  <span class="fu">mutate</span>(<span class="at">high_low_cases =</span> <span class="fu">if_else</span>(raw_cases <span class="sc">&gt;</span> t, <span class="st">"high"</span>, <span class="st">"low"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a></a>cases_df <span class="sc">|&gt;</span></span>
+<span id="cb31-4"><a></a>  <span class="fu">mutate</span>(<span class="at">high_low_cases =</span> <span class="fu">if_else</span>(raw_cases <span class="sc">&gt;</span> t, <span class="st">"high"</span>, <span class="st">"low"</span>)) <span class="sc">|&gt;</span> </span>
 <span id="cb31-5"><a></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
@@ -863,8 +863,8 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <li>Typically used after <code>group_by()</code> to summarize each group.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb33-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>cases_df <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb33-3"><a></a>  <span class="fu">summarise</span>(<span class="at">median_cases =</span> <span class="fu">median</span>(raw_cases))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
@@ -881,15 +881,15 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 <p><code>count()</code> is a shortcut for grouping and summarizing the data.</p>
 <p>For example, if we want to get the total number of complete rows for each state, then</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a>cases_count <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb35-2"><a></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span> <span class="co"># Removes rows where any value is missing (from tidyr)</span></span>
-<span id="cb35-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a>cases_count <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span> <span class="co"># Removes rows where any value is missing (from tidyr)</span></span>
+<span id="cb35-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb35-4"><a></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>is equivalent to</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>cases_count <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb36-2"><a></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>cases_count <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb36-3"><a></a>  <span class="fu">count</span>(geo_value)</span>
 <span id="cb36-4"><a></a></span>
 <span id="cb36-5"><a></a>cases_count <span class="co"># Let's see what the counts are.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -969,7 +969,7 @@ In this section:</li>
 </div>
 <!-- Example. Spreadsheet from hell -->
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>messy_cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>messy_cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb39-2"><a></a>  <span class="fu">pivot_wider</span>(</span>
 <span id="cb39-3"><a></a>    <span class="at">names_from =</span> time_value,   <span class="co"># Create new columns for each unique date</span></span>
 <span id="cb39-4"><a></a>    <span class="at">values_from =</span> raw_cases    <span class="co"># Fill those columns with the raw_case values</span></span>
@@ -1001,7 +1001,7 @@ In this section:</li>
 <li>Let’s try turning <code>messy_cases_df</code> back into the original tidy <code>cases_df</code>!</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>tidy_cases_df <span class="ot">&lt;-</span> messy_cases_df <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>tidy_cases_df <span class="ot">&lt;-</span> messy_cases_df <span class="sc">|&gt;</span></span>
 <span id="cb41-2"><a></a>  <span class="fu">pivot_longer</span>(</span>
 <span id="cb41-3"><a></a>    <span class="at">cols =</span> <span class="sc">-</span>geo_value,          <span class="co"># Keep the 'geo_value' column as it is</span></span>
 <span id="cb41-4"><a></a>    <span class="at">names_to =</span> <span class="st">"time_value"</span>,    <span class="co"># Create a new 'time_value' column from the column names</span></span>
@@ -1028,9 +1028,9 @@ In this section:</li>
 <li>Then, we can use <code>identical()</code> to check if the two data frames are exactly the same.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a>tidy_cases_df <span class="ot">=</span> tidy_cases_df <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">time_value =</span> <span class="fu">as.Date</span>(time_value))</span>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a>tidy_cases_df <span class="ot">=</span> tidy_cases_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">time_value =</span> <span class="fu">as.Date</span>(time_value))</span>
 <span id="cb43-2"><a></a></span>
-<span id="cb43-3"><a></a><span class="fu">identical</span>(tidy_cases_df <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(time_value), cases_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb43-3"><a></a><span class="fu">identical</span>(tidy_cases_df <span class="sc">|&gt;</span> <span class="fu">arrange</span>(time_value), cases_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
@@ -1045,8 +1045,8 @@ In this section:</li>
 <li>Let’s create a dataset with missing data &amp; consider each of those cases:</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>ca_missing <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb45-2"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"ca"</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>ca_missing <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
+<span id="cb45-2"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"ca"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb45-3"><a></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>) <span class="co"># Select rows 1 to 2 and 4 to 6; ie. omit 2022-03-03</span></span>
 <span id="cb45-4"><a></a></span>
 <span id="cb45-5"><a></a>ca_missing</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1078,7 +1078,7 @@ In this section:</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a><span class="co"># First, use complete() to add missing time_value (2022-03-03)</span></span>
-<span id="cb47-2"><a></a>ca_complete <span class="ot">&lt;-</span> ca_missing <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a></a>ca_complete <span class="ot">&lt;-</span> ca_missing <span class="sc">|&gt;</span></span>
 <span id="cb47-3"><a></a>  <span class="fu">complete</span>(geo_value, <span class="at">time_value =</span> <span class="fu">seq</span>(<span class="fu">min</span>(time_value), <span class="fu">max</span>(time_value), <span class="at">by =</span> <span class="st">"day"</span>),</span>
 <span id="cb47-4"><a></a>           <span class="at">fill =</span> <span class="fu">list</span>(<span class="at">raw_cases =</span> <span class="dv">0</span>))</span>
 <span id="cb47-5"><a></a>ca_complete</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1106,7 +1106,7 @@ In this section:</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a></a><span class="co"># First, use complete() to add missing time_value (2022-03-03)</span></span>
-<span id="cb49-2"><a></a>ca_complete <span class="ot">&lt;-</span> ca_missing <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a></a>ca_complete <span class="ot">&lt;-</span> ca_missing <span class="sc">|&gt;</span></span>
 <span id="cb49-3"><a></a>  <span class="fu">complete</span>(geo_value, <span class="at">time_value =</span> <span class="fu">seq</span>(<span class="fu">min</span>(time_value), <span class="fu">max</span>(time_value), <span class="at">by =</span> <span class="st">"day"</span>))</span>
 <span id="cb49-4"><a></a><span class="fu">head</span>(ca_complete, <span class="at">n =</span> <span class="dv">4</span>) <span class="co"># notice no fill with 0s this time, NA by default</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1124,7 +1124,7 @@ In this section:</li>
 <h2>Data is Genuinely Missing</h2>
 <p>Then, use <code>fill()</code> to fill the counts using LOCF (default):</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>ca_complete <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>ca_complete <span class="sc">|&gt;</span></span>
 <span id="cb51-2"><a></a>  <span class="fu">fill</span>(raw_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 3
@@ -1152,7 +1152,7 @@ In this section:</li>
 <h2>Subset <code>cases_df</code></h2>
 <p>To simplify things, let’s use <code>filter()</code> to only grab one date of <code>cases_df</code>:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a></a>cases_df_sub <span class="ot">=</span> cases_df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="st">"2022-03-01"</span>) </span>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a></a>cases_df_sub <span class="ot">=</span> cases_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="st">"2022-03-01"</span>) </span>
 <span id="cb53-2"><a></a>cases_df_sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
@@ -1171,9 +1171,9 @@ In this section:</li>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a></a><span class="co"># State census dataset from epidatasets</span></span>
 <span id="cb55-2"><a></a><span class="fu">library</span>(epidatasets)</span>
-<span id="cb55-3"><a></a>state_census <span class="ot">=</span> state_census <span class="sc">%&gt;%</span> <span class="fu">select</span>(abbr, pop) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(abbr <span class="sc">!=</span> <span class="st">"us"</span>)</span>
+<span id="cb55-3"><a></a>state_census <span class="ot">=</span> state_census <span class="sc">|&gt;</span> <span class="fu">select</span>(abbr, pop) <span class="sc">|&gt;</span> <span class="fu">filter</span>(abbr <span class="sc">!=</span> <span class="st">"us"</span>)</span>
 <span id="cb55-4"><a></a></span>
-<span id="cb55-5"><a></a>state_census <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb55-5"><a></a>state_census <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
   abbr       pop
@@ -1197,7 +1197,7 @@ In this section:</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a></a><span class="co"># Left join: combining March 1, 2022 state case data with the census data</span></span>
-<span id="cb57-2"><a></a>cases_left_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">%&gt;%</span></span>
+<span id="cb57-2"><a></a>cases_left_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb57-3"><a></a>  <span class="fu">left_join</span>(state_census, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>))</span>
 <span id="cb57-4"><a></a></span>
 <span id="cb57-5"><a></a>cases_left_join</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1222,7 +1222,7 @@ In this section:</li>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a></a><span class="co"># Right join: keep all rows from state_census</span></span>
-<span id="cb59-2"><a></a>cases_right_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">%&gt;%</span></span>
+<span id="cb59-2"><a></a>cases_right_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb59-3"><a></a>  <span class="fu">right_join</span>(state_census, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>))</span>
 <span id="cb59-4"><a></a></span>
 <span id="cb59-5"><a></a><span class="fu">head</span>(cases_right_join)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1247,7 +1247,7 @@ In this section:</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a></a><span class="co"># Inner join: only matching rows are kept</span></span>
-<span id="cb61-2"><a></a>cases_inner_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">%&gt;%</span></span>
+<span id="cb61-2"><a></a>cases_inner_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb61-3"><a></a>  <span class="fu">inner_join</span>(state_census, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>))</span>
 <span id="cb61-4"><a></a></span>
 <span id="cb61-5"><a></a>cases_inner_join</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1269,7 +1269,7 @@ In this section:</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a></a><span class="co"># Full join: keep all rows from both datasets</span></span>
-<span id="cb63-2"><a></a>cases_full_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">%&gt;%</span></span>
+<span id="cb63-2"><a></a>cases_full_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb63-3"><a></a>  <span class="fu">full_join</span>(state_census, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>))</span>
 <span id="cb63-4"><a></a></span>
 <span id="cb63-5"><a></a><span class="fu">head</span>(cases_full_join)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1314,7 +1314,7 @@ In this section:</li>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a></a>cases_full_join <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a></a>cases_full_join <span class="sc">|&gt;</span> </span>
 <span id="cb65-2"><a></a>     <span class="fu">fill</span>(time_value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
@@ -1339,7 +1339,7 @@ In this section:</li>
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a><span class="co"># Either left_join</span></span>
-<span id="cb67-2"><a></a>cases_left_join <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
+<span id="cb67-2"><a></a>cases_left_join <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb67-3"><a></a>  <span class="fu">left_join</span>(state_census, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>))</span>
 <span id="cb67-4"><a></a></span>
 <span id="cb67-5"><a></a>cases_left_join</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1365,7 +1365,7 @@ In this section:</li>
 <div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a></a>cases_df <span class="ot">=</span> cases_left_join</span>
 <span id="cb69-2"><a></a></span>
 <span id="cb69-3"><a></a><span class="co"># Or inner_join</span></span>
-<span id="cb69-4"><a></a>cases_inner_join <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
+<span id="cb69-4"><a></a>cases_inner_join <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb69-5"><a></a>  <span class="fu">inner_join</span>(state_census, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>))</span>
 <span id="cb69-6"><a></a></span>
 <span id="cb69-7"><a></a>cases_inner_join</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1391,7 +1391,7 @@ In this section:</li>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a>cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a>cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb71-2"><a></a>  <span class="fu">mutate</span>(<span class="at">scaled_cases =</span> raw_cases <span class="sc">/</span> pop <span class="sc">*</span> <span class="fl">1e5</span>) <span class="co"># cases / 100K</span></span>
 <span id="cb71-3"><a></a><span class="fu">head</span>(cases_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1418,10 +1418,10 @@ In this section:</li>
 </ul>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a>cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">%&gt;%</span></span>
-<span id="cb73-2"><a></a>  <span class="fu">as_epi_df</span>(<span class="at">as_of =</span> <span class="fu">as.Date</span>(<span class="st">"2024-01-01"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb73-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
-<span id="cb73-4"><a></a>  <span class="fu">epi_slide_mean</span>(scaled_cases, <span class="at">.window_size =</span> <span class="dv">14</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a>cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
+<span id="cb73-2"><a></a>  <span class="fu">as_epi_df</span>(<span class="at">as_of =</span> <span class="fu">as.Date</span>(<span class="st">"2024-01-01"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb73-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb73-4"><a></a>  <span class="fu">epi_slide_mean</span>(scaled_cases, <span class="at">.window_size =</span> <span class="dv">14</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
 <span id="cb73-5"><a></a>  <span class="fu">rename</span>(<span class="at">smoothed_scaled_cases =</span> slide_value_scaled_cases) </span>
 <span id="cb73-6"><a></a></span>
 <span id="cb73-7"><a></a><span class="fu">head</span>(cases_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1448,7 +1448,7 @@ In this section:</li>
 <h2>Epi. Data Processing with <code>epiprocess</code></h2>
 <p>It is easy to produce an autoplot the smoothed confirmed daily cases for each <code>geo_value</code>:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a>cases_df <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a>cases_df <span class="sc">|&gt;</span></span>
 <span id="cb75-2"><a></a>  <span class="fu">autoplot</span>(smoothed_scaled_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
@@ -1575,8 +1575,8 @@ In this section:</li>
 <section id="features---compute-growth-rates" class="slide level2">
 <h2>Features - Compute Growth Rates</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a></a>edf <span class="ot">&lt;-</span> <span class="fu">filter</span>(edf, geo_value <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ut"</span>, <span class="st">"ca"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb80-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a></a>edf <span class="ot">&lt;-</span> <span class="fu">filter</span>(edf, geo_value <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ut"</span>, <span class="st">"ca"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb80-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb80-3"><a></a>  <span class="fu">mutate</span>(<span class="at">gr_cases =</span> <span class="fu">growth_rate</span>(time_value, case_rate, <span class="at">method =</span> <span class="st">"trend_filter"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
@@ -1757,8 +1757,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb83-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ca"</span>,  <span class="co"># California (CA)</span></span>
 <span id="cb83-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">202401</span>, <span class="dv">202413</span>),  </span>
 <span id="cb83-9"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb83-10"><a></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb83-11"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">mortality =</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb83-10"><a></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb83-11"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">mortality =</span> value) <span class="sc">|&gt;</span> </span>
 <span id="cb83-12"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb83-13"><a></a></span>
 <span id="cb83-14"><a></a><span class="co"># Set the start and end days for the analysis </span></span>
@@ -1773,10 +1773,10 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li>A quick inspection reveals that mortality rates are systematically 7 days latent (<strong>fixed lag</strong>).</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a></a>mortality_revision_inspect <span class="ot">=</span> mortality_archive<span class="sc">$</span>DT <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">version_time_diff =</span> version <span class="sc">-</span> time_value)</span>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a></a>mortality_revision_inspect <span class="ot">=</span> mortality_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">version_time_diff =</span> version <span class="sc">-</span> time_value)</span>
 <span id="cb84-2"><a></a></span>
 <span id="cb84-3"><a></a><span class="co"># Look at the first revision for each week</span></span>
-<span id="cb84-4"><a></a>mortality_revision_inspect <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(time_value) <span class="sc">%&gt;%</span> <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb84-4"><a></a>mortality_revision_inspect <span class="sc">|&gt;</span> <span class="fu">group_by</span>(time_value) <span class="sc">|&gt;</span> <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 5
 # Groups:   time_value [6]
@@ -1867,15 +1867,15 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-03-10"</span>); fixed_lag <span class="ot">=</span> <span class="dv">7</span></span>
 <span id="cb88-2"><a></a></span>
 <span id="cb88-3"><a></a><span class="co"># Load the finalized mortality data for CA</span></span>
-<span id="cb88-4"><a></a>ca_finalized <span class="ot">&lt;-</span> mortality_latest <span class="sc">%&gt;%</span></span>
-<span id="cb88-5"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> (as_of_date <span class="sc">-</span> fixed_lag)) <span class="sc">%&gt;%</span></span>
+<span id="cb88-4"><a></a>ca_finalized <span class="ot">&lt;-</span> mortality_latest <span class="sc">|&gt;</span></span>
+<span id="cb88-5"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> (as_of_date <span class="sc">-</span> fixed_lag)) <span class="sc">|&gt;</span></span>
 <span id="cb88-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(mortality)</span>
 <span id="cb88-7"><a></a></span>
 <span id="cb88-8"><a></a><span class="co"># Load the provisional mortality data for the same week</span></span>
 <span id="cb88-9"><a></a>mortality_old <span class="ot">=</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date)</span>
 <span id="cb88-10"><a></a></span>
-<span id="cb88-11"><a></a>ca_provisional <span class="ot">&lt;-</span> mortality_old <span class="sc">%&gt;%</span></span>
-<span id="cb88-12"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> (as_of_date <span class="sc">-</span> fixed_lag)) <span class="sc">%&gt;%</span></span>
+<span id="cb88-11"><a></a>ca_provisional <span class="ot">&lt;-</span> mortality_old <span class="sc">|&gt;</span></span>
+<span id="cb88-12"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> (as_of_date <span class="sc">-</span> fixed_lag)) <span class="sc">|&gt;</span></span>
 <span id="cb88-13"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(mortality)</span>
 <span id="cb88-14"><a></a></span>
 <span id="cb88-15"><a></a><span class="co"># Calculate ratio between provisional and finalized cases for the week of interest</span></span>
@@ -1897,8 +1897,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-02-25"</span>)</span>
 <span id="cb90-2"><a></a></span>
-<span id="cb90-3"><a></a>provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">%&gt;%</span></span>
-<span id="cb90-4"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb90-3"><a></a>provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">|&gt;</span></span>
+<span id="cb90-4"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
 <span id="cb90-5"><a></a>  <span class="fu">pull</span>(mortality)</span>
 <span id="cb90-6"><a></a>provisional</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1907,8 +1907,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </div>
 <p>and a <strong>finalized value</strong> of 104</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a>finalized <span class="ot">&lt;-</span> mortality_latest <span class="sc">%&gt;%</span></span>
-<span id="cb92-2"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a>finalized <span class="ot">&lt;-</span> mortality_latest <span class="sc">|&gt;</span></span>
+<span id="cb92-2"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
 <span id="cb92-3"><a></a>  <span class="fu">pull</span>(mortality)</span>
 <span id="cb92-4"><a></a>finalized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1922,7 +1922,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a></a>dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(start_time, (as_of_date <span class="sc">-</span> <span class="dv">7</span>), <span class="at">by =</span> <span class="st">"day"</span>)</span>
 <span id="cb94-2"><a></a>mortality_real_time <span class="ot">&lt;-</span> <span class="cf">function</span>(date) {</span>
-<span id="cb94-3"><a></a>  <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> (date <span class="sc">+</span> <span class="dv">7</span>L)) <span class="sc">%&gt;%</span></span>
+<span id="cb94-3"><a></a>  <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> (date <span class="sc">+</span> <span class="dv">7</span>L)) <span class="sc">|&gt;</span></span>
 <span id="cb94-4"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> date)</span>
 <span id="cb94-5"><a></a>}</span>
 <span id="cb94-6"><a></a>mortality_real_time_df <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(dates, mortality_real_time)</span>
@@ -1987,8 +1987,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <p>We then use these “finalized” and real-time values to compute the mean ratio:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a></a><span class="co"># exclude date we're nowcasting for</span></span>
-<span id="cb98-2"><a></a>mortality_real_time_df <span class="ot">=</span> mortality_real_time_df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>) </span>
-<span id="cb98-3"><a></a>mortality_as_of_feb25 <span class="ot">=</span> mortality_as_of_feb25 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>)</span>
+<span id="cb98-2"><a></a>mortality_real_time_df <span class="ot">=</span> mortality_real_time_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>) </span>
+<span id="cb98-3"><a></a>mortality_as_of_feb25 <span class="ot">=</span> mortality_as_of_feb25 <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>)</span>
 <span id="cb98-4"><a></a>ratio_real_time_to_feb25 <span class="ot">&lt;-</span> mortality_real_time_df<span class="sc">$</span>mortality <span class="sc">/</span> mortality_as_of_feb25<span class="sc">$</span>mortality</span>
 <span id="cb98-5"><a></a><span class="fu">summary</span>(ratio_real_time_to_feb25)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -2032,14 +2032,14 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb102-2"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-02-25"</span>)</span>
 <span id="cb102-3"><a></a></span>
 <span id="cb102-4"><a></a><span class="co"># 1. Obtain the provisional value</span></span>
-<span id="cb102-5"><a></a>provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">%&gt;%</span></span>
-<span id="cb102-6"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb102-5"><a></a>provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">|&gt;</span></span>
+<span id="cb102-6"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
 <span id="cb102-7"><a></a>  <span class="fu">pull</span>(mortality)</span>
 <span id="cb102-8"><a></a>provisional</span>
 <span id="cb102-9"><a></a></span>
 <span id="cb102-10"><a></a><span class="co"># 2. Estimate the ratio </span></span>
-<span id="cb102-11"><a></a>mortality_real_time_df <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(dates, mortality_real_time) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>) <span class="co"># Real-time</span></span>
-<span id="cb102-12"><a></a>mortality_as_of_feb25 <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>)  <span class="co"># "Finalized"</span></span>
+<span id="cb102-11"><a></a>mortality_real_time_df <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(dates, mortality_real_time) <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>) <span class="co"># Real-time</span></span>
+<span id="cb102-12"><a></a>mortality_as_of_feb25 <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>)  <span class="co"># "Finalized"</span></span>
 <span id="cb102-13"><a></a></span>
 <span id="cb102-14"><a></a>ratio_real_time_to_feb25 <span class="ot">&lt;-</span> mortality_real_time_df<span class="sc">$</span>mortality <span class="sc">/</span> mortality_as_of_feb25<span class="sc">$</span>mortality</span>
 <span id="cb102-15"><a></a></span>
@@ -2066,8 +2066,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb103-2"><a></a>  as_of_date <span class="ot">=</span> nowcast_date <span class="sc">+</span> fixed_lag</span>
 <span id="cb103-3"><a></a>  </span>
 <span id="cb103-4"><a></a>  <span class="co"># 1. Obtain the provisional value for the target.</span></span>
-<span id="cb103-5"><a></a>  provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">%&gt;%</span></span>
-<span id="cb103-6"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> fixed_lag) <span class="sc">%&gt;%</span></span>
+<span id="cb103-5"><a></a>  provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">|&gt;</span></span>
+<span id="cb103-6"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> fixed_lag) <span class="sc">|&gt;</span></span>
 <span id="cb103-7"><a></a>    <span class="fu">pull</span>(mortality)</span>
 <span id="cb103-8"><a></a>  </span>
 <span id="cb103-9"><a></a>  <span class="co">#2. Estimate the ratio multiplier using</span></span>
@@ -2076,7 +2076,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb103-12"><a></a>  mortality_real_time <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(dates_seq, mortality_real_time)</span>
 <span id="cb103-13"><a></a>  </span>
 <span id="cb103-14"><a></a>  <span class="co"># and "finalized" data</span></span>
-<span id="cb103-15"><a></a>  finalized <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> start_time <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> (nowcast_date <span class="sc">-</span> fixed_lag)) </span>
+<span id="cb103-15"><a></a>  finalized <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, <span class="at">max_version =</span> as_of_date) <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> start_time <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> (nowcast_date <span class="sc">-</span> fixed_lag)) </span>
 <span id="cb103-16"><a></a>  </span>
 <span id="cb103-17"><a></a>  ratios <span class="ot">&lt;-</span> mortality_real_time<span class="sc">$</span>mortality <span class="sc">/</span> finalized<span class="sc">$</span>mortality</span>
 <span id="cb103-18"><a></a>  </span>
@@ -2105,7 +2105,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a></a><span class="co"># Apply Nowcast Function Over Multiple Dates</span></span>
 <span id="cb104-2"><a></a>nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2024-01-28"</span>), <span class="fu">as.Date</span>(<span class="st">"2024-03-24"</span>), <span class="at">by =</span> <span class="st">"week"</span>)</span>
 <span id="cb104-3"><a></a>fixed_lag <span class="ot">&lt;-</span> <span class="dv">7</span></span>
-<span id="cb104-4"><a></a>nowcast_results_df <span class="ot">&lt;-</span> <span class="fu">map2</span>(nowcast_dates, fixed_lag, nowcast_function) <span class="sc">%&gt;%</span> <span class="fu">list_rbind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb104-4"><a></a>nowcast_results_df <span class="ot">&lt;-</span> <span class="fu">map2</span>(nowcast_dates, fixed_lag, nowcast_function) <span class="sc">|&gt;</span> <span class="fu">list_rbind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="map-nowcast-over-multiple-dates-1" class="slide level2">
@@ -2174,8 +2174,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb106-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
 <span id="cb106-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
 <span id="cb106-9"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb106-10"><a></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb106-11"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s01 =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb106-10"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb106-11"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s01 =</span> value) <span class="sc">|&gt;</span></span>
 <span id="cb106-12"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb106-13"><a></a></span>
 <span id="cb106-14"><a></a>x2 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
@@ -2186,8 +2186,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb106-19"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
 <span id="cb106-20"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
 <span id="cb106-21"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb106-22"><a></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb106-23"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s02 =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb106-22"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb106-23"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s02 =</span> value) <span class="sc">|&gt;</span></span>
 <span id="cb106-24"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb106-25"><a></a></span>
 <span id="cb106-26"><a></a><span class="co"># Fetch hospital admissions data</span></span>
@@ -2199,8 +2199,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb106-32"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
 <span id="cb106-33"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
 <span id="cb106-34"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb106-35"><a></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb106-36"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">admissions =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb106-35"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb106-36"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">admissions =</span> value) <span class="sc">|&gt;</span></span>
 <span id="cb106-37"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -2259,16 +2259,16 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb107-6"><a></a>  </span>
 <span id="cb107-7"><a></a>  <span class="co"># Make predictions</span></span>
 <span id="cb107-8"><a></a>  predictions <span class="ot">=</span> <span class="fu">predict</span>(model,</span>
-<span id="cb107-9"><a></a>                        <span class="at">newdata =</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb107-9"><a></a>                        <span class="at">newdata =</span> data <span class="sc">|&gt;</span></span>
 <span id="cb107-10"><a></a>                          <span class="co"># Use tidyr::fill() for LOCF if predictor data is incomplete </span></span>
-<span id="cb107-11"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s01, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-12"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s02, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb107-11"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s01, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb107-12"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s02, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb107-13"><a></a>                          <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)),</span>
 <span id="cb107-14"><a></a>                        <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.9</span></span>
 <span id="cb107-15"><a></a>  )</span>
 <span id="cb107-16"><a></a></span>
 <span id="cb107-17"><a></a>  <span class="co"># Pull off true time value for comparison to target</span></span>
-<span id="cb107-18"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(admissions)</span>
+<span id="cb107-18"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span> <span class="fu">pull</span>(admissions)</span>
 <span id="cb107-19"><a></a></span>
 <span id="cb107-20"><a></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(predictions, <span class="at">actual_nowcast_date =</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value), <span class="at">real_time_val =</span> real_time_val))</span>
 <span id="cb107-21"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2292,16 +2292,16 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb108-4"><a></a><span class="co"># Determine this from revision_summary(y1, print_inform = TRUE) </span></span>
 <span id="cb108-5"><a></a></span>
 <span id="cb108-6"><a></a><span class="co"># Perform nowcasting using epix_slide</span></span>
-<span id="cb108-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">%&gt;%</span></span>
-<span id="cb108-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
+<span id="cb108-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span></span>
+<span id="cb108-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb108-9"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb108-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,</span>
 <span id="cb108-11"><a></a>    <span class="at">.before =</span> <span class="dv">14</span>,  <span class="co"># 14-day training period</span></span>
 <span id="cb108-12"><a></a>    <span class="at">.versions =</span> ref_time_values, </span>
 <span id="cb108-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
-<span id="cb108-14"><a></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb108-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">%&gt;%</span> <span class="co"># Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. </span></span>
-<span id="cb108-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates, <span class="at">time_value =</span> actual_nowcast_date) <span class="sc">%&gt;%</span></span>
+<span id="cb108-14"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb108-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span> <span class="co"># Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. </span></span>
+<span id="cb108-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates, <span class="at">time_value =</span> actual_nowcast_date) <span class="sc">|&gt;</span></span>
 <span id="cb108-17"><a></a>  <span class="fu">ungroup</span>()</span>
 <span id="cb108-18"><a></a></span>
 <span id="cb108-19"><a></a><span class="co"># View results</span></span>
@@ -2324,9 +2324,9 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a></a><span class="co"># Left join with latest results </span></span>
 <span id="cb110-2"><a></a><span class="co"># Latest snapshot of data (with the latest/finalized admissions)</span></span>
-<span id="cb110-3"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="at">max_version =</span> <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(avg_search_vol_s01, avg_search_vol_s02))</span>
+<span id="cb110-3"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="at">max_version =</span> <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(avg_search_vol_s01, avg_search_vol_s02))</span>
 <span id="cb110-4"><a></a></span>
-<span id="cb110-5"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
+<span id="cb110-5"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">|&gt;</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
 <span id="cb110-6"><a></a><span class="fu">head</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 10
@@ -2475,13 +2475,13 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb112-28"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(file_path, <span class="at">sheet =</span> <span class="st">"CasesByDate (Test Date)"</span>)</span>
 <span id="cb112-29"><a></a>  </span>
 <span id="cb112-30"><a></a>  <span class="co"># Process the data: rename columns and convert Date</span></span>
-<span id="cb112-31"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb112-31"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
 <span id="cb112-32"><a></a>    <span class="fu">rename</span>(</span>
 <span id="cb112-33"><a></a>      <span class="at">Date =</span> <span class="st">`</span><span class="at">Date</span><span class="st">`</span>,</span>
 <span id="cb112-34"><a></a>      <span class="at">Positive_Total =</span> <span class="st">`</span><span class="at">Positive Total</span><span class="st">`</span>,</span>
 <span id="cb112-35"><a></a>      <span class="at">Positive_New =</span> <span class="st">`</span><span class="at">Positive New</span><span class="st">`</span>,</span>
 <span id="cb112-36"><a></a>      <span class="at">Case_Average_7day =</span> <span class="st">`</span><span class="at">7-day confirmed case average</span><span class="st">`</span></span>
-<span id="cb112-37"><a></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb112-37"><a></a>    ) <span class="sc">|&gt;</span></span>
 <span id="cb112-38"><a></a>    <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">as.Date</span>(Date))  <span class="co"># Convert to Date class</span></span>
 <span id="cb112-39"><a></a>  </span>
 <span id="cb112-40"><a></a>  <span class="co"># Create a tibble with the required columns for the epi_archive</span></span>
@@ -2535,7 +2535,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb113-13"><a></a>  </span>
 <span id="cb113-14"><a></a>  <span class="co"># Convert the combined data into an epi_archive object</span></span>
 <span id="cb113-15"><a></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(combined_data) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb113-16"><a></a>    epi_archive_data <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb113-16"><a></a>    epi_archive_data <span class="ot">&lt;-</span> combined_data <span class="sc">|&gt;</span></span>
 <span id="cb113-17"><a></a>      <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb113-18"><a></a>    </span>
 <span id="cb113-19"><a></a>    <span class="fu">return</span>(epi_archive_data)</span>
@@ -2610,11 +2610,11 @@ Key: &lt;geo_value, time_value, version&gt;
 <span id="cb116-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ma"</span>, <span class="co"># Just for MA to keep it simple (&amp; to go with the case data by test date for that state)</span></span>
 <span id="cb116-8"><a></a>  <span class="at">time_value =</span> <span class="fu">epirange</span>(<span class="dv">20210301</span>, <span class="dv">20212101</span>), </span>
 <span id="cb116-9"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="dv">20210301</span>, <span class="dv">20212101</span>)</span>
-<span id="cb116-10"><a></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb116-10"><a></a>) <span class="sc">|&gt;</span></span>
 <span id="cb116-11"><a></a>  <span class="fu">select</span>(geo_value, time_value,</span>
 <span id="cb116-12"><a></a>         <span class="at">version =</span> issue,</span>
 <span id="cb116-13"><a></a>         <span class="at">percent_cli =</span> value</span>
-<span id="cb116-14"><a></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb116-14"><a></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb116-15"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -2668,13 +2668,13 @@ Key: &lt;geo_value, time_value, version&gt;
 <span id="cb119-4"><a></a></span>
 <span id="cb119-5"><a></a>  <span class="co"># Make predictions</span></span>
 <span id="cb119-6"><a></a>  predictions <span class="ot">=</span> <span class="fu">predict</span>(model,</span>
-<span id="cb119-7"><a></a>                        <span class="at">newdata =</span> data <span class="sc">%&gt;%</span></span>
-<span id="cb119-8"><a></a>                          <span class="fu">fill</span>(percent_cli, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb119-7"><a></a>                        <span class="at">newdata =</span> data <span class="sc">|&gt;</span></span>
+<span id="cb119-8"><a></a>                          <span class="fu">fill</span>(percent_cli, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb119-9"><a></a>                          <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)),</span>
 <span id="cb119-10"><a></a>                        <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.9</span>)</span>
 <span id="cb119-11"><a></a>  </span>
 <span id="cb119-12"><a></a>  <span class="co"># Pull off real-time value for later comparison to the nowcast value</span></span>
-<span id="cb119-13"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(case_rate_7d_av)</span>
+<span id="cb119-13"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span> <span class="fu">pull</span>(case_rate_7d_av)</span>
 <span id="cb119-14"><a></a>  </span>
 <span id="cb119-15"><a></a>  <span class="co"># Could clip predictions and bounds at 0</span></span>
 <span id="cb119-16"><a></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(predictions, <span class="at">actual_nowcast_date =</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value), <span class="at">real_time_val =</span> real_time_val)) </span>
@@ -2698,15 +2698,15 @@ Key: &lt;geo_value, time_value, version&gt;
 <span id="cb120-4"><a></a><span class="co"># Determine this from revision_summary(y)</span></span>
 <span id="cb120-5"><a></a></span>
 <span id="cb120-6"><a></a><span class="co"># Use epix_slide to perform the nowcasting with a training-test split</span></span>
-<span id="cb120-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">%&gt;%</span></span>
-<span id="cb120-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">%&gt;%</span></span>
+<span id="cb120-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span></span>
+<span id="cb120-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb120-9"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb120-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,  <span class="co"># Pass the function defined above</span></span>
 <span id="cb120-11"><a></a>    <span class="at">.before =</span> <span class="dv">30</span>,   <span class="co"># Training period of 30 days</span></span>
 <span id="cb120-12"><a></a>    <span class="at">.versions =</span> ref_time_values, <span class="co"># Determines the day where training data goes up to (not inclusive)</span></span>
 <span id="cb120-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
-<span id="cb120-14"><a></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb120-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb120-14"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb120-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span></span>
 <span id="cb120-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates,</span>
 <span id="cb120-17"><a></a>         <span class="at">time_value =</span> actual_nowcast_date)</span>
 <span id="cb120-18"><a></a></span>
@@ -2726,10 +2726,10 @@ Key: &lt;geo_value, time_value, version&gt;
 <h2>Visualizing Nowcasts vs.&nbsp;Actual Values</h2>
 <p>Merge the nowcast results with the latest data for more direct comparison:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="at">max_version =</span> <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="at">max_version =</span> <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span></span>
 <span id="cb122-2"><a></a>  <span class="fu">select</span>(<span class="sc">-</span>percent_cli) </span>
 <span id="cb122-3"><a></a></span>
-<span id="cb122-4"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
+<span id="cb122-4"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">|&gt;</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
 <span id="cb122-5"><a></a></span>
 <span id="cb122-6"><a></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
