@@ -522,7 +522,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
+head(epidata) |> select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
 ```
 Here `value` is the requested signal – in this case, the number of daily new confirmed COVID-19 cases per 100,000 population from January to April 2021. <!-- (and standard error if it is applicable to the metric). -->
 </div>
@@ -575,7 +575,7 @@ state_epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(state_epidata) %>% select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
+head(state_epidata) |> select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
 ```
 </div>
 
@@ -597,7 +597,7 @@ fb_county_data <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(fb_county_data) %>% select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
+head(fb_county_data) |> select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
 ```
 </div>
 ::: {.callout-important icon="false"}
@@ -762,11 +762,11 @@ x1 <- pub_covidcast(
   issues = epirange(20211201, 20220201)
 )
 
-x <- x1 %>%
+x <- x1 |>
   select(geo_value, time_value,
          version = issue,
          percent_cli = value
-  ) %>%
+  ) |>
   as_epi_archive(compactify = FALSE)
 
 head(epix_as_of(x, max_version = max(x$DT$version)))
@@ -898,11 +898,11 @@ Example: gathering different signals + **scaling** + visualizing panel data
 epi_rescale_signal = function(df, variable, scale_to = c(0, 1)) {
   Min <- function(x) min(x, na.rm = TRUE)
   Max <- function(x) max(x, na.rm = TRUE)
-  rescaled <- df %>%
-    group_by(signal) %>%
+  rescaled <- df |>
+    group_by(signal) |>
       mutate("{{variable}}" := ({{variable}} - Min({{variable}})) / 
                (Max({{variable}}) - Min({{variable}})) * scale_to[2] + 
-               scale_to[1]) %>%
+               scale_to[1]) |>
     ungroup()
   return(rescaled)
 }
@@ -948,8 +948,8 @@ ggplot(rescaled_df, aes(x = time_value, y = value, color = signal)) +
 #| fig-width: 8
 #| fig-height: 5
 source(here::here("_code/ca_cases_deaths.R"))
-ggplot(ca %>% 
-         mutate(deaths = trans21(deaths)) %>%
+ggplot(ca |> 
+         mutate(deaths = trans21(deaths)) |>
          pivot_longer(cols = c(cases, deaths), names_to = 'name'),
        aes(x = time_value, y = value)) + 
   geom_line(aes(color = name)) +
@@ -972,7 +972,7 @@ ggplot(ca %>%
 * Now, we add a second time index to indicate the data version...
 ```{r versioned-dat-ex}
 #| echo: false
-head(x$DT) %>% as_tibble()
+head(x$DT) |> as_tibble()
 ```
 
 * Note that this feature can be indicated in different ways (ex. `version`, `issue`, `release`, `as_of`). 
@@ -995,16 +995,16 @@ dv_as_of <- map_dfr(as_ofs, function(as_of) {
                 time_type = "day",
                 time_values = epirange(as.Date("2020-06-01"), 
                                        as.Date(as_of - 1L)),
-                as_of = as_of) %>%
+                as_of = as_of) |>
     mutate(as_of = as_of)
 })
 
 # plot each as_of time series curve, faceted by state
-dv_as_of %>%
+dv_as_of |>
   mutate(geo_label = factor(
     geo_value, levels = states,
-    )) %>%
-  mutate(as_of = factor(format(as.Date(as_of), "%b %d"))) %>%
+    )) |>
+  mutate(as_of = factor(format(as.Date(as_of), "%b %d"))) |>
   ggplot(aes(x = time_value, y = value, color = as_of)) +
   geom_line() +
   facet_wrap(vars(geo_label), nrow = 2) +
@@ -1040,15 +1040,15 @@ Example: COVID-19 case reports are revised frequently after initial publication 
 
 ```{r latency-wa-ex}
 #| echo: false
-x_dt_with_diff = x$DT %>% mutate(version_time_diff = version - time_value) 
-head(x_dt_with_diff %>% group_by(time_value) %>% slice(1) %>% ungroup()) 
+x_dt_with_diff = x$DT |> mutate(version_time_diff = version - time_value) 
+head(x_dt_with_diff |> group_by(time_value) |> slice(1) |> ungroup()) 
 ```
 
 * And clearly undergoes **revision** over time (ex. consider Dec. 1's `percent_cli` across `version`):
 
 ```{r revision-wa-ex}
 #| echo: false
-head(x_dt_with_diff) %>% as_tibble()
+head(x_dt_with_diff) |> as_tibble()
 ```
 
 
@@ -1171,7 +1171,7 @@ cases_as_of <- map_dfr(as_ofs, function(as_of) {
                 time_type = "day",
                 geo_values = "311",
                 as_of = as_of,
-                time_values = epirange(20200815, 20200926)) %>%
+                time_values = epirange(20200815, 20200926)) |>
     mutate(as_of = as_of)
 })
 dv_as_of <-  map_dfr(as_ofs, function(as_of) {
@@ -1181,12 +1181,12 @@ dv_as_of <-  map_dfr(as_ofs, function(as_of) {
                 time_type = "day",
                 geo_values = "311", 
                 as_of = as_of,
-                time_values = epirange(20200815, 20200926)) %>%
+                time_values = epirange(20200815, 20200926)) |>
     mutate(as_of = as_of)
 })
   
-p1 <- dv_as_of %>%
-  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) %>%
+p1 <- dv_as_of |>
+  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) |>
   ggplot(aes(x = time_value, y = value)) + 
   geom_line(aes(color = factor(as_of))) + 
   labs(title = "DV-CLI", x = "", y = "% doctor's visits due to CLI",
@@ -1196,8 +1196,8 @@ p1 <- dv_as_of %>%
   scale_color_viridis_d(end = .9, begin = .1) +
   guides(color = guide_legend(nrow = 1))
 
-p2 <- cases_as_of %>%
-  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) %>%
+p2 <- cases_as_of |>
+  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) |>
   ggplot(aes(x = time_value, y = value)) + 
   geom_line(aes(color = factor(as_of))) + 
   labs(title = "Cases", x = "", y = "Cases per 100,000 people",
@@ -1352,7 +1352,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value)
 ```
 
 * Initial estimate was *issued* on May 7, 2020 (due to delay from aggregation and ingestion by the API).
@@ -1377,7 +1377,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 
 * Substantial Estimate Change:
@@ -1406,7 +1406,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 
 ## Obtaining multiple issues for one state
@@ -1428,7 +1428,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 
 * This doesn't change anything here, but it may matter for other types of data where you don't know the latency or reporting lag.
@@ -1459,7 +1459,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-tail(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+tail(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 
 * We caution against starting queries with too late a minimum issue or setting a late maximum issue, as it could lead to incorrect and/or misleading results.
@@ -1487,7 +1487,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata, n = 8) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata, n = 8) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 
 </div>
@@ -1512,7 +1512,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 
 So, now we obtain all available issues for all states (not just PA) for the specified date range. Neat!
@@ -1555,7 +1555,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 
 We get the **most recent issue** for **all states**!
@@ -1582,7 +1582,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 </div>
 
@@ -1607,7 +1607,7 @@ epidata <- pub_covidcast(
 
 ```{r}
 #| echo = FALSE 
-head(epidata) %>% select(geo_value, signal, source, time_value, issue, lag, value, stderr)
+head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
 </div>
 -->
