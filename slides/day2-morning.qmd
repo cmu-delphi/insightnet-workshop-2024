@@ -972,6 +972,59 @@ getErrors((ca |> filter(time_value %in% pred_m2$target_date))$deaths,
 ```
 
 
+## Visualizing predictions for multiple horizons
+
+Different ways to visualize predictions for multiple $h$
+
+* Last slides: group by forecast date, and show prediction "trajectories"
+
+* Other approach: one line and color per horizon $h$
+
+## Predictions by horizon (Model 2)
+
+```{r weekly-predictions}
+pred_m2_week <- data.frame(matrix(NA, nrow = 0, ncol = 3))  #initialize df for predictions
+colnames(pred_m2_week) = c("forecast_date", "target_date", "prediction")
+
+# Only forecast on sundays
+sundays <- which(ca_lags$time_value >= t0_date & 
+                   ca_lags$time_value < ca_lags$time_value[n-max(h_vals)] &
+                   wday(ca_lags$time_value) == 1)
+
+for (t in sundays) {
+  for (i in seq_along(h_vals)) {
+    h = h_vals[i]
+    # formulas including h-lagged variables
+    m2_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h))
+    # fit to trailing window of data
+    m2_fit = lm(m2_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w)) 
+    # make h-step ahead predictions
+    pred_m2_week = rbind(pred_m2_week, 
+                         data.frame(forecast_date = ca_lags$time_value[t],
+                                    target_date = ca_lags$time_value[t+h],
+                                    prediction = predict(m2_fit, 
+                                                         newdata = data.frame(ca_lags[t+h, ]))))
+    }
+}
+```
+
+```{r plot-by-h}
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: left
+ca_lags |> 
+  ggplot() +
+  geom_line(aes(x = time_value, y = deaths), col = 'gray50', alpha = .6) +
+  geom_line(data = pred_m2_week |> 
+              mutate(horizon = as.factor(target_date - forecast_date)),
+            aes(target_date, prediction, group = horizon, col = horizon), 
+            inherit.aes = FALSE) +
+  geom_vline(xintercept = ca_lags$time_value[sundays[1]]) +
+  labs(x = "", y = "Deaths per 100k people") +
+  scale_colour_viridis_d(option = "inferno", end = .8) +
+  theme(legend.position = "bottom")
+```
+
 # Overfitting and Regularization
 
 ## Too many predictors
