@@ -44,7 +44,7 @@ library(Stat406)
 
 # Essentials of `dplyr` and `tidyr` 
 
-## Down with Spreadsheets for Data Manipulation
+## Down with spreadsheets for data manipulation
 
 * Spreadsheets make it difficult to rerun analyses consistently.
 * Using R (and `dplyr`) allows for:
@@ -59,14 +59,14 @@ library(Stat406)
 * It is part of the `tidyverse`, which includes a collection of packages designed to work together... Here's some of it's greatest hits:
 </div>
 <div style="text-align: center;">
-![](gfx/tidyverse_packages.png){style="width: 35%; display: block; margin-left: auto; margin-right: auto;"}
+![](gfx/tidyverse_packages.png){style="width: 30%; display: block; margin-left: auto; margin-right: auto;"}
 <br>
 <small>[Source](https://laddem.github.io/courses/tidyverse/)</small>
 </div>
 
 ## Introduction to `dplyr`
 
-![](gfx/dplyr.png){style="width: 20%"}
+![](gfx/dplyr.png){style="width: 10%"}
 
 To load `dplyr` you may simply load the `tidyverse` package:
 
@@ -85,13 +85,13 @@ Our focus will be on basic operations like selecting and filtering data.
 </div>
 
 
-## Downloading JHU CSSE COVID-19 Case Data
+## Downloading JHU CSSE COVID-19 case data
 
 * Let's start with something familiar... Here's a task for you:
 * Use `pub_covidcast()` to download **JHU CSSE COVID-19 confirmed case data** (`confirmed_incidence_num`) for CA, NC, and NY from March 1, 2022 to March 31, 2022 as of January 1, 2024.
 * Try this for yourself. Then click the dropdown on the next slide to check your work...
 
-## Downloading JHU CSSE COVID-19 Case Data
+## Downloading JHU CSSE COVID-19 case data
 
 ```{r load-dataset}
 #| echo: true
@@ -116,7 +116,7 @@ cases_df <- cases_df |>
   select(geo_value, time_value, raw_cases = value) # We'll talk more about this soon :)
 ```
 
-## Ways to Inspect the Dataset
+## Ways to inspect the dataset
 
 Use `head()` to view the first six row of the data 
 ```{r head-tail-funs}
@@ -130,7 +130,7 @@ and tail to view the last six
 tail(cases_df)  # Last 6 rows
 ```
 
-## Ways to Inspect the Dataset
+## Ways to inspect the dataset
 Now, for our first foray into the `tidyverse`...
 
 Use `glimpse()` to get a compact overview of the dataset.
@@ -140,7 +140,7 @@ Use `glimpse()` to get a compact overview of the dataset.
 glimpse(cases_df)
 ```
 
-## Creating Tibbles
+## Creating tibbles
 
 * **Tibbles**: Modern data frames with enhanced features.
 * Rows represent **observations** (or cases).
@@ -152,7 +152,7 @@ glimpse(cases_df)
 tibble(x = letters, y = 1:26)
 ```
 
-## Selecting Columns with `select()`
+## Selecting columns with `select()`
 
 The `select()` function is used to pick specific columns from your dataset.
 
@@ -161,7 +161,7 @@ The `select()` function is used to pick specific columns from your dataset.
 select(cases_df, geo_value, time_value)  # Select the 'geo_value' and 'time_value' columns
 ```
 
-## Selecting Columns with `select()`
+## Selecting columns with `select()`
 
 You can exclude columns by prefixing the column names with a minus sign `-`.
 
@@ -170,7 +170,7 @@ You can exclude columns by prefixing the column names with a minus sign `-`.
 select(cases_df, -raw_cases)  # Exclude the 'raw_cases' column from the dataset
 ```
 
-## Extracting Columns with `pull()`
+## Extracting columns with `pull()`
 
 * `pull()`: Extract a column as a vector.
 * Let's try this with the `cases` column...
@@ -181,7 +181,7 @@ pull(cases_df, raw_cases)
 ```
 
 
-## Filtering Rows with `filter()`
+## Filtering rows with `filter()`
 
 * The `filter()` function allows you to select rows that meet specific conditions.
 * Conditions can involve column values, such as filtering for only NC or higher numbers of cases.
@@ -192,7 +192,7 @@ pull(cases_df, raw_cases)
 filter(cases_df, geo_value == "nc", raw_cases > 500)  # Filter for NC with raw daily cases > 500
 ```
 
-## Combining `select()` and `filter()` Functions
+## Combining `select()` and `filter()` functions
 
 * You can further combine `select()` and `filter()` to further refine the dataset.
 * Use `select()` to choose columns and `filter()` to narrow down rows.
@@ -204,7 +204,7 @@ select(filter(cases_df, geo_value == "nc", raw_cases > 1000), time_value, raw_ca
   head()
 ```
 
-## Using the Pipe Operator `|>`
+## Using the pipe operator `|>`
 
 * The pipe operator (`|>`) makes code more readable by chaining multiple operations together.
 * The output of one function is automatically passed to the next function.
@@ -219,7 +219,7 @@ cases_df |>
   head()
 ```
 
-## Key Practices in `dplyr`
+## Key practices in `dplyr`
 
 * Use **tibbles** for easier data handling.
 * Use **`select()`** and **`filter()`** for data manipulation.
@@ -227,7 +227,7 @@ cases_df |>
 * Use **`head()`**, **`tail()`**, and **`glimpse()`** for quick data inspection.
 * Chain functions with **`|>`** for cleaner code.
 
-## Grouping Data with `group_by()`
+## Grouping data with `group_by()`
 
 * Use `group_by()` to group data by one or more columns.
 * Allows performing operations on specific groups of data.
@@ -239,7 +239,7 @@ cases_df |>
   filter(raw_cases == max(raw_cases, na.rm = TRUE))
 ```
 
-## Creating New Columns with `mutate()`
+## Creating new columns with `mutate()`
 
 <div style="text-align: center;">
 ![](gfx/dplyr_mutate.jpg){style="width: 45%; display: block; margin-left: auto; margin-right: auto;"}
@@ -247,7 +247,7 @@ cases_df |>
 <small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
 </div>
 
-## Creating New Columns with `mutate()`
+## Creating new columns with `mutate()`
 
 * `mutate()` is used to create new columns.
 * Perform calculations using existing columns and assign to new columns.
@@ -262,7 +262,7 @@ ny_subset |>
   head()
 ```
 
-## Creating New Columns with `mutate()`
+## Creating new columns with `mutate()`
 
 * `mutate()` can create multiple new columns in one step.
 * Logical comparisons (e.g., `over_5000 = raw_cases > 5000`) can be used within `mutate()`.
@@ -290,7 +290,7 @@ cases_df |>
   head()
 ```
 
-## Conditional Calculations with `if_else()`
+## Conditional calculations with `if_else()`
 * `if_else()` allows conditional logic within `mutate()`.
 * Perform different operations depending on conditions, like "high" or "low."
 
@@ -303,7 +303,7 @@ cases_df |>
   head()
 ```
 
-## Summarizing Data with `summarise()`
+## Summarizing data with `summarise()`
 * `summarise()` reduces data to summary statistics (e.g., mean, median).
 * Typically used after `group_by()` to summarize each group.
 
@@ -314,7 +314,7 @@ cases_df |>
   summarise(median_cases = median(raw_cases))
 ```
 
-## Using `count()` to Aggregate Data
+## Using `count()` to aggregate data
 `count()` is a shortcut for grouping and summarizing the data.
 
 For example, if we want to get the total number of complete rows for each state, then
@@ -337,14 +337,14 @@ cases_count <- cases_df |>
 cases_count # Let's see what the counts are.
 ```
 
-## Key Practices in `dplyr`: Round 2
+## Key practices in `dplyr`: Round 2
 
 * Use **group_by()** to group data by one or more variables before applying functions.
 * Use **mutate** to create new columns or modify existing ones by applying functions to existing data.
 * Use **summarise** to reduce data to summary statistics (e.g., mean, median).
 * **count()** is a convenient shortcut for counting rows by group without needing `group_by()` and `summarise()`.
 
-## Tidy Data and Tolstoy
+## Tidy data and Tolstoy
 
 > "Happy families are all alike; every unhappy family is unhappy in its own way." — Leo Tolstoy  
 
@@ -353,14 +353,14 @@ cases_count # Let's see what the counts are.
 In this section:
 * We'll define what makes data *tidy* and how to transform between the tidy and messy formats.
 
-## Tidy Data and Tolstoy
+## Tidy data and Tolstoy
 
 ![](gfx/tidy_messy_data.jpg){style="width: 60%;"}
 
 <small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
 
 
-## What is Tidy Data?
+## What is tidy data?
 
 * Tidy data follows a consistent structure: **each row represents one observation, and each column represents one variable.**
 * `cases_df` is one classic example of tidy data.
@@ -378,7 +378,7 @@ head(cases_df)
 <small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
 </div>
 
-## Making Data Wider with `pivot_wider()`
+## Making data wider with `pivot_wider()`
 <div style="font-size: 0.9em;">
 * To convert data from long format to wide/messy format use`pivot_wider()`.
 * For example, let's try creating a column for each time value in `cases_df`:
@@ -398,7 +398,7 @@ messy_cases_df <- cases_df |>
 messy_cases_df
 ```
 
-##  Tidying Messy Data with `pivot_longer()`
+##  Tidying messy data with `pivot_longer()`
 * Use `pivot_longer()` to convert data from **wide format** (multiple columns for the same variable) to **long format** (one column per variable).
 * Let's try turning `messy_cases_df` back into the original tidy `cases_df`!
 
@@ -415,7 +415,7 @@ tidy_cases_df <- messy_cases_df |>
 head(tidy_cases_df, n = 3) # Notice the class of time_value here
 ```
 
-##  Tidying Messy Data with `pivot_longer()`
+##  Tidying messy data with `pivot_longer()`
 
 * When we used `pivot_longer()`, the `time_value` column is converted to a character class because the column names are treated as strings.
 * So, to truly get the original `cases_df` we need to convert `time_value` back to the `Date` class.
@@ -429,7 +429,7 @@ identical(tidy_cases_df |> arrange(time_value), cases_df)
 
 Great. That was a success!
 
-## Missing Data
+## Missing data
 * Sometimes you may have missing data in your time series.
 * Can be due to actual missing data, or it can be due to the fact that the data is only reported on certain days. 
 * Let's create a dataset with missing data & consider each of those cases:
@@ -443,7 +443,7 @@ ca_missing <- cases_df |>
 ca_missing
 ```
 
-## `complete()` and `fill()` to Handle Missing Data
+## `complete()` and `fill()` to handle missing data
 
 A simple workflow to handle missing data relies on one or both of these functions:
 
@@ -451,7 +451,7 @@ A simple workflow to handle missing data relies on one or both of these function
 
 2. **`fill()`**: Fills missing values in columns, typically from previous or next available values (default is LOCF).
 
-## Data Only Reported on Certain Days
+## Data only reported on certain days
 
 * If the data is only reported on certain days, it is often useful to fill in the missing data with explicit zeros. 
 
@@ -467,7 +467,7 @@ ca_complete
 ```
 <!-- Using complete(time_value) doesn't work as expected because it doesn't automatically generate a sequence of missing dates between the min and max values of time_value. Instead, it simply tries to match the unique values in time_value and doesn't infer a complete range. To ensure complete() does what you want for time, it is best practice to explicitly create a sequence of dates that covers the entire range of time_value. -->
 
-## Data is Genuinely Missing
+## Data is genuinely missing
 
 * If the data is truly missing, then there are multiple options (ex. omission, single imputation, multiple imputation).
 * A common single imputation method  used to handle missing data in time series or longitudinal datasets is LOCF.
@@ -482,7 +482,7 @@ ca_complete <- ca_missing |>
 head(ca_complete, n = 4) # notice no fill with 0s this time, NA by default
 ```
 
-## Data is Genuinely Missing
+## Data is genuinely missing
 Then, use `fill()` to fill the counts using LOCF (default):
 
 ```{r fill-ex}
@@ -491,7 +491,7 @@ ca_complete |>
   fill(raw_cases)
 ```
 
-## Introduction to Joins in `dplyr`
+## Introduction to joins in `dplyr`
 * Joining datasets is a powerful tool for combining info. from multiple sources.
 * In R, `dplyr` provides several functions to perform different types of joins.
 * We'll demonstrate joining a subset of `cases_df` (our case counts dataset) with `state_census`.
@@ -508,7 +508,7 @@ cases_df_sub
 
 Though note that what we're going to do can be applied to the entirety of `cases_df`.
 
-## Load State Census Data
+## Load state census data
 
 The `state_census` dataset from `epidatasets` contains state populations from the 2019 census.
 ```{r state-census}
@@ -522,7 +522,7 @@ state_census |> head()
 
 Notice that this includes many states that are not in `cases_df_sub`.
 
-## Left Join: Keep All Rows from the First Dataset
+## Left Join: Keep all rows from the first dataset
 
 * A **left join** keeps all rows from the **first dataset** (`cases_df_sub`), and adds matching data from the second dataset (`state_census`).
 * So **all rows from the first dataset** (`cases_df_sub`) will be preserved.
@@ -537,7 +537,7 @@ cases_left_join <- cases_df_sub |>
 cases_left_join
 ```
 
-## Right Join: Keep All Rows from the Second Dataset
+## Right Join: Keep all rows from the second dataset
 <div style="font-size: 0.9em;">
 * A **right join** keeps all rows from the **second dataset** (`state_census`), and adds matching data from the first dataset (`cases_df_sub`).
 * If a row in the second dataset doesn't have a match in the first, then the columns from the first will be filled with NA. 
@@ -552,7 +552,7 @@ cases_right_join <- cases_df_sub |>
 head(cases_right_join)
 ```
 
-## Inner Join: Only Keeping Matching Rows
+## Inner Join: Only keeping matching rows
 * An inner join will only keep rows where there is a match in both datasets.
 * So, if a state in `state_census` does not have a corresponding entry in `cases_df_sub`, then that row will be excluded.
 ```{r inner-join}
@@ -564,7 +564,7 @@ cases_inner_join <- cases_df_sub |>
 cases_inner_join
 ```
 
-## Full Join: Keeping All Rows from Both Datasets
+## Full Join: Keeping all rows from both datasets
 
 * A full join will keep all rows from both datasets.
 * If a state in either dataset has no match in the other, the missing values will be filled with NA.
@@ -578,14 +578,14 @@ head(cases_full_join)
 ```
 
 
-## Summary of the Four Join Functions
+## Summary of the four join functions
 
 * **Left join:** All rows from the left dataset and matching rows from the right dataset.
 * **Right join:** All rows from the right dataset and matching rows from the left dataset.
 * **Inner join:** Only matching rows from both datasets.
 * **Full join:** All rows from both datasets, with NA where no match exists.
 
-## Final Thoughts on Joins
+## Final thoughts on joins
 * Joins are an essential part of data wrangling in R.
 * The choice of join depends on the analysis you need to perform:
     + Use **left joins** when you want to keep all data from the first dataset.
@@ -593,13 +593,14 @@ head(cases_full_join)
     + Use **inner joins** when you're only interested in matching rows.
     + Use **full joins** when you want to preserve all information from both datasets.
 
-## Three Review Questions
+## Three review questions
 
 **Q1)**: What can we use to fill in the missing `time_value` for the states in `cases_full_join`?
 
 ```{r}
 #| echo: true
 #| code-fold: true
+#| results: hide
 cases_full_join |> 
      fill(time_value)
 ```
@@ -607,6 +608,7 @@ cases_full_join |>
 ```{r}
 #| echo: true
 #| code-fold: true
+#| results: hide
 # Either left_join
 cases_left_join <- cases_df |>
   left_join(state_census, by = c("geo_value" = "abbr"))
@@ -625,12 +627,13 @@ cases_inner_join
 ```{r}
 #| echo: true
 #| code-fold: true
+#| results: hide
 cases_df <- cases_df |>
   mutate(scaled_cases = raw_cases / pop * 1e5) # cases / 100K
 head(cases_df)
 ```
 
-## Epi. Data Processing with `epiprocess`
+## Epi. data processing with `epiprocess`
 <div style="font-size: 0.8em;">
 * `epiprocess` is a package that offers additional functionality to pre-process such epidemiological data.
 * You can work with an `epi_df` like you can with a tibble by using dplyr verbs.
@@ -647,7 +650,7 @@ cases_df <- cases_df |>
 head(cases_df)
 ```
 
-## Epi. Data Processing with `epiprocess`
+## Epi. data processing with `epiprocess`
 It is easy to produce an autoplot the smoothed confirmed daily cases for each `geo_value`:
 ```{r}
 #| echo: true
@@ -655,7 +658,7 @@ cases_df |>
   autoplot(smoothed_scaled_cases)
 ```
 
-## Epi. Data Processing with `epiprocess`
+## Epi. data processing with `epiprocess`
 
 Alternatively, we can display both the smoothed and the original daily case rates:
 
@@ -673,9 +676,9 @@ ggplot(cases_df) +
 Now, before exploring some more features of `epiprocess`, let's have a look at the epiverse software ecosystem it's part of...
 
 
-# Epiverse Software Ecosystem
+# Epiverse software ecosystem
 
-## The Epiverse Ecosystem
+## The epiverse ecosystem
 Interworking, community-driven, packages for epi tracking & forecasting.
 
 ![](gfx/epiverse_packages_flow.jpg){style="width: 60%; display: block; margin-left: auto; margin-right: auto;"}
@@ -686,7 +689,7 @@ Interworking, community-driven, packages for epi tracking & forecasting.
   
 # Panel and Versioned Data in the Epiverse
   
-## What is Panel Data?
+## What is panel data?
 <div style="font-size: 0.8em;">
 * Recall that [panel data](https://en.wikipedia.org/wiki/Panel_data), or longitudinal data, 
 contain cross-sectional measurements of subjects over time. 
@@ -704,7 +707,7 @@ head(edf)
 </div>
   
   
-## `epi_df`: Snapshot of a Dataset
+## `epi_df`: Snapshot of a dataset
 
 * You can convert panel data into an `epi_df` with the required `geo_value` and `time_value` columns
 
@@ -721,7 +724,7 @@ contains the most [up-to-date values]{.primary} of the signal variables, [as of]
 :::
   
   
-## `epi_df`: Snapshot of a Dataset
+## `epi_df`: Snapshot of a dataset
 
 ```{r}
 #| echo: true
@@ -729,9 +732,9 @@ edf <- covid_case_death_rates
 edf
 ```
 
-## Examples of Preprocessing
+## Examples of preprocessing
 
-### EDA Features
+### EDA features
 
 1. Making locations commensurate (per capita scaling)
 1. Correlating signals across location or time 
@@ -739,7 +742,7 @@ edf
 1. Detecting and removing outliers
 1. Dealing with revisions 
 
-## Features - Correlations at Different Lags
+## Features - Correlations at different lags
 
 ```{r}
 #| echo: true
@@ -763,7 +766,7 @@ rbind(
   labs(x = "Date", y = "Correlation", col = "Lag")
 ```
 
-## Features - Compute Growth Rates
+## Features - Compute growth rates
 
 ```{r, echo=TRUE}
 edf <- filter(edf, geo_value %in% c("ut", "ca")) |>
@@ -783,7 +786,7 @@ ggplot(edf, aes(x = time_value, y = gr_cases)) +
   labs(x = "Date", y = "Growth rate", col = "State")
 ```
 
-## Features - Outlier Detection
+## Features - Outlier detection
 
 ```{r outliers}
 #| fig-width: 8
@@ -842,7 +845,7 @@ Epidemiology data gets revised frequently.
 archive_cases_dv_subset
 ```
   
-## Revision Patterns
+## Revision patterns
 
 
 ```{r}
@@ -860,7 +863,7 @@ ggplot(snapshots |> filter(!latest),
             inherit.aes = FALSE, color = "black")
 ```
 
-## Finalized Data
+## Finalized data
 <div style="font-size: 0.9em;">
   * Counts are revised as time proceeds
 * Want to know the [final]{.primary} value 
@@ -879,7 +882,7 @@ ggplot(snapshots |> filter(!latest),
   Nowcasting
 : At time $t$, predict the final value for time $t$
 
-# Basic Nowcasting in the Epiverse
+# Basic nowcasting in the Epiverse
 
 <!-- predicting a finalized value from a provisional value and making predictions. -->
 ## Backfill Canadian edition
@@ -893,7 +896,7 @@ ggplot(snapshots |> filter(!latest),
 
 * **Takeaway**: Once the data is backfilled, hospitalizations rarely show a decline, challenging the common media narrative.
 
-## Aside on Nowcasting
+## Aside on nowcasting
 
 * To some Epis, "nowcasting" can be equated with "estimate the time-varying instantaneous reproduction number, $R_t$"
 
@@ -924,7 +927,7 @@ cowplot::plot_grid(p1, p2)
 
 * We may come back to this later...
 
-## Mathematical Setup
+## Mathematical setup
 
 * Suppose today is time $t$
 
@@ -945,14 +948,14 @@ $x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
 
 # Nowcasting with One Variable
 
-## Nowcasting Simple Ratio Ex: NCHS Mortality 
+## Nowcasting simple ratio Ex: NCHS mortality 
 
 * In this example, we'll demonstrate the concept of nowcasting using **NHCS mortality data**
 (the number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population).
 * We will work with **provisional** data (real-time reports) and compare them to **finalized** data (final reports).
 * The goal is to estimate or **nowcast the mortality rate** for weeks when only provisional data is available.
   
-## Fetch Versioned Data
+## Fetch versioned data
 
 Let's fetch versioned mortality data from the API (`pub_covidcast`) for CA (`geo_values = "ca"`) and the signal of interest (`deaths_covid_incidence_num`) over early 2024.
 ```{r mortality-archive-construct}
@@ -976,7 +979,7 @@ start_time = as.Date("2023-12-31")
 end_time = as.Date("2024-03-24")
 ```
 
-## Latency in Reporting - Minimum Lag
+## Latency in reporting - Minimum lag
 
 * A quick inspection reveals that mortality rates are systematically 7 days latent (**fixed lag**).
 
@@ -995,7 +998,7 @@ mortality_revision_inspect |> group_by(time_value) |> slice(1) |> head()
 revision_summary(mortality_archive, print_inform = TRUE)
 ```
 
-## Latency in Reporting - Finalized Value Attainment
+## Latency in reporting - Finalized value attainment
 <div style="font-size: 0.8em;">
 * **Question:** When is the **finalized value** first attained for each date? Would we have access to any in real-time?
 * How fast are the final values attained & what's the pattern for these times, if any?
@@ -1042,7 +1045,7 @@ summary(as.numeric(res$diff))
 * So if we were doing this in real-time, then we wouldn't have access to the finalized data.
 </div>
 
-## Comparison of Final vs. Multiple Revisions
+## Comparison of final vs. multiple revisions
 This figure shows the finalized rates in comparison to **multiple revisions** to see how the data changes over time:
 
 ```{r mortality-by-revision-date}
@@ -1076,7 +1079,7 @@ ggplot() +
 
 ```
 
-## Comparison of Final vs. One Revision
+## Comparison of final vs. one revision
 <div style="font-size: 0.8em;">
 The below figure compares the finalized rates (in black) to **one revision** (in yellow) from March 3, 2024.
 
@@ -1092,7 +1095,7 @@ ggplot() +
 The real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions.
 </div>
 
-## Calculate One Ratio: Provisional vs. Finalized Data
+## Calculate one ratio: Provisional vs. finalized data
 <!-- * Let's start simple with computing one ratio. -->
 <div style="font-size: 0.8em;">
 * Suppose that the day is March 10, 2024. Then, because the data is 7 days latent, we can compute the ratio between provisional and finalized data for **March 3, 2024**.
@@ -1123,7 +1126,7 @@ ratio
 **Question**: Can we generalize this over many days? 
 </div>
 
-## Calculating the Ratio using Multiple Dates
+## Calculating the ratio using multiple dates
 * Let's move from calculating the ratio by using one day to multiple days with the goal to use it to nowcast for Feb. 18, which has a **provisional value** of 23
 ```{r provisional-val-feb27}
 #| echo: true
@@ -1145,7 +1148,7 @@ finalized <- mortality_latest |>
 finalized
 ```
 
-## Calculating the Ratio using Multiple Dates
+## Calculating the ratio using multiple dates
 First, let's download the real-time rates for CA, and compare them to their finalized version.
 
 ```{r real-time-mortality}
@@ -1159,7 +1162,7 @@ mortality_real_time_df <- map_dfr(dates, mortality_real_time)
 head(mortality_real_time_df)
 ```
 
-## Calculating the Ratio using Multiple Dates
+## Calculating the ratio using multiple dates
 Now, let's plot the real-time vs the finalized mortality rates:
 ```{r real-time-vs-finalized}
 ggplot() +
@@ -1171,7 +1174,7 @@ ggplot() +
 * **Takeaways**: The real-time counts are biased **well below** the finalized counts.
 * Systematic underreporting tends to lessen over time (the gap between the lines decreases).
 
-## Realistic Limitation of Nowcasting - Finalized Data
+## Realistic limitation of nowcasting - Finalized data
 * Recall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Jan. 7 is finalized 294 days later).
 * To nowcast accurately, we must rely on the **best available approximation of finalized data** at the time of estimation (Feb. 25).
 
@@ -1181,7 +1184,7 @@ mortality_as_of_feb25 <- epix_as_of(mortality_archive, max_version = as_of_date)
 head(mortality_as_of_feb25)
 ```
 
-## Ratio Calculation & Summary
+## Ratio calculation & summary
 <div style="font-size: 0.8em;">
 We then use these "finalized" and real-time values to compute the mean ratio:
 ```{r ratio-calc-summary}
@@ -1234,7 +1237,7 @@ nowcast
 ```
 So, this **nowcast is 92**, which is much closer to the **finalized value of 104** than the **provisional value of 23**.
 
-## Summary of Three Main Steps 
+## Summary of three main steps 
 So the main steps for this type of fixed lag nowcasting are...
 
 1. Obtain the **provisional value** for the target.
@@ -1269,7 +1272,7 @@ nowcast <- provisional *
 nowcast
 ```
 
-## Nowcasting Mortality for Multiple Dates
+## Nowcasting mortality for multiple dates
 
 * **Define Nowcast Function**:
   * **Input**: Takes in the dates to nowcast and the fixed lag
@@ -1309,7 +1312,7 @@ nowcast_function <- function(nowcast_date, fixed_lag) {
 }
 ```
 
-## Map Nowcast Over Multiple Dates
+## Map nowcast over multiple dates
 * We can use `map2()` to apply the function to a series of weeks (e.g., Jan. 28 to Mar. 24).
 * Returns a **dataframe** with nowcasted results.
 
@@ -1321,7 +1324,7 @@ fixed_lag <- 7
 nowcast_results_df <- map2(nowcast_dates, fixed_lag, nowcast_function) |> list_rbind()
 ```
 
-## Map Nowcast Over Multiple Dates
+## Map nowcast over multiple dates
 Let's smooth with a rolling trailing mean (window size 4) & see the results:
 ```{r}
 # Smooth results: Apply rolling median to nowcast_mortality with a window size of 4
@@ -1331,7 +1334,7 @@ nowcast_results_df$nowcast_mortality <- zoo::rollapply(nowcast_results_df$nowcas
 nowcast_results_df
 ```
 
-## Visualize Nowcast, Real-time, and Finalized Values
+## Visualize nowcast, real-time, and finalized values
 Finally, we can compare these nowcast results to the real-time and finalized values:
 ```{r nowcast-fun-plot-results}
 #| echo: false
@@ -1350,7 +1353,7 @@ The real-time counts tend to be biased below the finalized counts. Nowcasted val
 
 # Nowcasting with Two Variables
 
-## Nowcasting: Moving from One Signal to Two
+## Nowcasting: Moving from one signal to two
 
 * Recall that in nowcasting the goal is to predict a finalized value from a provisional value.
 * Now, we'll move from one signal to two, creating a simple linear model to nowcast.
@@ -1358,7 +1361,7 @@ The real-time counts tend to be biased below the finalized counts. Nowcasted val
 * We will use these signals to nowcast hospital admissions related to influenza.
 
 
-## Data Sources: Google Searches & Hospital Admissions
+## Data Sources: Google searches & hospital admissions
 
 * **Google Search Trends**: Symptoms like cough, fever, and shortness of breath.
   * **s01**: Cough, Phlegm, Sputum, Upper respiratory tract infection  
@@ -1370,7 +1373,7 @@ The real-time counts tend to be biased below the finalized counts. Nowcasted val
 
 * The first step is to fetch this data...
 
-## Data Sources: Google Searches & Hospital Admissions
+## Data Sources: Google searches & hospital admissions
 
 ```{r fetch-google-data}
 #| echo: true
@@ -1413,7 +1416,7 @@ y1 <- pub_covidcast(
   as_epi_archive(compactify = FALSE)
 ```
 
-## Merging the Archives
+## Merging the archives
 
 * We'll merge the symptom search trends (`x1`, `x2`) with hospital admissions data (`y`) using `epix_merge()` from `epiprocess`.
 * This allows us to match data by time and geography, & fill any missing values with the most recent observation (LOCF).
@@ -1425,13 +1428,13 @@ archive <- epix_merge(x1, y1, sync = "locf", compactify = FALSE)
 archive <- epix_merge(archive, x2, sync = "locf", compactify = FALSE)
 ```
 
-## Linear Model: A Simple Approach for Nowcasting
+## Linear Model: A simple approach for nowcasting
 
 * Aside from ratios, one of the simplest approach to nowcasting is to use a **linear regression model**.
 * We model the relationship between provisional (predictor) data and response data.
 * This model helps us make **predictions** for the finalized data based on the current (provisional) signals.
 
-## Linear Regression
+## Linear regression
 * **Goal**: Estimate the coefficients $\beta_0$ and $\beta_1$ that describe the relationship between the predictor $x_i$ and the outcome $y_i$.
 * **Linear Model**: The relationship is assumed to be:
 
@@ -1442,7 +1445,7 @@ archive <- epix_merge(archive, x2, sync = "locf", compactify = FALSE)
   $\beta_1$ is the slope.
 * **In R**: Use `lm(y ~ x)` to estimate the coefficients, where `y` is the outcome variable and `x` is the predictor.
 
-## Multiple Linear Regression
+## Multiple linear regression
 * **Goal**: Estimate coefficients $\beta_0, \beta_1, \dots, \beta_p$ that describe the relationship between multiple predictors $x_{i1}, x_{i2}, \dots, x_{ip}$ and the outcome $y_i$.
 * **Model**: The relationship is assumed to be:
 
@@ -1453,7 +1456,7 @@ archive <- epix_merge(archive, x2, sync = "locf", compactify = FALSE)
   $\beta_1, \dots, \beta_p$ are the coefficients.
 * **In R**: Use `lm(y ~ x1 + x2 + ... + xp)` to estimate the coefficients, where `y` is the outcome and `x1, x2, ..., xp` are the predictors.
 
-## Multiple Linear Regression Model
+## Multiple linear regression model
 
 * A linear model is a good choice to describe the relationship between search trends and hospital admissions.
 * The model will include two predictors (s01 and s02).
@@ -1461,7 +1464,7 @@ archive <- epix_merge(archive, x2, sync = "locf", compactify = FALSE)
 
 <!-- A linear regression model will be used to predict hospital admissions from search trends (s01 and s02). -->
 
-## Multiple Linear Regression Model
+## Multiple linear regression model
 ```{r}
 #| echo: true
 # Define the function for lm model fit and prediction
@@ -1519,7 +1522,7 @@ nowcast_res <- archive |>
 head(nowcast_res, n=2)
 ```
 
-## Compare with the Actual Admissions 
+## Compare with the actual admissions 
 
 * After making predictions, we compare them to the actual hospital admissions.
 ```{r}
@@ -1532,7 +1535,7 @@ res <- nowcast_res |> left_join(x_latest, by = c("geo_value", "time_value"))
 head(res)
 ```
 
-## Visualizing the Nowcast Results
+## Visualizing the nowcast results
 <div style="font-size: 0.9em;">
 We can then visualize the nowcast results alongside the true values using `ggplot2`:
 </div>
@@ -1554,7 +1557,7 @@ ggplot(res, aes(x = time_value)) +
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-## Key Takeaways: Linear Regression Nowcasting Example
+## Key Takeaways: Linear regression nowcasting example
 
 * **Provisional Data as Predictors**: Using **Google symptom search trends** to predict **influenza hospital admissions**.
 * **Simple Linear Model**: A linear regression model captures the relationship between symptom searches and hospital admissions.
@@ -1562,9 +1565,9 @@ ggplot(res, aes(x = time_value)) +
 * **Sliding Window Approach**: Predictions are based on **data up to the current time**, ensuring no future information influences the nowcast.
 * **Evaluation**: Predictions are compared with actual admissions visually.
 
-# Case Study - Nowcasting case rates using %CLI 
+# Case Study - Nowcasting Case Rates Using %CLI 
 
-## Goal of this Case Study
+## Goal of this case study
 
 **Goal**: Nowcast COVID-19 Case Rates using %CLI for Massachusetts.
 
@@ -1573,7 +1576,7 @@ ggplot(res, aes(x = time_value)) +
 * Case rates in the API (JHU) are aligned by report date, not specimen collection/test date.
 * Working with cases aligned by **test date** allows us to avoid the more unpredictable delays introduced by the **report date**.
 
-## Summary of Main Steps
+## Summary of main steps
 <div style="font-size: 0.8em;">
 The workflow is similar to the previous example where we nowcasted using two variables, only more involved. 
 The main steps are...
@@ -1591,7 +1594,7 @@ The main steps are...
 So the first step is to fetch the data...
 </div>
 
-## Construct an `epi_archive` from Scratch
+## Construct an `epi_archive` from scratch
 <div style="font-size: 0.9em;">
 [Here's]("https://www.mass.gov/info-details/archive-of-covid-19-cases-2020-2021") the archive of COVID-19 case excel files from the MA gov website, which we'll use to construct our own `epi_archive`.
 <br>
@@ -1606,7 +1609,7 @@ Brief summary of this data:
 * When **Monday** is a holiday, the **Friday through Monday** data is posted on **Tuesday**.
 </div>
 
-## Construct an `epi_archive` from Scratch
+## Construct an `epi_archive` from scratch
 <div style="font-size: 0.8em;">
 * **Purpose**: To create an `epi_archive` object for storing versioned time series data.
 * **Required Columns**:
@@ -1619,7 +1622,7 @@ Brief summary of this data:
   * `as_epi_archive()`: Simplifies the creation process, ensuring proper formatting and validation. We'll use this one when we download some data from the MA gov website!
 </div>
 
-## Main Steps to Construct the `epi_archive`
+## Main steps to construct the `epi_archive`
 <div style="font-size: 0.8em;">
 1. **Load necessary Libraries**: Such as `tidyverse`, `readxl`, `epiprocess`.
 2. **Process Each Date's Data**: 
@@ -1631,7 +1634,7 @@ Brief summary of this data:
    * Convert the tibble to an `epi_archive` object using `as_epi_archive()`.
 </div>
 
-## Fetch Data - Code for One Date
+## Fetch Data - Code for one date
 ```{r}
 #| echo: true
 # Load required libraries
@@ -1685,7 +1688,7 @@ process_covid_data <- function(Date) {
 }
 ```
 
-## Fetch Data - Code Breakdown 
+## Fetch Data - Code breakdown 
 <div style="font-size: 0.8em;">
 * This purpose of this function is to download and process each Excel file as of a date.
 * **URL Creation**: Dynamically generates the URL based on the date, removing leading zeros in day values (e.g., "April-01" → "April-1").
@@ -1695,12 +1698,12 @@ process_covid_data <- function(Date) {
 * **Tibble Creation**: Constructs a tibble with `geo_value`, `time_value`, `version`, and `case_rate_7d_av` to later compile into an `epi_archive` (you can think of an `epi_archive` as being a comprised of many `epi_df`s).
 </div>
 
-## Fetch Data - Process Range of Dates
+## Fetch Data - Process eange of dates
 * Note that `process_covid_data()` works on one date at a time.
 * So now, we need a function that iterates over a date range and applies `process_covid_data()` to each date & combines the resulting tibbles into an `epi_archive`.
 * We call this function `process_data_for_date_range()`...
 
-## Fetch Data - Process Range of Dates
+## Fetch Data - Process range of dates
 ```{r}
 #| echo: true
 # Function to process data for a range of dates
@@ -1729,7 +1732,7 @@ process_data_for_date_range <- function(start_date, end_date) {
 }
 ```
 
-## Fetch Data - Code Breakdown
+## Fetch Data - Code breakdown
 Here's a summary of what `process_data_for_date_range()` does:
 1. **Generates Date Range**: Creates a sequence of dates between `start_date` and `end_date`.
 
@@ -1739,7 +1742,7 @@ Here's a summary of what `process_data_for_date_range()` does:
 
 4. **Creates `epi_archive`**: Converts the combined data into an `epi_archive` object.
 
-## Fetch Data - Run the Function & Inspect Archive
+## Fetch Data - Run the function & inspect archive
 <div style="font-size: 0.75em;">
 * Now, let's run the function & inspect the resulting `epi_archive` of 7-day averaged COVID-19 case counts:
 * Expect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to meditate on life).
@@ -1752,7 +1755,7 @@ y <- process_data_for_date_range("2021-01-10", "2021-12-01")  # Raw .xlsx data i
 y
 ```
 
-## Fetch Data - % Outpatient Doctors Visits for CLI
+## Fetch Data - % Outpatient doctors visits for CLI
 <div style="font-size: 0.9em;">
 * Now, from the Epidata API, let's download the [estimated percentage of outpatient doctor visits]("https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html") primarily for COVID-related symptoms, based on health system data.
 * Comes pre-smoothed in time using a Gaussian linear smoother
@@ -1777,7 +1780,7 @@ x <- pub_covidcast(
   as_epi_archive(compactify = FALSE)
 ```
 
-## Use `epix_merge()` to Merge the Two Archives
+## Use `epix_merge()` to merge the two archives
 Now we'll use `epix_merge()` to combine the two `epi_archive`s that share the same `geo_value` & `time_value`.
 
 <!-- LOCF is used to ensure missing data is handled by filling forward. -->
@@ -1791,7 +1794,7 @@ archive <- epix_merge(
 archive
 ```
 
-## Fitting and Predicting with Linear Model
+## Fitting and predicting with linear model
 <div style="font-size: 0.8em;">
 * Define `lm_mod_pred()`: A function that fits a linear model to forecast case rates based on the `percent_cli` predictor.
 * Use `predict()` with a 90% prediction interval.
@@ -1848,7 +1851,7 @@ nowcast_res <- archive |>
 head(nowcast_res, n = 1)
 ```
 
-## Visualizing Nowcasts vs. Actual Values
+## Visualizing nowcasts vs. actual values
 Merge the nowcast results with the latest data for more direct comparison:
 
 ```{r}
@@ -1861,7 +1864,7 @@ res <- nowcast_res |> left_join(x_latest, by = c("geo_value", "time_value"))
 res
 ```
 
-## Visualizing Nowcasts vs. Actual Values
+## Visualizing nowcasts vs. actual values
 <div style="font-size: 0.9em;">
 Finally, plot the predictions & real-time values on top of latest COVID-19 case rates using `ggplot2`:
 </div>

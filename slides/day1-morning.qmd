@@ -209,7 +209,7 @@ The goal is to make epi-surveillance [more nimble, complete, standardized, robus
 
 
 
-## Some of our Pre-Pandemic Data Sources
+## Some of our pre-pandemic data sources
 <div style="font-size: 0.8em;">
 * FluView ILINet, by {state x week}
 
@@ -433,7 +433,7 @@ We provide...
   <img src="gfx/signal_discover_screenshot.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;">
 </a>
 
-## Example - NCHS Weekly Flu Mortality Data in States
+## Example - NCHS weekly flu mortality data in states
 
 <a href="https://delphi.cmu.edu/signals/">
   <img src="gfx/signal_discover_screenshot_ex.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;">
@@ -964,7 +964,7 @@ ggplot(ca |>
   theme(legend.position = "bottom", legend.title = element_blank()) 
 ```
 
-# Versioned data
+# Versioned Data
 
 ## Intro to versioned data
 * In panel data, we've seen that time is indicated by `time_value`.
