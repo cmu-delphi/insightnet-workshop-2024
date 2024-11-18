@@ -112,7 +112,7 @@ cases_df <- pub_covidcast(
 Now we only really need a few columns here...
 ```{r}
 #| echo: true
-cases_df <- cases_df %>% 
+cases_df <- cases_df |> 
   select(geo_value, time_value, raw_cases = value) # We'll talk more about this soon :)
 ```
 
@@ -200,22 +200,22 @@ filter(cases_df, geo_value == "nc", raw_cases > 500)  # Filter for NC with raw d
 
 ```{r select-filter-combine}
 #| echo: true
-select(filter(cases_df, geo_value == "nc", raw_cases > 1000), time_value, raw_cases) %>% 
+select(filter(cases_df, geo_value == "nc", raw_cases > 1000), time_value, raw_cases) |> 
   head()
 ```
 
-## Using the Pipe Operator `%>%`
+## Using the Pipe Operator `|>`
 
-* The pipe operator (`%>%`) makes code more readable by chaining multiple operations together.
+* The pipe operator (`|>`) makes code more readable by chaining multiple operations together.
 * The output of one function is automatically passed to the next function.
 * This allows you to perform multiple steps (e.g., `filter()` followed by `select()`) in a clear and concise manner.
 
 ```{r pipe-operator}
 #| echo: true
 # This code reads more like poetry!
-cases_df %>% 
-  filter(geo_value == "nc", raw_cases > 1000) %>% 
-  select(time_value, raw_cases) %>% 
+cases_df |> 
+  filter(geo_value == "nc", raw_cases > 1000) |> 
+  select(time_value, raw_cases) |> 
   head()
 ```
 
@@ -225,7 +225,7 @@ cases_df %>%
 * Use **`select()`** and **`filter()`** for data manipulation.
 * Use **`pull()`** to extract columns as vectors.
 * Use **`head()`**, **`tail()`**, and **`glimpse()`** for quick data inspection.
-* Chain functions with **`%>%`** for cleaner code.
+* Chain functions with **`|>`** for cleaner code.
 
 ## Grouping Data with `group_by()`
 
@@ -234,8 +234,8 @@ cases_df %>%
 
 ```{r group-by-ex}
 #| echo: true
-cases_df %>%
-  group_by(geo_value) %>%
+cases_df |>
+  group_by(geo_value) |>
   filter(raw_cases == max(raw_cases, na.rm = TRUE))
 ```
 
@@ -254,11 +254,11 @@ cases_df %>%
 
 ```{r mutate-one-var-ex}
 #| echo: true
-ny_subset = cases_df %>%
+ny_subset = cases_df |>
   filter(geo_value == "ny")
 
-ny_subset %>% 
-  mutate(cumulative_cases = cumsum(raw_cases)) %>% 
+ny_subset |> 
+  mutate(cumulative_cases = cumsum(raw_cases)) |> 
   head()
 ```
 
@@ -269,9 +269,9 @@ ny_subset %>%
 
 ```{r mutate-two-var-ex}
 #| echo: true
-ny_subset %>% 
+ny_subset |> 
   mutate(over_5000 = raw_cases > 5000,
-         cumulative_cases = cumsum(raw_cases)) %>% 
+         cumulative_cases = cumsum(raw_cases)) |> 
   head()
 ```
 
@@ -283,10 +283,10 @@ ny_subset %>%
 
 ```{r group-by-mutate-combo}
 #| echo: true
-cases_df %>%
-  group_by(geo_value) %>%
-  mutate(cumulative_cases = cumsum(raw_cases)) %>% 
-  arrange(geo_value) %>% 
+cases_df |>
+  group_by(geo_value) |>
+  mutate(cumulative_cases = cumsum(raw_cases)) |> 
+  arrange(geo_value) |> 
   head()
 ```
 
@@ -298,8 +298,8 @@ cases_df %>%
 #| echo: true
 t <- 5000
 
-cases_df %>%
-  mutate(high_low_cases = if_else(raw_cases > t, "high", "low")) %>% 
+cases_df |>
+  mutate(high_low_cases = if_else(raw_cases > t, "high", "low")) |> 
   head()
 ```
 
@@ -309,8 +309,8 @@ cases_df %>%
 
 ```{r summarise-median-one-var}
 #| echo: true
-cases_df %>%
-  group_by(geo_value) %>%
+cases_df |>
+  group_by(geo_value) |>
   summarise(median_cases = median(raw_cases))
 ```
 
@@ -320,9 +320,9 @@ cases_df %>%
 For example, if we want to get the total number of complete rows for each state, then
 ```{r summarise-count}
 #| echo: true
-cases_count <- cases_df %>%
-  drop_na() %>% # Removes rows where any value is missing (from tidyr)
-  group_by(geo_value) %>%
+cases_count <- cases_df |>
+  drop_na() |> # Removes rows where any value is missing (from tidyr)
+  group_by(geo_value) |>
   summarize(count = n())
 ```
 
@@ -330,8 +330,8 @@ is equivalent to
 
 ```{r count-fun}
 #| echo: true
-cases_count <- cases_df %>%
-  drop_na() %>% 
+cases_count <- cases_df |>
+  drop_na() |> 
   count(geo_value)
 
 cases_count # Let's see what the counts are.
@@ -388,7 +388,7 @@ head(cases_df)
 
 ```{r pivoting-wide-ex}
 #| echo: true
-messy_cases_df <- cases_df %>%
+messy_cases_df <- cases_df |>
   pivot_wider(
     names_from = time_value,   # Create new columns for each unique date
     values_from = raw_cases    # Fill those columns with the raw_case values
@@ -404,7 +404,7 @@ messy_cases_df
 
 ```{r messy-to-tidy-ex}
 #| echo: true
-tidy_cases_df <- messy_cases_df %>%
+tidy_cases_df <- messy_cases_df |>
   pivot_longer(
     cols = -geo_value,          # Keep the 'geo_value' column as it is
     names_to = "time_value",    # Create a new 'time_value' column from the column names
@@ -422,9 +422,9 @@ head(tidy_cases_df, n = 3) # Notice the class of time_value here
 * Then, we can use `identical()` to check if the two data frames are exactly the same.
 ```{r}
 #| echo: true
-tidy_cases_df = tidy_cases_df %>% mutate(time_value = as.Date(time_value))
+tidy_cases_df = tidy_cases_df |> mutate(time_value = as.Date(time_value))
 
-identical(tidy_cases_df %>% arrange(time_value), cases_df)
+identical(tidy_cases_df |> arrange(time_value), cases_df)
 ```
 
 Great. That was a success!
@@ -436,8 +436,8 @@ Great. That was a success!
 
 ```{r}
 #| echo: true
-ca_missing <- cases_df %>%
-  filter(geo_value == "ca") %>%
+ca_missing <- cases_df |>
+  filter(geo_value == "ca") |>
   slice(1:2, 4:6) # Select rows 1 to 2 and 4 to 6; ie. omit 2022-03-03
 
 ca_missing
@@ -460,7 +460,7 @@ A simple workflow to handle missing data relies on one or both of these function
 ```{r complete-ex}
 #| echo: true
 # First, use complete() to add missing time_value (2022-03-03)
-ca_complete <- ca_missing %>%
+ca_complete <- ca_missing |>
   complete(geo_value, time_value = seq(min(time_value), max(time_value), by = "day"),
            fill = list(raw_cases = 0))
 ca_complete
@@ -477,7 +477,7 @@ ca_complete
 ```{r}
 #| echo: true
 # First, use complete() to add missing time_value (2022-03-03)
-ca_complete <- ca_missing %>%
+ca_complete <- ca_missing |>
   complete(geo_value, time_value = seq(min(time_value), max(time_value), by = "day"))
 head(ca_complete, n = 4) # notice no fill with 0s this time, NA by default
 ```
@@ -487,7 +487,7 @@ Then, use `fill()` to fill the counts using LOCF (default):
 
 ```{r fill-ex}
 #| echo: true
-ca_complete %>%
+ca_complete |>
   fill(raw_cases)
 ```
 
@@ -502,7 +502,7 @@ ca_complete %>%
 To simplify things, let's use `filter()` to only grab one date of `cases_df`:
 ```{r}
 #| echo: true
-cases_df_sub = cases_df %>% filter(time_value == "2022-03-01") 
+cases_df_sub = cases_df |> filter(time_value == "2022-03-01") 
 cases_df_sub
 ```
 
@@ -515,9 +515,9 @@ The `state_census` dataset from `epidatasets` contains state populations from th
 #| echo: true
 # State census dataset from epidatasets
 library(epidatasets)
-state_census = state_census %>% select(abbr, pop) %>% filter(abbr != "us")
+state_census = state_census |> select(abbr, pop) |> filter(abbr != "us")
 
-state_census %>% head()
+state_census |> head()
 ```
 
 Notice that this includes many states that are not in `cases_df_sub`.
@@ -531,7 +531,7 @@ Notice that this includes many states that are not in `cases_df_sub`.
 ```{r left-join}
 #| echo: true
 # Left join: combining March 1, 2022 state case data with the census data
-cases_left_join <- cases_df_sub %>%
+cases_left_join <- cases_df_sub |>
   left_join(state_census, by = c("geo_value" = "abbr"))
 
 cases_left_join
@@ -546,7 +546,7 @@ cases_left_join
 ```{r right-join}
 #| echo: true
 # Right join: keep all rows from state_census
-cases_right_join <- cases_df_sub %>%
+cases_right_join <- cases_df_sub |>
   right_join(state_census, by = c("geo_value" = "abbr"))
 
 head(cases_right_join)
@@ -558,7 +558,7 @@ head(cases_right_join)
 ```{r inner-join}
 #| echo: true
 # Inner join: only matching rows are kept
-cases_inner_join <- cases_df_sub %>%
+cases_inner_join <- cases_df_sub |>
   inner_join(state_census, by = c("geo_value" = "abbr"))
 
 cases_inner_join
@@ -571,7 +571,7 @@ cases_inner_join
 ```{r full-join}
 #| echo: true
 # Full join: keep all rows from both datasets
-cases_full_join <- cases_df_sub %>%
+cases_full_join <- cases_df_sub |>
   full_join(state_census, by = c("geo_value" = "abbr"))
 
 head(cases_full_join)
@@ -600,7 +600,7 @@ head(cases_full_join)
 ```{r}
 #| echo: true
 #| code-fold: true
-cases_full_join %>% 
+cases_full_join |> 
      fill(time_value)
 ```
 **Q2)**: Now, what join function should you use if your goal is to scale the cases by population in `cases_df`?
@@ -608,14 +608,14 @@ cases_full_join %>%
 #| echo: true
 #| code-fold: true
 # Either left_join
-cases_left_join <- cases_df %>%
+cases_left_join <- cases_df |>
   left_join(state_census, by = c("geo_value" = "abbr"))
 
 cases_left_join
 cases_df = cases_left_join
 
 # Or inner_join
-cases_inner_join <- cases_df %>%
+cases_inner_join <- cases_df |>
   inner_join(state_census, by = c("geo_value" = "abbr"))
 
 cases_inner_join
@@ -625,7 +625,7 @@ cases_inner_join
 ```{r}
 #| echo: true
 #| code-fold: true
-cases_df <- cases_df %>%
+cases_df <- cases_df |>
   mutate(scaled_cases = raw_cases / pop * 1e5) # cases / 100K
 head(cases_df)
 ```
@@ -638,10 +638,10 @@ head(cases_df)
 </div>
 ```{r trailing-averages}
 #| echo: true
-cases_df <- cases_df %>%
-  as_epi_df(as_of = as.Date("2024-01-01")) %>%
-  group_by(geo_value) %>%
-  epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) %>%
+cases_df <- cases_df |>
+  as_epi_df(as_of = as.Date("2024-01-01")) |>
+  group_by(geo_value) |>
+  epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) |>
   rename(smoothed_scaled_cases = slide_value_scaled_cases) 
 
 head(cases_df)
@@ -651,7 +651,7 @@ head(cases_df)
 It is easy to produce an autoplot the smoothed confirmed daily cases for each `geo_value`:
 ```{r}
 #| echo: true
-cases_df %>%
+cases_df |>
   autoplot(smoothed_scaled_cases)
 ```
 
@@ -751,10 +751,10 @@ cor14 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, dt1 = -14)
 #| fig-align: center
 #| warning: false
 rbind(
-  cor0 %>% mutate(lag = 0),
-  cor14 %>% mutate(lag = 14)
-) %>%
-  mutate(lag = as.factor(lag)) %>%
+  cor0 |> mutate(lag = 0),
+  cor14 |> mutate(lag = 14)
+) |>
+  mutate(lag = as.factor(lag)) |>
   ggplot(aes(x = time_value, y = cor)) +
   geom_hline(yintercept = 0, size = 1.5) +
   geom_line(aes(color = lag), size = 1.5) +
@@ -766,8 +766,8 @@ rbind(
 ## Features - Compute Growth Rates
 
 ```{r, echo=TRUE}
-edf <- filter(edf, geo_value %in% c("ut", "ca")) %>%
-  group_by(geo_value) %>%
+edf <- filter(edf, geo_value %in% c("ut", "ca")) |>
+  group_by(geo_value) |>
   mutate(gr_cases = growth_rate(time_value, case_rate, method = "trend_filter"))
 ```
 
@@ -789,19 +789,19 @@ ggplot(edf, aes(x = time_value, y = gr_cases)) +
 #| fig-width: 8
 #| fig-height: 4
 #| warning: false
-edfo <- covid_incidence_outliers %>%
-  dplyr::select(geo_value, time_value, cases) %>%
-  as_epi_df() %>%
-  group_by(geo_value) %>%
+edfo <- covid_incidence_outliers |>
+  dplyr::select(geo_value, time_value, cases) |>
+  as_epi_df() |>
+  group_by(geo_value) |>
   mutate(outlier_info = detect_outlr_rm(
     x = time_value, y = cases
-  )) %>% 
-  ungroup() %>% 
-  unnest() %>% 
-  mutate(cases_corrected = replacement) %>% 
+  )) |> 
+  ungroup() |> 
+  unnest() |> 
+  mutate(cases_corrected = replacement) |> 
   select(geo_value, time_value, cases, cases_corrected)
-edfo %>% 
-  pivot_longer(starts_with("cases")) %>% 
+edfo |> 
+  pivot_longer(starts_with("cases")) |> 
   mutate(
     name = case_when(
       name == "cases_corrected" ~ "corrected",
@@ -809,7 +809,7 @@ edfo %>%
     ),
     name = as.factor(name),
     name = fct_relevel(name, "original")
-  ) %>% 
+  ) |> 
   ggplot(aes(x = time_value)) +
   geom_line(aes(y = value, color = name)) +
   scale_color_brewer(palette = "Set1") +
@@ -846,7 +846,7 @@ archive_cases_dv_subset
 
 
 ```{r}
-ggplot(snapshots %>% filter(!latest),
+ggplot(snapshots |> filter(!latest),
        aes(x = time_value, y = percent_cli)) +  
   geom_line(aes(color = factor(version))) + 
   geom_vline(aes(color = factor(version), xintercept = version), lty = 3) +
@@ -855,7 +855,7 @@ ggplot(snapshots %>% filter(!latest),
   labs(x = "", y = "% of doctor's visits with\n Covid-like illness") + 
   scale_color_viridis_d(option = "B", end = .8) +
   theme(legend.position = "none") +
-  geom_line(data = snapshots %>% filter(latest),
+  geom_line(data = snapshots |> filter(latest),
             aes(x = time_value, y = percent_cli), 
             inherit.aes = FALSE, color = "black")
 ```
@@ -966,8 +966,8 @@ mortality_archive <- pub_covidcast(
   geo_values = "ca",  # California (CA)
   time_values = epirange(202401, 202413),  
   issues = "*"
-) %>% 
-  select(geo_value, time_value, version = issue, mortality = value) %>% 
+) |> 
+  select(geo_value, time_value, version = issue, mortality = value) |> 
   as_epi_archive(compactify = TRUE)
 
 # Set the start and end days for the analysis 
@@ -982,10 +982,10 @@ end_time = as.Date("2024-03-24")
 
 ```{r inspect-latency-dplyr-way}
 #| echo: true
-mortality_revision_inspect = mortality_archive$DT %>% mutate(version_time_diff = version - time_value)
+mortality_revision_inspect = mortality_archive$DT |> mutate(version_time_diff = version - time_value)
 
 # Look at the first revision for each week
-mortality_revision_inspect %>% group_by(time_value) %>% slice(1) %>% head()
+mortality_revision_inspect |> group_by(time_value) |> slice(1) |> head()
 ```
 
 * Use `revision_summary()` from `epiprocess` to generate basic statistics about the revision behavior for the dataset.
@@ -1011,16 +1011,16 @@ check_when_finalized <- function(epi_archive, start_date = NULL, end_date = NULL
   mortality_latest <- epix_as_of(epi_archive, max_version = max(dt$version))
   
   # Merge the finalized mortality data with all versions
-  merged_data <- dt %>%
+  merged_data <- dt |>
     filter(geo_value %in% mortality_latest$geo_value &
-             time_value %in% mortality_latest$time_value) %>%
+             time_value %in% mortality_latest$time_value) |>
     inner_join(mortality_latest, by = c("geo_value", "time_value"), suffix = c("", "_finalized"))
   
   # Find the minimal version where the finalized mortality first occurred
-  finalized_version_data <- merged_data %>%
-    filter(mortality == mortality_finalized) %>%
-    group_by(geo_value, time_value) %>%
-    summarize(min_version = min(version), .groups = 'drop') %>%
+  finalized_version_data <- merged_data |>
+    filter(mortality == mortality_finalized) |>
+    group_by(geo_value, time_value) |>
+    summarize(min_version = min(version), .groups = 'drop') |>
     mutate(diff = min_version - time_value)
   
   return(finalized_version_data)
@@ -1053,7 +1053,7 @@ revision_dates <- seq(min(mortality_archive$DT$version), end_time, by = "1 week"
 
 # Create a data frame for each version and label them by revision date
 mortality_revisions <- map_dfr(revision_dates, function(date) {
-  epix_as_of(mortality_archive, max_version = date) %>%
+  epix_as_of(mortality_archive, max_version = date) |>
     mutate(revision_date = date)  # Add a column for the revision date
 })
 
@@ -1086,7 +1086,7 @@ as_of_date = as.Date("2024-03-03")
 
 ggplot() +
   geom_line(data = mortality_latest, aes(x = time_value, y = mortality), color = "black", size = 1) +
-  geom_line(data = mortality_revisions %>% filter(revision_date == as_of_date), aes(x = time_value, y = mortality), color = "#FFB300") +
+  geom_line(data = mortality_revisions |> filter(revision_date == as_of_date), aes(x = time_value, y = mortality), color = "#FFB300") +
   ggtitle(paste0("COVID-19 Mortality, CA: Finalized (black) vs ", as_of_date, " Revision (yellow)"))
 ```
 The real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions.
@@ -1102,15 +1102,15 @@ The real-time data is biased downwards (systematically below the true value). Th
 as_of_date = as.Date("2024-03-10"); fixed_lag = 7
 
 # Load the finalized mortality data for CA
-ca_finalized <- mortality_latest %>%
-  filter(time_value == (as_of_date - fixed_lag)) %>%
+ca_finalized <- mortality_latest |>
+  filter(time_value == (as_of_date - fixed_lag)) |>
   dplyr::select(mortality)
 
 # Load the provisional mortality data for the same week
 mortality_old = epix_as_of(mortality_archive, max_version = as_of_date)
 
-ca_provisional <- mortality_old %>%
-  filter(time_value == (as_of_date - fixed_lag)) %>%
+ca_provisional <- mortality_old |>
+  filter(time_value == (as_of_date - fixed_lag)) |>
   dplyr::select(mortality)
 
 # Calculate ratio between provisional and finalized cases for the week of interest
@@ -1129,8 +1129,8 @@ ratio
 #| echo: true
 as_of_date = as.Date("2024-02-25")
 
-provisional <- epix_as_of(mortality_archive, max_version = as_of_date) %>%
-  filter(time_value == as_of_date - 7) %>%
+provisional <- epix_as_of(mortality_archive, max_version = as_of_date) |>
+  filter(time_value == as_of_date - 7) |>
   pull(mortality)
 provisional
 ```
@@ -1139,8 +1139,8 @@ and a **finalized value** of 104
 
 ```{r finalized-val-feb27}
 #| echo: true
-finalized <- mortality_latest %>%
-  filter(time_value == as_of_date - 7) %>%
+finalized <- mortality_latest |>
+  filter(time_value == as_of_date - 7) |>
   pull(mortality)
 finalized
 ```
@@ -1152,7 +1152,7 @@ First, let's download the real-time rates for CA, and compare them to their fina
 #| echo: true
 dates <- seq(start_time, (as_of_date - 7), by = "day")
 mortality_real_time <- function(date) {
-  epix_as_of(mortality_archive, max_version = (date + 7L)) %>%
+  epix_as_of(mortality_archive, max_version = (date + 7L)) |>
     filter(time_value == date)
 }
 mortality_real_time_df <- map_dfr(dates, mortality_real_time)
@@ -1163,7 +1163,7 @@ head(mortality_real_time_df)
 Now, let's plot the real-time vs the finalized mortality rates:
 ```{r real-time-vs-finalized}
 ggplot() +
-  geom_line(data = mortality_latest %>% filter(time_value <= (as_of_date - 7)), aes(x = time_value, y = mortality)) +
+  geom_line(data = mortality_latest |> filter(time_value <= (as_of_date - 7)), aes(x = time_value, y = mortality)) +
   geom_line(data = mortality_real_time_df, aes(x = time_value, y = mortality),
             col = 'red') +
   ggtitle("Mortality, CA: finalized (black) vs real-time (red)")
@@ -1187,8 +1187,8 @@ We then use these "finalized" and real-time values to compute the mean ratio:
 ```{r ratio-calc-summary}
 #| echo: true
 # exclude date we're nowcasting for
-mortality_real_time_df = mortality_real_time_df %>% filter(time_value != "2024-02-18") 
-mortality_as_of_feb25 = mortality_as_of_feb25 %>% filter(time_value != "2024-02-18")
+mortality_real_time_df = mortality_real_time_df |> filter(time_value != "2024-02-18") 
+mortality_as_of_feb25 = mortality_as_of_feb25 |> filter(time_value != "2024-02-18")
 ratio_real_time_to_feb25 <- mortality_real_time_df$mortality / mortality_as_of_feb25$mortality
 summary(ratio_real_time_to_feb25)
 ```
@@ -1252,14 +1252,14 @@ So the main steps for this type of fixed lag nowcasting are...
 as_of_date = as.Date("2024-02-25")
 
 # 1. Obtain the provisional value
-provisional <- epix_as_of(mortality_archive, max_version = as_of_date) %>%
-  filter(time_value == as_of_date - 7) %>%
+provisional <- epix_as_of(mortality_archive, max_version = as_of_date) |>
+  filter(time_value == as_of_date - 7) |>
   pull(mortality)
 provisional
 
 # 2. Estimate the ratio 
-mortality_real_time_df <- map_dfr(dates, mortality_real_time) %>% filter(time_value != "2024-02-18") # Real-time
-mortality_as_of_feb25 <- epix_as_of(mortality_archive, max_version = as_of_date) %>% filter(time_value != "2024-02-18")  # "Finalized"
+mortality_real_time_df <- map_dfr(dates, mortality_real_time) |> filter(time_value != "2024-02-18") # Real-time
+mortality_as_of_feb25 <- epix_as_of(mortality_archive, max_version = as_of_date) |> filter(time_value != "2024-02-18")  # "Finalized"
 
 ratio_real_time_to_feb25 <- mortality_real_time_df$mortality / mortality_as_of_feb25$mortality
 
@@ -1281,8 +1281,8 @@ nowcast_function <- function(nowcast_date, fixed_lag) {
   as_of_date = nowcast_date + fixed_lag
   
   # 1. Obtain the provisional value for the target.
-  provisional <- epix_as_of(mortality_archive, max_version = as_of_date) %>%
-    filter(time_value == as_of_date - fixed_lag) %>%
+  provisional <- epix_as_of(mortality_archive, max_version = as_of_date) |>
+    filter(time_value == as_of_date - fixed_lag) |>
     pull(mortality)
   
   #2. Estimate the ratio multiplier using
@@ -1291,7 +1291,7 @@ nowcast_function <- function(nowcast_date, fixed_lag) {
   mortality_real_time <- map_dfr(dates_seq, mortality_real_time)
   
   # and "finalized" data
-  finalized <- epix_as_of(mortality_archive, max_version = as_of_date) %>% filter(time_value >= start_time & time_value <= (nowcast_date - fixed_lag)) 
+  finalized <- epix_as_of(mortality_archive, max_version = as_of_date) |> filter(time_value >= start_time & time_value <= (nowcast_date - fixed_lag)) 
   
   ratios <- mortality_real_time$mortality / finalized$mortality
   
@@ -1318,7 +1318,7 @@ nowcast_function <- function(nowcast_date, fixed_lag) {
 # Apply Nowcast Function Over Multiple Dates
 nowcast_dates <- seq(as.Date("2024-01-28"), as.Date("2024-03-24"), by = "week")
 fixed_lag <- 7
-nowcast_results_df <- map2(nowcast_dates, fixed_lag, nowcast_function) %>% list_rbind()
+nowcast_results_df <- map2(nowcast_dates, fixed_lag, nowcast_function) |> list_rbind()
 ```
 
 ## Map Nowcast Over Multiple Dates
@@ -1326,7 +1326,7 @@ Let's smooth with a rolling trailing mean (window size 4) & see the results:
 ```{r}
 # Smooth results: Apply rolling median to nowcast_mortality with a window size of 4
 nowcast_results_df$nowcast_mortality <- zoo::rollapply(nowcast_results_df$nowcast_mortality, width = 4, FUN = mean, partial = TRUE, align = "right")
-# nowcast_results_df$nowcast_mortality[1:3] %>% median()
+# nowcast_results_df$nowcast_mortality[1:3] |> median()
 
 nowcast_results_df
 ```
@@ -1342,8 +1342,8 @@ ggplot() +
   geom_point(data = nowcast_results_df, aes(x = time_value, y = nowcast_mortality), col = 'blue', shape = 16) + # shape 16 for solid points
   # Add points for real-time data (red points)
   geom_point(data = map_dfr(nowcast_dates, mortality_real_time), aes(x = time_value, y = mortality), col = 'red', shape = 16) + 
-  geom_line(data = mortality_latest %>% filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality), col = 'black') + # finalized
-  geom_point(data = mortality_latest %>% filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality), col = 'black', shape = 16) + 
+  geom_line(data = mortality_latest |> filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality), col = 'black') + # finalized
+  geom_point(data = mortality_latest |> filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality), col = 'black', shape = 16) + 
   ggtitle("Mortality, CA: Nowcast results (blue) vs real-time (red) and finalized (black)")
 ```
 The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).
@@ -1383,8 +1383,8 @@ x1 <- pub_covidcast(
   geo_values = "ga",
   time_values = epirange(20230401, 20230701),
   issues = "*"
-) %>%
-  select(geo_value, time_value, version = issue, avg_search_vol_s01 = value) %>%
+) |>
+  select(geo_value, time_value, version = issue, avg_search_vol_s01 = value) |>
   as_epi_archive(compactify = FALSE)
 
 x2 <- pub_covidcast(
@@ -1395,8 +1395,8 @@ x2 <- pub_covidcast(
   geo_values = "ga",
   time_values = epirange(20230401, 20230701),
   issues = "*"
-) %>%
-  select(geo_value, time_value, version = issue, avg_search_vol_s02 = value) %>%
+) |>
+  select(geo_value, time_value, version = issue, avg_search_vol_s02 = value) |>
   as_epi_archive(compactify = FALSE)
 
 # Fetch hospital admissions data
@@ -1408,8 +1408,8 @@ y1 <- pub_covidcast(
   geo_values = "ga",
   time_values = epirange(20230401, 20230701),
   issues = "*"
-) %>%
-  select(geo_value, time_value, version = issue, admissions = value) %>%
+) |>
+  select(geo_value, time_value, version = issue, admissions = value) |>
   as_epi_archive(compactify = FALSE)
 ```
 
@@ -1472,16 +1472,16 @@ lm_mod_pred <- function(data, gk, rtv, ...) {
   
   # Make predictions
   predictions = predict(model,
-                        newdata = data %>%
+                        newdata = data |>
                           # Use tidyr::fill() for LOCF if predictor data is incomplete 
-                          fill(avg_search_vol_s01, .direction = "down") %>% 
-                          fill(avg_search_vol_s02, .direction = "down") %>%
+                          fill(avg_search_vol_s01, .direction = "down") |> 
+                          fill(avg_search_vol_s02, .direction = "down") |>
                           filter(time_value == max(time_value)),
                         interval = "prediction", level = 0.9
   )
 
   # Pull off true time value for comparison to target
-  real_time_val = data %>% filter(time_value == max(time_value)) %>% pull(admissions)
+  real_time_val = data |> filter(time_value == max(time_value)) |> pull(admissions)
 
   return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val))
 }
@@ -1503,16 +1503,16 @@ ref_time_values = targeted_nowcast_dates + 2  # Adjust for the systematic 2-day 
 # Determine this from revision_summary(y1, print_inform = TRUE) 
 
 # Perform nowcasting using epix_slide
-nowcast_res <- archive %>%
-  group_by(geo_value) %>%
+nowcast_res <- archive |>
+  group_by(geo_value) |>
   epix_slide(
     .f = lm_mod_pred,
     .before = 14,  # 14-day training period
     .versions = ref_time_values, 
     .new_col_name = "res"
-  ) %>%
-  unnest() %>% # Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. 
-  mutate(targeted_nowcast_date = targeted_nowcast_dates, time_value = actual_nowcast_date) %>%
+  ) |>
+  unnest() |> # Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. 
+  mutate(targeted_nowcast_date = targeted_nowcast_dates, time_value = actual_nowcast_date) |>
   ungroup()
 
 # View results
@@ -1526,9 +1526,9 @@ head(nowcast_res, n=2)
 #| echo: true
 # Left join with latest results 
 # Latest snapshot of data (with the latest/finalized admissions)
-x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) %>% select(-c(avg_search_vol_s01, avg_search_vol_s02))
+x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) |> select(-c(avg_search_vol_s01, avg_search_vol_s02))
 
-res <- nowcast_res %>% left_join(x_latest, by = c("geo_value", "time_value"))
+res <- nowcast_res |> left_join(x_latest, by = c("geo_value", "time_value"))
 head(res)
 ```
 
@@ -1664,13 +1664,13 @@ process_covid_data <- function(Date) {
   data <- read_excel(file_path, sheet = "CasesByDate (Test Date)")
   
   # Process the data: rename columns and convert Date
-  data <- data %>%
+  data <- data |>
     rename(
       Date = `Date`,
       Positive_Total = `Positive Total`,
       Positive_New = `Positive New`,
       Case_Average_7day = `7-day confirmed case average`
-    ) %>%
+    ) |>
     mutate(Date = as.Date(Date))  # Convert to Date class
   
   # Create a tibble with the required columns for the epi_archive
@@ -1718,7 +1718,7 @@ process_data_for_date_range <- function(start_date, end_date) {
   
   # Convert the combined data into an epi_archive object
   if (nrow(combined_data) > 0) {
-    epi_archive_data <- combined_data %>%
+    epi_archive_data <- combined_data |>
       as_epi_archive(compactify = FALSE)
     
     return(epi_archive_data)
@@ -1769,11 +1769,11 @@ x <- pub_covidcast(
   geo_values = "ma", # Just for MA to keep it simple (& to go with the case data by test date for that state)
   time_value = epirange(20210301, 20212101), 
   issues = epirange(20210301, 20212101)
-) %>%
+) |>
   select(geo_value, time_value,
          version = issue,
          percent_cli = value
-  ) %>%
+  ) |>
   as_epi_archive(compactify = FALSE)
 ```
 
@@ -1805,13 +1805,13 @@ lm_mod_pred <- function(data, ...) {
 
   # Make predictions
   predictions = predict(model,
-                        newdata = data %>%
-                          fill(percent_cli, .direction = "down") %>% 
+                        newdata = data |>
+                          fill(percent_cli, .direction = "down") |> 
                           filter(time_value == max(time_value)),
                         interval = "prediction", level = 0.9)
   
   # Pull off real-time value for later comparison to the nowcast value
-  real_time_val = data %>% filter(time_value == max(time_value)) %>% pull(case_rate_7d_av)
+  real_time_val = data |> filter(time_value == max(time_value)) |> pull(case_rate_7d_av)
   
   # Could clip predictions and bounds at 0
   return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val)) 
@@ -1832,15 +1832,15 @@ ref_time_values = targeted_nowcast_dates + 1 # + 1 because the case data is 1 da
 # Determine this from revision_summary(y)
 
 # Use epix_slide to perform the nowcasting with a training-test split
-nowcast_res <- archive %>%
-  group_by(geo_value) %>%
+nowcast_res <- archive |>
+  group_by(geo_value) |>
   epix_slide(
     .f = lm_mod_pred,  # Pass the function defined above
     .before = 30,   # Training period of 30 days
     .versions = ref_time_values, # Determines the day where training data goes up to (not inclusive)
     .new_col_name = "res"
-  ) %>%
-  unnest() %>%
+  ) |>
+  unnest() |>
   mutate(targeted_nowcast_date = targeted_nowcast_dates,
          time_value = actual_nowcast_date)
 
@@ -1853,10 +1853,10 @@ Merge the nowcast results with the latest data for more direct comparison:
 
 ```{r}
 #| echo: true
-x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) %>%
+x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) |>
   select(-percent_cli) 
 
-res <- nowcast_res %>% left_join(x_latest, by = c("geo_value", "time_value"))
+res <- nowcast_res |> left_join(x_latest, by = c("geo_value", "time_value"))
 
 res
 ```
