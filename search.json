@@ -18,42 +18,56 @@
     "href": "slides/day1-afternoon.html#down-with-spreadsheets-for-data-manipulation",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Down with Spreadsheets for Data Manipulation",
-    "text": "Down with Spreadsheets for Data Manipulation\n\nSpreadsheets make it difficult to rerun analyses consistently.\nUsing R (and dplyr) allows for:\n\nReproducibility\nEase of modification\n\nRecommendation: Avoid manual edits; instead, use code for transformations."
+    "text": "Down with Spreadsheets for Data Manipulation\n\nSpreadsheets make it difficult to rerun analyses consistently.\nUsing R (and dplyr) allows for:\n\nReproducibility\nEase of modification\n\nRecommendation: Avoid manual edits; instead, use code for transformations.\nLet’s see what we mean by this…"
   },
   {
     "objectID": "slides/day1-afternoon.html#introduction-to-dplyr",
     "href": "slides/day1-afternoon.html#introduction-to-dplyr",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Introduction to dplyr",
-    "text": "Introduction to dplyr\n\ndplyr is a powerful package in R for data manipulation.\nIt is part of the tidyverse, which includes a collection of packages designed to work together.\nWe focus on basic operations like selecting and filtering data.\nMake sure to load the necessary libraries before using dplyr."
+    "text": "Introduction to dplyr\n\n\ndplyr is a powerful package in R for data manipulation.\nIt is part of the tidyverse, which includes a collection of packages designed to work together… Here’s some of it’s greatest hits:\n\n\n\n  Source"
   },
   {
-    "objectID": "slides/day1-afternoon.html#meet-the-palmers",
-    "href": "slides/day1-afternoon.html#meet-the-palmers",
+    "objectID": "slides/day1-afternoon.html#introduction-to-dplyr-1",
+    "href": "slides/day1-afternoon.html#introduction-to-dplyr-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Meet the Palmers",
-    "text": "Meet the Palmers\n\nIllustration from the palmerpenguins website"
+    "section": "Introduction to dplyr",
+    "text": "Introduction to dplyr\n\nTo load dplyr you may simply load the tidyverse package:\n\n# install.packages(\"tidyverse\")\nlibrary(tidyverse)  # Load tidyverse, which includes dplyr & tidyr"
   },
   {
-    "objectID": "slides/day1-afternoon.html#working-with-the-palmerpenguins-dataset",
-    "href": "slides/day1-afternoon.html#working-with-the-palmerpenguins-dataset",
+    "objectID": "slides/day1-afternoon.html#introduction-to-dplyr-2",
+    "href": "slides/day1-afternoon.html#introduction-to-dplyr-2",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Working with the palmerpenguins Dataset",
-    "text": "Working with the palmerpenguins Dataset\n\nThe palmerpenguins dataset is included in the palmerpenguins package.\nLoad both the tidyverse and palmerpenguins libraries to access and explore the dataset.\nThe dataset includes measurements of penguins such as species, bill length, flipper length, and body mass.\n\n\n\n# A tibble: 344 × 8\n   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n 1 Adelie  Torgersen           39.1          18.7               181        3750\n 2 Adelie  Torgersen           39.5          17.4               186        3800\n 3 Adelie  Torgersen           40.3          18                 195        3250\n 4 Adelie  Torgersen           NA            NA                  NA          NA\n 5 Adelie  Torgersen           36.7          19.3               193        3450\n 6 Adelie  Torgersen           39.3          20.6               190        3650\n 7 Adelie  Torgersen           38.9          17.8               181        3625\n 8 Adelie  Torgersen           39.2          19.6               195        4675\n 9 Adelie  Torgersen           34.1          18.1               193        3475\n10 Adelie  Torgersen           42            20.2               190        4250\n# ℹ 334 more rows\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;"
+    "section": "Introduction to dplyr",
+    "text": "Introduction to dplyr\nOur focus will be on basic operations like selecting and filtering data.\n\n\nSource"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#downloading-jhu-csse-covid-19-case-data",
+    "href": "slides/day1-afternoon.html#downloading-jhu-csse-covid-19-case-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Downloading JHU CSSE COVID-19 Case Data",
+    "text": "Downloading JHU CSSE COVID-19 Case Data\n\nLet’s start with something familiar… Here’s a task for you:\nUse pub_covidcast() to download JHU CSSE COVID-19 confirmed case data (confirmed_incidence_num) for CA, NC, and NY from March 1, 2022 to March 31, 2022 as of January 1, 2024.\nTry this for yourself. Then click the dropdown on the next slide to check your work…"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#downloading-jhu-csse-covid-19-case-data-1",
+    "href": "slides/day1-afternoon.html#downloading-jhu-csse-covid-19-case-data-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Downloading JHU CSSE COVID-19 Case Data",
+    "text": "Downloading JHU CSSE COVID-19 Case Data\n\n\nCode\nlibrary(epidatr)\n\ncases_df &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_incidence_num\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ca,nc,ny\",\n  time_values = epirange(20220301, 20220331),\n  as_of = as.Date(\"2024-01-01\")\n)\n\n\nNow we only really need a few columns here…\n\ncases_df &lt;- cases_df %&gt;% \n  select(geo_value, time_value, raw_cases = value) # We'll talk more about this soon :)"
   },
   {
     "objectID": "slides/day1-afternoon.html#ways-to-inspect-the-dataset",
     "href": "slides/day1-afternoon.html#ways-to-inspect-the-dataset",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ways to Inspect the Dataset",
-    "text": "Ways to Inspect the Dataset\n\nUse head() to view the first 6 row of the data (tail() to view the last 6 rows)\n\n\nhead(penguins)  # First 6 rows\n\n# A tibble: 6 × 8\n  species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n  &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n1 Adelie  Torgersen           39.1          18.7               181        3750\n2 Adelie  Torgersen           39.5          17.4               186        3800\n3 Adelie  Torgersen           40.3          18                 195        3250\n4 Adelie  Torgersen           NA            NA                  NA          NA\n5 Adelie  Torgersen           36.7          19.3               193        3450\n6 Adelie  Torgersen           39.3          20.6               190        3650\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;\n\n#tail(penguins)  # Last 6 rows"
+    "text": "Ways to Inspect the Dataset\nUse head() to view the first six row of the data\n\nhead(cases_df)  # First 6 rows\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 nc        2022-03-01      1231\n3 ny        2022-03-01      1487\n4 ca        2022-03-02      7044\n5 nc        2022-03-02      2243\n6 ny        2022-03-02      1889\n\n\nand tail to view the last six\n\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-30      3785\n2 nc        2022-03-30      1067\n3 ny        2022-03-30      3127\n4 ca        2022-03-31      4533\n5 nc        2022-03-31      1075\n6 ny        2022-03-31      4763"
   },
   {
     "objectID": "slides/day1-afternoon.html#ways-to-inspect-the-dataset-1",
     "href": "slides/day1-afternoon.html#ways-to-inspect-the-dataset-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ways to Inspect the Dataset",
-    "text": "Ways to Inspect the Dataset\n\nglimpse() to get a compact overview of the dataset.\n\n\nglimpse(penguins)\n\nRows: 344\nColumns: 8\n$ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel…\n$ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse…\n$ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, …\n$ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, …\n$ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186…\n$ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, …\n$ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male…\n$ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…"
+    "text": "Ways to Inspect the Dataset\nNow, for our first foray into the tidyverse…\nUse glimpse() to get a compact overview of the dataset.\n\nglimpse(cases_df)\n\nRows: 93\nColumns: 3\n$ geo_value  &lt;chr&gt; \"ca\", \"nc\", \"ny\", \"ca\", \"nc\", \"ny\", \"ca\", \"nc\", \"ny\", \"ca\",…\n$ time_value &lt;date&gt; 2022-03-01, 2022-03-01, 2022-03-01, 2022-03-02, 2022-03-02…\n$ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3586,…"
   },
   {
     "objectID": "slides/day1-afternoon.html#creating-tibbles",
@@ -67,42 +81,42 @@
     "href": "slides/day1-afternoon.html#selecting-columns-with-select",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Selecting Columns with select()",
-    "text": "Selecting Columns with select()\n\nThe select() function is used to pick specific columns from your dataset.\n\n\nselect(penguins, species, body_mass_g)  # Select the 'species' and 'body_mass_g' columns\n\n# A tibble: 344 × 2\n   species body_mass_g\n   &lt;fct&gt;         &lt;int&gt;\n 1 Adelie         3750\n 2 Adelie         3800\n 3 Adelie         3250\n 4 Adelie           NA\n 5 Adelie         3450\n 6 Adelie         3650\n 7 Adelie         3625\n 8 Adelie         4675\n 9 Adelie         3475\n10 Adelie         4250\n# ℹ 334 more rows"
+    "text": "Selecting Columns with select()\nThe select() function is used to pick specific columns from your dataset.\n\nselect(cases_df, geo_value, time_value)  # Select the 'geo_value' and 'time_value' columns\n\n# A tibble: 93 × 2\n   geo_value time_value\n   &lt;chr&gt;     &lt;date&gt;    \n 1 ca        2022-03-01\n 2 nc        2022-03-01\n 3 ny        2022-03-01\n 4 ca        2022-03-02\n 5 nc        2022-03-02\n 6 ny        2022-03-02\n 7 ca        2022-03-03\n 8 nc        2022-03-03\n 9 ny        2022-03-03\n10 ca        2022-03-04\n# ℹ 83 more rows"
   },
   {
     "objectID": "slides/day1-afternoon.html#selecting-columns-with-select-1",
     "href": "slides/day1-afternoon.html#selecting-columns-with-select-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Selecting Columns with select()",
-    "text": "Selecting Columns with select()\n\nYou can exclude columns by prefixing the column names with a minus sign -.\n\n\nselect(penguins, -species)  # Exclude the 'species' column from the dataset\n\n# A tibble: 344 × 7\n   island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g sex    year\n   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt; &lt;int&gt;\n 1 Torge…           39.1          18.7               181        3750 male   2007\n 2 Torge…           39.5          17.4               186        3800 fema…  2007\n 3 Torge…           40.3          18                 195        3250 fema…  2007\n 4 Torge…           NA            NA                  NA          NA &lt;NA&gt;   2007\n 5 Torge…           36.7          19.3               193        3450 fema…  2007\n 6 Torge…           39.3          20.6               190        3650 male   2007\n 7 Torge…           38.9          17.8               181        3625 fema…  2007\n 8 Torge…           39.2          19.6               195        4675 male   2007\n 9 Torge…           34.1          18.1               193        3475 &lt;NA&gt;   2007\n10 Torge…           42            20.2               190        4250 &lt;NA&gt;   2007\n# ℹ 334 more rows\n\n\n\nSo, this is useful when you want to keep only certain columns or remove unnecessary ones."
+    "text": "Selecting Columns with select()\nYou can exclude columns by prefixing the column names with a minus sign -.\n\nselect(cases_df, -raw_cases)  # Exclude the 'raw_cases' column from the dataset\n\n# A tibble: 93 × 2\n   geo_value time_value\n   &lt;chr&gt;     &lt;date&gt;    \n 1 ca        2022-03-01\n 2 nc        2022-03-01\n 3 ny        2022-03-01\n 4 ca        2022-03-02\n 5 nc        2022-03-02\n 6 ny        2022-03-02\n 7 ca        2022-03-03\n 8 nc        2022-03-03\n 9 ny        2022-03-03\n10 ca        2022-03-04\n# ℹ 83 more rows"
   },
   {
     "objectID": "slides/day1-afternoon.html#extracting-columns-with-pull",
     "href": "slides/day1-afternoon.html#extracting-columns-with-pull",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Extracting Columns with pull()",
-    "text": "Extracting Columns with pull()\n\npull(): Extract a column as a vector.\nLet’s try this with the species column…\n\n\npull(penguins, species)\n\n  [1] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n  [8] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [15] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [22] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [29] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [36] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [43] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [50] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [57] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [64] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [71] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [78] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [85] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [92] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n [99] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[106] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[113] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[120] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[127] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[134] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[141] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   \n[148] Adelie    Adelie    Adelie    Adelie    Adelie    Gentoo    Gentoo   \n[155] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[162] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[169] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[176] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[183] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[190] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[197] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[204] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[211] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[218] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[225] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[232] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[239] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[246] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[253] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[260] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[267] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   \n[274] Gentoo    Gentoo    Gentoo    Chinstrap Chinstrap Chinstrap Chinstrap\n[281] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[288] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[295] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[302] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[309] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[316] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[323] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[330] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[337] Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap Chinstrap\n[344] Chinstrap\nLevels: Adelie Chinstrap Gentoo"
+    "text": "Extracting Columns with pull()\n\npull(): Extract a column as a vector.\nLet’s try this with the cases column…\n\n\npull(cases_df, raw_cases) \n\n [1] 4310 1231 1487 7044 2243 1889 7509 2377 2390 3586 2646  350 1438    0 3372\n[16] 6465    0 2343 6690 4230 1033 3424  894 1025 4591 1833 1691 5359 1783 1747\n[31] 2713 1849 2229 1623    0 1396 5151    0 2202 4826 3130  982 1831  649 3128\n[46] 3706    0 2039 6143 2742 2356 4204 1740 2052 3256    0 2188 4659    0 2667\n[61] 5499 2508 1177 3004  819 1603 3943 1602  551 3550 1288 6596 1960 1224 3542\n[76] 1035    0    0 3384    0 5908 2811 2291 2286 1846  624 2394 3785 1067 3127\n[91] 4533 1075 4763"
   },
   {
     "objectID": "slides/day1-afternoon.html#filtering-rows-with-filter",
     "href": "slides/day1-afternoon.html#filtering-rows-with-filter",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Filtering Rows with filter()",
-    "text": "Filtering Rows with filter()\n\nThe filter() function allows you to select rows that meet specific conditions.\nConditions can involve column values, such as selecting only “Gentoo” penguins or filtering based on measurements like flipper length.\nThis enables you to narrow down your dataset to focus on relevant data.\n\n\nfilter(penguins, species == \"Gentoo\", flipper_length_mm &lt; 208)  # Filter Gentoo penguins with flipper length &lt; 208mm\n\n# A tibble: 2 × 8\n  species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n  &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n1 Gentoo  Biscoe           45.1          14.5               207        5050\n2 Gentoo  Biscoe           48.4          14.4               203        4625\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;"
+    "text": "Filtering Rows with filter()\n\nThe filter() function allows you to select rows that meet specific conditions.\nConditions can involve column values, such as filtering for only NC or higher numbers of cases.\nThis enables you to narrow down your dataset to focus on relevant data.\n\n\nfilter(cases_df, geo_value == \"nc\", raw_cases &gt; 500)  # Filter for NC with raw daily cases &gt; 500\n\n# A tibble: 22 × 3\n   geo_value time_value raw_cases\n   &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n 1 nc        2022-03-01      1231\n 2 nc        2022-03-02      2243\n 3 nc        2022-03-03      2377\n 4 nc        2022-03-04      2646\n 5 nc        2022-03-07      4230\n 6 nc        2022-03-08       894\n 7 nc        2022-03-09      1833\n 8 nc        2022-03-10      1783\n 9 nc        2022-03-11      1849\n10 nc        2022-03-14      3130\n# ℹ 12 more rows"
   },
   {
     "objectID": "slides/day1-afternoon.html#combining-select-and-filter-functions",
     "href": "slides/day1-afternoon.html#combining-select-and-filter-functions",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Combining select() and filter() Functions",
-    "text": "Combining select() and filter() Functions\n\nYou can combine select() and filter() functions to refine the dataset further.\nUse select() to choose columns and filter() to narrow rows based on conditions.\nThis helps in extracting the exact data needed for analysis.\n\n\nselect(filter(penguins, species == \"Gentoo\", flipper_length_mm &lt; 208), species, flipper_length_mm)\n\n# A tibble: 2 × 2\n  species flipper_length_mm\n  &lt;fct&gt;               &lt;int&gt;\n1 Gentoo                207\n2 Gentoo                203"
+    "text": "Combining select() and filter() Functions\n\nYou can further combine select() and filter() to further refine the dataset.\nUse select() to choose columns and filter() to narrow down rows.\nThis helps in extracting the exact data needed for analysis.\n\n\nselect(filter(cases_df, geo_value == \"nc\", raw_cases &gt; 1000), time_value, raw_cases) %&gt;% \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-09      1833"
   },
   {
     "objectID": "slides/day1-afternoon.html#using-the-pipe-operator",
     "href": "slides/day1-afternoon.html#using-the-pipe-operator",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Using the Pipe Operator %>%",
-    "text": "Using the Pipe Operator %&gt;%\n\nThe pipe operator (%&gt;%) makes code more readable by chaining multiple operations together.\nThe output of one function is automatically passed to the next function.\nThis allows you to perform multiple steps (e.g., select() followed by filter()) in a clear and concise manner.\n\n\n# This code reads more like poetry!\npenguins %&gt;% \n  select(species, flipper_length_mm) %&gt;%\n  filter(species == \"Gentoo\", flipper_length_mm &lt; 208)\n\n# A tibble: 2 × 2\n  species flipper_length_mm\n  &lt;fct&gt;               &lt;int&gt;\n1 Gentoo                207\n2 Gentoo                203"
+    "text": "Using the Pipe Operator %&gt;%\n\nThe pipe operator (%&gt;%) makes code more readable by chaining multiple operations together.\nThe output of one function is automatically passed to the next function.\nThis allows you to perform multiple steps (e.g., filter() followed by select()) in a clear and concise manner.\n\n\n# This code reads more like poetry!\ncases_df %&gt;% \n  filter(geo_value == \"nc\", raw_cases &gt; 1000) %&gt;% \n  select(time_value, raw_cases) %&gt;% \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-09      1833"
   },
   {
     "objectID": "slides/day1-afternoon.html#key-practices-in-dplyr",
@@ -116,140 +130,196 @@
     "href": "slides/day1-afternoon.html#grouping-data-with-group_by",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Grouping Data with group_by()",
-    "text": "Grouping Data with group_by()\n\nUse group_by() to group data by one or more columns.\nAllows performing operations on specific groups of data.\n\n\npenguins %&gt;%\n  group_by(species) %&gt;%\n  filter(body_mass_g == min(body_mass_g, na.rm = TRUE))\n\n# A tibble: 4 × 8\n# Groups:   species [3]\n  species   island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g\n  &lt;fct&gt;     &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;\n1 Adelie    Biscoe           36.5          16.6               181        2850\n2 Adelie    Biscoe           36.4          17.1               184        2850\n3 Gentoo    Biscoe           42.7          13.7               208        3950\n4 Chinstrap Dream            46.9          16.6               192        2700\n# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;"
-  },
-  {
-    "objectID": "slides/day1-afternoon.html#penguin-bill-length-and-depth",
-    "href": "slides/day1-afternoon.html#penguin-bill-length-and-depth",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Penguin bill length and depth",
-    "text": "Penguin bill length and depth\n\n\nIllustration from the palmerpenguins website"
+    "text": "Grouping Data with group_by()\n\nUse group_by() to group data by one or more columns.\nAllows performing operations on specific groups of data.\n\n\ncases_df %&gt;%\n  group_by(geo_value) %&gt;%\n  filter(raw_cases == max(raw_cases, na.rm = TRUE))\n\n# A tibble: 3 × 3\n# Groups:   geo_value [3]\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-03      7509\n2 nc        2022-03-07      4230\n3 ny        2022-03-24      6596"
   },
   {
     "objectID": "slides/day1-afternoon.html#creating-new-columns-with-mutate",
     "href": "slides/day1-afternoon.html#creating-new-columns-with-mutate",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Creating New Columns with mutate()",
-    "text": "Creating New Columns with mutate()\n\nmutate() is used to create new columns.\nPerform calculations using existing columns and assign to new columns.\n\n\npenguins %&gt;%\n  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm) %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, sex)) # too many cols to print\n\n# A tibble: 344 × 6\n   species island    bill_length_mm bill_depth_mm  year bill_size_mm2\n   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;         &lt;dbl&gt;\n 1 Adelie  Torgersen           39.1          18.7  2007          731.\n 2 Adelie  Torgersen           39.5          17.4  2007          687.\n 3 Adelie  Torgersen           40.3          18    2007          725.\n 4 Adelie  Torgersen           NA            NA    2007           NA \n 5 Adelie  Torgersen           36.7          19.3  2007          708.\n 6 Adelie  Torgersen           39.3          20.6  2007          810.\n 7 Adelie  Torgersen           38.9          17.8  2007          692.\n 8 Adelie  Torgersen           39.2          19.6  2007          768.\n 9 Adelie  Torgersen           34.1          18.1  2007          617.\n10 Adelie  Torgersen           42            20.2  2007          848.\n# ℹ 334 more rows"
+    "text": "Creating New Columns with mutate()\n\n  Artwork by @allison_horst"
   },
   {
     "objectID": "slides/day1-afternoon.html#creating-new-columns-with-mutate-1",
     "href": "slides/day1-afternoon.html#creating-new-columns-with-mutate-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Creating New Columns with mutate()",
-    "text": "Creating New Columns with mutate()\n\nmutate() can create multiple new columns in one step.\nLogical comparisons (e.g., sex == \"male\") can be used within mutate().\n\n\npenguins %&gt;%\n  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm, \n         TF = sex == \"male\") %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, year)) \n\n# A tibble: 344 × 7\n   species island    bill_length_mm bill_depth_mm sex    bill_size_mm2 TF   \n   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;fct&gt;          &lt;dbl&gt; &lt;lgl&gt;\n 1 Adelie  Torgersen           39.1          18.7 male            731. TRUE \n 2 Adelie  Torgersen           39.5          17.4 female          687. FALSE\n 3 Adelie  Torgersen           40.3          18   female          725. FALSE\n 4 Adelie  Torgersen           NA            NA   &lt;NA&gt;             NA  NA   \n 5 Adelie  Torgersen           36.7          19.3 female          708. FALSE\n 6 Adelie  Torgersen           39.3          20.6 male            810. TRUE \n 7 Adelie  Torgersen           38.9          17.8 female          692. FALSE\n 8 Adelie  Torgersen           39.2          19.6 male            768. TRUE \n 9 Adelie  Torgersen           34.1          18.1 &lt;NA&gt;            617. NA   \n10 Adelie  Torgersen           42            20.2 &lt;NA&gt;            848. NA   \n# ℹ 334 more rows"
+    "text": "Creating New Columns with mutate()\n\nmutate() is used to create new columns.\nPerform calculations using existing columns and assign to new columns.\n\n\nny_subset = cases_df %&gt;%\n  filter(geo_value == \"ny\")\n\nny_subset %&gt;% \n  mutate(cumulative_cases = cumsum(raw_cases)) %&gt;% \n  head()\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases cumulative_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;            &lt;dbl&gt;\n1 ny        2022-03-01      1487             1487\n2 ny        2022-03-02      1889             3376\n3 ny        2022-03-03      2390             5766\n4 ny        2022-03-04       350             6116\n5 ny        2022-03-05      3372             9488\n6 ny        2022-03-06      2343            11831"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#creating-new-columns-with-mutate-2",
+    "href": "slides/day1-afternoon.html#creating-new-columns-with-mutate-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating New Columns with mutate()",
+    "text": "Creating New Columns with mutate()\n\nmutate() can create multiple new columns in one step.\nLogical comparisons (e.g., over_5000 = raw_cases &gt; 5000) can be used within mutate().\n\n\nny_subset %&gt;% \n  mutate(over_5000 = raw_cases &gt; 5000,\n         cumulative_cases = cumsum(raw_cases)) %&gt;% \n  head()\n\n# A tibble: 6 × 5\n  geo_value time_value raw_cases over_5000 cumulative_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;lgl&gt;                &lt;dbl&gt;\n1 ny        2022-03-01      1487 FALSE                 1487\n2 ny        2022-03-02      1889 FALSE                 3376\n3 ny        2022-03-03      2390 FALSE                 5766\n4 ny        2022-03-04       350 FALSE                 6116\n5 ny        2022-03-05      3372 FALSE                 9488\n6 ny        2022-03-06      2343 FALSE                11831"
   },
   {
     "objectID": "slides/day1-afternoon.html#combining-group_by-and-mutate",
     "href": "slides/day1-afternoon.html#combining-group_by-and-mutate",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Combining group_by() and mutate()",
-    "text": "Combining group_by() and mutate()\n\nFirst, group data using group_by().\nThen, use drop_na() from tidyr to exclude rows with missing values.\nFinally, mutate to perform calculations for each group.\n\n\npenguins %&gt;%\n  drop_na() %&gt;% # Remove all non-complete rows\n  group_by(species) %&gt;%\n  mutate(body_mass_median = median(body_mass_g)) %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, sex)) %&gt;% \n  head()\n\n# A tibble: 6 × 6\n# Groups:   species [1]\n  species island    bill_length_mm bill_depth_mm  year body_mass_median\n  &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;            &lt;dbl&gt;\n1 Adelie  Torgersen           39.1          18.7  2007             3700\n2 Adelie  Torgersen           39.5          17.4  2007             3700\n3 Adelie  Torgersen           40.3          18    2007             3700\n4 Adelie  Torgersen           36.7          19.3  2007             3700\n5 Adelie  Torgersen           39.3          20.6  2007             3700\n6 Adelie  Torgersen           38.9          17.8  2007             3700"
+    "text": "Combining group_by() and mutate()\n\nFirst, group data using group_by().\nThen, use mutate to perform the calculations for each group.\nFinally, use arrange to display the output by geo_value.\n\n\ncases_df %&gt;%\n  group_by(geo_value) %&gt;%\n  mutate(cumulative_cases = cumsum(raw_cases)) %&gt;% \n  arrange(geo_value) %&gt;% \n  head()\n\n# A tibble: 6 × 4\n# Groups:   geo_value [1]\n  geo_value time_value raw_cases cumulative_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;            &lt;dbl&gt;\n1 ca        2022-03-01      4310             4310\n2 ca        2022-03-02      7044            11354\n3 ca        2022-03-03      7509            18863\n4 ca        2022-03-04      3586            22449\n5 ca        2022-03-05      1438            23887\n6 ca        2022-03-06      6465            30352"
   },
   {
-    "objectID": "slides/day1-afternoon.html#conditional-calculations-in-mutate-with-if_else",
-    "href": "slides/day1-afternoon.html#conditional-calculations-in-mutate-with-if_else",
+    "objectID": "slides/day1-afternoon.html#conditional-calculations-with-if_else",
+    "href": "slides/day1-afternoon.html#conditional-calculations-with-if_else",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Conditional Calculations in mutate() with if_else()",
-    "text": "Conditional Calculations in mutate() with if_else()\n\nif_else() allows conditional logic within mutate().\nPerform different operations depending on conditions, like “big” or “small.”\n\n\nt &lt;- 800\npenguins %&gt;%\n  mutate(bill_size_mm2 = bill_depth_mm * bill_length_mm, \n         TF = sex == \"male\",\n         bill_size_binary = if_else(bill_size_mm2 &gt; t, \"big\", \"small\")) %&gt;% \n  select(-c(flipper_length_mm, body_mass_g, sex)) %&gt;% # too many cols to print\n  head()\n\n# A tibble: 6 × 8\n  species island    bill_length_mm bill_depth_mm  year bill_size_mm2 TF   \n  &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;         &lt;dbl&gt; &lt;lgl&gt;\n1 Adelie  Torgersen           39.1          18.7  2007          731. TRUE \n2 Adelie  Torgersen           39.5          17.4  2007          687. FALSE\n3 Adelie  Torgersen           40.3          18    2007          725. FALSE\n4 Adelie  Torgersen           NA            NA    2007           NA  NA   \n5 Adelie  Torgersen           36.7          19.3  2007          708. FALSE\n6 Adelie  Torgersen           39.3          20.6  2007          810. TRUE \n# ℹ 1 more variable: bill_size_binary &lt;chr&gt;"
+    "section": "Conditional Calculations with if_else()",
+    "text": "Conditional Calculations with if_else()\n\nif_else() allows conditional logic within mutate().\nPerform different operations depending on conditions, like “high” or “low.”\n\n\nt &lt;- 5000\n\ncases_df %&gt;%\n  mutate(high_low_cases = if_else(raw_cases &gt; t, \"high\", \"low\")) %&gt;% \n  head()\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases high_low_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;chr&gt;         \n1 ca        2022-03-01      4310 low           \n2 nc        2022-03-01      1231 low           \n3 ny        2022-03-01      1487 low           \n4 ca        2022-03-02      7044 high          \n5 nc        2022-03-02      2243 low           \n6 ny        2022-03-02      1889 low"
   },
   {
     "objectID": "slides/day1-afternoon.html#summarizing-data-with-summarise",
     "href": "slides/day1-afternoon.html#summarizing-data-with-summarise",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Summarizing Data with summarise()",
-    "text": "Summarizing Data with summarise()\n\nsummarise() reduces data to summary statistics (e.g., mean, median).\nTypically used after group_by() to summarize each group.\n\n\npenguins %&gt;%\n  drop_na() %&gt;%\n  group_by(species) %&gt;%\n  summarise(body_mass_median = median(body_mass_g))\n\n# A tibble: 3 × 2\n  species   body_mass_median\n  &lt;fct&gt;                &lt;dbl&gt;\n1 Adelie                3700\n2 Chinstrap             3700\n3 Gentoo                5050"
-  },
-  {
-    "objectID": "slides/day1-afternoon.html#using-summarise-with-multiple-calculations",
-    "href": "slides/day1-afternoon.html#using-summarise-with-multiple-calculations",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Using summarise() with Multiple Calculations",
-    "text": "Using summarise() with Multiple Calculations\n\nUse summarise() to calculate multiple summary statistics at once.\nInclude multiple columns and functions in a single call.\n\n\npenguins %&gt;%\n  drop_na() %&gt;%\n  group_by(species) %&gt;%\n  summarise(body_mass_median = median(body_mass_g), \n            bill_depth_median = median(bill_depth_mm),\n            flipper_length_median = median(flipper_length_mm),\n            bill_length_mm = median(bill_length_mm))\n\n# A tibble: 3 × 5\n  species   body_mass_median bill_depth_median flipper_length_median\n  &lt;fct&gt;                &lt;dbl&gt;             &lt;dbl&gt;                 &lt;dbl&gt;\n1 Adelie                3700              18.4                   190\n2 Chinstrap             3700              18.4                   196\n3 Gentoo                5050              15                     216\n# ℹ 1 more variable: bill_length_mm &lt;dbl&gt;\n\n\n\nYikes! This can get long. Is there a way to condense this?"
-  },
-  {
-    "objectID": "slides/day1-afternoon.html#using-across-to-apply-functions-to-multiple-columns-in-one-swoop",
-    "href": "slides/day1-afternoon.html#using-across-to-apply-functions-to-multiple-columns-in-one-swoop",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Using across() to Apply Functions to Multiple Columns in one Swoop",
-    "text": "Using across() to Apply Functions to Multiple Columns in one Swoop\n\nacross() applies a function (e.g., median) to multiple columns.\nIt’s especially useful for summarizing multiple numeric columns in one step.\n\n\npenguins %&gt;%\n  drop_na() %&gt;% \n  group_by(species) %&gt;%\n  summarise(across(where(is.numeric), median))\n\n# A tibble: 3 × 6\n  species   bill_length_mm bill_depth_mm flipper_length_mm body_mass_g  year\n  &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;\n1 Adelie              38.8          18.4               190        3700  2008\n2 Chinstrap           49.6          18.4               196        3700  2008\n3 Gentoo              47.4          15                 216        5050  2008"
+    "text": "Summarizing Data with summarise()\n\nsummarise() reduces data to summary statistics (e.g., mean, median).\nTypically used after group_by() to summarize each group.\n\n\ncases_df %&gt;%\n  group_by(geo_value) %&gt;%\n  summarise(median_cases = median(raw_cases))\n\n# A tibble: 3 × 2\n  geo_value median_cases\n  &lt;chr&gt;            &lt;dbl&gt;\n1 ca                3785\n2 nc                1224\n3 ny                2188"
   },
   {
     "objectID": "slides/day1-afternoon.html#using-count-to-aggregate-data",
     "href": "slides/day1-afternoon.html#using-count-to-aggregate-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Using count() to Aggregate Data",
-    "text": "Using count() to Aggregate Data\n\ncount() is a shortcut for grouping and summarizing the data:\n\nFor example, if we want to count the number of penguins by species, then\n\npenguins_count &lt;- penguins %&gt;%\n  group_by(species) %&gt;%\n  summarize(count = n())\n\nis equivalent to\n\npenguins_count &lt;- penguins %&gt;%\n  count(species)\n\npenguins_count # Let's see what the counts are.\n\n# A tibble: 3 × 2\n  species       n\n  &lt;fct&gt;     &lt;int&gt;\n1 Adelie      152\n2 Chinstrap    68\n3 Gentoo      124"
+    "text": "Using count() to Aggregate Data\ncount() is a shortcut for grouping and summarizing the data.\nFor example, if we want to get the total number of complete rows for each state, then\n\ncases_count &lt;- cases_df %&gt;%\n  drop_na() %&gt;% # Removes rows where any value is missing (from tidyr)\n  group_by(geo_value) %&gt;%\n  summarize(count = n())\n\nis equivalent to\n\ncases_count &lt;- cases_df %&gt;%\n  drop_na() %&gt;% \n  count(geo_value)\n\ncases_count # Let's see what the counts are.\n\n# A tibble: 3 × 2\n  geo_value     n\n  &lt;chr&gt;     &lt;int&gt;\n1 ca           31\n2 nc           31\n3 ny           31"
   },
   {
-    "objectID": "slides/day1-afternoon.html#tidy-data",
-    "href": "slides/day1-afternoon.html#tidy-data",
+    "objectID": "slides/day1-afternoon.html#key-practices-in-dplyr-round-2",
+    "href": "slides/day1-afternoon.html#key-practices-in-dplyr-round-2",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Tidy Data",
-    "text": "Tidy Data\n\n“Happy families are all alike; every unhappy family is unhappy in its own way.” — Leo Tolstoy\n\n\nTidy datasets are like happy families: consistent, standardized, and easy to work with.\n\nMessy datasets are like unhappy families: each one messy in its own unique way.\nIn this section:\nWe’ll define what makes data tidy and how to transform between the tidy and messy formats."
+    "section": "Key Practices in dplyr: Round 2",
+    "text": "Key Practices in dplyr: Round 2\n\nUse group_by() to group data by one or more variables before applying functions.\nUse mutate to create new columns or modify existing ones by applying functions to existing data.\nUse summarise to reduce data to summary statistics (e.g., mean, median).\ncount() is a convenient shortcut for counting rows by group without needing group_by() and summarise()."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#tidy-data-and-tolstoy",
+    "href": "slides/day1-afternoon.html#tidy-data-and-tolstoy",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidy Data and Tolstoy",
+    "text": "Tidy Data and Tolstoy\n\n“Happy families are all alike; every unhappy family is unhappy in its own way.” — Leo Tolstoy\n\n\nTidy datasets are like happy families: consistent, standardized, and easy to work with.\n\nMessy datasets are like unhappy families: each one messy in its own unique way.\nIn this section:\nWe’ll define what makes data tidy and how to transform between the tidy and messy formats."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#tidy-data-and-tolstoy-1",
+    "href": "slides/day1-afternoon.html#tidy-data-and-tolstoy-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidy Data and Tolstoy",
+    "text": "Tidy Data and Tolstoy\n\nArtwork by @allison_horst"
   },
   {
     "objectID": "slides/day1-afternoon.html#what-is-tidy-data",
     "href": "slides/day1-afternoon.html#what-is-tidy-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "What is Tidy Data?",
-    "text": "What is Tidy Data?\n\nTidy data follows a consistent structure: each row represents one observation, and each column represents one variable.\n\n\n\n# Simple example of messy data (wide format)\npenguins_wide &lt;- tibble(\n  island = c(\"Biscoe\", \"Biscoe\", \"Dream\"),\n  year = c(2007, 2008, 2007),\n  Adelie = c(10, 18, 20),\n  Gentoo = c(34, 46, 0)\n)\npenguins_wide\n\n# A tibble: 3 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0"
+    "text": "What is Tidy Data?\n\nTidy data follows a consistent structure: each row represents one observation, and each column represents one variable.\ncases_df is one classic example of tidy data.\n\n\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 nc        2022-03-01      1231\n3 ny        2022-03-01      1487\n4 ca        2022-03-02      7044\n5 nc        2022-03-02      2243\n6 ny        2022-03-02      1889\n\n\n\nTo convert between tidy and messy data, we can use the tidyr package in the tidyverse."
   },
   {
-    "objectID": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer",
-    "href": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer",
+    "objectID": "slides/day1-afternoon.html#pivot_wider-and-pivot_longer",
+    "href": "slides/day1-afternoon.html#pivot_wider-and-pivot_longer",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Tidying Messy Data with pivot_longer()",
-    "text": "Tidying Messy Data with pivot_longer()\n\nTo turn messy data into tidy data, we often use the tidyr package in the tidyverse.\nUse pivot_longer() to convert data from wide format (multiple columns for the same variable) to long format (one column per variable).\nThis makes it easier to perform group-based calculations or create visualizations.\n\n\n\n# A tibble: 6 × 4\n  island  year species count\n  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;\n1 Biscoe  2007 Adelie     10\n2 Biscoe  2007 Gentoo     34\n3 Biscoe  2008 Adelie     18\n4 Biscoe  2008 Gentoo     46\n5 Dream   2007 Adelie     20\n6 Dream   2007 Gentoo      0"
+    "section": "pivot_wider() and pivot_longer()",
+    "text": "pivot_wider() and pivot_longer()\n\n  Artwork by @allison_horst"
   },
   {
     "objectID": "slides/day1-afternoon.html#making-data-wider-with-pivot_wider",
     "href": "slides/day1-afternoon.html#making-data-wider-with-pivot_wider",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Making Data Wider with pivot_wider()",
-    "text": "Making Data Wider with pivot_wider()\n\nSometimes, you need to convert data from long format to wide format using pivot_wider().\nThis can be useful when you want to separate variables into individual columns.\nLet’s try converting penguins_tidy back to penguins_wide!\n\n\n# Pivoting long data back to wide format\npenguins_wide_back &lt;- penguins_tidy %&gt;%\n  pivot_wider(names_from = species, values_from = count)\n\npenguins_wide_back\n\n# A tibble: 3 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0"
+    "text": "Making Data Wider with pivot_wider()\n\n\nTo convert data from long format to wide/messy format usepivot_wider().\nFor example, let’s try creating a column for each time value in cases_df:\n\n\n\n\nmessy_cases_df &lt;- cases_df %&gt;%\n  pivot_wider(\n    names_from = time_value,   # Create new columns for each unique date\n    values_from = raw_cases    # Fill those columns with the raw_case values\n  )\n\n# View the result\nmessy_cases_df\n\n# A tibble: 3 × 32\n  geo_value `2022-03-01` `2022-03-02` `2022-03-03` `2022-03-04` `2022-03-05`\n  &lt;chr&gt;            &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;\n1 ca                4310         7044         7509         3586         1438\n2 nc                1231         2243         2377         2646            0\n3 ny                1487         1889         2390          350         3372\n# ℹ 26 more variables: `2022-03-06` &lt;dbl&gt;, `2022-03-07` &lt;dbl&gt;,\n#   `2022-03-08` &lt;dbl&gt;, `2022-03-09` &lt;dbl&gt;, `2022-03-10` &lt;dbl&gt;,\n#   `2022-03-11` &lt;dbl&gt;, `2022-03-12` &lt;dbl&gt;, `2022-03-13` &lt;dbl&gt;,\n#   `2022-03-14` &lt;dbl&gt;, `2022-03-15` &lt;dbl&gt;, `2022-03-16` &lt;dbl&gt;,\n#   `2022-03-17` &lt;dbl&gt;, `2022-03-18` &lt;dbl&gt;, `2022-03-19` &lt;dbl&gt;,\n#   `2022-03-20` &lt;dbl&gt;, `2022-03-21` &lt;dbl&gt;, `2022-03-22` &lt;dbl&gt;,\n#   `2022-03-23` &lt;dbl&gt;, `2022-03-24` &lt;dbl&gt;, `2022-03-25` &lt;dbl&gt;, …"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer",
+    "href": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidying Messy Data with pivot_longer()",
+    "text": "Tidying Messy Data with pivot_longer()\n\nUse pivot_longer() to convert data from wide format (multiple columns for the same variable) to long format (one column per variable).\nLet’s try turning messy_cases_df back into the original tidy cases_df!\n\n\ntidy_cases_df &lt;- messy_cases_df %&gt;%\n  pivot_longer(\n    cols = -geo_value,          # Keep the 'geo_value' column as it is\n    names_to = \"time_value\",    # Create a new 'time_value' column from the column names\n    values_to = \"raw_cases\"     # Values from the wide columns should go into 'raw_cases'\n  )\n\n# View the result\nhead(tidy_cases_df, n = 3) # Notice the class of time_value here\n\n# A tibble: 3 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03      7509"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer-1",
+    "href": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidying Messy Data with pivot_longer()",
+    "text": "Tidying Messy Data with pivot_longer()\n\nWhen we used pivot_longer(), the time_value column is converted to a character class because the column names are treated as strings.\nSo, to truly get the original cases_df we need to convert time_value back to the Date class.\nThen, we can use identical() to check if the two data frames are exactly the same.\n\n\ntidy_cases_df = tidy_cases_df %&gt;% mutate(time_value = as.Date(time_value))\n\nidentical(tidy_cases_df %&gt;% arrange(time_value), cases_df)\n\n[1] TRUE\n\n\nGreat. That was a success!"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#missing-data",
+    "href": "slides/day1-afternoon.html#missing-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Missing Data",
+    "text": "Missing Data\n\nSometimes you may have missing data in your time series.\nCan be due to actual missing data, or it can be due to the fact that the data is only reported on certain days.\nLet’s create a dataset with missing data & consider each of those cases:\n\n\nca_missing &lt;- cases_df %&gt;%\n  filter(geo_value == \"ca\") %&gt;%\n  slice(1:2, 4:6) # Select rows 1 to 2 and 4 to 6; ie. omit 2022-03-03\n\nca_missing\n\n# A tibble: 5 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-04      3586\n4 ca        2022-03-05      1438\n5 ca        2022-03-06      6465"
   },
   {
     "objectID": "slides/day1-afternoon.html#complete-and-fill-to-handle-missing-data",
     "href": "slides/day1-afternoon.html#complete-and-fill-to-handle-missing-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "complete() and fill() to Handle Missing Data",
-    "text": "complete() and fill() to Handle Missing Data\n\n\ncomplete(): Adds missing rows for combinations of specified variables.\nfill(): Fills missing values in columns, typically from previous or next available values (default is LOCF).\n\n\n\n# First, use complete() to add missing year (2008 for Dream)\npenguins_complete &lt;- penguins_wide %&gt;%\n  complete(island, year)\npenguins_complete\n\n# A tibble: 4 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0\n4 Dream   2008     NA     NA\n\n\n\n# Then, use fill() to fill the missing penguin counts\npenguins_complete %&gt;%\n  fill(Adelie, Gentoo)\n\n# A tibble: 4 × 4\n  island  year Adelie Gentoo\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1 Biscoe  2007     10     34\n2 Biscoe  2008     18     46\n3 Dream   2007     20      0\n4 Dream   2008     20      0"
+    "text": "complete() and fill() to Handle Missing Data\nA simple workflow to handle missing data relies on one or both of these functions:\n\ncomplete(): Adds missing rows for combinations of specified variables.\nfill(): Fills missing values in columns, typically from previous or next available values (default is LOCF)."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#data-only-reported-on-certain-days",
+    "href": "slides/day1-afternoon.html#data-only-reported-on-certain-days",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Data Only Reported on Certain Days",
+    "text": "Data Only Reported on Certain Days\n\nIf the data is only reported on certain days, it is often useful to fill in the missing data with explicit zeros.\ncomplete() is enough to handle this:\n\n\n# First, use complete() to add missing time_value (2022-03-03)\nca_complete &lt;- ca_missing %&gt;%\n  complete(geo_value, time_value = seq(min(time_value), max(time_value), by = \"day\"),\n           fill = list(raw_cases = 0))\nca_complete\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03         0\n4 ca        2022-03-04      3586\n5 ca        2022-03-05      1438\n6 ca        2022-03-06      6465"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#data-is-genuinely-missing",
+    "href": "slides/day1-afternoon.html#data-is-genuinely-missing",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Data is Genuinely Missing",
+    "text": "Data is Genuinely Missing\n\nIf the data is truly missing, then there are multiple options (ex. omission, single imputation, multiple imputation).\nA common single imputation method used to handle missing data in time series or longitudinal datasets is LOCF.\nWe can easily perform LOCF using complete() followed by fill().\nStart with complete():\n\n\n# First, use complete() to add missing time_value (2022-03-03)\nca_complete &lt;- ca_missing %&gt;%\n  complete(geo_value, time_value = seq(min(time_value), max(time_value), by = \"day\"))\nhead(ca_complete, n = 4) # notice no fill with 0s this time, NA by default\n\n# A tibble: 4 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03        NA\n4 ca        2022-03-04      3586"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#data-is-genuinely-missing-1",
+    "href": "slides/day1-afternoon.html#data-is-genuinely-missing-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Data is Genuinely Missing",
+    "text": "Data is Genuinely Missing\nThen, use fill() to fill the counts using LOCF (default):\n\nca_complete %&gt;%\n  fill(raw_cases)\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03      7044\n4 ca        2022-03-04      3586\n5 ca        2022-03-05      1438\n6 ca        2022-03-06      6465"
   },
   {
     "objectID": "slides/day1-afternoon.html#introduction-to-joins-in-dplyr",
     "href": "slides/day1-afternoon.html#introduction-to-joins-in-dplyr",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Introduction to Joins in dplyr",
-    "text": "Introduction to Joins in dplyr\n\n\nJoining datasets is a powerful tool for combining info. from multiple sources.\nIn R, dplyr provides several functions to perform different types of joins.\nWe’ll demonstrate joining penguins_complete (our penguin counts dataset) with island_info (dataset containing additional info. about the islands).\n\n\n# Island information dataset\nisland_info &lt;- tibble(\n  island = c(\"Biscoe\", \"Dream\", \"Torgersen\"),\n  location = c(\"Antarctica\", \"Antarctica\", \"Antarctica\"),\n  region = c(\"West\", \"East\", \"East\")\n)\n\nisland_info\n\n# A tibble: 3 × 3\n  island    location   region\n  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe    Antarctica West  \n2 Dream     Antarctica East  \n3 Torgersen Antarctica East  \n\n\n\nNotice that the island_info dataset includes an island, Torgersen, that is not in penguins_complete."
+    "text": "Introduction to Joins in dplyr\n\nJoining datasets is a powerful tool for combining info. from multiple sources.\nIn R, dplyr provides several functions to perform different types of joins.\nWe’ll demonstrate joining a subset of cases_df (our case counts dataset) with state_census.\nMotivation: We can scale the case counts by population to make them comparable across regions of different sizes."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#subset-cases_df",
+    "href": "slides/day1-afternoon.html#subset-cases_df",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Subset cases_df",
+    "text": "Subset cases_df\nTo simplify things, let’s use filter() to only grab one date of cases_df:\n\ncases_df_sub = cases_df %&gt;% filter(time_value == \"2022-03-01\") \ncases_df_sub\n\n# A tibble: 3 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 nc        2022-03-01      1231\n3 ny        2022-03-01      1487\n\n\nThough note that what we’re going to do can be applied to the entirety of cases_df."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#load-state-census-data",
+    "href": "slides/day1-afternoon.html#load-state-census-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Load State Census Data",
+    "text": "Load State Census Data\nThe state_census dataset from epidatasets contains state populations from the 2019 census.\n\n# State census dataset from epidatasets\nlibrary(epidatasets)\nstate_census = state_census %&gt;% select(abbr, pop) %&gt;% filter(abbr != \"us\")\n\nstate_census %&gt;% head()\n\n# A tibble: 6 × 2\n  abbr       pop\n  &lt;chr&gt;    &lt;dbl&gt;\n1 al     4903185\n2 ak      731545\n3 az     7278717\n4 ar     3017804\n5 ca    39512223\n6 co     5758736\n\n\nNotice that this includes many states that are not in cases_df_sub."
   },
   {
     "objectID": "slides/day1-afternoon.html#left-join-keep-all-rows-from-the-first-dataset",
     "href": "slides/day1-afternoon.html#left-join-keep-all-rows-from-the-first-dataset",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Left Join: Keep All Rows from the First Dataset",
-    "text": "Left Join: Keep All Rows from the First Dataset\n\nA left join keeps all rows from the first dataset (penguins_complete), and adds matching data from the second dataset (island_info).\nSo all rows from the first dataset (penguins_complete) will be preserved.\nThe datasets are joined by matching the island column, specified by the by argument.\n\n\n# Left join: combining penguins data with island info\npenguins_with_info &lt;- penguins_complete %&gt;%\n  left_join(island_info, by = \"island\")\n\npenguins_with_info\n\n# A tibble: 4 × 6\n  island  year Adelie Gentoo location   region\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe  2007     10     34 Antarctica West  \n2 Biscoe  2008     18     46 Antarctica West  \n3 Dream   2007     20      0 Antarctica East  \n4 Dream   2008     NA     NA Antarctica East"
+    "text": "Left Join: Keep All Rows from the First Dataset\n\nA left join keeps all rows from the first dataset (cases_df_sub), and adds matching data from the second dataset (state_census).\nSo all rows from the first dataset (cases_df_sub) will be preserved.\nThe datasets are joined by matching the geo_value column, specified by the by argument.\n\n\n# Left join: combining March 1, 2022 state case data with the census data\ncases_left_join &lt;- cases_df_sub %&gt;%\n  left_join(state_census, by = c(\"geo_value\" = \"abbr\"))\n\ncases_left_join\n\n# A tibble: 3 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561"
   },
   {
     "objectID": "slides/day1-afternoon.html#right-join-keep-all-rows-from-the-second-dataset",
     "href": "slides/day1-afternoon.html#right-join-keep-all-rows-from-the-second-dataset",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Right Join: Keep All Rows from the Second Dataset",
-    "text": "Right Join: Keep All Rows from the Second Dataset\n\nA right join keeps all rows from the second dataset (island_info), and adds matching data from the first dataset (penguins_complete).\nIf a row in the second dataset doesn’t have a match in the first, then the columns from the first will be filled with NA.\nWe can see this for the Torgersen row from island_info…\n\n\n# Right join: keep all rows from island_info\npenguins_right_join &lt;- penguins_complete %&gt;%\n  right_join(island_info, by = \"island\")\n\npenguins_right_join\n\n# A tibble: 5 × 6\n  island     year Adelie Gentoo location   region\n  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe     2007     10     34 Antarctica West  \n2 Biscoe     2008     18     46 Antarctica West  \n3 Dream      2007     20      0 Antarctica East  \n4 Dream      2008     NA     NA Antarctica East  \n5 Torgersen    NA     NA     NA Antarctica East"
+    "text": "Right Join: Keep All Rows from the Second Dataset\n\n\nA right join keeps all rows from the second dataset (state_census), and adds matching data from the first dataset (cases_df_sub).\nIf a row in the second dataset doesn’t have a match in the first, then the columns from the first will be filled with NA.\nFor example, can see this for the al row from state_census…\n\n\n\n# Right join: keep all rows from state_census\ncases_right_join &lt;- cases_df_sub %&gt;%\n  right_join(state_census, by = c(\"geo_value\" = \"abbr\"))\n\nhead(cases_right_join)\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561\n4 al        NA                NA  4903185\n5 ak        NA                NA   731545\n6 az        NA                NA  7278717"
   },
   {
     "objectID": "slides/day1-afternoon.html#inner-join-only-keeping-matching-rows",
     "href": "slides/day1-afternoon.html#inner-join-only-keeping-matching-rows",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Inner Join: Only Keeping Matching Rows",
-    "text": "Inner Join: Only Keeping Matching Rows\n\nAn inner join will only keep rows where there is a match in both datasets.\nSo, if an island in island_info does not have a corresponding entry in penguins_complete, then that row will be excluded.\n\n\n# Inner join: only matching rows are kept\npenguins_inner_join &lt;- penguins_complete %&gt;%\n  inner_join(island_info, by = \"island\")\n\npenguins_inner_join\n\n# A tibble: 4 × 6\n  island  year Adelie Gentoo location   region\n  &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe  2007     10     34 Antarctica West  \n2 Biscoe  2008     18     46 Antarctica West  \n3 Dream   2007     20      0 Antarctica East  \n4 Dream   2008     NA     NA Antarctica East"
+    "text": "Inner Join: Only Keeping Matching Rows\n\nAn inner join will only keep rows where there is a match in both datasets.\nSo, if a state in state_census does not have a corresponding entry in cases_df_sub, then that row will be excluded.\n\n\n# Inner join: only matching rows are kept\ncases_inner_join &lt;- cases_df_sub %&gt;%\n  inner_join(state_census, by = c(\"geo_value\" = \"abbr\"))\n\ncases_inner_join\n\n# A tibble: 3 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561"
   },
   {
     "objectID": "slides/day1-afternoon.html#full-join-keeping-all-rows-from-both-datasets",
     "href": "slides/day1-afternoon.html#full-join-keeping-all-rows-from-both-datasets",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Full Join: Keeping All Rows from Both Datasets",
-    "text": "Full Join: Keeping All Rows from Both Datasets\n\nA full join will keep all rows from both datasets.\nIf an island in either dataset has no match in the other, the missing values will be filled with NA.\n\n\n# Full join: keep all rows from both datasets\npenguins_full_join &lt;- penguins_complete %&gt;%\n  full_join(island_info, by = \"island\")\n\npenguins_full_join\n\n# A tibble: 5 × 6\n  island     year Adelie Gentoo location   region\n  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; \n1 Biscoe     2007     10     34 Antarctica West  \n2 Biscoe     2008     18     46 Antarctica West  \n3 Dream      2007     20      0 Antarctica East  \n4 Dream      2008     NA     NA Antarctica East  \n5 Torgersen    NA     NA     NA Antarctica East"
+    "text": "Full Join: Keeping All Rows from Both Datasets\n\nA full join will keep all rows from both datasets.\nIf a state in either dataset has no match in the other, the missing values will be filled with NA.\n\n\n# Full join: keep all rows from both datasets\ncases_full_join &lt;- cases_df_sub %&gt;%\n  full_join(state_census, by = c(\"geo_value\" = \"abbr\"))\n\nhead(cases_full_join)\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561\n4 al        NA                NA  4903185\n5 ak        NA                NA   731545\n6 az        NA                NA  7278717"
   },
   {
     "objectID": "slides/day1-afternoon.html#summary-of-the-four-join-functions",
@@ -262,78 +332,120 @@
     "objectID": "slides/day1-afternoon.html#final-thoughts-on-joins",
     "href": "slides/day1-afternoon.html#final-thoughts-on-joins",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Final thoughts on joins",
-    "text": "Final thoughts on joins\n\nJoins are an essential part of data wrangling in R.\nThe choice of join depends on the analysis you need to perform:\n\nUse left joins when you want to keep all data from the first dataset.\nUse right joins when you want to keep all data from the second dataset.\nUse inner joins when you’re only interested in matching rows.\nUse full joins when you want to preserve all information from both datasets."
+    "section": "Final Thoughts on Joins",
+    "text": "Final Thoughts on Joins\n\nJoins are an essential part of data wrangling in R.\nThe choice of join depends on the analysis you need to perform:\n\nUse left joins when you want to keep all data from the first dataset.\nUse right joins when you want to keep all data from the second dataset.\nUse inner joins when you’re only interested in matching rows.\nUse full joins when you want to preserve all information from both datasets."
   },
   {
-    "objectID": "slides/day1-afternoon.html#goodbye-palmer-penguins",
-    "href": "slides/day1-afternoon.html#goodbye-palmer-penguins",
+    "objectID": "slides/day1-afternoon.html#three-review-questions",
+    "href": "slides/day1-afternoon.html#three-review-questions",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Goodbye palmer penguins",
-    "text": "Goodbye palmer penguins\n\nWhat’s a penguin’s favorite tool?\n%&gt;% — to keep the fish moving, from one catch to the next! 🐧\n\n\nLogo from the palmerpenguins website"
+    "section": "Three Review Questions",
+    "text": "Three Review Questions\nQ1): What can we use to fill in the missing time_value for the states in cases_full_join?\n\n\nCode\ncases_full_join %&gt;% \n     fill(time_value)\n\n\n# A tibble: 56 × 4\n   geo_value time_value raw_cases      pop\n   &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n 1 ca        2022-03-01      4310 39512223\n 2 nc        2022-03-01      1231 10488084\n 3 ny        2022-03-01      1487 19453561\n 4 al        2022-03-01        NA  4903185\n 5 ak        2022-03-01        NA   731545\n 6 az        2022-03-01        NA  7278717\n 7 ar        2022-03-01        NA  3017804\n 8 co        2022-03-01        NA  5758736\n 9 ct        2022-03-01        NA  3565287\n10 de        2022-03-01        NA   973764\n# ℹ 46 more rows\n\n\nQ2): Now, what join function should you use if your goal is to scale the cases by population in cases_df?\n\n\nCode\n# Either left_join\ncases_left_join &lt;- cases_df %&gt;%\n  left_join(state_census, by = c(\"geo_value\" = \"abbr\"))\n\ncases_left_join\n\n\n# A tibble: 93 × 4\n   geo_value time_value raw_cases      pop\n   &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n 1 ca        2022-03-01      4310 39512223\n 2 nc        2022-03-01      1231 10488084\n 3 ny        2022-03-01      1487 19453561\n 4 ca        2022-03-02      7044 39512223\n 5 nc        2022-03-02      2243 10488084\n 6 ny        2022-03-02      1889 19453561\n 7 ca        2022-03-03      7509 39512223\n 8 nc        2022-03-03      2377 10488084\n 9 ny        2022-03-03      2390 19453561\n10 ca        2022-03-04      3586 39512223\n# ℹ 83 more rows\n\n\nCode\ncases_df = cases_left_join\n\n# Or inner_join\ncases_inner_join &lt;- cases_df %&gt;%\n  inner_join(state_census, by = c(\"geo_value\" = \"abbr\"))\n\ncases_inner_join\n\n\n# A tibble: 93 × 5\n   geo_value time_value raw_cases    pop.x    pop.y\n   &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;\n 1 ca        2022-03-01      4310 39512223 39512223\n 2 nc        2022-03-01      1231 10488084 10488084\n 3 ny        2022-03-01      1487 19453561 19453561\n 4 ca        2022-03-02      7044 39512223 39512223\n 5 nc        2022-03-02      2243 10488084 10488084\n 6 ny        2022-03-02      1889 19453561 19453561\n 7 ca        2022-03-03      7509 39512223 39512223\n 8 nc        2022-03-03      2377 10488084 10488084\n 9 ny        2022-03-03      2390 19453561 19453561\n10 ca        2022-03-04      3586 39512223 39512223\n# ℹ 83 more rows\n\n\nQ3): Finally, please create a new column in cases_df where you scale the cases by population and multiply by 1e5 to get cases / 100k.\n\n\nCode\ncases_df &lt;- cases_df %&gt;%\n  mutate(scaled_cases = raw_cases / pop * 1e5) # cases / 100K\nhead(cases_df)\n\n\n# A tibble: 6 × 5\n  geo_value time_value raw_cases      pop scaled_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223        10.9 \n2 nc        2022-03-01      1231 10488084        11.7 \n3 ny        2022-03-01      1487 19453561         7.64\n4 ca        2022-03-02      7044 39512223        17.8 \n5 nc        2022-03-02      2243 10488084        21.4 \n6 ny        2022-03-02      1889 19453561         9.71"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess",
+    "href": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Epi. Data Processing with epiprocess",
+    "text": "Epi. Data Processing with epiprocess\n\n\nepiprocess is a package that offers additional functionality to pre-process such epidemiological data.\nYou can work with an epi_df like you can with a tibble by using dplyr verbs.\nFor example, on cases_df, we can easily use epi_slide_mean() to calculate trailing 14 day averages of cases:\n\n\n\ncases_df &lt;- cases_df %&gt;%\n  as_epi_df(as_of = as.Date(\"2024-01-01\")) %&gt;%\n  group_by(geo_value) %&gt;%\n  epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) %&gt;%\n  rename(smoothed_scaled_cases = slide_value_scaled_cases) \n\nhead(cases_df)\n\nAn `epi_df` object, 6 x 6 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-01-01\n\n# A tibble: 6 × 6\n# Groups:   geo_value [1]\n  geo_value time_value raw_cases      pop scaled_cases smoothed_scaled_cases\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223        10.9                   10.9\n2 ca        2022-03-02      7044 39512223        17.8                   14.4\n3 ca        2022-03-03      7509 39512223        19.0                   15.9\n4 ca        2022-03-04      3586 39512223         9.08                  14.2\n5 ca        2022-03-05      1438 39512223         3.64                  12.1\n6 ca        2022-03-06      6465 39512223        16.4                   12.8"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-1",
+    "href": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Epi. Data Processing with epiprocess",
+    "text": "Epi. Data Processing with epiprocess\nIt is easy to produce an autoplot the smoothed confirmed daily cases for each geo_value:\n\ncases_df %&gt;%\n  autoplot(smoothed_scaled_cases)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-2",
+    "href": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Epi. Data Processing with epiprocess",
+    "text": "Epi. Data Processing with epiprocess\nAlternatively, we can display both the smoothed and the original daily case rates:\n\nNow, before exploring some more features of epiprocess, let’s have a look at the epiverse software ecosystem it’s part of…"
   },
   {
     "objectID": "slides/day1-afternoon.html#the-epiverse-ecosystem",
     "href": "slides/day1-afternoon.html#the-epiverse-ecosystem",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "The epiverse ecosystem",
-    "text": "The epiverse ecosystem\nInterworking, community-driven, packages for epi tracking & forecasting."
+    "section": "The Epiverse Ecosystem",
+    "text": "The Epiverse Ecosystem\nInterworking, community-driven, packages for epi tracking & forecasting."
   },
   {
     "objectID": "slides/day1-afternoon.html#what-is-panel-data",
     "href": "slides/day1-afternoon.html#what-is-panel-data",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "What is panel data?",
-    "text": "What is panel data?\n\n\nRecall that panel data, or longitudinal data, contain cross-sectional measurements of subjects over time.\nBuilt-in example: covid_case_death_rates dataset, which is a snapshot as of May 31, 2022 that contains daily state-wise measures of case_rate and death_rate for COVID-19 in 2021:\n\n\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 6 × 4\n  geo_value time_value case_rate death_rate\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ak        2020-12-31      35.9      0.158\n2 al        2020-12-31      65.1      0.438\n3 ar        2020-12-31      66.0      1.27 \n4 as        2020-12-31       0        0    \n5 az        2020-12-31      76.8      1.10 \n6 ca        2020-12-31      96.0      0.751\n\n\n\nHow do we store & work with such snapshots in the epiverse software ecosystem?"
+    "section": "What is Panel Data?",
+    "text": "What is Panel Data?\n\n\nRecall that panel data, or longitudinal data, contain cross-sectional measurements of subjects over time.\nBuilt-in example: covid_case_death_rates dataset, which is a snapshot as of May 31, 2022 that contains daily state-wise measures of case_rate and death_rate for COVID-19 in 2021:\n\n\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 6 × 4\n  geo_value time_value case_rate death_rate\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ak        2020-12-31      35.9      0.158\n2 al        2020-12-31      65.1      0.438\n3 ar        2020-12-31      66.0      1.27 \n4 as        2020-12-31       0        0    \n5 az        2020-12-31      76.8      1.10 \n6 ca        2020-12-31      96.0      0.751\n\n\n\nHow do we store & work with such snapshots in the epiverse software ecosystem?"
   },
   {
-    "objectID": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set",
-    "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set",
+    "objectID": "slides/day1-afternoon.html#epi_df-snapshot-of-a-dataset",
+    "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-dataset",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "epi_df: snapshot of a data set",
-    "text": "epi_df: snapshot of a data set\n\nYou can convert panel data into an epi_df with the required geo_value and time_value columns\n\nTherefore, an epi_df is… * a tibble that requires columns geo_value and time_value. * arbitrary additional columns containing measured values * additional keys to index (age_group, ethnicity, etc.)\n\n\n\n\n\n\nepi_df\n\n\nRepresents a snapshot that contains the most up-to-date values of the signal variables, as of a given time."
+    "section": "epi_df: Snapshot of a Dataset",
+    "text": "epi_df: Snapshot of a Dataset\n\nYou can convert panel data into an epi_df with the required geo_value and time_value columns\n\nTherefore, an epi_df is… * a tibble that requires columns geo_value and time_value. * arbitrary additional columns containing measured values * additional keys to index (age_group, ethnicity, etc.)\n\n\n\n\n\n\nepi_df\n\n\nRepresents a snapshot that contains the most up-to-date values of the signal variables, as of a given time."
   },
   {
-    "objectID": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set-1",
-    "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-data-set-1",
+    "objectID": "slides/day1-afternoon.html#epi_df-snapshot-of-a-dataset-1",
+    "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-dataset-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "epi_df: snapshot of a data set",
-    "text": "epi_df: snapshot of a data set\n\nedf &lt;- covid_case_death_rates\nedf\n\nAn `epi_df` object, 20,496 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 20,496 × 4\n   geo_value time_value case_rate death_rate\n * &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n 1 ak        2020-12-31      35.9      0.158\n 2 al        2020-12-31      65.1      0.438\n 3 ar        2020-12-31      66.0      1.27 \n 4 as        2020-12-31       0        0    \n 5 az        2020-12-31      76.8      1.10 \n 6 ca        2020-12-31      96.0      0.751\n 7 co        2020-12-31      35.8      0.649\n 8 ct        2020-12-31      52.1      0.819\n 9 dc        2020-12-31      31.0      0.601\n10 de        2020-12-31      64.3      0.912\n# ℹ 20,486 more rows"
+    "section": "epi_df: Snapshot of a Dataset",
+    "text": "epi_df: Snapshot of a Dataset\n\nedf &lt;- covid_case_death_rates\nedf\n\nAn `epi_df` object, 20,496 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 20,496 × 4\n   geo_value time_value case_rate death_rate\n * &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n 1 ak        2020-12-31      35.9      0.158\n 2 al        2020-12-31      65.1      0.438\n 3 ar        2020-12-31      66.0      1.27 \n 4 as        2020-12-31       0        0    \n 5 az        2020-12-31      76.8      1.10 \n 6 ca        2020-12-31      96.0      0.751\n 7 co        2020-12-31      35.8      0.649\n 8 ct        2020-12-31      52.1      0.819\n 9 dc        2020-12-31      31.0      0.601\n10 de        2020-12-31      64.3      0.912\n# ℹ 20,486 more rows"
   },
   {
-    "objectID": "slides/day1-afternoon.html#sliding-examples-on-epi_df",
-    "href": "slides/day1-afternoon.html#sliding-examples-on-epi_df",
+    "objectID": "slides/day1-afternoon.html#examples-of-preprocessing",
+    "href": "slides/day1-afternoon.html#examples-of-preprocessing",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Sliding examples on epi_df",
-    "text": "Sliding examples on epi_df\nGrowth rates\n\nedf &lt;- filter(edf, geo_value %in% c(\"ut\", \"ca\")) %&gt;%\n  group_by(geo_value) %&gt;%\n  mutate(gr_cases = growth_rate(time_value, case_rate, method = \"trend_filter\"))"
+    "section": "Examples of Preprocessing",
+    "text": "Examples of Preprocessing\nEDA Features\n\nMaking locations commensurate (per capita scaling)\nCorrelating signals across location or time\nComputing growth rates\nDetecting and removing outliers\nDealing with revisions"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#features---correlations-at-different-lags",
+    "href": "slides/day1-afternoon.html#features---correlations-at-different-lags",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features - Correlations at Different Lags",
+    "text": "Features - Correlations at Different Lags\n\ncor0 &lt;- epi_cor(edf, case_rate, death_rate, cor_by = time_value)\ncor14 &lt;- epi_cor(edf, case_rate, death_rate, cor_by = time_value, dt1 = -14)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#features---compute-growth-rates",
+    "href": "slides/day1-afternoon.html#features---compute-growth-rates",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features - Compute Growth Rates",
+    "text": "Features - Compute Growth Rates\n\nedf &lt;- filter(edf, geo_value %in% c(\"ut\", \"ca\")) %&gt;%\n  group_by(geo_value) %&gt;%\n  mutate(gr_cases = growth_rate(time_value, case_rate, method = \"trend_filter\"))"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#features---outlier-detection",
+    "href": "slides/day1-afternoon.html#features---outlier-detection",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features - Outlier Detection",
+    "text": "Features - Outlier Detection"
   },
   {
     "objectID": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs",
     "href": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "epi_archive: collection of epi_dfs",
-    "text": "epi_archive: collection of epi_dfs\n\nfull version history of a data set\nacts like a bunch of epi_dfs — but stored compactly\nallows similar functionality as epi_df but using only data that would have been available at the time\n\n\n\n\n\n\n\nRevisions\n\n\nEpidemiology data gets revised frequently.\n\nWe may want to use the data as it looked in the past\nor we may want to examine the history of revisions."
+    "section": "epi_archive: Collection of epi_dfs",
+    "text": "epi_archive: Collection of epi_dfs\n\nfull version history of a data set\nacts like a bunch of epi_dfs — but stored compactly\nallows similar functionality as epi_df but using only data that would have been available at the time\n\n\n\n\n\n\n\nRevisions\n\n\nEpidemiology data gets revised frequently.\n\nWe may want to use the data as it looked in the past\nor we may want to examine the history of revisions."
   },
   {
     "objectID": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs-1",
     "href": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "epi_archive: collection of epi_dfs",
-    "text": "epi_archive: collection of epi_dfs\n\narchive_cases_dv_subset\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-06-01 / 2021-11-30\nℹ First/last version with update: 2020-06-02 / 2021-12-01\nℹ Versions end: 2021-12-01\nℹ A preview of the table (129638 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version percent_cli case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n     1:        ca 2020-06-01 2020-06-02          NA        6.628329\n     2:        ca 2020-06-01 2020-06-06    2.140116        6.628329\n     3:        ca 2020-06-01 2020-06-07    2.140116        6.628329\n     4:        ca 2020-06-01 2020-06-08    2.140379        6.628329\n     5:        ca 2020-06-01 2020-06-09    2.114430        6.628329\n    ---                                                            \n129634:        tx 2021-11-26 2021-11-29    1.858596        7.957657\n129635:        tx 2021-11-27 2021-11-28          NA        7.174299\n129636:        tx 2021-11-28 2021-11-29          NA        6.834681\n129637:        tx 2021-11-29 2021-11-30          NA        8.841247\n129638:        tx 2021-11-30 2021-12-01          NA        9.566218"
+    "section": "epi_archive: Collection of epi_dfs",
+    "text": "epi_archive: Collection of epi_dfs\n\narchive_cases_dv_subset\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-06-01 / 2021-11-30\nℹ First/last version with update: 2020-06-02 / 2021-12-01\nℹ Versions end: 2021-12-01\nℹ A preview of the table (129638 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version percent_cli case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n     1:        ca 2020-06-01 2020-06-02          NA        6.628329\n     2:        ca 2020-06-01 2020-06-06    2.140116        6.628329\n     3:        ca 2020-06-01 2020-06-07    2.140116        6.628329\n     4:        ca 2020-06-01 2020-06-08    2.140379        6.628329\n     5:        ca 2020-06-01 2020-06-09    2.114430        6.628329\n    ---                                                            \n129634:        tx 2021-11-26 2021-11-29    1.858596        7.957657\n129635:        tx 2021-11-27 2021-11-28          NA        7.174299\n129636:        tx 2021-11-28 2021-11-29          NA        6.834681\n129637:        tx 2021-11-29 2021-11-30          NA        8.841247\n129638:        tx 2021-11-30 2021-12-01          NA        9.566218"
   },
   {
     "objectID": "slides/day1-afternoon.html#revision-patterns",
     "href": "slides/day1-afternoon.html#revision-patterns",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Revision patterns",
-    "text": "Revision patterns"
+    "section": "Revision Patterns",
+    "text": "Revision Patterns"
   },
   {
     "objectID": "slides/day1-afternoon.html#finalized-data",
     "href": "slides/day1-afternoon.html#finalized-data",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Finalized data",
-    "text": "Finalized data\n\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\n\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)"
+    "section": "Finalized Data",
+    "text": "Finalized Data\n\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\n\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)"
   },
   {
     "objectID": "slides/day1-afternoon.html#backfill-canadian-edition",
@@ -353,134 +465,134 @@
     "objectID": "slides/day1-afternoon.html#mathematical-setup",
     "href": "slides/day1-afternoon.html#mathematical-setup",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Mathematical setup",
-    "text": "Mathematical setup\n\nSuppose today is time \\(t\\)\nLet \\(y_i\\) denote a series of interest observed at times \\(i=1,\\ldots, t\\).\n\n\n\n\nOur goal\n\n\n\nProduce a point nowcast for the finalized values of \\(y_t\\).\nAccompany with time-varying prediction intervals\n\n\n\n\n\nWe also have access to \\(p\\) other time series \\(x_{ij},\\; i=1,\\ldots,t, \\; j = 1,\\ldots,p\\)\nAll may be subject to revisions."
+    "section": "Mathematical Setup",
+    "text": "Mathematical Setup\n\nSuppose today is time \\(t\\)\nLet \\(y_i\\) denote a series of interest observed at times \\(i=1,\\ldots, t\\).\n\n\n\n\nOur goal\n\n\n\nProduce a point nowcast for the finalized values of \\(y_t\\).\nAccompany with time-varying prediction intervals\n\n\n\n\n\nWe also have access to \\(p\\) other time series \\(x_{ij},\\; i=1,\\ldots,t, \\; j = 1,\\ldots,p\\)\nAll may be subject to revisions."
   },
   {
-    "objectID": "slides/day1-afternoon.html#nowcasting-simple-ratio-ex-hhs-admissions",
-    "href": "slides/day1-afternoon.html#nowcasting-simple-ratio-ex-hhs-admissions",
+    "objectID": "slides/day1-afternoon.html#nowcasting-simple-ratio-ex-nchs-mortality",
+    "href": "slides/day1-afternoon.html#nowcasting-simple-ratio-ex-nchs-mortality",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Nowcasting Simple Ratio Ex: HHS Admissions",
-    "text": "Nowcasting Simple Ratio Ex: HHS Admissions\n\nIn this example, we will demonstrate the concept of nowcasting using HHS influenza admissions data (All confirmed influenza hospital admissions occurring each day).\nWe will work with provisional data (real-time reports) and compare them to finalized data (final reports).\nThe goal is to estimate or nowcast the admissions values for days when only provisional data is available."
+    "section": "Nowcasting Simple Ratio Ex: NCHS Mortality",
+    "text": "Nowcasting Simple Ratio Ex: NCHS Mortality\n\nIn this example, we’ll demonstrate the concept of nowcasting using NHCS mortality data (the number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population).\nWe will work with provisional data (real-time reports) and compare them to finalized data (final reports).\nThe goal is to estimate or nowcast the mortality rate for weeks when only provisional data is available."
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-versioned-data",
     "href": "slides/day1-afternoon.html#fetch-versioned-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Fetch Versioned Data",
-    "text": "Fetch Versioned Data\nLet’s fetch versioned admissions data from the API (pub_covidcast) for Georgia (geo_values = \"ga\") and the signal of interest (confirmed_admissions_influenza_1d) over February 2023.\n\n# Set the start and end dates for the analysis\nstart_time = as.Date(\"2023-02-01\")\nend_time = as.Date(\"2023-02-28\")\n\nadmissions_archive &lt;- pub_covidcast(\n  source = \"hhs\",\n  signals = \"confirmed_admissions_influenza_1d\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ga\",\n  time_values = \"*\", # all time values\n  issues = \"*\"\n) %&gt;% \n  filter(time_value &gt;= start_time & time_value &lt;= end_time) %&gt;%\n  select(geo_value, time_value, version = issue, admissions = value) %&gt;%\n  as_epi_archive(compactify = TRUE)"
+    "text": "Fetch Versioned Data\nLet’s fetch versioned mortality data from the API (pub_covidcast) for CA (geo_values = \"ca\") and the signal of interest (deaths_covid_incidence_num) over early 2024.\n\n# Fetch the versioned NCHS mortality data (weekly)\nmortality_archive &lt;- pub_covidcast(\n  source = \"nchs-mortality\",\n  signals = \"deaths_covid_incidence_num\",\n  geo_type = \"state\",\n  time_type = \"week\",\n  geo_values = \"ca\",  # California (CA)\n  time_values = epirange(202401, 202413),  \n  issues = \"*\"\n) %&gt;% \n  select(geo_value, time_value, version = issue, mortality = value) %&gt;% \n  as_epi_archive(compactify = TRUE)\n\n# Set the start and end days for the analysis \n# corresponding to the weeks entered in time_values\nstart_time = as.Date(\"2023-12-31\")\nend_time = as.Date(\"2024-03-24\")"
   },
   {
     "objectID": "slides/day1-afternoon.html#latency-in-reporting---minimum-lag",
     "href": "slides/day1-afternoon.html#latency-in-reporting---minimum-lag",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Latency in Reporting - Minimum Lag",
-    "text": "Latency in Reporting - Minimum Lag\n\nA quick inspection reveals that admissions are systematically 2 days latent (fixed lag).\n\n\nadmissions_revision_inspect = admissions_archive$DT %&gt;% mutate(version_time_diff = version - time_value)\nadmissions_revision_inspect %&gt;% group_by(time_value) %&gt;% slice(1) %&gt;% head()\n\n# A tibble: 6 × 5\n# Groups:   time_value [6]\n  geo_value time_value version    admissions version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;          &lt;dbl&gt; &lt;drtn&gt;           \n1 ga        2023-02-01 2023-02-03          6 2 days           \n2 ga        2023-02-02 2023-02-04         68 2 days           \n3 ga        2023-02-03 2023-02-05         11 2 days           \n4 ga        2023-02-04 2023-02-06         74 2 days           \n5 ga        2023-02-05 2023-02-07          9 2 days           \n6 ga        2023-02-06 2023-02-08          9 2 days           \n\n\n\nUse revision_summary() from epiprocess to generate basic statistics about the revision behavior for the dataset."
+    "text": "Latency in Reporting - Minimum Lag\n\nA quick inspection reveals that mortality rates are systematically 7 days latent (fixed lag).\n\n\nmortality_revision_inspect = mortality_archive$DT %&gt;% mutate(version_time_diff = version - time_value)\n\n# Look at the first revision for each week\nmortality_revision_inspect %&gt;% group_by(time_value) %&gt;% slice(1) %&gt;% head()\n\n# A tibble: 6 × 5\n# Groups:   time_value [6]\n  geo_value time_value version    mortality version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;drtn&gt;           \n1 ca        2023-12-31 2024-01-07        48 7 days           \n2 ca        2024-01-07 2024-01-14        28 7 days           \n3 ca        2024-01-14 2024-01-21        47 7 days           \n4 ca        2024-01-21 2024-01-28        41 7 days           \n5 ca        2024-01-28 2024-02-04        31 7 days           \n6 ca        2024-02-04 2024-02-11        47 7 days           \n\n\n\nUse revision_summary() from epiprocess to generate basic statistics about the revision behavior for the dataset."
   },
   {
     "objectID": "slides/day1-afternoon.html#latency-in-reporting---finalized-value-attainment",
     "href": "slides/day1-afternoon.html#latency-in-reporting---finalized-value-attainment",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Latency in Reporting - Finalized Value Attainment",
-    "text": "Latency in Reporting - Finalized Value Attainment\n\n\nWhen is the finalized value first attained for each date? (we wouldn’t have access to this in real-time)\nHow fast are the final values attained & what’s the pattern for these times, if any?\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value min_version diff   \n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;drtn&gt; \n1 ga        2023-02-01 2023-02-26  25 days\n2 ga        2023-02-02 2023-02-26  24 days\n3 ga        2023-02-03 2023-02-26  23 days\n4 ga        2023-02-04 2023-02-07   3 days\n5 ga        2023-02-05 2023-02-26  21 days\n6 ga        2023-02-06 2023-02-26  20 days\n\n\nAnd here’s a numerical summary:\n\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   2.00    7.00   10.00   22.54   18.25  320.00 \n\n\n\nConclusion: Varies somewhat. Even for this relatively small time period… Could be as low as 2 days or as high as 320 days. Yikes.\nSo if we were doing this in real-time, then we don’t necessarily have access to finalized data until much later in time."
+    "text": "Latency in Reporting - Finalized Value Attainment\n\n\nQuestion: When is the finalized value first attained for each date? Would we have access to any in real-time?\nHow fast are the final values attained & what’s the pattern for these times, if any?\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value min_version diff    \n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;drtn&gt;  \n1 ca        2023-12-31 2024-10-13  287 days\n2 ca        2024-01-07 2024-10-27  294 days\n3 ca        2024-01-14 2024-06-09  147 days\n4 ca        2024-01-21 2024-08-11  203 days\n5 ca        2024-01-28 2024-07-07  161 days\n6 ca        2024-02-04 2024-10-13  252 days\n\n\nAnd here’s a numerical summary:\n\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   84.0   147.0   189.0   192.8   259.0   294.0 \n\n\n\nConclusion: Tends to take a long time & varies. Even for this relatively small time period… Goes as low as 84 days or as high as 294 days. Yikes.\nSo if we were doing this in real-time, then we wouldn’t have access to the finalized data."
   },
   {
     "objectID": "slides/day1-afternoon.html#comparison-of-final-vs.-multiple-revisions",
     "href": "slides/day1-afternoon.html#comparison-of-final-vs.-multiple-revisions",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Comparison of Final vs. Multiple Revisions",
-    "text": "Comparison of Final vs. Multiple Revisions\nThis figure shows the finalized admissions in comparison to multiple revisions to see how the data changes over time:"
+    "text": "Comparison of Final vs. Multiple Revisions\nThis figure shows the finalized rates in comparison to multiple revisions to see how the data changes over time:"
   },
   {
     "objectID": "slides/day1-afternoon.html#comparison-of-final-vs.-one-revision",
     "href": "slides/day1-afternoon.html#comparison-of-final-vs.-one-revision",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Comparison of Final vs. One Revision",
-    "text": "Comparison of Final vs. One Revision\n\nThe below figure compares the finalized admissions (in black) to one revision (in yellow) for Feb. 16, 2023.\n\n\n\n\n\n\n\n\n\nThe real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions."
+    "text": "Comparison of Final vs. One Revision\n\nThe below figure compares the finalized rates (in black) to one revision (in yellow) from March 3, 2024.\n\n\n\n\n\n\n\n\n\nThe real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions."
   },
   {
     "objectID": "slides/day1-afternoon.html#calculate-one-ratio-provisional-vs.-finalized-data",
     "href": "slides/day1-afternoon.html#calculate-one-ratio-provisional-vs.-finalized-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Calculate One Ratio: Provisional vs. Finalized Data",
-    "text": "Calculate One Ratio: Provisional vs. Finalized Data\n\n\n\nSuppose that the day is February 16, 2023. Then, because the data is 2 days latent, we can compute the ratio between provisional and finalized data for February 14, 2023.\n\n\ndate_under_investigation = as.Date(\"2023-02-14\")\n\n# Load the finalized influenza data for GA\nga_finalized &lt;- admissions_latest %&gt;%\n  filter(time_value == date_under_investigation) %&gt;%\n  dplyr::select(admissions)\n\n# Look at the same data but \"as_of\" \"2023-02-16\"\n# Load the provisional case data (reported on \"2023-02-16\" but for \"2022-02-14\")\nadmissions_old = epix_as_of(admissions_archive, max_version = (date_under_investigation + 2L))\n\nga_provisional &lt;- admissions_old %&gt;%\n  filter(time_value == date_under_investigation) %&gt;%\n  dplyr::select(admissions)\n\n# Calculate ratio between provisional and finalized cases for 2022-02-14\nratio &lt;- ga_provisional$admissions / ga_finalized$admissions\nratio\n\n[1] 0.3571429\n\n\nConclusion: The real-time counts tend to be far below the finalized counts for this time (5 vs 14 here).\nQuestion: Can we generalize this over many days?"
+    "text": "Calculate One Ratio: Provisional vs. Finalized Data\n\n\n\nSuppose that the day is March 10, 2024. Then, because the data is 7 days latent, we can compute the ratio between provisional and finalized data for March 3, 2024.\n\n\nas_of_date = as.Date(\"2024-03-10\"); fixed_lag = 7\n\n# Load the finalized mortality data for CA\nca_finalized &lt;- mortality_latest %&gt;%\n  filter(time_value == (as_of_date - fixed_lag)) %&gt;%\n  dplyr::select(mortality)\n\n# Load the provisional mortality data for the same week\nmortality_old = epix_as_of(mortality_archive, max_version = as_of_date)\n\nca_provisional &lt;- mortality_old %&gt;%\n  filter(time_value == (as_of_date - fixed_lag)) %&gt;%\n  dplyr::select(mortality)\n\n# Calculate ratio between provisional and finalized cases for the week of interest\nratio &lt;- ca_provisional$mortality / ca_finalized$mortality\nratio\n\n[1] 0.3611111\n\n\nConclusion: The real-time rate is well below the finalized for this time (26 vs 72 here).\nQuestion: Can we generalize this over many days?"
   },
   {
-    "objectID": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates",
-    "href": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates",
+    "objectID": "slides/day1-afternoon.html#calculating-the-ratio-using-multiple-dates",
+    "href": "slides/day1-afternoon.html#calculating-the-ratio-using-multiple-dates",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Calculating the Ratio over Multiple Dates",
-    "text": "Calculating the Ratio over Multiple Dates\n\nLet’s move from calculating the ratio for one day to multiple day with the goal to use it to nowcast for Feb. 27, which has a provisional value of 6\n\n\nas_of_date = as.Date(\"2023-03-01\")\n\nprovisional_feb_27 &lt;- epix_as_of(admissions_archive, max_version = as_of_date) %&gt;%\n  filter(time_value == as_of_date - 2L) %&gt;%\n  pull(admissions)\nprovisional_feb_27\n\n[1] 6\n\n\nand a finalized value of 8\n\nfinalized_value &lt;- admissions_latest %&gt;%\n  filter(time_value == as_of_date - 2L) %&gt;%\n  pull(admissions)\nfinalized_value\n\n[1] 8"
+    "section": "Calculating the Ratio using Multiple Dates",
+    "text": "Calculating the Ratio using Multiple Dates\n\nLet’s move from calculating the ratio by using one day to multiple days with the goal to use it to nowcast for Feb. 18, which has a provisional value of 23\n\n\nas_of_date = as.Date(\"2024-02-25\")\n\nprovisional &lt;- epix_as_of(mortality_archive, max_version = as_of_date) %&gt;%\n  filter(time_value == as_of_date - 7) %&gt;%\n  pull(mortality)\nprovisional\n\n[1] 23\n\n\nand a finalized value of 104\n\nfinalized &lt;- mortality_latest %&gt;%\n  filter(time_value == as_of_date - 7) %&gt;%\n  pull(mortality)\nfinalized\n\n[1] 104"
   },
   {
-    "objectID": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates-1",
-    "href": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates-1",
+    "objectID": "slides/day1-afternoon.html#calculating-the-ratio-using-multiple-dates-1",
+    "href": "slides/day1-afternoon.html#calculating-the-ratio-using-multiple-dates-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Calculating the Ratio over Multiple Dates",
-    "text": "Calculating the Ratio over Multiple Dates\nFirst, let’s download the real-time number of cases for GA in February 2023, and compare them to their finalized version.\n\ndates &lt;- seq(as.Date(\"2023-02-01\"), as.Date(\"2023-02-26\"), by = \"day\")\nadmissions_real_time &lt;- function(date) {\n  epix_as_of(admissions_archive, max_version = (date + 2L)) %&gt;%\n    filter(time_value == date)\n}\nadmissions_ga_real_time &lt;- map_dfr(dates, admissions_real_time)\nhead(admissions_ga_real_time)\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2023-02-03\n\n# A tibble: 6 × 3\n  geo_value time_value admissions\n* &lt;chr&gt;     &lt;date&gt;          &lt;dbl&gt;\n1 ga        2023-02-01          6\n2 ga        2023-02-02         68\n3 ga        2023-02-03         11\n4 ga        2023-02-04         74\n5 ga        2023-02-05          9\n6 ga        2023-02-06          9"
+    "section": "Calculating the Ratio using Multiple Dates",
+    "text": "Calculating the Ratio using Multiple Dates\nFirst, let’s download the real-time rates for CA, and compare them to their finalized version.\n\ndates &lt;- seq(start_time, (as_of_date - 7), by = \"day\")\nmortality_real_time &lt;- function(date) {\n  epix_as_of(mortality_archive, max_version = (date + 7L)) %&gt;%\n    filter(time_value == date)\n}\nmortality_real_time_df &lt;- map_dfr(dates, mortality_real_time)\nhead(mortality_real_time_df)\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-01-07\n\n# A tibble: 6 × 3\n  geo_value time_value mortality\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2023-12-31        48\n2 ca        2024-01-07        28\n3 ca        2024-01-14        47\n4 ca        2024-01-21        41\n5 ca        2024-01-28        31\n6 ca        2024-02-04        47"
   },
   {
-    "objectID": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates-2",
-    "href": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates-2",
+    "objectID": "slides/day1-afternoon.html#calculating-the-ratio-using-multiple-dates-2",
+    "href": "slides/day1-afternoon.html#calculating-the-ratio-using-multiple-dates-2",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Calculating the Ratio over Multiple Dates",
-    "text": "Calculating the Ratio over Multiple Dates\nNow, let’s plot the real-time vs the finalized number of admissions:\n\n\nTakeaways: Aside from two major overreporting spikes near the beginning, the real-time counts are generally biased below the finalized counts.\nSystematic underreporting begins around Feb. 6, where the bias becomes more consistent."
-  },
-  {
-    "objectID": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates-3",
-    "href": "slides/day1-afternoon.html#calculating-the-ratio-over-multiple-dates-3",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Calculating the Ratio over Multiple Dates",
-    "text": "Calculating the Ratio over Multiple Dates\nSince we expect that this pattern in bias continues going forward (and the massive overreporting near the beginning may drown this out), we’ll start estimating the ratio from Feb. 6 and beyond.\n\nadmissions_ga_real_time = admissions_ga_real_time %&gt;% filter(time_value &gt;= \"2023-02-06\")\nhead(admissions_ga_real_time)\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2023-02-03\n\n# A tibble: 6 × 3\n  geo_value time_value admissions\n* &lt;chr&gt;     &lt;date&gt;          &lt;dbl&gt;\n1 ga        2023-02-06          9\n2 ga        2023-02-07          5\n3 ga        2023-02-08          4\n4 ga        2023-02-09          8\n5 ga        2023-02-10          6\n6 ga        2023-02-11          7"
+    "section": "Calculating the Ratio using Multiple Dates",
+    "text": "Calculating the Ratio using Multiple Dates\nNow, let’s plot the real-time vs the finalized mortality rates:\n\n\nTakeaways: The real-time counts are biased well below the finalized counts.\nSystematic underreporting tends to lessen over time (the gap between the lines decreases)."
   },
   {
     "objectID": "slides/day1-afternoon.html#realistic-limitation-of-nowcasting---finalized-data",
     "href": "slides/day1-afternoon.html#realistic-limitation-of-nowcasting---finalized-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Realistic Limitation of Nowcasting - Finalized Data",
-    "text": "Realistic Limitation of Nowcasting - Finalized Data\n\nRecall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Feb 10 finalized 320 days later).\nTo nowcast accurately, we must rely on the best available approximation of finalized data at the time of estimation (March 1).\n\n\nadmissions_as_of_mar_1 &lt;- epix_as_of(admissions_archive, max_version = as_of_date) %&gt;%\n  filter(time_value &gt;= \"2023-02-06\" & time_value &lt;= \"2023-02-26\")"
+    "text": "Realistic Limitation of Nowcasting - Finalized Data\n\nRecall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Jan. 7 is finalized 294 days later).\nTo nowcast accurately, we must rely on the best available approximation of finalized data at the time of estimation (Feb. 25).\n\n\nmortality_as_of_feb25 &lt;- epix_as_of(mortality_archive, max_version = as_of_date)\nhead(mortality_as_of_feb25)\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = week\n* as_of     = 2024-02-25\n\n# A tibble: 6 × 3\n  geo_value time_value mortality\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2023-12-31       213\n2 ca        2024-01-07       183\n3 ca        2024-01-14       183\n4 ca        2024-01-21       146\n5 ca        2024-01-28       124\n6 ca        2024-02-04       120"
   },
   {
     "objectID": "slides/day1-afternoon.html#ratio-calculation-summary",
     "href": "slides/day1-afternoon.html#ratio-calculation-summary",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Ratio calculation & summary",
-    "text": "Ratio calculation & summary\nWe then use the “finalized” and real-time counts to compute the mean ratio.\n\nratio_real_time_to_mar1 &lt;- admissions_ga_real_time$admissions / admissions_as_of_mar_1$admissions\nsummary(ratio_real_time_to_mar1)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n 0.2667  0.4000  0.5000  0.7811  0.7778  3.3333 \n\n\nOn average, the real-time counts are ~78.1% of the finalized counts."
+    "section": "Ratio Calculation & Summary",
+    "text": "Ratio Calculation & Summary\n\nWe then use these “finalized” and real-time values to compute the mean ratio:\n\n# exclude date we're nowcasting for\nmortality_real_time_df = mortality_real_time_df %&gt;% filter(time_value != \"2024-02-18\") \nmortality_as_of_feb25 = mortality_as_of_feb25 %&gt;% filter(time_value != \"2024-02-18\")\nratio_real_time_to_feb25 &lt;- mortality_real_time_df$mortality / mortality_as_of_feb25$mortality\nsummary(ratio_real_time_to_feb25)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n 0.1530  0.2317  0.2500  0.2565  0.2688  0.3917 \n\n\nOn average, the real-time rates are ~25.7% of the finalized.\n\n\n\nTells us the distribution is right-skewed (mean &gt; median) and so we should opt for the median."
   },
   {
-    "objectID": "slides/day1-afternoon.html#nowcasting-on-march-1",
-    "href": "slides/day1-afternoon.html#nowcasting-on-march-1",
+    "objectID": "slides/day1-afternoon.html#nowcasting-on-feb.-25",
+    "href": "slides/day1-afternoon.html#nowcasting-on-feb.-25",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Nowcasting on March 1",
-    "text": "Nowcasting on March 1\nSince the average ratio between real-time and finalized values is 0.781 (i.e., real-time counts are typically 78% of the finalized counts), then the nowcast is\n\n# Now we can nowcast properly:\nnowcast &lt;- provisional_feb_27 *\n  1 / mean(ratio_real_time_to_mar1)\nnowcast\n\n[1] 7.681254\n\n\nSo, this nowcast is 7.68, which is closer to the true finalized value of 8 than the provisional value of 6."
+    "section": "Nowcasting on Feb. 25",
+    "text": "Nowcasting on Feb. 25\nSince the median ratio between real-time and finalized values is 0.250 (i.e., real-time values are typically 25% of the finalized), then the nowcast is\n\n# Now we can nowcast properly:\nnowcast &lt;- provisional *\n  1 / median(ratio_real_time_to_feb25)\nnowcast\n\n[1] 92\n\n\nSo, this nowcast is 92, which is much closer to the finalized value of 104 than the provisional value of 23."
   },
   {
     "objectID": "slides/day1-afternoon.html#summary-of-three-main-steps",
     "href": "slides/day1-afternoon.html#summary-of-three-main-steps",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Summary of three main steps",
-    "text": "Summary of three main steps\nSo the main steps for this type of fixed lag nowcasting are…\n\nObtain the provisional value for the target.\nEstimate the ratio using the real-time and “finalized” data (for all previous dates that follow a consistent pattern in reporting).\nProfit.\n\n\n\nExpand for the accompanying code\n# Today\nas_of_date = as.Date(\"2023-03-01\")\n\n# 1. Obtain the provisional value\nprovisional_feb_27 &lt;- epix_as_of(admissions_archive, max_version = as_of_date) %&gt;%\n  filter(time_value == as_of_date - 2L) %&gt;%\n  pull(admissions)\nprovisional_feb_27\n\n# 2. Estimate the ratio \nadmissions_ga_real_time = admissions_ga_real_time %&gt;% filter(time_value &gt;= \"2023-02-06\") # Real-time data\nadmissions_as_of_mar_1 &lt;- epix_as_of(admissions_archive, max_version = as_of_date) %&gt;% # \"Finalized\" data\n  filter(time_value &gt;= \"2023-02-06\" & time_value &lt;= \"2023-02-26\")\n\nmean_ratio &lt;- mean(admissions_ga_real_time$admissions / admissions_as_of_mar_1$admissions) # Mean ratio\n\n# 3. Profit.\nnowcast &lt;- provisional_feb_27 *\n  1 / mean(ratio_real_time_to_mar1)\nnowcast"
+    "section": "Summary of Three Main Steps",
+    "text": "Summary of Three Main Steps\nSo the main steps for this type of fixed lag nowcasting are…\n\nObtain the provisional value for the target.\nEstimate the ratio using the real-time and “finalized” data (for all previous dates that follow a consistent pattern in reporting).\nProfit.\n\n\n\nExpand for the accompanying code\n# Today\nas_of_date = as.Date(\"2024-02-25\")\n\n# 1. Obtain the provisional value\nprovisional &lt;- epix_as_of(mortality_archive, max_version = as_of_date) %&gt;%\n  filter(time_value == as_of_date - 7) %&gt;%\n  pull(mortality)\nprovisional\n\n# 2. Estimate the ratio \nmortality_real_time_df &lt;- map_dfr(dates, mortality_real_time) %&gt;% filter(time_value != \"2024-02-18\") # Real-time\nmortality_as_of_feb25 &lt;- epix_as_of(mortality_archive, max_version = as_of_date) %&gt;% filter(time_value != \"2024-02-18\")  # \"Finalized\"\n\nratio_real_time_to_feb25 &lt;- mortality_real_time_df$mortality / mortality_as_of_feb25$mortality\n\n# 3. Profit.\nnowcast &lt;- provisional *\n  1 / median(ratio_real_time_to_feb25)\nnowcast"
   },
   {
-    "objectID": "slides/day1-afternoon.html#nowcasting-admissions-data-for-multiple-dates",
-    "href": "slides/day1-afternoon.html#nowcasting-admissions-data-for-multiple-dates",
+    "objectID": "slides/day1-afternoon.html#nowcasting-mortality-for-multiple-dates",
+    "href": "slides/day1-afternoon.html#nowcasting-mortality-for-multiple-dates",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Nowcasting Admissions Data for Multiple Dates",
-    "text": "Nowcasting Admissions Data for Multiple Dates\n\nDefine Nowcast Function:\n\nInput: Takes in the dates to nowcast and the fixed lag\nOutput: The nowcasted admissions based on the ratio of real-time to finalized data.\n\n\n\n\nCode\nnowcast_function &lt;- function(nowcast_date, fixed_lag) {\n  as_of_date = nowcast_date + fixed_lag\n  \n  # 1. Obtain the provisional value for the target.\n  provisional &lt;- epix_as_of(admissions_archive, max_version = as_of_date) %&gt;%\n  filter(time_value == as_of_date - 2L) %&gt;%\n  pull(admissions)\n  \n  #2. Estimate the ratio multiplier using\n  # real-time\n  dates &lt;- seq(as.Date(\"2023-02-06\"), nowcast_date - 1, by = \"day\")\n  admissions_ga_real_time &lt;- map_dfr(dates, admissions_real_time)\n  \n  # and \"finalized\" data\n  finalized &lt;- epix_as_of(admissions_archive, max_version = as_of_date) %&gt;% filter(time_value &gt;= \"2023-02-06\" & time_value &lt;= (nowcast_date - 1)) \n\n  ratios &lt;- admissions_ga_real_time$admissions / finalized$admissions\n  \n  # Remove infinite or NaN ratios (i.e., keep only finite values)\n  mean_ratio &lt;- mean(ratios[is.finite(ratios)])\n\n  #3. Profit.\n  nowcast &lt;- provisional * (1 / mean_ratio)\n  \n  # Return a dataframe with the nowcast and date\n  tibble(\n    time_value = nowcast_date,\n    nowcast_admissions = nowcast\n  )\n}"
+    "section": "Nowcasting Mortality for Multiple Dates",
+    "text": "Nowcasting Mortality for Multiple Dates\n\nDefine Nowcast Function:\n\nInput: Takes in the dates to nowcast and the fixed lag\nOutput: The nowcasted mortality rates based on the ratio of real-time to finalized data.\n\n\n\n\nCode\nnowcast_function &lt;- function(nowcast_date, fixed_lag) {\n  as_of_date = nowcast_date + fixed_lag\n  \n  # 1. Obtain the provisional value for the target.\n  provisional &lt;- epix_as_of(mortality_archive, max_version = as_of_date) %&gt;%\n    filter(time_value == as_of_date - fixed_lag) %&gt;%\n    pull(mortality)\n  \n  #2. Estimate the ratio multiplier using\n  # real-time\n  dates_seq &lt;- seq(start_time, (nowcast_date - fixed_lag), by = \"week\")\n  mortality_real_time &lt;- map_dfr(dates_seq, mortality_real_time)\n  \n  # and \"finalized\" data\n  finalized &lt;- epix_as_of(mortality_archive, max_version = as_of_date) %&gt;% filter(time_value &gt;= start_time & time_value &lt;= (nowcast_date - fixed_lag)) \n  \n  ratios &lt;- mortality_real_time$mortality / finalized$mortality\n  \n  # Remove infinite or NaN ratios (i.e., keep only finite values)\n  median_ratio &lt;- median(ratios[is.finite(ratios)])\n  \n  #3. Profit.\n  nowcast &lt;- provisional * (1 / median_ratio)\n  \n  # Return a dataframe with the nowcast and date\n  tibble(\n    time_value = nowcast_date,\n    nowcast_mortality = nowcast\n  )\n}"
   },
   {
     "objectID": "slides/day1-afternoon.html#map-nowcast-over-multiple-dates",
     "href": "slides/day1-afternoon.html#map-nowcast-over-multiple-dates",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Map Nowcast Over Multiple Dates",
-    "text": "Map Nowcast Over Multiple Dates\n\nWe can use map2_df() to apply the function to a series of dates (e.g., Feb 27–28).\nReturns a dataframe with nowcasted results.\n\n\n# Apply Nowcast Function Over Multiple Dates\nnowcast_dates &lt;- seq(as.Date(\"2023-02-27\"), as.Date(\"2023-02-28\"), by = \"day\")\nfixed_lag &lt;- 2\nnowcast_results_df &lt;- map2_df(nowcast_dates, fixed_lag, nowcast_function)\n\n# View Nowcast Results\nnowcast_results_df\n\n# A tibble: 2 × 2\n  time_value nowcast_admissions\n  &lt;date&gt;                  &lt;dbl&gt;\n1 2023-02-27               7.68\n2 2023-02-28               8.49"
+    "text": "Map Nowcast Over Multiple Dates\n\nWe can use map2() to apply the function to a series of weeks (e.g., Jan. 28 to Mar. 24).\nReturns a dataframe with nowcasted results.\n\n\n# Apply Nowcast Function Over Multiple Dates\nnowcast_dates &lt;- seq(as.Date(\"2024-01-28\"), as.Date(\"2024-03-24\"), by = \"week\")\nfixed_lag &lt;- 7\nnowcast_results_df &lt;- map2(nowcast_dates, fixed_lag, nowcast_function) %&gt;% list_rbind()"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#map-nowcast-over-multiple-dates-1",
+    "href": "slides/day1-afternoon.html#map-nowcast-over-multiple-dates-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Map Nowcast Over Multiple Dates",
+    "text": "Map Nowcast Over Multiple Dates\nLet’s smooth with a rolling trailing mean (window size 4) & see the results:\n\n\n# A tibble: 9 × 2\n  time_value nowcast_mortality\n  &lt;date&gt;                 &lt;dbl&gt;\n1 2024-01-28             116. \n2 2024-02-04             145. \n3 2024-02-11             114. \n4 2024-02-18             109. \n5 2024-02-25             110. \n6 2024-03-03              92.8\n7 2024-03-10              90.3\n8 2024-03-17              82.6\n9 2024-03-24              65.4"
   },
   {
     "objectID": "slides/day1-afternoon.html#visualize-nowcast-real-time-and-finalized-values",
     "href": "slides/day1-afternoon.html#visualize-nowcast-real-time-and-finalized-values",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Visualize nowcast, real-time, and finalized values",
-    "text": "Visualize nowcast, real-time, and finalized values\nFinally, we can compare these nowcast results to the real-time and finalized values:\n\nThe real-time counts tend to be biased slightly below the finalized counts. Nowcasted values tend to provide a better approximation of the truth (at least for these dates)."
+    "section": "Visualize Nowcast, Real-time, and Finalized Values",
+    "text": "Visualize Nowcast, Real-time, and Finalized Values\nFinally, we can compare these nowcast results to the real-time and finalized values:\n\nThe real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates)."
   },
   {
     "objectID": "slides/day1-afternoon.html#nowcasting-moving-from-one-signal-to-two",
@@ -490,18 +602,18 @@
     "text": "Nowcasting: Moving from One Signal to Two\n\nRecall that in nowcasting the goal is to predict a finalized value from a provisional value.\nNow, we’ll move from one signal to two, creating a simple linear model to nowcast.\nExogenous features (predictors) could include relevant signals, such as Google symptom search trends.\nWe will use these signals to nowcast hospital admissions related to influenza."
   },
   {
-    "objectID": "slides/day1-afternoon.html#data-sources-google-search-trends-hospital-admissions",
-    "href": "slides/day1-afternoon.html#data-sources-google-search-trends-hospital-admissions",
+    "objectID": "slides/day1-afternoon.html#data-sources-google-searches-hospital-admissions",
+    "href": "slides/day1-afternoon.html#data-sources-google-searches-hospital-admissions",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Data Sources: Google Search Trends & Hospital Admissions",
-    "text": "Data Sources: Google Search Trends & Hospital Admissions\n\nGoogle Search Trends: Symptoms like cough, fever, and shortness of breath.\n\ns01: Cough, Phlegm, Sputum, Upper respiratory tract infection\ns03: Fever, Hyperthermia, Chills, Shivering\n\nHospital Admissions: Data from the Department of Health & Human Services on confirmed influenza admissions.\nUsing these, we will nowcast hospital admissions by using Google symptom search trends for GA from April to June 2023.\nThe first step is to fetch this data…"
+    "section": "Data Sources: Google Searches & Hospital Admissions",
+    "text": "Data Sources: Google Searches & Hospital Admissions\n\nGoogle Search Trends: Symptoms like cough, fever, and shortness of breath.\n\ns01: Cough, Phlegm, Sputum, Upper respiratory tract infection\n\ns02: Nasal congestion, Post nasal drip, Sinusitis, Common cold\n\nHospital Admissions: Data from the Department of Health & Human Services on confirmed influenza admissions.\nUsing these, we will nowcast hospital admissions by using Google symptom search trends for GA from April to June 2023.\nThe first step is to fetch this data…"
   },
   {
-    "objectID": "slides/day1-afternoon.html#data-sources-google-search-trends-hospital-admissions-1",
-    "href": "slides/day1-afternoon.html#data-sources-google-search-trends-hospital-admissions-1",
+    "objectID": "slides/day1-afternoon.html#data-sources-google-searches-hospital-admissions-1",
+    "href": "slides/day1-afternoon.html#data-sources-google-searches-hospital-admissions-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Data Sources: Google Search Trends & Hospital Admissions",
-    "text": "Data Sources: Google Search Trends & Hospital Admissions\n\n\nCode\n# Fetch Google symptom data for s01 and s03\nx1 &lt;- pub_covidcast(\n  source = \"google-symptoms\",\n  signals = \"s01_smoothed_search\", \n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ga\",\n  time_values = epirange(20230401, 20230701),\n  issues = \"*\"\n) %&gt;%\n  select(geo_value, time_value, version = issue, avg_search_vol_s01 = value) %&gt;%\n  as_epi_archive(compactify = FALSE)\n\nx2 &lt;- pub_covidcast(\n  source = \"google-symptoms\",\n  signals = \"s03_smoothed_search\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ga\",\n  time_values = epirange(20230401, 20230701),\n  issues = \"*\"\n) %&gt;%\n  select(geo_value, time_value, version = issue, avg_search_vol_s03 = value) %&gt;%\n  as_epi_archive(compactify = FALSE)\n\n# Fetch hospital admissions data\ny1 &lt;- pub_covidcast(\n  source = \"hhs\",\n  signals = \"confirmed_admissions_influenza_1d\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ga\",\n  time_values = epirange(20230401, 20230701),\n  issues = \"*\"\n) %&gt;%\n  select(geo_value, time_value, version = issue, admissions = value) %&gt;%\n  as_epi_archive(compactify = FALSE)"
+    "section": "Data Sources: Google Searches & Hospital Admissions",
+    "text": "Data Sources: Google Searches & Hospital Admissions\n\n# Fetch Google symptom data for s01 and s02\nx1 &lt;- pub_covidcast(\n  source = \"google-symptoms\",\n  signals = \"s01_smoothed_search\", \n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ga\",\n  time_values = epirange(20230401, 20230701),\n  issues = \"*\"\n) %&gt;%\n  select(geo_value, time_value, version = issue, avg_search_vol_s01 = value) %&gt;%\n  as_epi_archive(compactify = FALSE)\n\nx2 &lt;- pub_covidcast(\n  source = \"google-symptoms\",\n  signals = \"s02_smoothed_search\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ga\",\n  time_values = epirange(20230401, 20230701),\n  issues = \"*\"\n) %&gt;%\n  select(geo_value, time_value, version = issue, avg_search_vol_s02 = value) %&gt;%\n  as_epi_archive(compactify = FALSE)\n\n# Fetch hospital admissions data\ny1 &lt;- pub_covidcast(\n  source = \"hhs\",\n  signals = \"confirmed_admissions_influenza_1d\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ga\",\n  time_values = epirange(20230401, 20230701),\n  issues = \"*\"\n) %&gt;%\n  select(geo_value, time_value, version = issue, admissions = value) %&gt;%\n  as_epi_archive(compactify = FALSE)"
   },
   {
     "objectID": "slides/day1-afternoon.html#merging-the-archives",
@@ -536,14 +648,14 @@
     "href": "slides/day1-afternoon.html#multiple-linear-regression-model",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Multiple Linear Regression Model",
-    "text": "Multiple Linear Regression Model\n\nA linear model is a good choice to describe the relationship between search trends and hospital admissions.\nThe model will include two predictors (s01 and s03).\nWe’ll use these two search trend signals to predict hospital admissions (response)."
+    "text": "Multiple Linear Regression Model\n\nA linear model is a good choice to describe the relationship between search trends and hospital admissions.\nThe model will include two predictors (s01 and s02).\nWe’ll use these two search trend signals to predict hospital admissions (response)."
   },
   {
     "objectID": "slides/day1-afternoon.html#multiple-linear-regression-model-1",
     "href": "slides/day1-afternoon.html#multiple-linear-regression-model-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Multiple Linear Regression Model",
-    "text": "Multiple Linear Regression Model\n\n# Define the function for lm model fit and prediction\nlm_mod_pred &lt;- function(data, gk, rtv, ...) {\n  \n  # Fit the linear model\n  model &lt;- lm(admissions ~ avg_search_vol_s01 + avg_search_vol_s03, data = data)\n  \n  # Make predictions\n  predictions = predict(model,\n                        newdata = data %&gt;%\n                          # Use tidyr::fill() for LOCF if predictor data is incomplete \n                          fill(avg_search_vol_s01, .direction = \"down\") %&gt;% \n                          fill(avg_search_vol_s03, .direction = \"down\") %&gt;%\n                          filter(time_value == max(time_value)),\n                        interval = \"prediction\", level = 0.9\n  )\n\n  # Pull off true time value for comparison to target\n  real_time_val = data %&gt;% filter(time_value == max(time_value)) %&gt;% pull(admissions)\n\n  return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val))\n}\n\nNote that this code is intentionally simple; while it can be refined to handle cases like negatives or other boundary conditions, we aim to avoid unnecessary complexity."
+    "text": "Multiple Linear Regression Model\n\n# Define the function for lm model fit and prediction\nlm_mod_pred &lt;- function(data, gk, rtv, ...) {\n  \n  # Fit the linear model\n  model &lt;- lm(admissions ~ avg_search_vol_s01 + avg_search_vol_s02, data = data)\n  \n  # Make predictions\n  predictions = predict(model,\n                        newdata = data %&gt;%\n                          # Use tidyr::fill() for LOCF if predictor data is incomplete \n                          fill(avg_search_vol_s01, .direction = \"down\") %&gt;% \n                          fill(avg_search_vol_s02, .direction = \"down\") %&gt;%\n                          filter(time_value == max(time_value)),\n                        interval = \"prediction\", level = 0.9\n  )\n\n  # Pull off true time value for comparison to target\n  real_time_val = data %&gt;% filter(time_value == max(time_value)) %&gt;% pull(admissions)\n\n  return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val))\n}\n\nNote that this code is intentionally simple; while it can be refined to handle cases like negatives or other boundary conditions, we aim to avoid unnecessary complexity."
   },
   {
     "objectID": "slides/day1-afternoon.html#nowcasting-with-epix_slide",
@@ -557,14 +669,14 @@
     "href": "slides/day1-afternoon.html#nowcasting-with-epix_slide-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Nowcasting with epix_slide()",
-    "text": "Nowcasting with epix_slide()\n\n# Define the reference time points for nowcasting\ntargeted_nowcast_dates &lt;- seq(as.Date(\"2023-04-15\"), as.Date(\"2023-06-15\"), by = \"1 week\")\nref_time_values = targeted_nowcast_dates + 2  # Adjust for the systematic 2-day latency in the response\n# Determine this from revision_summary(y1, print_inform = TRUE) \n\n# Perform nowcasting using epix_slide\nnowcast_res &lt;- archive %&gt;%\n  group_by(geo_value) %&gt;%\n  epix_slide(\n    .f = lm_mod_pred,\n    .before = 14,  # 14-day training period\n    .versions = ref_time_values, \n    .new_col_name = \"res\"\n  ) %&gt;%\n  unnest() %&gt;% # Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. \n  mutate(targeted_nowcast_date = targeted_nowcast_dates, time_value = actual_nowcast_date) %&gt;%\n  ungroup()\n\n# View results\nhead(nowcast_res, n=2)\n\n# A tibble: 2 × 9\n  geo_value version      fit    lwr   upr actual_nowcast_date real_time_val\n  &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;                      &lt;dbl&gt;\n1 ga        2023-04-17  4.53 -0.331  9.39 2023-04-15                      4\n2 ga        2023-04-24  7.58  1.64  13.5  2023-04-22                      4\n# ℹ 2 more variables: targeted_nowcast_date &lt;date&gt;, time_value &lt;date&gt;"
+    "text": "Nowcasting with epix_slide()\n\n# Define the reference time points for nowcasting\ntargeted_nowcast_dates &lt;- seq(as.Date(\"2023-04-15\"), as.Date(\"2023-06-15\"), by = \"1 week\")\nref_time_values = targeted_nowcast_dates + 2  # Adjust for the systematic 2-day latency in the response\n# Determine this from revision_summary(y1, print_inform = TRUE) \n\n# Perform nowcasting using epix_slide\nnowcast_res &lt;- archive %&gt;%\n  group_by(geo_value) %&gt;%\n  epix_slide(\n    .f = lm_mod_pred,\n    .before = 14,  # 14-day training period\n    .versions = ref_time_values, \n    .new_col_name = \"res\"\n  ) %&gt;%\n  unnest() %&gt;% # Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. \n  mutate(targeted_nowcast_date = targeted_nowcast_dates, time_value = actual_nowcast_date) %&gt;%\n  ungroup()\n\n# View results\nhead(nowcast_res, n=2)\n\n# A tibble: 2 × 9\n  geo_value version      fit    lwr   upr actual_nowcast_date real_time_val\n  &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;                      &lt;dbl&gt;\n1 ga        2023-04-17  4.64 -0.122  9.39 2023-04-15                      4\n2 ga        2023-04-24  7.36  1.56  13.2  2023-04-22                      4\n# ℹ 2 more variables: targeted_nowcast_date &lt;date&gt;, time_value &lt;date&gt;"
   },
   {
     "objectID": "slides/day1-afternoon.html#compare-with-the-actual-admissions",
     "href": "slides/day1-afternoon.html#compare-with-the-actual-admissions",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Compare with the Actual Admissions",
-    "text": "Compare with the Actual Admissions\n\nAfter making predictions, we compare them to the actual hospital admissions.\n\n\n# Left join with latest results \n# Latest snapshot of data (with the latest/finalized admissions)\nx_latest &lt;- epix_as_of(archive, max_version = max(archive$DT$version)) %&gt;% select(-c(avg_search_vol_s01, avg_search_vol_s03))\n\nres &lt;- nowcast_res %&gt;% left_join(x_latest, by = c(\"geo_value\", \"time_value\"))\nhead(res)\n\n# A tibble: 6 × 10\n  geo_value version      fit    lwr   upr actual_nowcast_date real_time_val\n  &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;                      &lt;dbl&gt;\n1 ga        2023-04-17  4.53 -0.331  9.39 2023-04-15                      4\n2 ga        2023-04-24  7.58  1.64  13.5  2023-04-22                      4\n3 ga        2023-05-01  5.89  1.88   9.91 2023-04-29                      5\n4 ga        2023-05-08  4.57  0.450  8.70 2023-05-06                      6\n5 ga        2023-05-15  7.95  4.91  11.0  2023-05-11                      8\n6 ga        2023-05-22  2.84 -2.00   7.68 2023-05-20                      4\n# ℹ 3 more variables: targeted_nowcast_date &lt;date&gt;, time_value &lt;date&gt;,\n#   admissions &lt;dbl&gt;"
+    "text": "Compare with the Actual Admissions\n\nAfter making predictions, we compare them to the actual hospital admissions.\n\n\n# Left join with latest results \n# Latest snapshot of data (with the latest/finalized admissions)\nx_latest &lt;- epix_as_of(archive, max_version = max(archive$DT$version)) %&gt;% select(-c(avg_search_vol_s01, avg_search_vol_s02))\n\nres &lt;- nowcast_res %&gt;% left_join(x_latest, by = c(\"geo_value\", \"time_value\"))\nhead(res)\n\n# A tibble: 6 × 10\n  geo_value version      fit    lwr   upr actual_nowcast_date real_time_val\n  &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;                      &lt;dbl&gt;\n1 ga        2023-04-17  4.64 -0.122  9.39 2023-04-15                      4\n2 ga        2023-04-24  7.36  1.56  13.2  2023-04-22                      4\n3 ga        2023-05-01  6.06  1.57  10.5  2023-04-29                      5\n4 ga        2023-05-08  5.01  1.28   8.74 2023-05-06                      6\n5 ga        2023-05-15  8.14  5.69  10.6  2023-05-11                      8\n6 ga        2023-05-22  3.43 -2.35   9.21 2023-05-20                      4\n# ℹ 3 more variables: targeted_nowcast_date &lt;date&gt;, time_value &lt;date&gt;,\n#   admissions &lt;dbl&gt;"
   },
   {
     "objectID": "slides/day1-afternoon.html#visualizing-the-nowcast-results",
@@ -578,84 +690,84 @@
     "href": "slides/day1-afternoon.html#key-takeaways-linear-regression-nowcasting-example",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Key Takeaways: Linear Regression Nowcasting Example",
-    "text": "Key Takeaways: Linear Regression Nowcasting Example\n\nProvisional Data as Predictors: Using Google symptom search trends (s01, s03) to predict influenza hospital admissions.\nSimple Linear Model: A linear regression model captures the relationship between symptom searches and hospital admissions.\nActionable Predictions: Nowcasts provide timely insights for hospital admissions, even before data is finalized.\nSliding Window Approach: Predictions are based on data up to the current time, ensuring no future information influences the nowcast.\nEvaluation: Predictions are compared with actual admissions visually."
+    "text": "Key Takeaways: Linear Regression Nowcasting Example\n\nProvisional Data as Predictors: Using Google symptom search trends to predict influenza hospital admissions.\nSimple Linear Model: A linear regression model captures the relationship between symptom searches and hospital admissions.\nActionable Predictions: Nowcasts provide timely insights for hospital admissions, even before data is finalized.\nSliding Window Approach: Predictions are based on data up to the current time, ensuring no future information influences the nowcast.\nEvaluation: Predictions are compared with actual admissions visually."
   },
   {
     "objectID": "slides/day1-afternoon.html#goal-of-this-case-study",
     "href": "slides/day1-afternoon.html#goal-of-this-case-study",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Goal of this Case Study",
-    "text": "Goal of this Case Study\nGoal: Nowcast COVID-19 Case Rates using %CLI for Massachusetts.\n\n%CLI is contained in the Epidata API.\nCase rates by specimen collection date are not. They are from the MA gov website.\nCase rates in the API (JHU) are aligned by report date, not specimen collection/test date.\nAligning by test date allows us to avoid the more unpredictable delays introduced by the report date."
+    "text": "Goal of this Case Study\nGoal: Nowcast COVID-19 Case Rates using %CLI for Massachusetts.\n\n%CLI is contained in the Epidata API.\nCase rates by specimen collection date are not. They are from the MA gov website.\nCase rates in the API (JHU) are aligned by report date, not specimen collection/test date.\nWorking with cases aligned by test date allows us to avoid the more unpredictable delays introduced by the report date."
   },
   {
     "objectID": "slides/day1-afternoon.html#summary-of-main-steps",
     "href": "slides/day1-afternoon.html#summary-of-main-steps",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Summary of main steps",
-    "text": "Summary of main steps\n\nThe workflow is similar to the previous example where we nowcasted using two variables, only more involved. The main steps are…\n\nFetch Data: Retrieve %CLI and COVID-19 case data (by specimen collection date) for MA.\nMerge Data: Align %CLI and case rate data using epix_merge, filling missing values via last observation carried forward (LOCF).\nModel & Prediction: Fit a linear model to predict case rates based on %CLI, trained on a 30-day rolling window.\nNowcast Execution: Use epix_slide to nowcast the case rates dynamically.\nVisualization: Plot actual vs. nowcasted case rates with confidence intervals to assess model accuracy.\n\nSo the first step is to fetch the data…"
+    "section": "Summary of Main Steps",
+    "text": "Summary of Main Steps\n\nThe workflow is similar to the previous example where we nowcasted using two variables, only more involved. The main steps are…\n\nFetch Data: Retrieve %CLI and COVID-19 case data (by specimen collection date) for MA.\nMerge Data: Align %CLI and case rate data using epix_merge, filling missing values via last observation carried forward (LOCF).\nModel & Prediction: Fit a linear model to predict case rates based on %CLI, trained on a 30-day rolling window.\nNowcast Execution: Use epix_slide to nowcast the case rates dynamically.\nVisualization: Plot actual vs. nowcasted case rates with confidence intervals to assess model accuracy.\n\nSo the first step is to fetch the data…"
   },
   {
     "objectID": "slides/day1-afternoon.html#construct-an-epi_archive-from-scratch",
     "href": "slides/day1-afternoon.html#construct-an-epi_archive-from-scratch",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Construct an epi_archive from scratch",
-    "text": "Construct an epi_archive from scratch\n\nHere’s the archive of COVID-19 case excel files from the MA gov website, which we’ll use to construct our own epi_archive.  Brief summary of this data:\n\nFirst release: Raw .xlsx data was first released early January 2021.\nChange in reporting: Starting July 1, 2021, the dashboard shifted from 7 days/week to 5 days/week (Monday-Friday).\nFriday, Saturday, and Sunday data is included in the Monday dashboard.\nWhen Monday is a holiday, the Friday through Monday data is posted on Tuesday."
+    "section": "Construct an epi_archive from Scratch",
+    "text": "Construct an epi_archive from Scratch\n\nHere’s the archive of COVID-19 case excel files from the MA gov website, which we’ll use to construct our own epi_archive.  Brief summary of this data:\n\nFirst release: Raw .xlsx data was first released early January 2021.\nChange in reporting: Starting July 1, 2021, the dashboard shifted from 7 days/week to 5 days/week (Monday-Friday).\nFriday, Saturday, and Sunday data is included in the Monday dashboard.\nWhen Monday is a holiday, the Friday through Monday data is posted on Tuesday."
   },
   {
     "objectID": "slides/day1-afternoon.html#construct-an-epi_archive-from-scratch-1",
     "href": "slides/day1-afternoon.html#construct-an-epi_archive-from-scratch-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Construct an epi_archive from scratch",
-    "text": "Construct an epi_archive from scratch\n\n\nPurpose: To create an epi_archive object for storing versioned time series data.\nRequired Columns:\n\ngeo_value: Geographic data (e.g., region).\ntime_value: Time-related data (e.g., date, time).\nversion: Tracks when the data was available (enables version-aware forecasting).\n\nConstructor:\n\nnew_epi_archive(): For manual construction of epi_archive (assumes validation of inputs).\n\nRecommended Method:\n\nas_epi_archive(): Simplifies the creation process, ensuring proper formatting and validation. We’ll use this one when we download some data from the MA gov website!"
+    "section": "Construct an epi_archive from Scratch",
+    "text": "Construct an epi_archive from Scratch\n\n\nPurpose: To create an epi_archive object for storing versioned time series data.\nRequired Columns:\n\ngeo_value: Geographic data (e.g., region).\ntime_value: Time-related data (e.g., date, time).\nversion: Tracks when the data was available (enables version-aware forecasting).\n\nConstructor:\n\nnew_epi_archive(): For manual construction of epi_archive (assumes validation of inputs).\n\nRecommended Method:\n\nas_epi_archive(): Simplifies the creation process, ensuring proper formatting and validation. We’ll use this one when we download some data from the MA gov website!"
   },
   {
     "objectID": "slides/day1-afternoon.html#main-steps-to-construct-the-epi_archive",
     "href": "slides/day1-afternoon.html#main-steps-to-construct-the-epi_archive",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Main steps to construct the epi_archive",
-    "text": "Main steps to construct the epi_archive\n\n\nLoad necessary Libraries: Such as tidyverse, readxl, epiprocess.\nProcess Each Date’s Data:\n\nA function we’ll make (process_covid_data) downloads and processes daily COVID-19 data from the MA gov Excel files on their website.\nThe data is cleaned and formatted with columns: geo_value, time_value, version, and values.\n\nHandle Missing Data: Checks if a date’s data is available (handle 404 errors).\nCreate epi_archive:\n\nCombine processed data into a tibble.\nConvert the tibble to an epi_archive object using as_epi_archive()."
+    "section": "Main Steps to Construct the epi_archive",
+    "text": "Main Steps to Construct the epi_archive\n\n\nLoad necessary Libraries: Such as tidyverse, readxl, epiprocess.\nProcess Each Date’s Data:\n\nA function we’ll make (process_covid_data) downloads and processes daily COVID-19 data from the MA gov Excel files on their website.\nThe data is cleaned and formatted with columns: geo_value, time_value, version, and values.\n\nHandle Missing Data: Checks if a date’s data is available (handle 404 errors).\nCreate epi_archive:\n\nCombine processed data into a tibble.\nConvert the tibble to an epi_archive object using as_epi_archive()."
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-data---code-for-one-date",
     "href": "slides/day1-afternoon.html#fetch-data---code-for-one-date",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fetch Data - Code for one date",
-    "text": "Fetch Data - Code for one date\n\n# Load required libraries\nlibrary(tidyverse)\nlibrary(readxl)\nlibrary(httr)\nlibrary(tibble)\nlibrary(epiprocess)\n\n# Function to download and process each Excel file for a given date\nprocess_covid_data &lt;- function(Date) {\n  # Generate the URL for the given date\n  url &lt;- paste0(\"https://www.mass.gov/doc/covid-19-raw-data-\", tolower(gsub(\"-0\", \"-\", format(Date, \"%B-%d-%Y\"))), \"/download\") \n  # Applies gsub(\"-0\", \"-\", ...) to replace any occurrence of -0 (such as in \"April-01\") with just - (resulting in \"April-1\").\n  \n  # Check if the URL exists (handle the 404 error by skipping that date)\n  response &lt;- GET(url)\n  \n  if (status_code(response) != 200) {\n    return(NULL)  # Skip if URL doesn't exist (404)\n  }\n  \n  # Define the destination file path for the Excel file\n  file_path &lt;- tempfile(fileext = \".xlsx\")\n  \n  # Download the Excel file\n  GET(url, write_disk(file_path, overwrite = TRUE))\n  \n  # Read the relevant sheet from the Excel file\n  data &lt;- read_excel(file_path, sheet = \"CasesByDate (Test Date)\")\n  \n  # Process the data: rename columns and convert Date\n  data &lt;- data %&gt;%\n    rename(\n      Date = `Date`,\n      Positive_Total = `Positive Total`,\n      Positive_New = `Positive New`,\n      Case_Average_7day = `7-day confirmed case average`\n    ) %&gt;%\n    mutate(Date = as.Date(Date))  # Convert to Date class\n  \n  # Create a tibble with the required columns for the epi_archive\n  tib &lt;- tibble(\n    geo_value = \"ma\",  # Massachusetts (geo_value)\n    time_value = data$Date,  # Date from the data\n    version = Date,  # The extracted version date\n    case_rate_7d_av = data$Case_Average_7day  # 7-day average case value\n  )\n  \n  return(tib)\n}"
+    "section": "Fetch Data - Code for One Date",
+    "text": "Fetch Data - Code for One Date\n\n# Load required libraries\nlibrary(tidyverse)\nlibrary(readxl)\nlibrary(httr)\nlibrary(tibble)\nlibrary(epiprocess)\n\n# Function to download and process each Excel file for a given date\nprocess_covid_data &lt;- function(Date) {\n  # Generate the URL for the given date\n  url &lt;- paste0(\"https://www.mass.gov/doc/covid-19-raw-data-\", tolower(gsub(\"-0\", \"-\", format(Date, \"%B-%d-%Y\"))), \"/download\") \n  # Applies gsub(\"-0\", \"-\", ...) to replace any occurrence of -0 (such as in \"April-01\") with just - (resulting in \"April-1\").\n  \n  # Check if the URL exists (handle the 404 error by skipping that date)\n  response &lt;- GET(url)\n  \n  if (status_code(response) != 200) {\n    return(NULL)  # Skip if URL doesn't exist (404)\n  }\n  \n  # Define the destination file path for the Excel file\n  file_path &lt;- tempfile(fileext = \".xlsx\")\n  \n  # Download the Excel file\n  GET(url, write_disk(file_path, overwrite = TRUE))\n  \n  # Read the relevant sheet from the Excel file\n  data &lt;- read_excel(file_path, sheet = \"CasesByDate (Test Date)\")\n  \n  # Process the data: rename columns and convert Date\n  data &lt;- data %&gt;%\n    rename(\n      Date = `Date`,\n      Positive_Total = `Positive Total`,\n      Positive_New = `Positive New`,\n      Case_Average_7day = `7-day confirmed case average`\n    ) %&gt;%\n    mutate(Date = as.Date(Date))  # Convert to Date class\n  \n  # Create a tibble with the required columns for the epi_archive\n  tib &lt;- tibble(\n    geo_value = \"ma\",  # Massachusetts (geo_value)\n    time_value = data$Date,  # Date from the data\n    version = Date,  # The extracted version date\n    case_rate_7d_av = data$Case_Average_7day  # 7-day average case value\n  )\n  \n  return(tib)\n}"
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-data---code-breakdown",
     "href": "slides/day1-afternoon.html#fetch-data---code-breakdown",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fetch Data - Code breakdown",
-    "text": "Fetch Data - Code breakdown\n\n\nThis purpose of this function is to download and process each Excel file as of a date.\nURL Creation: Dynamically generates the URL based on the date, removing leading zeros in day values (e.g., “April-01” → “April-1”).\nCheck URL: Sends a request (GET(url)) and skips the date if the URL returns a non-200 status (e.g., 404 error).\nDownload File: Saves the Excel file to a temporary path using tempfile() and GET().\nRead Data: Loads the relevant sheet (“CasesByDate”) from the Excel file using read_excel().\nTibble Creation: Constructs a tibble with geo_value, time_value, version, and case_rate_7d_av to later compile into an epi_archive (you can think of an epi_archive as being a comprised of many epi_dfs)."
+    "section": "Fetch Data - Code Breakdown",
+    "text": "Fetch Data - Code Breakdown\n\n\nThis purpose of this function is to download and process each Excel file as of a date.\nURL Creation: Dynamically generates the URL based on the date, removing leading zeros in day values (e.g., “April-01” → “April-1”).\nCheck URL: Sends a request (GET(url)) and skips the date if the URL returns a non-200 status (e.g., 404 error).\nDownload File: Saves the Excel file to a temporary path using tempfile() and GET().\nRead Data: Loads the relevant sheet (“CasesByDate”) from the Excel file using read_excel().\nTibble Creation: Constructs a tibble with geo_value, time_value, version, and case_rate_7d_av to later compile into an epi_archive (you can think of an epi_archive as being a comprised of many epi_dfs)."
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-data---process-range-of-dates",
     "href": "slides/day1-afternoon.html#fetch-data---process-range-of-dates",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fetch Data - Process range of dates",
-    "text": "Fetch Data - Process range of dates\n\nNote that process_covid_data() works on one date at a time.\nSo now, we need a function that iterates over a date range and applies process_covid_data() to each date & combines the resulting tibbles into an epi_archive.\nWe call this function process_data_for_date_range()…"
+    "section": "Fetch Data - Process Range of Dates",
+    "text": "Fetch Data - Process Range of Dates\n\nNote that process_covid_data() works on one date at a time.\nSo now, we need a function that iterates over a date range and applies process_covid_data() to each date & combines the resulting tibbles into an epi_archive.\nWe call this function process_data_for_date_range()…"
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-data---process-range-of-dates-1",
     "href": "slides/day1-afternoon.html#fetch-data---process-range-of-dates-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fetch Data - Process range of dates",
-    "text": "Fetch Data - Process range of dates\n\n# Function to process data for a range of dates\nprocess_data_for_date_range &lt;- function(start_date, end_date) {\n  # Generate a sequence of dates between start_date and end_date\n  date_sequence &lt;- seq(as.Date(start_date), as.Date(end_date), by = \"day\")\n  \n  # Process data for each date and combine results\n  covid_data_list &lt;- lapply(date_sequence, function(Date) {\n    process_covid_data(Date)  # Skip over dates with no data (NULLs will be ignored)\n  })\n  \n  # Combine all non-null individual tibbles into one data frame\n  combined_data &lt;- bind_rows(covid_data_list[!sapply(covid_data_list, is.null)])\n  \n  # Convert the combined data into an epi_archive object\n  if (nrow(combined_data) &gt; 0) {\n    epi_archive_data &lt;- combined_data %&gt;%\n      as_epi_archive(compactify = FALSE)\n    \n    return(epi_archive_data)\n  } else {\n    message(\"No valid data available for the given date range.\")\n    return(NULL)\n  }\n}"
+    "section": "Fetch Data - Process Range of Dates",
+    "text": "Fetch Data - Process Range of Dates\n\n# Function to process data for a range of dates\nprocess_data_for_date_range &lt;- function(start_date, end_date) {\n  # Generate a sequence of dates between start_date and end_date\n  date_sequence &lt;- seq(as.Date(start_date), as.Date(end_date), by = \"day\")\n  \n  # Process data for each date and combine results\n  covid_data_list &lt;- lapply(date_sequence, function(Date) {\n    process_covid_data(Date)  # Skip over dates with no data (NULLs will be ignored)\n  })\n  \n  # Combine all non-null individual tibbles into one data frame\n  combined_data &lt;- bind_rows(covid_data_list[!sapply(covid_data_list, is.null)])\n  \n  # Convert the combined data into an epi_archive object\n  if (nrow(combined_data) &gt; 0) {\n    epi_archive_data &lt;- combined_data %&gt;%\n      as_epi_archive(compactify = FALSE)\n    \n    return(epi_archive_data)\n  } else {\n    message(\"No valid data available for the given date range.\")\n    return(NULL)\n  }\n}"
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-data---code-breakdown-1",
     "href": "slides/day1-afternoon.html#fetch-data---code-breakdown-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fetch Data - Code breakdown",
-    "text": "Fetch Data - Code breakdown\nHere’s a summary of what process_data_for_date_range() does: 1. Generates Date Range: Creates a sequence of dates between start_date and end_date.\n\nProcesses Data: Applies the process_covid_data function to each date in the range (skip over dates with no data).\nCombines Results: Combines all valid (non-NULL) tibbles into one single data frame.\nCreates epi_archive: Converts the combined data into an epi_archive object."
+    "section": "Fetch Data - Code Breakdown",
+    "text": "Fetch Data - Code Breakdown\nHere’s a summary of what process_data_for_date_range() does: 1. Generates Date Range: Creates a sequence of dates between start_date and end_date.\n\nProcesses Data: Applies the process_covid_data function to each date in the range (skip over dates with no data).\nCombines Results: Combines all valid (non-NULL) tibbles into one single data frame.\nCreates epi_archive: Converts the combined data into an epi_archive object."
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-data---run-the-function-inspect-archive",
     "href": "slides/day1-afternoon.html#fetch-data---run-the-function-inspect-archive",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fetch Data - Run the function & inspect archive",
-    "text": "Fetch Data - Run the function & inspect archive\n\n\nNow, let’s run the function & inspect the resulting epi_archive of 7-day averaged COVID-19 case counts:\nExpect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to meditate on life).\n\n\n\n\n# Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021\ny &lt;- process_data_for_date_range(\"2021-01-10\", \"2021-12-01\")  # Raw .xlsx data is first released on Jan. 4, 2021\ny\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-01-29 / 2021-11-30\nℹ First/last version with update: 2021-01-10 / 2021-12-01\nℹ Versions end: 2021-12-01\nℹ A preview of the table (135549 rows x 4 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;           &lt;num&gt;\n     1:        ma 2020-01-29 2021-01-10              NA\n     2:        ma 2020-01-29 2021-01-11              NA\n     3:        ma 2020-01-29 2021-01-12              NA\n     4:        ma 2020-01-29 2021-01-13              NA\n     5:        ma 2020-01-29 2021-01-14              NA\n    ---                                                \n135545:        ma 2021-11-28 2021-11-30        2196.000\n135546:        ma 2021-11-28 2021-12-01        2352.286\n135547:        ma 2021-11-29 2021-11-30        1735.714\n135548:        ma 2021-11-29 2021-12-01        2371.286\n135549:        ma 2021-11-30 2021-12-01        1972.143"
+    "section": "Fetch Data - Run the Function & Inspect Archive",
+    "text": "Fetch Data - Run the Function & Inspect Archive\n\n\nNow, let’s run the function & inspect the resulting epi_archive of 7-day averaged COVID-19 case counts:\nExpect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to meditate on life).\n\n\n\n\n# Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021\ny &lt;- process_data_for_date_range(\"2021-01-10\", \"2021-12-01\")  # Raw .xlsx data is first released on Jan. 4, 2021\ny\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-01-29 / 2021-11-30\nℹ First/last version with update: 2021-01-10 / 2021-12-01\nℹ Versions end: 2021-12-01\nℹ A preview of the table (135549 rows x 4 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;           &lt;num&gt;\n     1:        ma 2020-01-29 2021-01-10              NA\n     2:        ma 2020-01-29 2021-01-11              NA\n     3:        ma 2020-01-29 2021-01-12              NA\n     4:        ma 2020-01-29 2021-01-13              NA\n     5:        ma 2020-01-29 2021-01-14              NA\n    ---                                                \n135545:        ma 2021-11-28 2021-11-30        2196.000\n135546:        ma 2021-11-28 2021-12-01        2352.286\n135547:        ma 2021-11-29 2021-11-30        1735.714\n135548:        ma 2021-11-29 2021-12-01        2371.286\n135549:        ma 2021-11-30 2021-12-01        1972.143"
   },
   {
     "objectID": "slides/day1-afternoon.html#fetch-data---outpatient-doctors-visits-for-cli",
@@ -668,8 +780,8 @@
     "objectID": "slides/day1-afternoon.html#use-epix_merge-to-merge-the-two-archives",
     "href": "slides/day1-afternoon.html#use-epix_merge-to-merge-the-two-archives",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Use epix_merge() to merge the two archives",
-    "text": "Use epix_merge() to merge the two archives\nNow we’ll use epix_merge() to combine the two epi_archives that share the same geo_value & time_value.\n\n\narchive &lt;- epix_merge(\n  x, y,\n  sync = \"locf\",\n  compactify = FALSE\n)\narchive\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-01-29 / 2021-12-13\nℹ First/last version with update: 2021-01-10 / 2021-12-17\nℹ Versions end: 2021-12-17\nℹ A preview of the table (139190 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version percent_cli case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n     1:        ma 2020-01-29 2021-01-10          NA              NA\n     2:        ma 2020-01-29 2021-01-11          NA              NA\n     3:        ma 2020-01-29 2021-01-12          NA              NA\n     4:        ma 2020-01-29 2021-01-13          NA              NA\n     5:        ma 2020-01-29 2021-01-14          NA              NA\n    ---                                                            \n139186:        ma 2021-12-11 2021-12-16    2.306966              NA\n139187:        ma 2021-12-11 2021-12-17    2.281141              NA\n139188:        ma 2021-12-12 2021-12-16    2.333759              NA\n139189:        ma 2021-12-12 2021-12-17    2.369756              NA\n139190:        ma 2021-12-13 2021-12-17    2.256551              NA"
+    "section": "Use epix_merge() to Merge the Two Archives",
+    "text": "Use epix_merge() to Merge the Two Archives\nNow we’ll use epix_merge() to combine the two epi_archives that share the same geo_value & time_value.\n\n\narchive &lt;- epix_merge(\n  x, y,\n  sync = \"locf\",\n  compactify = FALSE\n)\narchive\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-01-29 / 2021-12-13\nℹ First/last version with update: 2021-01-10 / 2021-12-17\nℹ Versions end: 2021-12-17\nℹ A preview of the table (139190 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version percent_cli case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n     1:        ma 2020-01-29 2021-01-10          NA              NA\n     2:        ma 2020-01-29 2021-01-11          NA              NA\n     3:        ma 2020-01-29 2021-01-12          NA              NA\n     4:        ma 2020-01-29 2021-01-13          NA              NA\n     5:        ma 2020-01-29 2021-01-14          NA              NA\n    ---                                                            \n139186:        ma 2021-12-11 2021-12-16    2.306966              NA\n139187:        ma 2021-12-11 2021-12-17    2.281141              NA\n139188:        ma 2021-12-12 2021-12-16    2.333759              NA\n139189:        ma 2021-12-12 2021-12-17    2.369756              NA\n139190:        ma 2021-12-13 2021-12-17    2.256551              NA"
   },
   {
     "objectID": "slides/day1-afternoon.html#fitting-and-predicting-with-linear-model",
