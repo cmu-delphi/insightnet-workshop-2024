@@ -17,28 +17,31 @@ format: revealjs
 
 
 
-```{r theme}
+```{r theme-load-pkg}
 theme_set(theme_bw())
 library(tidymodels)
 library(gridExtra)
 library(grid)
 library(epidatasets)
-library(epidatr)
 library(epiprocess)
 library(epipredict)
 ```
 
 ## Outline
 
-1. About Delphi 
-
-1. Goals of Delphi Epidata platform
+1. Delphi 
 
 1. Epidata API
 
-1. Finding data sources and signals
+1. Epidatr
 
-1. Versioned data
+1. Find Data Sources and Signals
+
+1. Panel Data
+
+1. Versioned Data
+
+1. Versioning in epidatr
 
 
 # Delphi
@@ -103,7 +106,6 @@ a[target="_blank"]::after {
   <a href="https://cmu-delphi.github.io/delphi-tooling-book/"
      style="position: absolute; top: 30px; left: 682px; width: 270px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
   </a>
-</div>
 
   <a href="https://cmu-delphi.github.io/delphi-epidata/"
      style="position: absolute; top: 242px; left: 182px; width: 370px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
@@ -303,7 +305,7 @@ Installing the package in R is straightforward...
 
 Install the CRAN version
 
-```{r error functions}
+```{r install-epidatr-cran}
 #| echo: true
 # Install the CRAN version
 pak::pkg_install("epidatr")
@@ -311,7 +313,7 @@ pak::pkg_install("epidatr")
 
 or the development version
 
-```{r}
+```{r install-epidatr-dev}
 #| eval: false
 #| echo: true
 # Install the development version from the GitHub dev branch
@@ -344,7 +346,7 @@ pip install epidatpy
 The following shows how to import the library and fetch all confirmed influenza hospital admissions occurring each day for North Carolina:
 </div> 
 
-```{r epidatr ex county}
+```{r hhs-influenza-pub-covidcast}
 #| echo: true
 library(epidatr)
 res <- pub_covidcast('hhs', 'confirmed_admissions_influenza_1d', 'state', 'day', geo_values = 'nc',
@@ -454,7 +456,7 @@ Functions to enhance data discovery in `epidatr`:
     
 * **Output Format**: Returns a tibble for easy viewing and analysis of available data sources.
 </div>
-```{r avail endpoints fun}
+```{r avail-endpoints-fun}
 #| echo: true
 #| results: hide
 avail_endpoints() 
@@ -474,7 +476,7 @@ avail_endpoints()
 * **Filtering Convenience**: Signal names are prefixed with their respective data source for easier navigation.
 </div>
 
-```{r covidcast epidata fun}
+```{r covidcast-epidata-fun}
 #| echo: true
 #| results: hide
 covid_sources <- covidcast_epidata()
@@ -501,13 +503,13 @@ head(covid_sources$sources, n = 2) # head(list, n = 2) will print the first two 
 ## Fetching data - COVIDcast main endpoint 
 
 <div style="font-size: 0.8em;">
-```{r load packages}
+```{r load-epi-packages}
 #| echo: true
 library(epidatr)
 library(dplyr)
 ```
 
-```{r first pub covidcast}
+```{r us-jhu-pub-covidcast}
 #| echo: true
 # Obtain the most up-to-date version of the daily new 
 # confirmed COVID cases, 7-day average, per 100k people for the US
@@ -521,7 +523,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-us-jhu-pub-covidcast}
 #| echo = FALSE 
 head(epidata) |> select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
 ```
@@ -560,7 +562,7 @@ Crucially—and unlike most other sources of COVID-19 data—our API reports two
 
 * Simply change `geo_type` and `geo_values` in the previous example to get...
 
-```{r state level result}
+```{r state-jhu-pub-covidcast}
 #| echo: true
 # Obtain the most up-to-date version of the smoothed covid-like illness (CLI)
 # signal from the COVID-19 Trends and Impact survey for all states
@@ -574,7 +576,7 @@ state_epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-state-jhu-pub-covidcast}
 #| echo = FALSE 
 head(state_epidata) |> select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
 ```
@@ -584,9 +586,9 @@ head(state_epidata) |> select(geo_value, signal, source, geo_type, time_value, i
 <div style="font-size: 0.75em;">
 County `geo_values` are [FIPS codes](https://en.wikipedia.org/wiki/List_of_United_States_FIPS_codes_by_county) and are discussed in the API docs [here](https://cmu-delphi.github.io/delphi-epidata/api/covidcast_geography.html). The example below is for Orange County, California. 
 
-```{r covidcast example}
+```{r county-jhu-pub-covid}
 #| echo: true
-fb_county_data <- pub_covidcast(
+jhu_county_data <- pub_covidcast(
   source = "jhu-csse",
   signals = "confirmed_7dav_incidence_prop",
   geo_type = "county",
@@ -596,9 +598,9 @@ fb_county_data <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-county-jhu-pub-covid}
 #| echo = FALSE 
-head(fb_county_data) |> select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
+head(jhu_county_data) |> select(geo_value, signal, source, geo_type, time_value, issue, lag, value)
 ```
 </div>
 ::: {.callout-important icon="false"}
@@ -628,7 +630,7 @@ pub_covid_hosp_facility_lookup(city = "southlake")
 **COVID-19 Hospitalization by Facility**
 
 <small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp_facility.html> </small>
-```{r hosp by facility}
+```{r hosp-by-facility}
 #| echo: true
 #| results: hide
 pub_covid_hosp_facility(
@@ -669,7 +671,7 @@ pub_fluview(regions = "nat", epiweeks = epirange(201201, 202001))
 **NIDSS Flu**
 
 <small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html> </small>
-```{r NIDSS flu}
+```{r NIDSS-flu}
 #| echo: true
 #| results: hide
 pub_nidss_flu(regions = "taipei", epiweeks = epirange(200901, 201301))
@@ -698,7 +700,7 @@ pub_nidss_dengue(locations = "taipei", epiweeks = epirange(200301, 201301))
 **PAHO Dengue**
 
 <small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html> </small>
-```{r PAHO Dengue}
+```{r PAHO-Dengue}
 #| echo: true
 #| results: hide
 pub_paho_dengue(regions = "ca", epiweeks = epirange(200201, 202319))
@@ -709,7 +711,7 @@ pub_paho_dengue(regions = "ca", epiweeks = epirange(200201, 202319))
 **Wikipedia access**
 
 <small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/wiki.html> </small>
-```{r pub wiki}
+```{r pub-wiki}
 #| echo: true
 pub_wiki(
   language = "en",
@@ -751,7 +753,7 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 * In table form, panel data is a time index + one or more locations/keys.
 
 * For example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 ([docs](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html)):
-```{r ex-panel-data}
+```{r panel-wa-ex}
 #| echo: false
 x1 <- pub_covidcast(
   source = "doctor-visits",
@@ -780,7 +782,7 @@ head(epix_as_of(x, max_version = max(x$DT$version)))
 
 API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html>
 
-```{r examples-jhu-csse}
+```{r examples-panel-covid}
 #| echo: false
 SOURCES <- c("jhu-csse", "chng", "chng", "hhs")
 SIGNALS <- c("confirmed_7dav_incidence_prop",
@@ -971,7 +973,7 @@ ggplot(ca |>
 * In panel data, we've seen that time is indicated by `time_value`.
 
 * Now, we add a second time index to indicate the data version...
-```{r versioned-dat-ex}
+```{r versioned-wa-ex}
 #| echo: false
 head(x$DT) |> as_tibble()
 ```
@@ -981,7 +983,7 @@ head(x$DT) |> as_tibble()
 ## Versioned panel data
 Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:
 
-```{r versioned-panel-ex}
+```{r versioned-panel-multi-states-ex}
 #| echo: false
 # different as_of dates
 as_ofs <- seq(as.Date("2020-06-08"), as.Date("2020-08-01"), by = "week")
@@ -1160,7 +1162,7 @@ Many data sources are subject to revisions:
 * **JHU CSSE cases (right) ** remain "as reported" on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data.
 </div>
 
-```{r figure-1-revisions}
+```{r fig1-McDonald}
 #| echo: false
 # This is Figure 1 from https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118
 
@@ -1263,7 +1265,7 @@ invisible(p3)
 * **Right**: CTIS estimates of CLI-in-community showed more stable underlying trends.
 </div>
 
-```{r figure-4}
+```{r fig4-Reinhart}
 # |echo: false
 # |message: false
 
@@ -1351,7 +1353,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-pa-may-1st-as-of}
 #| echo = FALSE 
 head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value)
 ```
@@ -1376,7 +1378,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-pa-may-1st-most-recent}
 #| echo = FALSE 
 head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
@@ -1392,7 +1394,7 @@ head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value
 ## Obtaining multiple specific issues for one state
 By using the `issues` argument, we can request all issues in a certain time period:
 
-```{r}
+```{r pa-multiple-issues}
 #| echo: true
 epidata <- pub_covidcast(
   source = "doctor-visits",
@@ -1405,7 +1407,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-pa-multiple-issues}
 #| echo = FALSE 
 head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
@@ -1414,7 +1416,7 @@ head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value
 <div style="font-size: 0.8em;">
 To ensure that you've captured all issues up to a specific date (e.g., "2020-05-15"), set an extreme lower bound: `issues = epirange("1900-01-01", "2020-05-15")`.
 
-```{r}
+```{r extreme-lb-multiple-issues}
 #| echo: true
 epidata <- pub_covidcast(
   source = "doctor-visits",
@@ -1427,7 +1429,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-extreme-lb-multiple-issues}
 #| echo = FALSE 
 head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
@@ -1445,7 +1447,7 @@ to find the earliest date available.
 
 * For example, the last issue in July 2020 and so the data is finalized as of July 2020, even though we requested issues up to today.
 
-```{r}
+```{r extreme-lb-ub-multiple-issues}
 #| echo: true
 epidata <- pub_covidcast(
   source = "doctor-visits",
@@ -1458,7 +1460,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-extreme-lb-ub-multiple-issues}
 #| echo = FALSE 
 tail(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
@@ -1473,7 +1475,7 @@ tail(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value
 <div style="font-size: 0.9em;">
 The fast way to obtain all available issues for PA, set `issues` to be `*`:
 
-```{r}
+```{r pa-all-issues}
 #| echo: true
 epidata <- pub_covidcast(
   source = "doctor-visits",
@@ -1486,7 +1488,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-pa-all-issues}
 #| echo = FALSE 
 head(epidata, n = 8) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
@@ -1511,7 +1513,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-all-the-states-and-issues}
 #| echo = FALSE 
 head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
@@ -1543,7 +1545,7 @@ epidata <- pub_covidcast(
 
 <small> **Hint**: remember a couple slides ago, when we removed `as_of`, we got the most recent estimate for PA. </small>
 
-```{r}
+```{r one-issue-all-states}
 #| echo: true
 epidata <- pub_covidcast(
   source = "doctor-visits",
@@ -1554,7 +1556,7 @@ epidata <- pub_covidcast(
 )
 ```
 
-```{r}
+```{r head-one-issue-all-states}
 #| echo = FALSE 
 head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value, stderr)
 ```
