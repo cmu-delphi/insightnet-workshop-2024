@@ -416,10 +416,12 @@
 <h2>Outline</h2>
 <ol type="1">
 <li><p>Essentials of <code>dplyr</code> and <code>tidyr</code></p></li>
-<li><p>Epiverse software ecosystem</p></li>
-<li><p>Panel and versioned data in the epiverse</p></li>
+<li><p>Epiverse Software ecosystem</p></li>
+<li><p>Panel and Versioned Data in the epiverse</p></li>
 <li><p>Basic Nowcasting using <code>epiprocess</code></p></li>
-<li><p>Motivating case study</p></li>
+<li><p>Nowcasting with One Variable</p></li>
+<li><p>Nowcasting with Two Variables</p></li>
+<li><p>Case Study - Nowcasting Cases Using %CLI</p></li>
 </ol>
 </section>
 <section>
@@ -1053,7 +1055,7 @@ In this section:</li>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>ca_missing <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb45-2"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"ca"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb45-3"><a></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>) <span class="co"># Select rows 1 to 2 and 4 to 6; ie. omit 2022-03-03</span></span>
+<span id="cb45-3"><a></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>) <span class="co"># Subset rows 1 to 2 and 4 to 6; ie. omit 2022-03-03</span></span>
 <span id="cb45-4"><a></a></span>
 <span id="cb45-5"><a></a>ca_missing</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1406,12 +1408,12 @@ In this section:</li>
 <span id="cb70-2"><a></a>  <span class="fu">autoplot</span>(smoothed_scaled_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-13-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/autoplot-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="epi.-data-processing-with-epiprocess-3" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
 <p>Alternatively, we can display both the smoothed and the original daily case rates:</p>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-14-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
+<img data-src="day1-afternoon_files/figure-revealjs/smoothed-original-plot-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
 </section></section>
 <section>
 <section id="epiverse-software-ecosystem" class="title-slide slide level1 center">
@@ -1482,8 +1484,7 @@ In this section:</li>
 <section id="epi_df-snapshot-of-a-dataset-1" class="slide level2">
 <h2><code>epi_df</code>: Snapshot of a dataset</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a></a>edf <span class="ot">&lt;-</span> covid_case_death_rates</span>
-<span id="cb72-2"><a></a>edf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a></a>edf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `epi_df` object, 20,496 x 4 with metadata:
 * geo_type  = state
@@ -1525,7 +1526,7 @@ In this section:</li>
 <span id="cb74-2"><a></a>cor14 <span class="ot">&lt;-</span> <span class="fu">epi_cor</span>(edf, case_rate, death_rate, <span class="at">cor_by =</span> time_value, <span class="at">dt1 =</span> <span class="sc">-</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-18-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-corr-lags-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="features---compute-growth-rates" class="slide level2">
 <h2>Features - Compute growth rates</h2>
 <div class="cell" data-layout-align="center">
@@ -1534,7 +1535,7 @@ In this section:</li>
 <span id="cb75-3"><a></a>  <span class="fu">mutate</span>(<span class="at">gr_cases =</span> <span class="fu">growth_rate</span>(time_value, case_rate, <span class="at">method =</span> <span class="st">"trend_filter"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-20-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-growth-rates-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="features---outlier-detection" class="slide level2">
 <h2>Features - Outlier detection</h2>
 <div class="cell" data-layout-align="center">
@@ -1547,7 +1548,7 @@ In this section:</li>
 <span id="cb76-7"><a></a>  )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-21-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-outlier-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="epi_archive-collection-of-epi_dfs" class="slide level2">
 <h2><code>epi_archive</code>: Collection of <code>epi_df</code>s</h2>
 <ul>
@@ -1603,7 +1604,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <section id="revision-patterns" class="slide level2">
 <h2>Revision patterns</h2>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-23-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-revision-patterns-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="finalized-data" class="slide level2">
 <h2>Finalized data</h2>
 <div style="font-size: 0.9em;">
@@ -1654,8 +1655,9 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Aside on nowcasting</h2>
 <ul>
 <li><p>To some Epis, “nowcasting” can be equated with “estimate the time-varying instantaneous reproduction number, <span class="math inline">\(R_t\)</span>”</p></li>
-<li><p>Example using the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. <!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. --></p></li>
+<li><p>Example using the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023.</p></li>
 </ul>
+<!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. -->
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -2312,7 +2314,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <p>We can then visualize the nowcast results alongside the true values using <code>ggplot2</code>:</p>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/plot-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-multiple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="key-takeaways-linear-regression-nowcasting-example" class="slide level2">
 <h2>Key Takeaways: Linear regression nowcasting example</h2>
 <ul>
@@ -2324,17 +2326,17 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </ul>
 </section></section>
 <section>
-<section id="case-study---nowcasting-case-rates-using-cli" class="title-slide slide level1 center">
-<h1>Case Study - Nowcasting Case Rates Using %CLI</h1>
+<section id="case-study---nowcasting-cases-using-cli" class="title-slide slide level1 center">
+<h1>Case Study - Nowcasting Cases Using %CLI</h1>
 
 </section>
 <section id="goal-of-this-case-study" class="slide level2">
 <h2>Goal of this case study</h2>
-<p><strong>Goal</strong>: Nowcast COVID-19 Case Rates using %CLI for Massachusetts.</p>
+<p><strong>Goal</strong>: Nowcast COVID-19 Cases for MA using %CLI.</p>
 <ul>
 <li>%CLI is contained in the Epidata API.</li>
-<li>Case rates by specimen collection date are not. They are from the MA gov website.</li>
-<li>Case rates in the API (JHU) are aligned by report date, not specimen collection/test date.</li>
+<li>Cases by specimen collection date are not. They are from the MA gov website.</li>
+<li>Cases in the API (JHU) are aligned by report date, not specimen collection/test date.</li>
 <li>Working with cases aligned by <strong>test date</strong> allows us to avoid the more unpredictable delays introduced by the <strong>report date</strong>.</li>
 </ul>
 </section>
@@ -2344,10 +2346,10 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <p>The workflow is similar to the previous example where we nowcasted using two variables, only more involved. The main steps are…</p>
 <ol type="1">
 <li><p><strong>Fetch Data</strong>: Retrieve %CLI and COVID-19 case data (by specimen collection date) for MA.</p></li>
-<li><p><strong>Merge Data</strong>: Align %CLI and case rate data using <code>epix_merge</code>, filling missing values via last observation carried forward (LOCF).</p></li>
-<li><p><strong>Model &amp; Prediction</strong>: Fit a linear model to predict case rates based on %CLI, trained on a 30-day rolling window.</p></li>
-<li><p><strong>Nowcast Execution</strong>: Use <code>epix_slide</code> to nowcast the case rates dynamically.</p></li>
-<li><p><strong>Visualization</strong>: Plot actual vs.&nbsp;nowcasted case rates with confidence intervals to assess model accuracy.</p></li>
+<li><p><strong>Merge Data</strong>: Align %CLI and case data using <code>epix_merge</code>, filling missing values via last observation carried forward (LOCF).</p></li>
+<li><p><strong>Model &amp; Prediction</strong>: Fit a linear model to predict cases based on %CLI, trained on a 30-day rolling window.</p></li>
+<li><p><strong>Nowcast Execution</strong>: Use <code>epix_slide</code> to nowcast the cases dynamically.</p></li>
+<li><p><strong>Visualization</strong>: Plot actual vs.&nbsp;nowcasted cases with confidence intervals to assess model accuracy.</p></li>
 </ol>
 <p>So the first step is to fetch the data…</p>
 </div>
@@ -2560,7 +2562,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <ul>
 <li>Now, from the Epidata API, let’s download the <a href="&quot;https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html&quot;">estimated percentage of outpatient doctor visits</a> primarily for COVID-related symptoms, based on health system data.</li>
 <li>Comes pre-smoothed in time using a Gaussian linear smoother</li>
-<li>This will be the predictor when we nowcast COVID-19 Case Rates in MA.</li>
+<li>This will be the predictor when we nowcast COVID-19 cases in MA.</li>
 </ul>
 </div>
 <div class="cell" data-layout-align="center">
@@ -2619,9 +2621,9 @@ Key: &lt;geo_value, time_value, version&gt;
 <h2>Fitting and predicting with linear model</h2>
 <div style="font-size: 0.8em;">
 <ul>
-<li>Define <code>lm_mod_pred()</code>: A function that fits a linear model to forecast case rates based on the <code>percent_cli</code> predictor.</li>
+<li>Define <code>lm_mod_pred()</code>: A function that fits a linear model to forecast cases based on the <code>percent_cli</code> predictor.</li>
 <li>Use <code>predict()</code> with a 90% prediction interval.</li>
-<li>Save the actual case rates to compare to the nowcasts later.</li>
+<li>Save the actual cases to compare to the nowcasts later.</li>
 </ul>
 </div>
 <div class="cell" data-layout-align="center">
@@ -2649,7 +2651,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <ul>
 <li><strong>Specify targets</strong>: Define the target dates for nowcasting (e.g., 1st of each month) &amp; adjust training data to include the lag for the latent case data.</li>
 <li><strong>Sliding window</strong>: Use <code>epix_slide()</code> to apply the linear model across a sliding window of data for each region.</li>
-<li><strong>Training-test split</strong>: Use the last 30 days of data to train and predict case rates for each target nowcast date.</li>
+<li><strong>Training-test split</strong>: Use the last 30 days of data to train and predict cases for each target nowcast date.</li>
 </ul>
 </section>
 <section id="nowcasting-with-epix_slide-3" class="slide level2">
@@ -2716,22 +2718,22 @@ Key: &lt;geo_value, time_value, version&gt;
 <section id="visualizing-nowcasts-vs.-actual-values-1" class="slide level2">
 <h2>Visualizing nowcasts vs.&nbsp;actual values</h2>
 <div style="font-size: 0.9em;">
-<p>Finally, plot the predictions &amp; real-time values on top of latest COVID-19 case rates using <code>ggplot2</code>:</p>
+<p>Finally, plot the predictions &amp; real-time values on top of latest COVID-19 cases using <code>ggplot2</code>:</p>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-38-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-simple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="takeaways" class="slide level2">
 <h2>Takeaways</h2>
-<p><strong>Goal</strong>: Predict COVID-19 case rates using %CLI, overcoming delays in report data.</p>
+<p><strong>Goal</strong>: Predict COVID-19 cases using %CLI, overcoming delays in report data.</p>
 <p>Main Steps:</p>
 <ol type="1">
-<li><p><strong>Fetch Data</strong>: Collect case rates and %CLI data.</p></li>
+<li><p><strong>Fetch Data</strong>: Collect case and %CLI data.</p></li>
 <li><p><strong>Merge Data</strong>: Align datasets with <code>epix_merge()</code> and fill missing values.</p></li>
-<li><p><strong>Model</strong>: Fit a linear model to predict case rates.</p></li>
+<li><p><strong>Model</strong>: Fit a linear model to predict cases.</p></li>
 <li><p><strong>Nowcast</strong>: Apply dynamic forecasting with <code>epix_slide()</code>.</p></li>
-<li><p><strong>Visualize</strong>: Plot nowcasts vs.&nbsp;actual case rates with confidence intervals.</p></li>
+<li><p><strong>Visualize</strong>: Plot nowcasts vs.&nbsp;actual cases with confidence intervals.</p></li>
 </ol>
-<p>Overall, nowcasting, based on the linear model, provided a closer approximation of true case rates compared to the real-time values.</p>
+<p>Overall, nowcasting, based on the linear model, provided a closer approximation of true cases compared to the real-time values.</p>
 </section>
 <section id="final-slide" class="slide level2 smaller">
 <h2>Final slide</h2>

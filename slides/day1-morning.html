@@ -415,11 +415,13 @@
 <section id="outline" class="slide level2">
 <h2>Outline</h2>
 <ol type="1">
-<li><p>About Delphi</p></li>
-<li><p>Goals of Delphi Epidata platform</p></li>
+<li><p>Delphi</p></li>
 <li><p>Epidata API</p></li>
-<li><p>Finding data sources and signals</p></li>
-<li><p>Versioned data</p></li>
+<li><p>Epidatr</p></li>
+<li><p>Find Data Sources and Signals</p></li>
+<li><p>Panel Data</p></li>
+<li><p>Versioned Data</p></li>
+<li><p>Versioning in epidatr</p></li>
 </ol>
 </section>
 <section>
@@ -472,13 +474,12 @@ a[target="_blank"]::after {
 <p><!-- Create clickable areas on top of the JPG --> <!-- Signal discovery --> <a href="https://delphi.cmu.edu/signals/" style="position: absolute; top: 30px; left: 12px; width: 310px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
 <p><a href="https://cmu-delphi.github.io/epiprocess/" style="position: absolute; top: 30px; left: 362px; width: 290px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
 <p><a href="https://cmu-delphi.github.io/delphi-tooling-book/" style="position: absolute; top: 30px; left: 682px; width: 270px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-</div>
 <p><a href="https://cmu-delphi.github.io/delphi-epidata/" style="position: absolute; top: 242px; left: 182px; width: 370px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
 <p><a href="https://cmu-delphi.github.io/epidatr/" style="position: absolute; top: 222px; left: 582px; width: 260px; height: 140px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
 <p><a href="https://cmu-delphi.github.io/epipredict/" style="position: absolute; top: 222px; left: 866px; width: 170px; height: 150px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/" style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a>
-</section></section></div>
-
+<p><a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/" style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
+</div>
+</section>
 <section id="goals-of-delphi-epidata-platform-and-repository" class="slide level2">
 <h2>Goals of Delphi Epidata platform and repository</h2>
 <div style="font-size: 0.9em;">
@@ -507,7 +508,7 @@ a[target="_blank"]::after {
 <section id="the-bigger-goal" class="slide level2">
 <h2>The bigger goal</h2>
 <p>The goal is to make epi-surveillance <span class="primary">more nimble, complete, standardized, robust, and real-time</span>; and <span class="primary">less burdensome on the health system itself</span>. Epidata is not the solution; but we hope it is a blueprint towards such a solution.</p>
-</section>
+</section></section>
 <section>
 <section id="epidata-api" class="title-slide slide level1 center">
 <h1>Epidata API</h1>
@@ -928,7 +929,7 @@ a[target="_blank"]::after {
 <div style="font-size: 0.75em;">
 <p>County <code>geo_values</code> are <a href="https://en.wikipedia.org/wiki/List_of_United_States_FIPS_codes_by_county">FIPS codes</a> and are discussed in the API docs <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast_geography.html">here</a>. The example below is for Orange County, California.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>fb_county_data <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>jhu_county_data <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
 <span id="cb15-2"><a></a>  <span class="at">source =</span> <span class="st">"jhu-csse"</span>,</span>
 <span id="cb15-3"><a></a>  <span class="at">signals =</span> <span class="st">"confirmed_7dav_incidence_prop"</span>,</span>
 <span id="cb15-4"><a></a>  <span class="at">geo_type =</span> <span class="st">"county"</span>,</span>
@@ -1130,7 +1131,7 @@ a[target="_blank"]::after {
 <p><strong>JHU CSSE COVID cases per 100k </strong> estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.</p>
 <p>API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html</a></p>
 
-<img data-src="day1-morning_files/figure-revealjs/examples-jhu-csse-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-morning_files/figure-revealjs/examples-panel-covid-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="examples-of-panel-data---chng-cli" class="slide level2">
 <h2>Examples of panel data - CHNG-CLI</h2>
 <p><strong>Change Healthcare COVID-like illness (CHNG-CLI)</strong> reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.</p>
@@ -1220,7 +1221,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <h2>Versioned panel data</h2>
 <p>Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:</p>
 
-<img data-src="day1-morning_files/figure-revealjs/versioned-panel-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
+<img data-src="day1-morning_files/figure-revealjs/versioned-panel-multi-states-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
 <p><small><a href="https://www.pnas.org/doi/10.1073/pnas.2111452118">Figure 5 from Reinhart et al.&nbsp;(2021)</a></small></p>
 </div>
 </section>
@@ -1316,7 +1317,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </ul>
 </div>
 
-<img data-src="day1-morning_files/figure-revealjs/figure-1-revisions-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
+<img data-src="day1-morning_files/figure-revealjs/fig1-McDonald-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
 <p><small><a href="https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118">Figure 1 from McDonald et al.&nbsp;(2021)</a></small></p>
 </div>
 </section>
@@ -1341,7 +1342,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </ul>
 </div>
 
-<img data-src="day1-morning_files/figure-revealjs/figure-4-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
+<img data-src="day1-morning_files/figure-revealjs/fig4-Reinhart-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
 <p><small><a href="https://www.pnas.org/doi/10.1073/pnas.2111452118">Figure 4 from Reinhart et al.&nbsp;(2021)</a></small></p>
 </div>
 </section>
@@ -1763,7 +1764,7 @@ epidata <- pub_covidcast(
 </div>
 </section></section>
     </div>
-  
+  </div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
   <script src="../site_libs/revealjs/dist/reveal.js"></script>
