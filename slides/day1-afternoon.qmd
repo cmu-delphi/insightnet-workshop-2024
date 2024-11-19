@@ -645,7 +645,7 @@ head(cases_df)
 ```
 
 ## Epi. data processing with `epiprocess`
-<div style="font-size: 0.8em;">
+<div style="font-size: 0.9em;">
 * `epiprocess` is a package that offers additional functionality to pre-process such epidemiological data.
 * You can work with an `epi_df` like you can with a tibble by using dplyr verbs.
 * For example, on `cases_df`, we can easily use `epi_slide_mean()` to calculate trailing 14 day averages of cases:
@@ -657,8 +657,12 @@ cases_df <- cases_df |>
   group_by(geo_value) |>
   epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) |>
   rename(smoothed_scaled_cases = slide_value_scaled_cases) 
+```
 
-head(cases_df)
+## Epi. data processing with `epiprocess`
+
+```{r}
+cases_df
 ```
 
 ## Epi. data processing with `epiprocess`
@@ -1919,11 +1923,11 @@ Main Steps:
 
 1. **Fetch Data**: Collect case rates and %CLI data.
 
-2. **Merge Data**: Align datasets with epix_merge() and fill missing values.
+2. **Merge Data**: Align datasets with `epix_merge()` and fill missing values.
 
 3. **Model**: Fit a linear model to predict case rates.
 
-4. **Nowcast**: Apply dynamic forecasting with epix_slide().
+4. **Nowcast**: Apply dynamic forecasting with `epix_slide()`.
 
 5. **Visualize**: Plot nowcasts vs. actual case rates with confidence intervals.
 
