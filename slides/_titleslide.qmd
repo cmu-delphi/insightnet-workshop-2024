@@ -27,6 +27,7 @@ scale_fill_delphi <- function(..., aesthetics = "fill") {
 scale_color_delphi <- function(..., aesthetics = "color") {
   discrete_scale(name = "delphi", aesthetics = aesthetics, palette = delphi_pal)
 }
+scale_colour_delphi <- scale_color_delphi
 x <- archive_cases_dv_subset
 x_latest <- epix_as_of(x, max_version = max(x$DT$version))
 self_max = max(x$DT$version)
