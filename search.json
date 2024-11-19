@@ -354,18 +354,25 @@
     "href": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Epi. data processing with epiprocess",
-    "text": "Epi. data processing with epiprocess\n\n\nepiprocess is a package that offers additional functionality to pre-process such epidemiological data.\nYou can work with an epi_df like you can with a tibble by using dplyr verbs.\nFor example, on cases_df, we can easily use epi_slide_mean() to calculate trailing 14 day averages of cases:\n\n\n\ncases_df &lt;- cases_df |&gt;\n  as_epi_df(as_of = as.Date(\"2024-01-01\")) |&gt;\n  group_by(geo_value) |&gt;\n  epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) |&gt;\n  rename(smoothed_scaled_cases = slide_value_scaled_cases) \n\nhead(cases_df)\n\nAn `epi_df` object, 6 x 6 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-01-01\n\n# A tibble: 6 × 6\n# Groups:   geo_value [1]\n  geo_value time_value raw_cases      pop scaled_cases smoothed_scaled_cases\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223        10.9                   10.9\n2 ca        2022-03-02      7044 39512223        17.8                   14.4\n3 ca        2022-03-03      7509 39512223        19.0                   15.9\n4 ca        2022-03-04      3586 39512223         9.08                  14.2\n5 ca        2022-03-05      1438 39512223         3.64                  12.1\n6 ca        2022-03-06      6465 39512223        16.4                   12.8"
+    "text": "Epi. data processing with epiprocess\n\n\nepiprocess is a package that offers additional functionality to pre-process such epidemiological data.\nYou can work with an epi_df like you can with a tibble by using dplyr verbs.\nFor example, on cases_df, we can easily use epi_slide_mean() to calculate trailing 14 day averages of cases:\n\n\n\ncases_df &lt;- cases_df |&gt;\n  as_epi_df(as_of = as.Date(\"2024-01-01\")) |&gt;\n  group_by(geo_value) |&gt;\n  epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) |&gt;\n  rename(smoothed_scaled_cases = slide_value_scaled_cases)"
   },
   {
     "objectID": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-1",
     "href": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Epi. data processing with epiprocess",
-    "text": "Epi. data processing with epiprocess\nIt is easy to produce an autoplot the smoothed confirmed daily cases for each geo_value:\n\ncases_df |&gt;\n  autoplot(smoothed_scaled_cases)"
+    "text": "Epi. data processing with epiprocess\n\n\nAn `epi_df` object, 93 x 6 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-01-01\n\n# A tibble: 93 × 6\n# Groups:   geo_value [3]\n   geo_value time_value raw_cases      pop scaled_cases smoothed_scaled_cases\n * &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;\n 1 ca        2022-03-01      4310 39512223        10.9                   10.9\n 2 ca        2022-03-02      7044 39512223        17.8                   14.4\n 3 ca        2022-03-03      7509 39512223        19.0                   15.9\n 4 ca        2022-03-04      3586 39512223         9.08                  14.2\n 5 ca        2022-03-05      1438 39512223         3.64                  12.1\n 6 ca        2022-03-06      6465 39512223        16.4                   12.8\n 7 ca        2022-03-07      6690 39512223        16.9                   13.4\n 8 ca        2022-03-08      3424 39512223         8.67                  12.8\n 9 ca        2022-03-09      4591 39512223        11.6                   12.7\n10 ca        2022-03-10      5359 39512223        13.6                   12.8\n# ℹ 83 more rows"
   },
   {
     "objectID": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-2",
     "href": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Epi. data processing with epiprocess",
+    "text": "Epi. data processing with epiprocess\nIt is easy to produce an autoplot the smoothed confirmed daily cases for each geo_value:\n\ncases_df |&gt;\n  autoplot(smoothed_scaled_cases)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-3",
+    "href": "slides/day1-afternoon.html#epi.-data-processing-with-epiprocess-3",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Epi. data processing with epiprocess",
     "text": "Epi. data processing with epiprocess\nAlternatively, we can display both the smoothed and the original daily case rates:\n\nNow, before exploring some more features of epiprocess, let’s have a look at the epiverse software ecosystem it’s part of…"

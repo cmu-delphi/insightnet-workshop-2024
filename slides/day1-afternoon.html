@@ -1356,7 +1356,7 @@ In this section:</li>
 </section>
 <section id="epi.-data-processing-with-epiprocess" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
-<div style="font-size: 0.8em;">
+<div style="font-size: 0.9em;">
 <ul>
 <li><code>epiprocess</code> is a package that offers additional functionality to pre-process such epidemiological data.</li>
 <li>You can work with an <code>epi_df</code> like you can with a tibble by using dplyr verbs.</li>
@@ -1368,29 +1368,37 @@ In this section:</li>
 <span id="cb68-2"><a></a>  <span class="fu">as_epi_df</span>(<span class="at">as_of =</span> <span class="fu">as.Date</span>(<span class="st">"2024-01-01"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb68-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb68-4"><a></a>  <span class="fu">epi_slide_mean</span>(scaled_cases, <span class="at">.window_size =</span> <span class="dv">14</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb68-5"><a></a>  <span class="fu">rename</span>(<span class="at">smoothed_scaled_cases =</span> slide_value_scaled_cases) </span>
-<span id="cb68-6"><a></a></span>
-<span id="cb68-7"><a></a><span class="fu">head</span>(cases_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb68-5"><a></a>  <span class="fu">rename</span>(<span class="at">smoothed_scaled_cases =</span> slide_value_scaled_cases) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="epi.-data-processing-with-epiprocess-1" class="slide level2">
+<h2>Epi. data processing with <code>epiprocess</code></h2>
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>An `epi_df` object, 6 x 6 with metadata:
+<pre><code>An `epi_df` object, 93 x 6 with metadata:
 * geo_type  = state
 * time_type = day
 * as_of     = 2024-01-01
 
-# A tibble: 6 × 6
-# Groups:   geo_value [1]
-  geo_value time_value raw_cases      pop scaled_cases smoothed_scaled_cases
-* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;
-1 ca        2022-03-01      4310 39512223        10.9                   10.9
-2 ca        2022-03-02      7044 39512223        17.8                   14.4
-3 ca        2022-03-03      7509 39512223        19.0                   15.9
-4 ca        2022-03-04      3586 39512223         9.08                  14.2
-5 ca        2022-03-05      1438 39512223         3.64                  12.1
-6 ca        2022-03-06      6465 39512223        16.4                   12.8</code></pre>
+# A tibble: 93 × 6
+# Groups:   geo_value [3]
+   geo_value time_value raw_cases      pop scaled_cases smoothed_scaled_cases
+ * &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;
+ 1 ca        2022-03-01      4310 39512223        10.9                   10.9
+ 2 ca        2022-03-02      7044 39512223        17.8                   14.4
+ 3 ca        2022-03-03      7509 39512223        19.0                   15.9
+ 4 ca        2022-03-04      3586 39512223         9.08                  14.2
+ 5 ca        2022-03-05      1438 39512223         3.64                  12.1
+ 6 ca        2022-03-06      6465 39512223        16.4                   12.8
+ 7 ca        2022-03-07      6690 39512223        16.9                   13.4
+ 8 ca        2022-03-08      3424 39512223         8.67                  12.8
+ 9 ca        2022-03-09      4591 39512223        11.6                   12.7
+10 ca        2022-03-10      5359 39512223        13.6                   12.8
+# ℹ 83 more rows</code></pre>
 </div>
 </div>
 </section>
-<section id="epi.-data-processing-with-epiprocess-1" class="slide level2">
+<section id="epi.-data-processing-with-epiprocess-2" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
 <p>It is easy to produce an autoplot the smoothed confirmed daily cases for each <code>geo_value</code>:</p>
 <div class="cell" data-layout-align="center">
@@ -1398,12 +1406,12 @@ In this section:</li>
 <span id="cb70-2"><a></a>  <span class="fu">autoplot</span>(smoothed_scaled_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-12-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
-<section id="epi.-data-processing-with-epiprocess-2" class="slide level2">
+<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-13-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="epi.-data-processing-with-epiprocess-3" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
 <p>Alternatively, we can display both the smoothed and the original daily case rates:</p>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-13-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
+<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-14-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
 </section></section>
 <section>
 <section id="epiverse-software-ecosystem" class="title-slide slide level1 center">
@@ -1517,7 +1525,7 @@ In this section:</li>
 <span id="cb74-2"><a></a>cor14 <span class="ot">&lt;-</span> <span class="fu">epi_cor</span>(edf, case_rate, death_rate, <span class="at">cor_by =</span> time_value, <span class="at">dt1 =</span> <span class="sc">-</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-17-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-18-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="features---compute-growth-rates" class="slide level2">
 <h2>Features - Compute growth rates</h2>
 <div class="cell" data-layout-align="center">
@@ -1526,7 +1534,7 @@ In this section:</li>
 <span id="cb75-3"><a></a>  <span class="fu">mutate</span>(<span class="at">gr_cases =</span> <span class="fu">growth_rate</span>(time_value, case_rate, <span class="at">method =</span> <span class="st">"trend_filter"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-19-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-20-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="features---outlier-detection" class="slide level2">
 <h2>Features - Outlier detection</h2>
 <div class="cell" data-layout-align="center">
@@ -1539,7 +1547,7 @@ In this section:</li>
 <span id="cb76-7"><a></a>  )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-20-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-21-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="epi_archive-collection-of-epi_dfs" class="slide level2">
 <h2><code>epi_archive</code>: Collection of <code>epi_df</code>s</h2>
 <ul>
@@ -1595,7 +1603,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <section id="revision-patterns" class="slide level2">
 <h2>Revision patterns</h2>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-22-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-23-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="finalized-data" class="slide level2">
 <h2>Finalized data</h2>
 <div style="font-size: 0.9em;">
@@ -2711,16 +2719,16 @@ Key: &lt;geo_value, time_value, version&gt;
 <p>Finally, plot the predictions &amp; real-time values on top of latest COVID-19 case rates using <code>ggplot2</code>:</p>
 </div>
 
-<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-37-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/unnamed-chunk-38-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="takeaways" class="slide level2">
 <h2>Takeaways</h2>
 <p><strong>Goal</strong>: Predict COVID-19 case rates using %CLI, overcoming delays in report data.</p>
 <p>Main Steps:</p>
 <ol type="1">
 <li><p><strong>Fetch Data</strong>: Collect case rates and %CLI data.</p></li>
-<li><p><strong>Merge Data</strong>: Align datasets with epix_merge() and fill missing values.</p></li>
+<li><p><strong>Merge Data</strong>: Align datasets with <code>epix_merge()</code> and fill missing values.</p></li>
 <li><p><strong>Model</strong>: Fit a linear model to predict case rates.</p></li>
-<li><p><strong>Nowcast</strong>: Apply dynamic forecasting with epix_slide().</p></li>
+<li><p><strong>Nowcast</strong>: Apply dynamic forecasting with <code>epix_slide()</code>.</p></li>
 <li><p><strong>Visualize</strong>: Plot nowcasts vs.&nbsp;actual case rates with confidence intervals.</p></li>
 </ol>
 <p>Overall, nowcasting, based on the linear model, provided a closer approximation of true case rates compared to the real-time values.</p>
