@@ -120,7 +120,8 @@ a[target="_blank"]::after {
 <a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/"
      style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
   </a>
-  
+</div>
+
 ## Goals of Delphi Epidata platform and repository
 
 <div style="font-size: 0.9em;">
@@ -375,7 +376,7 @@ print(res['result'], res['message'], len(res['epidata']))
 The `epidatr` client automatically searches for the key in the `DELPHI_EPIDATA_KEY` environment variable. We recommend storing it in your `.Renviron` file, which R reads by default. More on setting your API key [here](https://rdrr.io/cran/epidatr/man/get_api_key.html).
 :::
 
-# Find data sources & signals
+# Find Data Sources & Signals
 
 ## Finding data sources and signals of interest
 <div style="font-size: 0.8em;">
@@ -739,7 +740,7 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
     + `pub_fluview_meta()`: Get metadata for the FluView endpoint.
     + `pub_meta()`: General metadata for the Delphi Epidata API.
 
-# Panel data
+# Panel Data
 
 ## Panel data
 <div style="font-size: 0.85em;">

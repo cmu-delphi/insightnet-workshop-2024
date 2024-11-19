@@ -66,7 +66,7 @@ library(Stat406)
 
 ## Introduction to `dplyr`
 
-![](gfx/dplyr.png){style="width: 10%"}
+![](gfx/dplyr.png){style="width: 6%"}
 
 To load `dplyr` you may simply load the `tidyverse` package:
 
@@ -180,11 +180,18 @@ select(cases_df, -raw_cases)  # Exclude the 'raw_cases' column from the dataset
 pull(cases_df, raw_cases) 
 ```
 
+## Subsetting rows with `filter()`
 
-## Filtering rows with `filter()`
+<div style="text-align: center;">
+![](gfx/dplyr_filter.png){style="width: 65%; display: block; margin-left: auto; margin-right: auto;"}
+<br>
+<small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
+</div>
 
-* The `filter()` function allows you to select rows that meet specific conditions.
-* Conditions can involve column values, such as filtering for only NC or higher numbers of cases.
+## Subsetting rows with `filter()`
+
+* The `filter()` function allows you to subset rows that meet specific conditions.
+* Conditions regard column values, such as filtering for only NC or cases higher than some threshold.
 * This enables you to narrow down your dataset to focus on relevant data.
 
 ```{r filter-rows}
@@ -577,13 +584,17 @@ cases_full_join <- cases_df_sub |>
 head(cases_full_join)
 ```
 
+## Pictorial summary of the four join functions
 
-## Summary of the four join functions
-
-* **Left join:** All rows from the left dataset and matching rows from the right dataset.
+<!--* **Left join:** All rows from the left dataset and matching rows from the right dataset.
 * **Right join:** All rows from the right dataset and matching rows from the left dataset.
 * **Inner join:** Only matching rows from both datasets.
-* **Full join:** All rows from both datasets, with NA where no match exists.
+* **Full join:** All rows from both datasets, with NA where no match exists.-->
+
+![](gfx/join_funs_cheatsheet.png){style="width: 40%; display: block; margin-left: auto; margin-right: auto;"}
+<div style="text-align: center;">
+<small>[Source](https://ohi-science.org/data-science-training/dplyr.html)</small>
+</div>
 
 ## Final thoughts on joins
 * Joins are an essential part of data wrangling in R.
@@ -675,8 +686,7 @@ ggplot(cases_df) +
 ```
 Now, before exploring some more features of `epiprocess`, let's have a look at the epiverse software ecosystem it's part of...
 
-
-# Epiverse software ecosystem
+# Epiverse Software Ecosystem
 
 ## The epiverse ecosystem
 Interworking, community-driven, packages for epi tracking & forecasting.
@@ -769,14 +779,14 @@ rbind(
 ## Features - Compute growth rates
 
 ```{r, echo=TRUE}
-edf <- filter(edf, geo_value %in% c("ut", "ca")) |>
+edfg <- filter(edf, geo_value %in% c("ut", "ca")) |>
   group_by(geo_value) |>
   mutate(gr_cases = growth_rate(time_value, case_rate, method = "trend_filter"))
 ```
 
 ```{r}
 #| fig-align: center
-ggplot(edf, aes(x = time_value, y = gr_cases)) +
+ggplot(edfg, aes(x = time_value, y = gr_cases)) +
   geom_hline(yintercept = 0, size = 1.5) +
   geom_line(aes(col = geo_value), size = 1.5) +
   geom_hline(yintercept = 0) +
@@ -789,25 +799,29 @@ ggplot(edf, aes(x = time_value, y = gr_cases)) +
 ## Features - Outlier detection
 
 ```{r outliers}
-#| fig-width: 8
-#| fig-height: 4
-#| warning: false
-edfo <- covid_incidence_outliers |>
-  dplyr::select(geo_value, time_value, cases) |>
+#| echo: true
+#| message: false
+edfo <- filter(edf, geo_value %in% c("nc", "ak")) |> 
+  dplyr::select(geo_value, time_value, case_rate) |>
   as_epi_df() |>
   group_by(geo_value) |>
   mutate(outlier_info = detect_outlr_rm(
-    x = time_value, y = cases
-  )) |> 
+    x = time_value, y = case_rate
+  )) 
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 4
+edfo |> 
   ungroup() |> 
   unnest() |> 
-  mutate(cases_corrected = replacement) |> 
-  select(geo_value, time_value, cases, cases_corrected)
-edfo |> 
-  pivot_longer(starts_with("cases")) |> 
+  mutate(case_corrected = replacement) |> 
+  select(geo_value, time_value, case_rate, case_corrected) |> 
+  pivot_longer(starts_with("case")) |> 
   mutate(
     name = case_when(
-      name == "cases_corrected" ~ "corrected",
+      name == "case_corrected" ~ "corrected",
       TRUE ~ "original"
     ),
     name = as.factor(name),
@@ -819,7 +833,7 @@ edfo |>
   geom_hline(yintercept = 0) +
   facet_wrap(vars(geo_value), scales = "free_y", nrow = 1) +
   scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
-  labs(x = "Date", y = "Reported COVID-19 cases") +
+  labs(x = "Date", y = "COVID-19 case rates") +
   theme(legend.position = c(.075, .8), legend.background = element_rect(fill = NA), legend.key = element_rect(fill = NA))
 ```
 
@@ -882,7 +896,7 @@ ggplot(snapshots |> filter(!latest),
   Nowcasting
 : At time $t$, predict the final value for time $t$
 
-# Basic nowcasting in the Epiverse
+# Basic Nowcasting in the Epiverse
 
 <!-- predicting a finalized value from a provisional value and making predictions. -->
 ## Backfill Canadian edition
