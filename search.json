@@ -98,11 +98,18 @@
     "text": "Extracting columns with pull()\n\npull(): Extract a column as a vector.\nLet’s try this with the cases column…\n\n\npull(cases_df, raw_cases) \n\n [1] 4310 1231 1487 7044 2243 1889 7509 2377 2390 3586 2646  350 1438    0 3372\n[16] 6465    0 2343 6690 4230 1033 3424  894 1025 4591 1833 1691 5359 1783 1747\n[31] 2713 1849 2229 1623    0 1396 5151    0 2202 4826 3130  982 1831  649 3128\n[46] 3706    0 2039 6143 2742 2356 4204 1740 2052 3256    0 2188 4659    0 2667\n[61] 5499 2508 1177 3004  819 1603 3943 1602  551 3550 1288 6596 1960 1224 3542\n[76] 1035    0    0 3384    0 5908 2811 2291 2286 1846  624 2394 3785 1067 3127\n[91] 4533 1075 4763"
   },
   {
-    "objectID": "slides/day1-afternoon.html#filtering-rows-with-filter",
-    "href": "slides/day1-afternoon.html#filtering-rows-with-filter",
+    "objectID": "slides/day1-afternoon.html#subsetting-rows-with-filter",
+    "href": "slides/day1-afternoon.html#subsetting-rows-with-filter",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Filtering rows with filter()",
-    "text": "Filtering rows with filter()\n\nThe filter() function allows you to select rows that meet specific conditions.\nConditions can involve column values, such as filtering for only NC or higher numbers of cases.\nThis enables you to narrow down your dataset to focus on relevant data.\n\n\nfilter(cases_df, geo_value == \"nc\", raw_cases &gt; 500)  # Filter for NC with raw daily cases &gt; 500\n\n# A tibble: 22 × 3\n   geo_value time_value raw_cases\n   &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n 1 nc        2022-03-01      1231\n 2 nc        2022-03-02      2243\n 3 nc        2022-03-03      2377\n 4 nc        2022-03-04      2646\n 5 nc        2022-03-07      4230\n 6 nc        2022-03-08       894\n 7 nc        2022-03-09      1833\n 8 nc        2022-03-10      1783\n 9 nc        2022-03-11      1849\n10 nc        2022-03-14      3130\n# ℹ 12 more rows"
+    "section": "Subsetting rows with filter()",
+    "text": "Subsetting rows with filter()\n\n  Artwork by @allison_horst"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#subsetting-rows-with-filter-1",
+    "href": "slides/day1-afternoon.html#subsetting-rows-with-filter-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Subsetting rows with filter()",
+    "text": "Subsetting rows with filter()\n\nThe filter() function allows you to subset rows that meet specific conditions.\nConditions regard column values, such as filtering for only NC or cases higher than some threshold.\nThis enables you to narrow down your dataset to focus on relevant data.\n\n\nfilter(cases_df, geo_value == \"nc\", raw_cases &gt; 500)  # Filter for NC with raw daily cases &gt; 500\n\n# A tibble: 22 × 3\n   geo_value time_value raw_cases\n   &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n 1 nc        2022-03-01      1231\n 2 nc        2022-03-02      2243\n 3 nc        2022-03-03      2377\n 4 nc        2022-03-04      2646\n 5 nc        2022-03-07      4230\n 6 nc        2022-03-08       894\n 7 nc        2022-03-09      1833\n 8 nc        2022-03-10      1783\n 9 nc        2022-03-11      1849\n10 nc        2022-03-14      3130\n# ℹ 12 more rows"
   },
   {
     "objectID": "slides/day1-afternoon.html#combining-select-and-filter-functions",
@@ -322,11 +329,11 @@
     "text": "Full Join: Keeping all rows from both datasets\n\nA full join will keep all rows from both datasets.\nIf a state in either dataset has no match in the other, the missing values will be filled with NA.\n\n\n# Full join: keep all rows from both datasets\ncases_full_join &lt;- cases_df_sub |&gt;\n  full_join(state_census, by = c(\"geo_value\" = \"abbr\"))\n\nhead(cases_full_join)\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561\n4 al        NA                NA  4903185\n5 ak        NA                NA   731545\n6 az        NA                NA  7278717"
   },
   {
-    "objectID": "slides/day1-afternoon.html#summary-of-the-four-join-functions",
-    "href": "slides/day1-afternoon.html#summary-of-the-four-join-functions",
+    "objectID": "slides/day1-afternoon.html#pictorial-summary-of-the-four-join-functions",
+    "href": "slides/day1-afternoon.html#pictorial-summary-of-the-four-join-functions",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Summary of the four join functions",
-    "text": "Summary of the four join functions\n\nLeft join: All rows from the left dataset and matching rows from the right dataset.\nRight join: All rows from the right dataset and matching rows from the left dataset.\nInner join: Only matching rows from both datasets.\nFull join: All rows from both datasets, with NA where no match exists."
+    "section": "Pictorial summary of the four join functions",
+    "text": "Pictorial summary of the four join functions\n\n\n\nSource"
   },
   {
     "objectID": "slides/day1-afternoon.html#final-thoughts-on-joins",
@@ -410,14 +417,14 @@
     "href": "slides/day1-afternoon.html#features---compute-growth-rates",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Features - Compute growth rates",
-    "text": "Features - Compute growth rates\n\nedf &lt;- filter(edf, geo_value %in% c(\"ut\", \"ca\")) |&gt;\n  group_by(geo_value) |&gt;\n  mutate(gr_cases = growth_rate(time_value, case_rate, method = \"trend_filter\"))"
+    "text": "Features - Compute growth rates\n\nedfg &lt;- filter(edf, geo_value %in% c(\"ut\", \"ca\")) |&gt;\n  group_by(geo_value) |&gt;\n  mutate(gr_cases = growth_rate(time_value, case_rate, method = \"trend_filter\"))"
   },
   {
     "objectID": "slides/day1-afternoon.html#features---outlier-detection",
     "href": "slides/day1-afternoon.html#features---outlier-detection",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Features - Outlier detection",
-    "text": "Features - Outlier detection"
+    "text": "Features - Outlier detection\n\nedfo &lt;- filter(edf, geo_value %in% c(\"nc\", \"ak\")) |&gt; \n  dplyr::select(geo_value, time_value, case_rate) |&gt;\n  as_epi_df() |&gt;\n  group_by(geo_value) |&gt;\n  mutate(outlier_info = detect_outlr_rm(\n    x = time_value, y = case_rate\n  ))"
   },
   {
     "objectID": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs",
