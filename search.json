@@ -970,7 +970,7 @@
     "href": "slides/day1-morning.html#api-keys",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "API keys",
-    "text": "API keys\n\n\nAnyone may access the Epidata API anonymously without providing any personal data.\nAnonymous API access is subject to the following restrictions:\n\npublic datasets only; 2) rate limited to 60 requests per hour; 3) only two parameters may have multiple selections\n\nAn API key grants priviledged access to the API and can be obtained by registering with us.\nPrivileges of registration:\n\nno rate limit; 2) no limit on multiple selections\n\n\n\n\n\n\n\n\n\nTip\n\n\nThe epidatr client automatically searches for the key in the DELPHI_EPIDATA_KEY environment variable. We recommend storing it in your .Renviron file, which R reads by default. More on setting your API key here."
+    "text": "API keys\n\nAnyone may access the Epidata API anonymously without providing any personal data.\nAnonymous API access is subject to the following restrictions:\n\npublic datasets only; 2) rate limited to 60 requests per hour; 3) only two parameters may have multiple selections\n\nAn API key grants priviledged access to the API and can be obtained by registering with us.\nPrivileges of registration:\n\nno rate limit; 2) no limit on multiple selections\n\n\n\n\n\n\n\n\nTip\n\n\nThe epidatr client automatically searches for the key in the DELPHI_EPIDATA_KEY environment variable. We recommend storing it in your .Renviron file, which R reads by default. More on setting your API key here."
   },
   {
     "objectID": "slides/day1-morning.html#finding-data-sources-and-signals-of-interest",

@@ -669,12 +669,11 @@ a[target="_blank"]::after {
 </div>
 </div>
 <p>Python equivalent:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a></a><span class="ex">res</span> = Epidata.covidcast<span class="er">(</span><span class="st">'hhs'</span><span class="ex">,</span> <span class="st">'confirmed_admissions_influenza_1d'</span>, <span class="st">'day'</span>, <span class="st">'state'</span>, [20240401, Epidata.range<span class="er">(</span><span class="ex">20240405,</span> 20240414<span class="kw">)</span><span class="ex">],</span> <span class="st">'nc'</span><span class="kw">)</span></span>
-<span id="cb7-2"><a></a><span class="ex">print</span><span class="er">(</span><span class="va">res</span><span class="op">[</span><span class="st">'result'</span><span class="op">]</span><span class="ex">,</span> res<span class="pp">[</span><span class="st">'message'</span><span class="pp">]</span>, len<span class="er">(</span><span class="va">res</span><span class="op">[</span><span class="st">'epidata'</span><span class="op">]</span><span class="kw">))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a>res <span class="op">=</span> Epidata.covidcast(<span class="st">'hhs'</span>, <span class="st">'confirmed_admissions_influenza_1d'</span>, <span class="st">'day'</span>, <span class="st">'state'</span>, [<span class="dv">20240401</span>, Epidata.<span class="bu">range</span>(<span class="dv">20240405</span>, <span class="dv">20240414</span>)], <span class="st">'nc'</span>)</span>
+<span id="cb7-2"><a></a><span class="bu">print</span>(res[<span class="st">'result'</span>], res[<span class="st">'message'</span>], <span class="bu">len</span>(res[<span class="st">'epidata'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="api-keys" class="slide level2">
 <h2>API keys</h2>
-<div style="font-size: 0.9em;">
 <ul>
 <li><p>Anyone may access the Epidata API anonymously without providing any personal data.</p></li>
 <li><p>Anonymous API access is subject to the following restrictions:</p>
@@ -687,7 +686,6 @@ a[target="_blank"]::after {
 <li>no rate limit; 2) no limit on multiple selections</li>
 </ol></li>
 </ul>
-</div>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1668,6 +1666,7 @@ epidata <- pub_covidcast(
 
 ::: {.cell layout-align="center"}
 ::: {.cell-output .cell-output-stdout}
+
 ```
 # A tibble: 5 × 8
   geo_value signal           source     time_value issue        lag value stderr
@@ -1678,6 +1677,8 @@ epidata <- pub_covidcast(
 4 pa        smoothed_adj_cli doctor-vi… 2020-05-06 2020-05-13     7  2.56     NA
 5 pa        smoothed_adj_cli doctor-vi… 2020-05-07 2020-05-14     7  2.19     NA
 ```
+
+
 :::
 :::
 
@@ -1707,6 +1708,7 @@ epidata <- pub_covidcast(
 
 ::: {.cell layout-align="center"}
 ::: {.cell-output .cell-output-stdout}
+
 ```
 # A tibble: 5 × 8
   geo_value signal           source     time_value issue        lag value stderr
@@ -1717,6 +1719,8 @@ epidata <- pub_covidcast(
 4 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-14    11  3.02     NA
 5 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-15    12  3.05     NA
 ```
+
+
 :::
 :::
 
@@ -1981,12 +1985,15 @@ epidata <- pub_covidcast(
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -1997,13 +2004,6 @@ epidata <- pub_covidcast(
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy
