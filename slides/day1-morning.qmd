@@ -20,21 +20,22 @@ library(gridExtra)
 library(grid)
 library(epidatasets)
 library(epipredict)
+library(epidatr)
 ```
 
 ## Outline
 
 1. Delphi 
 
+1. Panel Data
+
+1. Versioned Data
+
 1. Epidata API
 
 1. Epidatr
 
 1. Find Data Sources and Signals
-
-1. Panel Data
-
-1. Versioned Data
 
 1. Versioning in epidatr
 
@@ -119,6 +120,579 @@ a[target="_blank"]::after {
   </a>
 </div>
 
+# Panel Data
+
+## Panel data
+
+* [**Panel data**](https://en.wikipedia.org/wiki/Panel_data) or longitudinal data, contain cross-sectional measurements of subjects over time.
+
+* Since we're working with aggregated data, the subjects are geographic units (e.g. counties, states) and not individuals.
+
+* In table form, panel data is a time index + one or more locations/keys.
+
+* For example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 ([docs](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html)):
+```{r panel-wa-ex}
+#| echo: false
+x1 <- pub_covidcast(
+  source = "doctor-visits",
+  signals = "smoothed_adj_cli",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "wa", # Just for WA to keep it simple (& to go with the case data by test date for that state)
+  time_value = epirange(20211201, 20220201), 
+  issues = epirange(20211201, 20220201)
+)
+
+x <- x1 |>
+  select(geo_value, time_value,
+         version = issue,
+         percent_cli = value
+  ) |>
+  as_epi_archive(compactify = FALSE)
+
+head(epix_as_of(x, max_version = max(x$DT$version)))
+```
+
+## Examples of panel data - COVID-19 cases
+
+[[**JHU CSSE COVID cases per 100k **]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html) estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.
+
+```{r examples-panel-covid}
+#| echo: false
+SOURCES <- c("jhu-csse", "chng", "chng", "hhs")
+SIGNALS <- c("confirmed_7dav_incidence_prop",
+             "smoothed_adj_outpatient_cli",
+             "smoothed_adj_outpatient_covid",
+             "confirmed_admissions_covid_1d_prop_7dav")
+
+data_list <- list()
+
+for (i in seq_along(SOURCES)) {
+  data_list[[i]] <- pub_covidcast(
+    source = SOURCES[i],
+    signals = SIGNALS[i],
+    geo_type = "state",
+    geo_values = c("ca", "fl", "nc", "wa"), 
+    time_type = "day",
+    time_values = epirange(20210915, 20220915)
+  )
+}
+
+colors <- c("black", scales::hue_pal()(4))
+names <- c("COVID-19 cases", "CHNG-CLI", "CHNG-COVID", "COVID-19 hospital admissions")
+units <- c("Reported cases per 100k people",
+           "% doctor's visits due to CLI",
+           "% doctor's visits due to COVID-19",
+           "Hospital admissions per 100k people")
+
+
+ggplot(data_list[[1]], aes(x = time_value, y = value, color = geo_value)) +
+  geom_line() +
+  labs(x = "Date", y = units[1]) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
+               date_minor_breaks = "1 month") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+## Examples of panel data - CHNG-CLI
+
+[[**Change Healthcare COVID-like illness (CHNG-CLI)**]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html) reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.
+
+```{r examples-chng-cli}
+#| echo: false
+ggplot(data_list[[2]], aes(x = time_value, y = value, color = geo_value)) +
+  geom_line() +
+  labs(x = "Date", y = units[2]) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
+               date_minor_breaks = "1 month") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+## Examples of panel data - CHNG-COVID
+
+[[**Change Healthcare COVID (CHNG-COVID)**]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html) reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.
+
+```{r examples-chng-covid}
+#| echo: false
+ggplot(data_list[[3]], aes(x = time_value, y = value, color = geo_value)) +
+  geom_line() +
+  labs(x = "Date", y = units[3]) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
+               date_minor_breaks = "1 month") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+<!--  Numerator = denote the Covid counts. Denominator be the total count of visits. Scaling by population is not necessary here because the signal is already normalized to the total number of visits, which acts as a proxy for population size. -->
+
+## Examples of panel data - HHS Admissions
+
+[[**Confirmed COVID-19 Hospital Admissions per 100k**]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html) estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days.
+
+```{r examples-hhs-admissions}
+#| echo: false
+ggplot(data_list[[4]], aes(x = time_value, y = value, color = geo_value)) +
+  geom_line() +
+  labs(x = "Date", y = units[4]) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
+               date_minor_breaks = "1 month") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+<!-- 
+## All together - Visualizing multiple panel data signals
+Example: gathering different signals + visualizing panel data
+
+```{r multiple-signals-unscale}
+#| echo: false
+# turn list into dataframe
+df <- list_rbind(data_list)
+df$signal <- factor(df$signal, labels = names)
+
+ggplot(df, aes(x = time_value, y = value, color = signal)) +
+  geom_line() +
+  scale_color_manual(breaks = names, values = colors) +
+  labs(x = "Date", y = "Signal value") +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
+               date_minor_breaks = "1 month") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+## All together - Visualizing multiple panel data signals
+Example: gathering different signals + **scaling** + visualizing panel data
+
+```{r multiple-signals-scale}
+#| echo: FALSE
+#| include: FALSE
+# HIDE THIS: function that rescales signal value according to specified range
+epi_rescale_signal = function(df, variable, scale_to = c(0, 1)) {
+  Min <- function(x) min(x, na.rm = TRUE)
+  Max <- function(x) max(x, na.rm = TRUE)
+  rescaled <- df |>
+    group_by(signal) |>
+      mutate("{{variable}}" := ({{variable}} - Min({{variable}})) / 
+               (Max({{variable}}) - Min({{variable}})) * scale_to[2] + 
+               scale_to[1]) |>
+    ungroup()
+  return(rescaled)
+}
+```
+
+
+```{r scaled-signals}
+#| echo: false
+# minimum and maximum of cases (used to rescale data)
+case_min <- min(data_list[[1]]$value)
+case_max <- max(data_list[[1]]$value)
+
+# rescale data
+rescaled_df <- epi_rescale_signal(df, value, scale_to = c(case_min, case_max))
+
+# plot
+rescaled_df$signal <- factor(rescaled_df$signal, labels = names)
+
+ggplot(rescaled_df, aes(x = time_value, y = value, color = signal)) +
+  geom_line() +
+  scale_color_manual(breaks = names, values = colors) +
+  labs(x = "Date", y = "Signal value (scaled)") +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
+               date_minor_breaks = "1 month") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+
+#ggsave("fig_covidcast_signals/time_trends_national.pdf", width = 5, height = 3)
+```
+<div style="text-align: center;">
+<small>[Figure 1 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
+</div>
+
+**Takeaway:** The auxiliary signals track changes in the official reported cases quite well. This is clearer when they have all been placed on the same range as reported cases per 100,000 people.
+-->
+
+## Examples of panel data - COVID-19 cases and deaths in CA
+* [**Takeaway**]{.primary}: Cases appear to strongly correlate with deaths several weeks later.
+* We'll see this again in an upcoming session...
+
+```{r plot-ca-cases-deaths}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 5
+source(here::here("_code/ca_cases_deaths.R"))
+ggplot(ca |> 
+         mutate(deaths = trans21(deaths)) |>
+         pivot_longer(cols = c(cases, deaths), names_to = 'name'),
+       aes(x = time_value, y = value)) + 
+  geom_line(aes(color = name)) +
+  scale_color_manual(values = palette()[c(2,4)]) +
+  scale_y_continuous(
+    name = "Reported Covid-19 cases per 100k people", 
+    limits = range1,
+    sec.axis = sec_axis(
+      trans = trans12, 
+      name = "Reported Deaths per 100k people")) +
+  labs(title = "Covid-19 cases and deaths in California", x = "Date") +
+  theme(legend.position = "bottom", legend.title = element_blank()) 
+```
+
+# Versioned Data
+
+## Intro to versioned data
+* In panel data, we've seen that time is indicated by `time_value`.
+
+* Now, we add a second time index to indicate the data version...
+```{r versioned-wa-ex}
+#| echo: false
+head(x$DT) |> as_tibble()
+```
+
+* Note that this feature can be indicated in different ways (ex. `version`, `issue`, `release`, `as_of`). 
+
+## Versioned panel data
+Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:
+
+```{r versioned-panel-multi-states-ex}
+#| echo: false
+# different as_of dates
+as_ofs <- seq(as.Date("2020-06-08"), as.Date("2020-08-01"), by = "week")
+# choose 4 states
+states <- c("az", "ca", "ny", "tx")
+
+dv_as_of <- map_dfr(as_ofs, function(as_of) {
+  pub_covidcast(source = "doctor-visits", 
+                signals = "smoothed_adj_cli", 
+                geo_type = "state", 
+                geo_values = states, 
+                time_type = "day",
+                time_values = epirange(as.Date("2020-06-01"), 
+                                       as.Date(as_of - 1L)),
+                as_of = as_of) |>
+    mutate(as_of = as_of)
+})
+
+# plot each as_of time series curve, faceted by state
+dv_as_of |>
+  mutate(geo_label = factor(
+    geo_value, levels = states,
+    )) |>
+  mutate(as_of = factor(format(as.Date(as_of), "%b %d"))) |>
+  ggplot(aes(x = time_value, y = value, color = as_of)) +
+  geom_line() +
+  facet_wrap(vars(geo_label), nrow = 2) +
+  labs(color = "As of:", x = "Date", y = "% doctor's visits due to CLI") +
+  expand_limits(y = 0) +
+  scale_y_continuous(labels = label_percent(scale = 1, accuracy = 1),
+                     breaks = seq(0, 12, by = 4)) +
+  theme_bw() +
+  theme(legend.position = "right", legend.direction = "vertical") +
+  scale_color_brewer(palette = "Set1")
+
+#ggsave("fig_covidcast_signals/dv_as_of.pdf", width = 5, height = 4)
+```
+<div style="text-align: center;">
+<small>[Figure 5 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
+</div>
+
+## Latency and revision in signals
+
+* [**Latency**]{.primary} refers to the delay between data collection and availability.
+
+**Example**: A signal based on medical insurance claims may take several days to appear but is subject to delays as claims are processed over weeks.
+
+* [**Revision**]{.primary} occurs when data is updated or corrected after initial publication, often due to new information or late reporting.
+
+**Example**: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared.
+
+## Latency and revision in signals - Example
+
+* Recall the first example of panel & versioned data we've seen... 
+
+* This signal is 4 days [**latent**]{.primary} (min(`version` - `time_value`))
+
+```{r latency-wa-ex}
+#| echo: false
+x_dt_with_diff = x$DT |> mutate(version_time_diff = version - time_value) 
+head(x_dt_with_diff |> group_by(time_value) |> slice(1) |> ungroup()) 
+```
+
+* And clearly undergoes [**revision**]{.primary} over time (ex. consider Dec. 1's `percent_cli` across `version`):
+
+```{r revision-wa-ex}
+#| echo: false
+head(x_dt_with_diff) |> as_tibble()
+```
+
+<!-- min_lag: the minimum time to any value min(as.integer(version) - as.integer(time_value)  -->
+<!-- max_lag: the amount of time until the final (new) version -->
+<!-- revision_summary computes some basic statistics about the revision behavior of an archive, returning a tibble summarizing the revisions per time_value+epi_key features. -->
+
+## Revision triangle, Outpatient visits in WA 2022
+
+```{r revision-triangle}
+#| echo: false
+#| dpi: 300
+#| fig-format: png
+dv_cli <- pub_covidcast(
+  source = "doctor-visits",
+  signals = "smoothed_cli",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "wa",
+  time_values = epirange(20211201, 20220201),
+  issues = epirange(20211201, 20220201)
+) |>
+  select(time_value, value, issue)
+
+dv_cli_finalized <- pub_covidcast(
+  source = "doctor-visits",
+  signals = "smoothed_cli",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "wa",
+  time_values = epirange(20211201, 20220201),
+  as_of = "2022-02-01"
+) |>
+  select(time_value, final_value = value)
+
+dv_cli <- left_join(dv_cli, dv_cli_finalized, by = join_by(time_value))
+
+
+p1 <- dv_cli |>
+  filter(time_value > ymd("2021-12-31"), issue >= "2021-12-31") |>
+  ggplot(aes(time_value, issue, fill = value / final_value * 100)) +
+  geom_tile() +
+  scale_x_date(expand = expansion(), name = "Date") +
+  scale_y_date(expand = expansion(), name = "Report date") +
+  scale_fill_viridis_c(
+    name = "% final", 
+    option = "B",
+    direction = -1
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.key.width = unit(1, "cm")) 
+
+p2 <- dv_cli |>
+  filter(issue >= "2021-12-31", time_value > ymd("2021-12-31")) |>
+  ggplot(aes(time_value)) +
+  geom_line(aes(y = value, colour = issue, group = issue)) +
+  scale_x_date(expand = expansion(), name = "Date") +
+  scale_y_continuous(
+    expand = expansion(), 
+    name = "% Outpatient visits b/c CLI",
+  ) +
+  scale_colour_viridis_c(
+    name = "Report Date", 
+    direction = -1,
+    trans = "date",
+    labels = scales::label_date("%b %d"),
+    option = "B"
+  ) +
+  geom_line(aes(y = final_value), color = "black") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.key.width = unit(1, "cm")) 
+
+cowplot::plot_grid(p1, p2)
+```
+
+## Revisions
+Many data sources are subject to revisions:
+
+* Case and death counts are frequently corrected or adjusted by authorities.
+
+* Medical claims data can take weeks to be submitted and processed.
+
+<!--* In the previous slide's example because doctor's visits may be reported to the health system partners several days after they occur, these signals are typically available with several days of lag. This means that estimates for a specific day are only available several days later. -->
+
+* Lab tests and medical records can be backlogged for a variety of reasons.
+
+* Surveys are not always completed promptly.
+
+* [**Key**]{.primary}: An accurate revision log is crucial for researchers building forecasts. 
+
+**A forecast that is made today can should rely on information we have access to today.**
+
+## Three types of revisions
+1. [**Sources that don't revise**]{.primary} - Ex. Facebook or Google symptoms (provisional and final are the same)
+
+1. [**Predictable revisions**]{.secondary} - Ex. Claims data (CHNG) and public health reports aligned by test, hosp., or death date
+
+1. [**Revisions that are large and erratic to predict**]{.tertiary} - Ex. COVID cases and deaths, especially when aligned by report date (which can be highly variable & less predictable compared to test data). 
+
+## Types of revisions - Comparison between 2. and 3.
+
+* Revision behavior for two indicators in the HRR containing Charlotte, NC.
+
+<!-- Each colored line corresponds to the data as reported on a particular date (as of dates varying from 28 September through 19 October). -->
+* [**DV-CLI signal (left)**]{.secondary} was regularly revised throughout the period, although effects fade farther back.
+
+* [**JHU CSSE cases (right)**]{.tertiary} remain "as reported" on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data.
+
+
+```{r fig1-McDonald}
+#| echo: false
+# This is Figure 1 from https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118
+
+as_ofs <- seq(as.Date("2020-09-28"), as.Date("2020-10-19"), by = "week")
+cases_as_of <- map_dfr(as_ofs, function(as_of) {
+  pub_covidcast(source = "jhu-csse", 
+                signals = "confirmed_7dav_incidence_prop",
+                geo_type = "hrr", 
+                time_type = "day",
+                geo_values = "311",
+                as_of = as_of,
+                time_values = epirange(20200815, 20200926)) |>
+    mutate(as_of = as_of)
+})
+dv_as_of <-  map_dfr(as_ofs, function(as_of) {
+  pub_covidcast(source = "doctor-visits", 
+                signals = "smoothed_adj_cli", # Estimated % of outpatient doctor visits primarily about COVID-related symptoms
+                geo_type = "hrr",
+                time_type = "day",
+                geo_values = "311", 
+                as_of = as_of,
+                time_values = epirange(20200815, 20200926)) |>
+    mutate(as_of = as_of)
+})
+  
+p1 <- dv_as_of |>
+  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) |>
+  ggplot(aes(x = time_value, y = value)) + 
+  geom_line(aes(color = factor(as_of))) + 
+  labs(title = "DV-CLI", x = "", y = "% doctor's visits due to CLI",
+       color = "As of:") +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  scale_color_viridis_d(end = .9, begin = .1) +
+  guides(color = guide_legend(nrow = 1))
+
+p2 <- cases_as_of |>
+  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) |>
+  ggplot(aes(x = time_value, y = value)) + 
+  geom_line(aes(color = factor(as_of))) + 
+  labs(title = "Cases", x = "", y = "Cases per 100,000 people",
+       color = "As of:") +
+  theme_bw() + 
+  theme(legend.position = "bottom") +
+  scale_color_viridis_d(end = .9, begin = .1) +
+  guides(color = guide_legend(nrow = 1))
+
+# From https://github.com/tidyverse/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs
+grid_arrange_shared_legend <- function(...,
+                                       ncol = length(list(...)),
+                                       nrow = 1,
+                                       position = c("bottom", "right")) {
+
+  plots <- list(...)
+  position <- match.arg(position)
+  g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+  lheight <- sum(legend$height)
+  lwidth <- sum(legend$width)
+  gl <- lapply(plots, function(x) x + theme(legend.position="none"))
+  gl <- c(gl, ncol = ncol, nrow = nrow)
+
+  combined <- switch(position,
+                     "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
+                                            legend,
+                                            ncol = 1,
+                                            heights = unit.c(unit(1, "npc") - lheight, lheight)),
+                     "right" = arrangeGrob(do.call(arrangeGrob, gl),
+                                           legend,
+                                           ncol = 2,
+                                           widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
+
+  grid.newpage()
+  invisible(grid.draw(combined))
+
+  # return gtable invisibly
+  invisible(combined)
+
+}
+
+p3 <- grid_arrange_shared_legend(p1, p2)
+invisible(p3)
+```
+<div style="text-align: center;">
+<small>[Figure 1 from McDonald et al. (2021)](https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118)</small>
+</div>
+
+## Key takeaways
+
+* [**Medical claims revisions**]{.secondary}: More systematic and predictable.
+* [**COVID-19 case report revisions**]{.tertiary}: Erratic and often unpredictable.
+* Large spikes or anomalies can occur as
+    + [**Reporting backlogs**]{.tertiary} are cleared.
+    + [**Changes in case definitions**]{.tertiary} are implemented.
+
+## Reporting backlogs - Example
+
+* **Left**: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 [backlogged cases]{.primary} were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.
+
+* **Right**: CTIS estimates of CLI-in-community showed more stable underlying trends.
+
+
+```{r fig4-Reinhart}
+# |echo: false
+# |message: false
+
+# Figure 4 from https://www.pnas.org/doi/10.1073/pnas.2111452118
+sa_fips <- "48029"
+sa_start <- "2020-06-15"
+sa_end <- "2020-08-15"
+sa_anomaly_date <- as.Date("2020-07-16")
+
+sa_cases <- pub_covidcast(source = "jhu-csse", 
+                          signals = "confirmed_7dav_incidence_num",
+                          time_type = "day",
+                          geo_type = "county",
+                          time_values = epirange(sa_start, sa_end), 
+                          geo_values = sa_fips)
+
+sa_cli <- pub_covidcast(source = "fb-survey", 
+                           signals = "smoothed_whh_cmnty_cli",
+                           time_type = "day",
+                           geo_type = "county",
+                           time_values = epirange(sa_start, sa_end), 
+                           geo_values = sa_fips)
+
+g1 <- ggplot(sa_cases, aes(x = time_value, y = value)) +
+  geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
+             size = 0.75, alpha = 0.75) +
+  geom_line() +
+  labs(x = "", y = "Cases", title = "Cases") +
+  theme_bw()
+
+g2 <- ggplot(sa_cli, aes(x = time_value, y = value)) +
+  geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
+             size = 0.75, alpha = 0.75) +
+  geom_line() +
+  labs(x = "", y = "% CLI-in-community", title = "CTIS-CLI-in-community") +
+  scale_y_continuous(labels = scales::label_percent(scale = 1, accuracy = 1),
+                     limits = c(NA, 75)) +
+  theme_bw()
+
+grid.arrange(g1, g2, ncol = 2)
+
+# ggsave("../paper/fig/bexar_compare.pdf", g, width = 6, height = 4)
+```
+<div style="text-align: center;">
+<small>[Figure 4 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
+</div>
+
+## Reporting backlogs - Key takeaways
+
+* [**Reporting issues been common across U.S. jurisdictions**]{.primary}.
+
+* For example, audits have regularly discovered [**misclassified or unreported cases and deaths**]{.primary}.
+
+* This underscores the value of [**cross-checking data with external sources**]{.primary} not part of the same reporting systems.
+
+
+# Epidata API
+
 ## Goals of Delphi Epidata platform and repository
 
 <div style="font-size: 0.9em;">
@@ -138,7 +712,6 @@ a[target="_blank"]::after {
 </div>
 
 
-
 ## The bigger goal
 The goal is to make epi-surveillance [more nimble, complete, standardized, robust, and real-time]{.primary} and
 
@@ -146,7 +719,6 @@ The goal is to make epi-surveillance [more nimble, complete, standardized, robus
 
 Epidata is not the solution; but we hope it is a blueprint towards such a solution.
 
-# Epidata API
 
 ## What is the Epidata repository
 
@@ -457,8 +1029,6 @@ We provide...
 
 <!-- To reproduce: Pathogen/Syndrom = flu, Severity pyramid = Dead (top of pyramid), Geo-level = ADM1 (e.g. U.S. states) -->
 
-
-
 ## Interactive tooling in R 
 
 * Moving from initial web-based browsing to programming, [**how do we find sources and signals in R?**]{.primary}
@@ -485,9 +1055,9 @@ avail_endpoints()
     
 * **Editor Support**: In RStudio or similar editors, use tab completion to explore:
 
-        - **Data Sources**: Type `covid_sources$source$` to view available data sources.
+    + **Data Sources**: Type `covid_sources$source$` to view available data sources.
         
-        - **Signals**: Type `covid_sources$signals$` to see signal options with autocomplete assistance.
+    + **Signals**: Type `covid_sources$signals$` to see signal options with autocomplete assistance.
         
 * **Filtering Convenience**: Signal names are prefixed with their respective data source for easier navigation.
 
@@ -754,582 +1324,6 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
     + `pub_covidcast_meta()`: Access metadata for the COVIDcast endpoint.
     + `pub_fluview_meta()`: Get metadata for the FluView endpoint.
     + `pub_meta()`: General metadata for the Delphi Epidata API.
-
-# Panel Data
-
-## Panel data
-
-* [**Panel data**](https://en.wikipedia.org/wiki/Panel_data) or longitudinal data, contain cross-sectional measurements of subjects over time.
-
-* Since we're working with aggregated data, the subjects are geographic units (e.g. counties, states) and not individuals.
-
-* In table form, panel data is a time index + one or more locations/keys.
-
-* For example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 ([docs](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html)):
-```{r panel-wa-ex}
-#| echo: false
-x1 <- pub_covidcast(
-  source = "doctor-visits",
-  signals = "smoothed_adj_cli",
-  geo_type = "state",
-  time_type = "day",
-  geo_values = "wa", # Just for WA to keep it simple (& to go with the case data by test date for that state)
-  time_value = epirange(20211201, 20220201), 
-  issues = epirange(20211201, 20220201)
-)
-
-x <- x1 |>
-  select(geo_value, time_value,
-         version = issue,
-         percent_cli = value
-  ) |>
-  as_epi_archive(compactify = FALSE)
-
-head(epix_as_of(x, max_version = max(x$DT$version)))
-```
-
-## Examples of panel data - COVID-19 cases
-
-[**JHU CSSE COVID cases per 100k **]{.primary} estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.
-
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html>
-
-```{r examples-panel-covid}
-#| echo: false
-SOURCES <- c("jhu-csse", "chng", "chng", "hhs")
-SIGNALS <- c("confirmed_7dav_incidence_prop",
-             "smoothed_adj_outpatient_cli",
-             "smoothed_adj_outpatient_covid",
-             "confirmed_admissions_covid_1d_prop_7dav")
-
-data_list <- list()
-
-for (i in seq_along(SOURCES)) {
-  data_list[[i]] <- pub_covidcast(
-    source = SOURCES[i],
-    signals = SIGNALS[i],
-    geo_type = "state",
-    geo_values = c("ca", "fl", "nc", "wa"), 
-    time_type = "day",
-    time_values = epirange(20210915, 20220915)
-  )
-}
-
-colors <- c("black", scales::hue_pal()(4))
-names <- c("COVID-19 cases", "CHNG-CLI", "CHNG-COVID", "COVID-19 hospital admissions")
-units <- c("Reported cases per 100k people",
-           "% doctor's visits due to CLI",
-           "% doctor's visits due to COVID-19",
-           "Hospital admissions per 100k people")
-
-
-ggplot(data_list[[1]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[1]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
-```
-
-## Examples of panel data - CHNG-CLI
-
-[**Change Healthcare COVID-like illness (CHNG-CLI)**]{.primary} reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.
-
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html>
-```{r examples-chng-cli}
-#| echo: false
-ggplot(data_list[[2]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[2]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
-```
-
-## Examples of panel data - CHNG-COVID
-
-[**Change Healthcare COVID (CHNG-COVID)**]{.primary} reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.
-
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html>
-```{r examples-chng-covid}
-#| echo: false
-ggplot(data_list[[3]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[3]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
-```
-
-<!--  Numerator = denote the Covid counts. Denominator be the total count of visits. Scaling by population is not necessary here because the signal is already normalized to the total number of visits, which acts as a proxy for population size. -->
-
-## Examples of panel data - HHS Admissions
-
-[**Confirmed COVID-19 Hospital Admissions per 100k**]{.primary} estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days.
-
-API docs: <https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html>
-
-```{r examples-hhs-admissions}
-#| echo: false
-ggplot(data_list[[4]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[4]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
-```
-
-<!-- 
-## All together - Visualizing multiple panel data signals
-Example: gathering different signals + visualizing panel data
-
-```{r multiple-signals-unscale}
-#| echo: false
-# turn list into dataframe
-df <- list_rbind(data_list)
-df$signal <- factor(df$signal, labels = names)
-
-ggplot(df, aes(x = time_value, y = value, color = signal)) +
-  geom_line() +
-  scale_color_manual(breaks = names, values = colors) +
-  labs(x = "Date", y = "Signal value") +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
-```
-
-## All together - Visualizing multiple panel data signals
-Example: gathering different signals + **scaling** + visualizing panel data
-
-```{r multiple-signals-scale}
-#| echo: FALSE
-#| include: FALSE
-# HIDE THIS: function that rescales signal value according to specified range
-epi_rescale_signal = function(df, variable, scale_to = c(0, 1)) {
-  Min <- function(x) min(x, na.rm = TRUE)
-  Max <- function(x) max(x, na.rm = TRUE)
-  rescaled <- df |>
-    group_by(signal) |>
-      mutate("{{variable}}" := ({{variable}} - Min({{variable}})) / 
-               (Max({{variable}}) - Min({{variable}})) * scale_to[2] + 
-               scale_to[1]) |>
-    ungroup()
-  return(rescaled)
-}
-```
-
-
-```{r scaled-signals}
-#| echo: false
-# minimum and maximum of cases (used to rescale data)
-case_min <- min(data_list[[1]]$value)
-case_max <- max(data_list[[1]]$value)
-
-# rescale data
-rescaled_df <- epi_rescale_signal(df, value, scale_to = c(case_min, case_max))
-
-# plot
-rescaled_df$signal <- factor(rescaled_df$signal, labels = names)
-
-ggplot(rescaled_df, aes(x = time_value, y = value, color = signal)) +
-  geom_line() +
-  scale_color_manual(breaks = names, values = colors) +
-  labs(x = "Date", y = "Signal value (scaled)") +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
-
-#ggsave("fig_covidcast_signals/time_trends_national.pdf", width = 5, height = 3)
-```
-<div style="text-align: center;">
-<small>[Figure 1 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
-</div>
-
-**Takeaway:** The auxiliary signals track changes in the official reported cases quite well. This is clearer when they have all been placed on the same range as reported cases per 100,000 people.
--->
-
-## Examples of panel data - COVID-19 cases and deaths in CA
-* [**Takeaway**]{.primary}: Cases appear to strongly correlate with deaths several weeks later.
-* We'll see this again in an upcoming session...
-
-```{r plot-ca-cases-deaths}
-#| echo: false
-#| fig-width: 8
-#| fig-height: 5
-source(here::here("_code/ca_cases_deaths.R"))
-ggplot(ca |> 
-         mutate(deaths = trans21(deaths)) |>
-         pivot_longer(cols = c(cases, deaths), names_to = 'name'),
-       aes(x = time_value, y = value)) + 
-  geom_line(aes(color = name)) +
-  scale_color_manual(values = palette()[c(2,4)]) +
-  scale_y_continuous(
-    name = "Reported Covid-19 cases per 100k people", 
-    limits = range1,
-    sec.axis = sec_axis(
-      trans = trans12, 
-      name = "Reported Deaths per 100k people")) +
-  labs(title = "Covid-19 cases and deaths in California", x = "Date") +
-  theme(legend.position = "bottom", legend.title = element_blank()) 
-```
-
-# Versioned Data
-
-## Intro to versioned data
-* In panel data, we've seen that time is indicated by `time_value`.
-
-* Now, we add a second time index to indicate the data version...
-```{r versioned-wa-ex}
-#| echo: false
-head(x$DT) |> as_tibble()
-```
-
-* Note that this feature can be indicated in different ways (ex. `version`, `issue`, `release`, `as_of`). 
-
-## Versioned panel data
-Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:
-
-```{r versioned-panel-multi-states-ex}
-#| echo: false
-# different as_of dates
-as_ofs <- seq(as.Date("2020-06-08"), as.Date("2020-08-01"), by = "week")
-# choose 4 states
-states <- c("az", "ca", "ny", "tx")
-
-dv_as_of <- map_dfr(as_ofs, function(as_of) {
-  pub_covidcast(source = "doctor-visits", 
-                signals = "smoothed_adj_cli", 
-                geo_type = "state", 
-                geo_values = states, 
-                time_type = "day",
-                time_values = epirange(as.Date("2020-06-01"), 
-                                       as.Date(as_of - 1L)),
-                as_of = as_of) |>
-    mutate(as_of = as_of)
-})
-
-# plot each as_of time series curve, faceted by state
-dv_as_of |>
-  mutate(geo_label = factor(
-    geo_value, levels = states,
-    )) |>
-  mutate(as_of = factor(format(as.Date(as_of), "%b %d"))) |>
-  ggplot(aes(x = time_value, y = value, color = as_of)) +
-  geom_line() +
-  facet_wrap(vars(geo_label), nrow = 2) +
-  labs(color = "As of:", x = "Date", y = "% doctor's visits due to CLI") +
-  expand_limits(y = 0) +
-  scale_y_continuous(labels = label_percent(scale = 1, accuracy = 1),
-                     breaks = seq(0, 12, by = 4)) +
-  theme_bw() +
-  theme(legend.position = "right", legend.direction = "vertical") +
-  scale_color_brewer(palette = "Set1")
-
-#ggsave("fig_covidcast_signals/dv_as_of.pdf", width = 5, height = 4)
-```
-<div style="text-align: center;">
-<small>[Figure 5 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
-</div>
-
-## Latency and revision in signals
-
-* [**Latency**]{.primary} refers to the delay between data collection and availability.
-
-Example: A signal based on medical insurance claims may take several days to appear but is subject to delays as claims are processed over weeks.
-
-* [**Revision**]{.primary} occurs when data is updated or corrected after initial publication, often due to new information or late reporting.
-
-**Example**: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared.
-
-## Latency and revision in signals - Example
-
-* Recall the first example of panel & versioned data we've seen... 
-
-* This signal is 4 days [**latent**]{.primary} (min(`version` - `time_value`))
-
-```{r latency-wa-ex}
-#| echo: false
-x_dt_with_diff = x$DT |> mutate(version_time_diff = version - time_value) 
-head(x_dt_with_diff |> group_by(time_value) |> slice(1) |> ungroup()) 
-```
-
-* And clearly undergoes [**revision**]{.primary} over time (ex. consider Dec. 1's `percent_cli` across `version`):
-
-```{r revision-wa-ex}
-#| echo: false
-head(x_dt_with_diff) |> as_tibble()
-```
-
-<!-- min_lag: the minimum time to any value min(as.integer(version) - as.integer(time_value)  -->
-<!-- max_lag: the amount of time until the final (new) version -->
-<!-- revision_summary computes some basic statistics about the revision behavior of an archive, returning a tibble summarizing the revisions per time_value+epi_key features. -->
-
-## Revision triangle, Outpatient visits in WA 2022
-
-```{r revision-triangle}
-#| echo: false
-#| dpi: 300
-#| fig-format: png
-dv_cli <- pub_covidcast(
-  source = "doctor-visits",
-  signals = "smoothed_cli",
-  geo_type = "state",
-  time_type = "day",
-  geo_values = "wa",
-  time_values = epirange(20211201, 20220201),
-  issues = epirange(20211201, 20220201)
-) |>
-  select(time_value, value, issue)
-
-dv_cli_finalized <- pub_covidcast(
-  source = "doctor-visits",
-  signals = "smoothed_cli",
-  geo_type = "state",
-  time_type = "day",
-  geo_values = "wa",
-  time_values = epirange(20211201, 20220201),
-  as_of = "2022-02-01"
-) |>
-  select(time_value, final_value = value)
-
-dv_cli <- left_join(dv_cli, dv_cli_finalized, by = join_by(time_value))
-
-
-p1 <- dv_cli |>
-  filter(time_value > ymd("2021-12-31"), issue >= "2021-12-31") |>
-  ggplot(aes(time_value, issue, fill = value / final_value * 100)) +
-  geom_tile() +
-  scale_x_date(expand = expansion(), name = "Date") +
-  scale_y_date(expand = expansion(), name = "Report date") +
-  scale_fill_viridis_c(
-    name = "% final", 
-    option = "B",
-    direction = -1
-  ) +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.key.width = unit(1, "cm")) 
-
-p2 <- dv_cli |>
-  filter(issue >= "2021-12-31", time_value > ymd("2021-12-31")) |>
-  ggplot(aes(time_value)) +
-  geom_line(aes(y = value, colour = issue, group = issue)) +
-  scale_x_date(expand = expansion(), name = "Date") +
-  scale_y_continuous(
-    expand = expansion(), 
-    name = "% Outpatient visits b/c CLI",
-  ) +
-  scale_colour_viridis_c(
-    name = "Report Date", 
-    direction = -1,
-    trans = "date",
-    labels = scales::label_date("%b %d"),
-    option = "B"
-  ) +
-  geom_line(aes(y = final_value), color = "black") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.key.width = unit(1, "cm")) 
-
-cowplot::plot_grid(p1, p2)
-```
-
-## Revisions
-Many data sources are subject to revisions:
-
-* Case and death counts are frequently corrected or adjusted by authorities.
-
-* Medical claims data can take weeks to be submitted and processed.
-
-<!--* In the previous slide's example because doctor's visits may be reported to the health system partners several days after they occur, these signals are typically available with several days of lag. This means that estimates for a specific day are only available several days later. -->
-
-* Lab tests and medical records can be backlogged for a variety of reasons.
-
-* Surveys are not always completed promptly.
-
-* [**Key**]{.primary}: An accurate revision log is crucial for researchers building forecasts. 
-
-**A forecast that is made today can should rely on information we have access to today.**
-
-## Three types of revisions
-1. [**Sources that don't revise**]{.primary} - Ex. Facebook or Google symptoms (provisional and final are the same)
-
-1. [**Predictable revisions**]{.secondary} - Ex. Claims data (CHNG) and public health reports aligned by test, hosp., or death date
-
-1. [**Revisions that are large and erratic to predict**]{.tertiary} - Ex. COVID cases and deaths, especially when aligned by report date (which can be highly variable & less predictable compared to test data). 
-
-## Types of revisions - Comparison between 2. and 3.
-
-* Revision behavior for two indicators in the HRR containing Charlotte, NC.
-
-<!-- Each colored line corresponds to the data as reported on a particular date (as of dates varying from 28 September through 19 October). -->
-* [**DV-CLI signal (left)**]{.secondary} was regularly revised throughout the period, although effects fade farther back.
-
-* [**JHU CSSE cases (right)**]{.tertiary} remain "as reported" on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data.
-
-
-```{r fig1-McDonald}
-#| echo: false
-# This is Figure 1 from https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118
-
-as_ofs <- seq(as.Date("2020-09-28"), as.Date("2020-10-19"), by = "week")
-cases_as_of <- map_dfr(as_ofs, function(as_of) {
-  pub_covidcast(source = "jhu-csse", 
-                signals = "confirmed_7dav_incidence_prop",
-                geo_type = "hrr", 
-                time_type = "day",
-                geo_values = "311",
-                as_of = as_of,
-                time_values = epirange(20200815, 20200926)) |>
-    mutate(as_of = as_of)
-})
-dv_as_of <-  map_dfr(as_ofs, function(as_of) {
-  pub_covidcast(source = "doctor-visits", 
-                signals = "smoothed_adj_cli", # Estimated % of outpatient doctor visits primarily about COVID-related symptoms
-                geo_type = "hrr",
-                time_type = "day",
-                geo_values = "311", 
-                as_of = as_of,
-                time_values = epirange(20200815, 20200926)) |>
-    mutate(as_of = as_of)
-})
-  
-p1 <- dv_as_of |>
-  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) |>
-  ggplot(aes(x = time_value, y = value)) + 
-  geom_line(aes(color = factor(as_of))) + 
-  labs(title = "DV-CLI", x = "", y = "% doctor's visits due to CLI",
-       color = "As of:") +
-  theme_bw() + 
-  theme(legend.position = "bottom") +
-  scale_color_viridis_d(end = .9, begin = .1) +
-  guides(color = guide_legend(nrow = 1))
-
-p2 <- cases_as_of |>
-  mutate(as_of = fct_relabel(factor(as_of), function(x) strftime(x, "%b %d"))) |>
-  ggplot(aes(x = time_value, y = value)) + 
-  geom_line(aes(color = factor(as_of))) + 
-  labs(title = "Cases", x = "", y = "Cases per 100,000 people",
-       color = "As of:") +
-  theme_bw() + 
-  theme(legend.position = "bottom") +
-  scale_color_viridis_d(end = .9, begin = .1) +
-  guides(color = guide_legend(nrow = 1))
-
-# From https://github.com/tidyverse/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs
-grid_arrange_shared_legend <- function(...,
-                                       ncol = length(list(...)),
-                                       nrow = 1,
-                                       position = c("bottom", "right")) {
-
-  plots <- list(...)
-  position <- match.arg(position)
-  g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
-  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
-  lheight <- sum(legend$height)
-  lwidth <- sum(legend$width)
-  gl <- lapply(plots, function(x) x + theme(legend.position="none"))
-  gl <- c(gl, ncol = ncol, nrow = nrow)
-
-  combined <- switch(position,
-                     "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
-                                            legend,
-                                            ncol = 1,
-                                            heights = unit.c(unit(1, "npc") - lheight, lheight)),
-                     "right" = arrangeGrob(do.call(arrangeGrob, gl),
-                                           legend,
-                                           ncol = 2,
-                                           widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
-
-  grid.newpage()
-  invisible(grid.draw(combined))
-
-  # return gtable invisibly
-  invisible(combined)
-
-}
-
-p3 <- grid_arrange_shared_legend(p1, p2)
-invisible(p3)
-```
-<div style="text-align: center;">
-<small>[Figure 1 from McDonald et al. (2021)](https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118)</small>
-</div>
-
-## Key takeaways
-
-* [**Medical claims revisions**]{.secondary}: More systematic and predictable.
-* [**COVID-19 case report revisions**]{.tertiary}: Erratic and often unpredictable.
-* Large spikes or anomalies can occur as
-    + [**Reporting backlogs**]{.tertiary} are cleared.
-    + [**Changes in case definitions**]{.tertiary} are implemented.
-
-## Reporting backlogs - Example
-
-* **Left**: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 [backlogged cases]{.primary} were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.
-
-* **Right**: CTIS estimates of CLI-in-community showed more stable underlying trends.
-
-
-```{r fig4-Reinhart}
-# |echo: false
-# |message: false
-
-# Figure 4 from https://www.pnas.org/doi/10.1073/pnas.2111452118
-sa_fips <- "48029"
-sa_start <- "2020-06-15"
-sa_end <- "2020-08-15"
-sa_anomaly_date <- as.Date("2020-07-16")
-
-sa_cases <- pub_covidcast(source = "jhu-csse", 
-                          signals = "confirmed_7dav_incidence_num",
-                          time_type = "day",
-                          geo_type = "county",
-                          time_values = epirange(sa_start, sa_end), 
-                          geo_values = sa_fips)
-
-sa_cli <- pub_covidcast(source = "fb-survey", 
-                           signals = "smoothed_whh_cmnty_cli",
-                           time_type = "day",
-                           geo_type = "county",
-                           time_values = epirange(sa_start, sa_end), 
-                           geo_values = sa_fips)
-
-g1 <- ggplot(sa_cases, aes(x = time_value, y = value)) +
-  geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
-             size = 0.75, alpha = 0.75) +
-  geom_line() +
-  labs(x = "", y = "Cases", title = "Cases") +
-  theme_bw()
-
-g2 <- ggplot(sa_cli, aes(x = time_value, y = value)) +
-  geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
-             size = 0.75, alpha = 0.75) +
-  geom_line() +
-  labs(x = "", y = "% CLI-in-community", title = "CTIS-CLI-in-community") +
-  scale_y_continuous(labels = scales::label_percent(scale = 1, accuracy = 1),
-                     limits = c(NA, 75)) +
-  theme_bw()
-
-grid.arrange(g1, g2, ncol = 2)
-
-# ggsave("../paper/fig/bexar_compare.pdf", g, width = 6, height = 4)
-```
-<div style="text-align: center;">
-<small>[Figure 4 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
-</div>
-
-## Reporting backlogs - Key takeaways
-
-* [**Reporting issues been common across U.S. jurisdictions**]{.primary}.
-
-* For example, audits have regularly discovered [**misclassified or unreported cases and deaths**]{.primary}.
-
-* This underscores the value of [**cross-checking data with external sources**]{.primary} not part of the same reporting systems.
 
 # Versioning in `epidatr`
 
