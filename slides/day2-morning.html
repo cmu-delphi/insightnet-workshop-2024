@@ -451,7 +451,8 @@
 <ul>
 <li>Given <span class="math inline">\(p\)</span> different predictors, we seek <span class="math inline">\((p+1)\)</span> coefficients such that</li>
 </ul>
-<p><span class="math display">\[y_i \approx \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}\]</span> is a good approximation for every <span class="math inline">\(i = 1, \dots, n\)</span>.</p>
+<p><span class="math display">\[y_i \approx \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}\]</span></p>
+<p>is a good approximation for every <span class="math inline">\(i = 1, \dots, n\)</span>.</p>
 </section>
 <section id="linear-regression-with-lagged-predictor" class="slide level2">
 <h2>Linear regression with lagged predictor</h2>
@@ -487,7 +488,8 @@
 <ul>
 <li>If we let</li>
 </ul>
-<p><span class="math display">\[y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t\]</span> is the following a good model?</p>
+<p><span class="math display">\[y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t\]</span></p>
+<p>is the following a good model?</p>
 <p><span class="math display">\[\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}\]</span></p>
 </div>
 </section>
@@ -512,7 +514,7 @@
 <pre><code>An `epi_df` object, 6 x 4 with metadata:
 * geo_type  = state
 * time_type = day
-* as_of     = 2024-11-06 08:50:44.00687
+* as_of     = 2024-11-05 23:50:44.00687
 
 # A tibble: 6 × 4
 # Groups:   geo_value [1]
@@ -599,7 +601,8 @@
 </section>
 <section id="error-metrics-mse-and-mae" class="slide level2">
 <h2>Error metrics: MSE and MAE</h2>
-<p><span class="math display">\[MSE = \frac{1}{N} \sum_{t=1}^N (y_{new, t}- \hat y_{new, t})^2\]</span> <span class="math display">\[MAE = \frac{1}{N} \sum_{t=1}^N |y_{new, t}- \hat y_{new, t}|\]</span></p>
+<p><span class="math display">\[MSE = \frac{1}{N} \sum_{t=1}^N (y_{new, t}- \hat y_{new, t})^2\]</span></p>
+<p><span class="math display">\[MAE = \frac{1}{N} \sum_{t=1}^N |y_{new, t}- \hat y_{new, t}|\]</span></p>
 <ul>
 <li><p>MAE gives less importance to extreme errors than MSE.</p></li>
 <li><p><span class="primary">Drawback</span>: both metrics are scale-dependent, so they are not universally interpretable. (For example, if <span class="math inline">\(y\)</span> captures height, MSE and MAE will vary depending on whether we measure in feet or meters.)</p></li>
@@ -657,10 +660,7 @@ yhat2 5.382247 36.08279</code></pre>
 </section>
 <section id="error-metrics-mase" class="slide level2">
 <h2>Error metrics: MASE</h2>
-<p><span class="math display">\[MASE = 100 \times \frac{\frac{1}{N} \sum_{t=1}^N
-|y_{new, t}- \hat y_{new, t}|}
-{\frac{1}{N-1} \sum_{t=2}^N
-|y_{new, t}- y_{new, t-1}|}\]</span></p>
+<p>$$MASE = 100 { <em>{t=2}^N |y</em>{new, t}- y_{new, t-1}|}$$</p>
 <ul>
 <li><p><span class="primary">Advantages</span>:</p>
 <ul>
@@ -1138,9 +1138,8 @@ ARX(1) 0.04463132 129.2531</code></pre>
 <section id="arx-model-for-covid-deaths-with-many-predictors" class="slide level2">
 <h2>ARX model for COVID deaths with many predictors</h2>
 <p>When predicting COVID deaths 28 days ahead, we can use more past information and fit a model that includes the past two months of deaths and cases as predictors</p>
-<p><span class="math display">\[\hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-1} + \dots +
-\hat\phi_{59} y_{t-59} +
-\hat\beta_0 x_{t} + \dots + \hat\beta_{t-59} x_{t-59}\]</span></p>
+<p>$$y_{t+28} = + <em>0 y</em>{t} + <em>1 y</em>{t-1} + +</p>
+<p><em>{59} y</em>{t-59} + <em>0 x</em>{t} + + <em>{t-59} x</em>{t-59}$$</p>
 </section>
 <section id="preparing-the-data-1" class="slide level2">
 <h2>Preparing the data</h2>
@@ -1256,8 +1255,8 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 <p><span class="math display">\[\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} +
 \hat\beta_0 x_{t} + \hat\beta_1 x_{t-7}\]</span></p>
 <p>and the <span class="primary">ARX(3)</span> model</p>
-<p><span class="math display">\[\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14} +
-\hat\beta_0 x_{t} + \hat\beta_1 x_{t-7} + \hat\beta_2 x_{t-14}\]</span></p>
+<p>$$y_{t+h} = + <em>0 y</em>{t} + <em>1 y</em>{t-7} + <em>2 y</em>{t-14} +</p>
+<p><em>0 x</em>{t} + <em>1 x</em>{t-7} + <em>2 x</em>{t-14}$$</p>
 <p>and fit them using a trailing window with <span class="math inline">\(w = 120\)</span>.</p>
 </section>
 <section id="fit-arx2-and-arx3-on-trailing-window" class="slide level2">
@@ -1701,7 +1700,9 @@ Coverage   0.6029412   0.6544118</code></pre>
 ℹ First/last version with update: 2020-04-02 / 2023-03-10
 ℹ Versions end: 2023-03-10
 ℹ A preview of the table (148820 rows x 5 columns):
+Key: &lt;geo_value, time_value, version&gt;
         geo_value time_value    version case_rate death_rate
+           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;     &lt;num&gt;      &lt;num&gt;
      1:        ak 2020-04-01 2020-04-02  1.797489  0.0000000
      2:        ak 2020-04-01 2020-05-07  1.777061  0.0000000
      3:        ak 2020-04-01 2020-10-28  1.106147  0.0000000
@@ -2115,9 +2116,9 @@ Coverage   0.6029412   0.6544118</code></pre>
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1280,
+        width: 1600,
 
-        height: 720,
+        height: 900,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,
@@ -2155,15 +2156,12 @@ Coverage   0.6029412   0.6544118</code></pre>
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          // dispatch for htmlwidgets
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -2174,6 +2172,13 @@ Coverage   0.6029412   0.6544118</code></pre>
               window.jQuery(currentSlide).trigger("shown");
             }
           }
+        }
+
+        // hookup for reveal
+        if (window.Reveal) {
+          window.Reveal.addEventListener("slidechanged", function(event) {
+            fireSlideChanged(event.previousSlide, event.currentSlide);
+          });
         }
 
         // hookup for slidy
