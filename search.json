@@ -1880,7 +1880,7 @@
     "href": "slides/day2-morning.html#time-series-cv-all-past-and-trailing-arx1-model",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Time-Series CV: all past and trailing, ARX(1) model",
-    "text": "Time-Series CV: all past and trailing, ARX(1) model\n\n\n\n                                 MAE      MASE\ntime series CV            0.16204381 1509.6779\ntime series CV + trailing 0.07872895  733.4767\n\n\n\nErrors under both metrics are smaller than with previous model."
+    "text": "Time-Series CV: all past and trailing, ARX(1) model\n\n\n\n                                 MAE      MASE\ntime series CV            0.16204381 1509.6779\ntime series CV + trailing 0.07852942  731.6178\n\n\n\nErrors under both metrics are smaller than with previous model."
   },
   {
     "objectID": "slides/day2-morning.html#warning-2",
@@ -2020,14 +2020,14 @@
     "href": "slides/day2-morning.html#estimated-coefficients-shrinkage-vs-sparsity",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Estimated coefficients: shrinkage vs sparsity",
-    "text": "Estimated coefficients: shrinkage vs sparsity\n\n\n\n\n                    ridge       lasso\n(Intercept)  0.2978514823 0.124915807\nX1           0.0433892112 0.069300307\nX2           0.0292256563 0.000000000\nX3           0.0179647838 0.000000000\nX4           0.0083918680 0.000000000\nX5          -0.0015177021 0.000000000\nX6          -0.0125786976 0.000000000\nX7          -0.0191532557 0.000000000\nX8           0.0010586265 0.008320956\nX9           0.0009417383 0.000000000\nX10          0.0008208805 0.001690258\nX11          0.0006535137 0.000000000\nX12          0.0004488789 0.000000000\nX13          0.0002816751 0.000000000\nX14          0.0001839354 0.000000000"
+    "text": "Estimated coefficients: shrinkage vs sparsity\n\n\n\n\n                       ridge        lasso\n(Intercept)      0.245113034 0.0793942146\nlagged_deaths_28 0.073031163 0.1210091477\nlagged_cases_28  0.001708898 0.0095486227\nlagged_deaths_35 0.050223031 0.0000000000\nlagged_cases_35  0.001511386 0.0000000000\nlagged_deaths_42 0.033045185 0.0382093257\nlagged_cases_42  0.001332843 0.0007931385"
   },
   {
     "objectID": "slides/day2-morning.html#predictions-arx-ridgelasso-train-and-test-set",
     "href": "slides/day2-morning.html#predictions-arx-ridgelasso-train-and-test-set",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions: ARX + ridge/lasso (train and test set)",
-    "text": "Predictions: ARX + ridge/lasso (train and test set)\n\n\n\n                         MAE      MASE\nridge training     0.1975073  924.4584\nridge split-sample 0.2923452 2723.6281\nlasso training     0.0790951  370.2149\nlasso split-sample 0.2945295 2743.9784"
+    "text": "Predictions: ARX + ridge/lasso (train and test set)\n\n\n\n                          MAE      MASE\nridge training     0.16518033  821.1417\nridge split-sample 0.26018165 2423.9771\nlasso training     0.06410243  318.6649\nlasso split-sample 0.27402469 2552.9454"
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cv-for-arx-ridgelasso-trailing",
@@ -2041,7 +2041,7 @@
     "href": "slides/day2-morning.html#predictions-time-series-cv-for-arx-ridgelasso-trailing",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions: time-series CV for ARX + ridge/lasso (trailing)",
-    "text": "Predictions: time-series CV for ARX + ridge/lasso (trailing)\n\n\n\n                           MAE      MASE\nridge CV + trailing 0.09264327  863.1092\nlasso CV + trailing 0.12042184 1121.9076"
+    "text": "Predictions: time-series CV for ARX + ridge/lasso (trailing)\n\n\n\n                           MAE     MASE\nridge CV + trailing 0.08555066 797.0310\nlasso CV + trailing 0.07633053 711.1318"
   },
   {
     "objectID": "slides/day2-morning.html#point-predictions-vs-intervals",
@@ -2069,7 +2069,7 @@
     "href": "slides/day2-morning.html#prediction-intervals-for-arx-cv-trailing-window-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Prediction intervals for ARX (CV, trailing window)",
-    "text": "Prediction intervals for ARX (CV, trailing window)\n\n\n\n                 MAE     MASE\nlm.trailing 0.104397 972.6125"
+    "text": "Prediction intervals for ARX (CV, trailing window)\n\n\n\n                   MAE     MASE\nlm.trailing 0.08932857 832.2278"
   },
   {
     "objectID": "slides/day2-morning.html#quantile-regression",
@@ -2097,14 +2097,14 @@
     "href": "slides/day2-morning.html#predictions-via-quantile-regression-cv-trailing-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions via quantile regression (CV, trailing)",
-    "text": "Predictions via quantile regression (CV, trailing)\n\n\n\n                  MAE     MASE\nrq.trailing 0.1244401 1159.343"
+    "text": "Predictions via quantile regression (CV, trailing)\n\n\n\n                  MAE     MASE\nrq.trailing 0.1016452 946.9752"
   },
   {
     "objectID": "slides/day2-morning.html#actual-coverage",
     "href": "slides/day2-morning.html#actual-coverage",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Actual Coverage",
-    "text": "Actual Coverage\n\nWe would expect the ARX model fitted via lm and via rq to cover the truth about 80% of the times. Is this actually true in practice?\nThe actual coverage of each predictive interval is lower:\n\n\n\n         lm.trailing rq.trailing\nCoverage   0.8294118   0.8117647"
+    "text": "Actual Coverage\n\nWe would expect the ARX model fitted via lm and via rq to cover the truth about 80% of the times. Is this actually true in practice?\nThe actual coverage of each predictive interval is lower:\n\n\n\n         lm.trailing rq.trailing\nCoverage   0.6029412   0.6544118"
   },
   {
     "objectID": "slides/day2-morning.html#evaluation-1",
@@ -2125,7 +2125,7 @@
     "href": "slides/day2-morning.html#wis-for-arx-fitted-via-lm-and-rq",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "WIS for ARX fitted via lm and rq",
-    "text": "WIS for ARX fitted via lm and rq\nThe lowest mean WIS is attained by quantile regression.\n\n\n  Mean WIS lm Mean WIS rq\n1   0.1335326   0.1056215"
+    "text": "WIS for ARX fitted via lm and rq\nThe lowest mean WIS is attained by quantile regression.\n\n\n  Mean WIS lm Mean WIS rq\n1   0.1670436   0.1578256"
   },
   {
     "objectID": "slides/day2-morning.html#versioned-data",

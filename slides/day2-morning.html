@@ -495,7 +495,7 @@
 <h2>Example: COVID cases and deaths in California</h2>
 <div class="flex">
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/plot-ca-cases-deaths_a562944f5a72d4fc6dc22f0397608010">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -506,7 +506,7 @@
 </div>
 </div>
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/ca data_d58c0b46dc30f17ef16918a6be1c2787">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">head</span>(ca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `epi_df` object, 6 x 4 with metadata:
@@ -555,7 +555,7 @@
 </section>
 <section id="preparing-the-data" class="slide level2">
 <h2>Preparing the data</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lag-cases_eaeaaf716788d8c8a535ad61cd66fdeb">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="co"># Add column with cases lagged by k</span></span>
 <span id="cb3-2"><a></a>ca<span class="sc">$</span>lagged_cases <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(ca<span class="sc">$</span>cases, <span class="at">n =</span> k)</span>
 <span id="cb3-3"><a></a></span>
@@ -569,7 +569,7 @@
 <img data-src="day2-morning_files/figure-revealjs/plot-lag-cases-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="fitting-lagged-linear-regression-in-r" class="slide level2">
 <h2>Fitting lagged linear regression in R</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lagged-lm_2d30155983f6626cb7f3300a6672b590">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>reg_lagged <span class="ot">=</span> <span class="fu">lm</span>(deaths <span class="sc">~</span> lagged_cases, <span class="at">data =</span> train)</span>
 <span id="cb4-2"><a></a><span class="fu">coef</span>(reg_lagged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -634,7 +634,7 @@
 </div>
 <div class="flex">
 <div class="w-70">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/mae-mape-example_845e7367e48f292d634bd82f2a4954f1">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -645,7 +645,7 @@
 </div>
 </div>
 <div class="w-30 align-end">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/mae-mape-error_1d6ee0e334ebb4c1f175862f2b00a055">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>           MAE     MAPE
 yhat1 2.873328 43.14008
@@ -674,7 +674,7 @@ yhat2 5.382247 36.08279</code></pre>
 <h2>Comparing MAE, MAPE and MASE</h2>
 <div class="flex">
 <div class="w-65">
-<div class="cell" data-layout-align="left" data-hash="day2-morning_cache/revealjs/mae-mape-mase-example_e716e69a872942350933545dec1edf54">
+<div class="cell" data-layout-align="left">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-left">
 <figure>
@@ -685,7 +685,7 @@ yhat2 5.382247 36.08279</code></pre>
 </div>
 </div>
 <div class="w-35">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/mae-mape-mase-error_bea6056c0fd01f68e025e60d3e8af270">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>           MAE     MAPE      MASE
 yhat1 2.873328 43.14008  66.10004
@@ -697,7 +697,7 @@ yhat2 5.382247 36.08279 123.81696</code></pre>
 </section>
 <section id="defining-the-error-metrics-in-r" class="slide level2">
 <h2>Defining the error metrics in R</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/error functions_f9ba612b26f03abc7c1c9e7cbd74fd67">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>MSE <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, prediction) {</span>
 <span id="cb8-2"><a></a>  <span class="fu">mean</span>((truth <span class="sc">-</span> prediction)<span class="sc">^</span><span class="dv">2</span>)}</span>
 <span id="cb8-3"><a></a></span>
@@ -737,12 +737,12 @@ yhat2 5.382247 36.08279 123.81696</code></pre>
 <section id="training-error-1" class="slide level2">
 <h2>Training error</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/pred-train_d09534d0ab2730714b382752c8a8f59a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="co"># Getting the predictions for the training set</span></span>
 <span id="cb9-2"><a></a>pred_train <span class="ot">&lt;-</span> <span class="fu">predict</span>(reg_lagged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-train-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/training-error_3ce06b4bb3245dee01bb231638f2aa6e">
+<img data-src="day2-morning_files/figure-revealjs/plot-train-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>               MAE     MASE
 training 0.0740177 380.9996</code></pre>
@@ -778,14 +778,14 @@ training 0.0740177 380.9996</code></pre>
 <section id="split-sample-error-1" class="slide level2">
 <h2>Split-sample error</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-1">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/test-pred_f3959e07fba7133d1d162ed09b11c3e1">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="co"># Getting h-step ahead predictions for the test set</span></span>
 <span id="cb11-2"><a></a>h <span class="ot">&lt;-</span> k</span>
 <span id="cb11-3"><a></a>test_h <span class="ot">&lt;-</span> test[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span>h<span class="dv">-1</span>), ] <span class="co"># drop first h-1 rows to avoid data leakage</span></span>
 <span id="cb11-4"><a></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(reg_lagged, <span class="at">newdata =</span> test_h)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-test-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/test-error_2d4266d1f023b6291008d0a11ab9bcd9">
+<img data-src="day2-morning_files/figure-revealjs/plot-test-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                   MAE      MASE
 training     0.0740177  380.9996
@@ -834,7 +834,7 @@ split-sample 0.3116854 2914.4575</code></pre>
 <section id="time-series-cross-validation-cv-1" class="slide level2">
 <h2>Time-series cross-validation (CV)</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-2">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/time-series-cv_c1ad0b9ba9d94aaf29782393034ea165">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ca)                               <span class="co">#length of time series</span></span>
 <span id="cb13-2"><a></a>h <span class="ot">&lt;-</span> k                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
 <span id="cb13-3"><a></a>pred_all_past <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="at">length =</span> n)        <span class="co">#initialize vector of predictions</span></span>
@@ -860,7 +860,7 @@ split-sample 0.3116854 2914.4575</code></pre>
 <h2>Time-series cross-validation (CV)</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-3">Linear regression of COVID deaths on lagged cases</h4>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/cv-error_f1ea8db5ff09a13cda0429bc6085c8fc">
+<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                     MAE      MASE
 training       0.0740177  380.9996
@@ -918,7 +918,7 @@ time series CV 0.2374931 2212.5992</code></pre>
 <section id="trailing-window" class="slide level2">
 <h2>Trailing window</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-4">Linear regression of COVID deaths on lagged cases</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/time-series-cv-trailing_c7ca1e634e62a116bf6794c8b340951e">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="co"># Getting the predictions through CV with trailing window</span></span>
 <span id="cb15-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>                                    <span class="co">#trailing window size</span></span>
 <span id="cb15-3"><a></a>h <span class="ot">&lt;-</span> k                                      <span class="co">#number of days ahead for which prediction is wanted</span></span>
@@ -936,7 +936,7 @@ time series CV 0.2374931 2212.5992</code></pre>
 <h2>Time-series CV: all past vs trailing window</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-5">Linear regression of COVID deaths on lagged cases</h4>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/cv-trailing-error_c6a50b47b17fd008e0115f3e9142e197">
+<img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                 MAE      MASE
 training                  0.07401770  380.9996
@@ -986,7 +986,7 @@ time series CV + trailing 0.09932651  925.3734</code></pre>
 <ul>
 <li>We will refer to this model as <span class="primary">ARX(1)</span>, as it only includes one lag for each predictor.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-lm_9071eb8bb25ff7ae5724738710e54d44">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="co"># Prepare data: add column with deaths lagged by 28</span></span>
 <span id="cb17-2"><a></a>ca<span class="sc">$</span>lagged_deaths <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(ca<span class="sc">$</span>deaths, <span class="at">n =</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -997,11 +997,11 @@ time series CV + trailing 0.09932651  925.3734</code></pre>
 <section id="time-series-cv-all-past-and-trailing-arx1-model" class="slide level2">
 <h2>Time-Series CV: all past and trailing, ARX(1) model</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/arx-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-cv-error_9a47a508c2b57e809e44e0d9a67fed7e">
+<img data-src="day2-morning_files/figure-revealjs/arx-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                 MAE      MASE
 time series CV            0.16204381 1509.6779
-time series CV + trailing 0.07872895  733.4767</code></pre>
+time series CV + trailing 0.07852942  731.6178</code></pre>
 </div>
 </div>
 <aside class="notes">
@@ -1039,7 +1039,7 @@ time series CV + trailing 0.07872895  733.4767</code></pre>
 </section>
 <section id="predictions-for-different-h-1" class="slide level2">
 <h2>Predictions for different <span class="math inline">\(h\)</span></h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/different-h-pred_13c88138f4e1c5559412358913082f17">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>h_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">28</span>)  <span class="co">#horizons </span></span>
 <span id="cb19-2"><a></a>pred_m1 <span class="ot">=</span> pred_m2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> <span class="dv">0</span>, <span class="at">ncol =</span> <span class="dv">3</span>))  <span class="co">#initialize df for predictions</span></span>
 <span id="cb19-3"><a></a><span class="fu">colnames</span>(pred_m1) <span class="ot">=</span> <span class="fu">colnames</span>(pred_m2) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"forecast_date"</span>, <span class="st">"target_date"</span>, <span class="st">"prediction"</span>)</span>
@@ -1083,7 +1083,7 @@ time series CV + trailing 0.07872895  733.4767</code></pre>
 <section id="predictions-for-different-h-lm-on-lagged-cases" class="slide level2">
 <h2>Predictions for different <span class="math inline">\(h\)</span>, <code>lm</code> on lagged cases</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-m1-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/m1-error_b3cb4463eedaa8c1231f009d7591ea2b">
+<img data-src="day2-morning_files/figure-revealjs/plot-m1-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                         MAE    MASE
 lm on lagged cases 0.1049742 304.007</code></pre>
@@ -1093,7 +1093,7 @@ lm on lagged cases 0.1049742 304.007</code></pre>
 <section id="predictions-for-different-h-arx1" class="slide level2">
 <h2>Predictions for different <span class="math inline">\(h\)</span>, ARX(1)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-m2-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/m2-error_b121b6ee98b64c588a62bf9e1a654626">
+<img data-src="day2-morning_files/figure-revealjs/plot-m2-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>              MAE     MASE
 ARX(1) 0.04463132 129.2531</code></pre>
@@ -1144,7 +1144,7 @@ ARX(1) 0.04463132 129.2531</code></pre>
 </section>
 <section id="preparing-the-data-1" class="slide level2">
 <h2>Preparing the data</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/overfit-data_26414659227b5640a50ca5f697076aa8">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>y <span class="ot">&lt;-</span> ca<span class="sc">$</span>deaths  <span class="co">#outcome</span></span>
 <span id="cb22-2"><a></a>lags <span class="ot">&lt;-</span> <span class="dv">28</span><span class="sc">:</span><span class="dv">87</span>   <span class="co">#lags used for predictors (deaths and cases)</span></span>
 <span id="cb22-3"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span></span>
@@ -1163,7 +1163,7 @@ ARX(1) 0.04463132 129.2531</code></pre>
 </section>
 <section id="fitting-the-arx-model" class="slide level2">
 <h2>Fitting the ARX model</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/overfit-lm_0df87aad67843b85dd31cc80911401bb">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="co"># Train/test split</span></span>
 <span id="cb23-2"><a></a>y_train <span class="ot">&lt;-</span> y[<span class="dv">1</span><span class="sc">:</span>t0]</span>
 <span id="cb23-3"><a></a>X_train <span class="ot">&lt;-</span> X[<span class="dv">1</span><span class="sc">:</span>t0, ]</span>
@@ -1230,7 +1230,7 @@ ARX(1) 0.04463132 129.2531</code></pre>
 <section id="predictions-on-training-and-test-set" class="slide level2">
 <h2>Predictions on training and test set</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/overfit-plot-train-test-trunc-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/overfit-train-test-error-trunc_fdaf4724d1bdda710782e4b08db0d503">
+<img data-src="day2-morning_files/figure-revealjs/overfit-plot-train-test-trunc-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                             MAE    MASE
 split-sample truncated 0.3978198 3706.28</code></pre>
@@ -1262,7 +1262,7 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 </section>
 <section id="fit-arx2-and-arx3-on-trailing-window" class="slide level2">
 <h2>Fit ARX(2) and ARX(3) on trailing window</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-2-and-3_64a51843b4fc50ad7b7cf73286c2531e">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>pred_arx2 <span class="ot">=</span> pred_arx3 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="at">length =</span> n)  </span>
 <span id="cb26-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>     <span class="co">#trailing window size</span></span>
 <span id="cb26-3"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>      <span class="co">#number of days ahead</span></span>
@@ -1291,7 +1291,7 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 <section id="time-series-cv-trailing-arx2-and-arx3" class="slide level2">
 <h2>Time-Series CV (trailing): ARX(2) and ARX(3)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/arx-2-and-3-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-2-and-3-cv-error_3f0aaf7eeafa215aceb3dae742dd2cc4">
+<img data-src="day2-morning_files/figure-revealjs/arx-2-and-3-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                            MAE      MASE
 ARX(2), CV + trailing 0.0871616  812.0393
@@ -1326,7 +1326,7 @@ ARX(3), CV + trailing 0.1248769 1163.4135</code></pre>
 </section>
 <section id="fit-arx-3-lags-ridgelasso-for-covid-deaths" class="slide level2">
 <h2>Fit ARX (3 lags) + ridge/lasso for COVID deaths</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/ridge-lasso-fit_105d92cfe8b28f972f0725f1f0f7f32f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="fu">library</span>(glmnet) <span class="co"># Implements ridge and lasso</span></span>
 <span id="cb28-2"><a></a></span>
 <span id="cb28-3"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span></span>
@@ -1355,7 +1355,7 @@ ARX(3), CV + trailing 0.1248769 1163.4135</code></pre>
 </section>
 <section id="predictions-on-test-set-and-best-lambda" class="slide level2">
 <h2>Predictions on test set and best <span class="math inline">\(\lambda\)</span></h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lasso-ridge-predictions_609774011698189be8c9719daf472e08">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>X_test <span class="ot">&lt;-</span> X[(t0<span class="sc">+</span>h)<span class="sc">:</span>n, ]</span>
 <span id="cb30-2"><a></a>y_test <span class="ot">&lt;-</span> y[(t0<span class="sc">+</span>h)<span class="sc">:</span>n]</span>
 <span id="cb30-3"><a></a></span>
@@ -1382,29 +1382,21 @@ ARX(3), CV + trailing 0.1248769 1163.4135</code></pre>
 <h2>Estimated coefficients: shrinkage vs sparsity</h2>
 <div class="flex">
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lasso-ridge-coeff_30fbde250a11d9a902ca90316c26b681">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                    ridge       lasso
-(Intercept)  0.2978514823 0.124915807
-X1           0.0433892112 0.069300307
-X2           0.0292256563 0.000000000
-X3           0.0179647838 0.000000000
-X4           0.0083918680 0.000000000
-X5          -0.0015177021 0.000000000
-X6          -0.0125786976 0.000000000
-X7          -0.0191532557 0.000000000
-X8           0.0010586265 0.008320956
-X9           0.0009417383 0.000000000
-X10          0.0008208805 0.001690258
-X11          0.0006535137 0.000000000
-X12          0.0004488789 0.000000000
-X13          0.0002816751 0.000000000
-X14          0.0001839354 0.000000000</code></pre>
+<pre><code>                       ridge        lasso
+(Intercept)      0.245113034 0.0793942146
+lagged_deaths_28 0.073031163 0.1210091477
+lagged_cases_28  0.001708898 0.0095486227
+lagged_deaths_35 0.050223031 0.0000000000
+lagged_cases_35  0.001511386 0.0000000000
+lagged_deaths_42 0.033045185 0.0382093257
+lagged_cases_42  0.001332843 0.0007931385</code></pre>
 </div>
 </div>
 </div>
 <div class="w-50">
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/plot-ridge-lasso-coeff_0c663626609454a2f099ffae150629fe">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1419,19 +1411,19 @@ X14          0.0001839354 0.000000000</code></pre>
 <section id="predictions-arx-ridgelasso-train-and-test-set" class="slide level2">
 <h2>Predictions: ARX + ridge/lasso (train and test set)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/shrinkage-sparsity-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/regularization-train-test-errors_dbf32d5e0dc411e6b5a914e5a977cf3c">
+<img data-src="day2-morning_files/figure-revealjs/shrinkage-sparsity-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                         MAE      MASE
-ridge training     0.1975073  924.4584
-ridge split-sample 0.2923452 2723.6281
-lasso training     0.0790951  370.2149
-lasso split-sample 0.2945295 2743.9784</code></pre>
+<pre><code>                          MAE      MASE
+ridge training     0.16518033  821.1417
+ridge split-sample 0.26018165 2423.9771
+lasso training     0.06410243  318.6649
+lasso split-sample 0.27402469 2552.9454</code></pre>
 </div>
 </div>
 </section>
 <section id="time-series-cv-for-arx-ridgelasso-trailing" class="slide level2">
 <h2>Time-series CV for ARX + ridge/lasso (trailing)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/regularization-cv_9ebf52f6788e81b2a0de1f5fb9e78b13">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>  <span class="co"># number of days ahead </span></span>
 <span id="cb33-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span> <span class="co"># window length</span></span>
 <span id="cb33-3"><a></a></span>
@@ -1470,11 +1462,11 @@ lasso split-sample 0.2945295 2743.9784</code></pre>
 <section id="predictions-time-series-cv-for-arx-ridgelasso-trailing" class="slide level2">
 <h2>Predictions: time-series CV for ARX + ridge/lasso (trailing)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-regularization-cv-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/regularization-cv-errors_59a1e3cbe816261acb3c0e795c21d032">
+<img data-src="day2-morning_files/figure-revealjs/plot-regularization-cv-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                           MAE      MASE
-ridge CV + trailing 0.09264327  863.1092
-lasso CV + trailing 0.12042184 1121.9076</code></pre>
+<pre><code>                           MAE     MASE
+ridge CV + trailing 0.08555066 797.0310
+lasso CV + trailing 0.07633053 711.1318</code></pre>
 </div>
 </div>
 </section></section>
@@ -1518,7 +1510,7 @@ lasso CV + trailing 0.12042184 1121.9076</code></pre>
 </section>
 <section id="prediction-intervals-for-arx-cv-trailing-window" class="slide level2">
 <h2>Prediction intervals for ARX (CV, trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/arx-intervals-time-series-cv_ba2d88af3eba74ebb3083ed936103d0a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="co"># Initialize matrices to store predictions </span></span>
 <span id="cb35-2"><a></a><span class="co"># 3 columns: point estimate, lower limit, and upper limit</span></span>
 <span id="cb35-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
@@ -1537,10 +1529,10 @@ lasso CV + trailing 0.12042184 1121.9076</code></pre>
 <section id="prediction-intervals-for-arx-cv-trailing-window-1" class="slide level2">
 <h2>Prediction intervals for ARX (CV, trailing window)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot arx-intervals-cv-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lm-errors-arx_4566534dc0a4693c32db4e981c99e6eb">
+<img data-src="day2-morning_files/figure-revealjs/plot arx-intervals-cv-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>                 MAE     MASE
-lm.trailing 0.104397 972.6125</code></pre>
+<pre><code>                   MAE     MASE
+lm.trailing 0.08932857 832.2278</code></pre>
 </div>
 </div>
 </section>
@@ -1569,7 +1561,7 @@ lm.trailing 0.104397 972.6125</code></pre>
 </section>
 <section id="arx-model-for-covid-deaths-via-quantile-regression" class="slide level2">
 <h2>ARX model for COVID deaths via quantile regression</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/q-reg_27f284a3a282a9d0a6671fefd9ff940e">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a><span class="co">#install.packages("quantreg")</span></span>
 <span id="cb37-2"><a></a><span class="fu">library</span>(quantreg)  <span class="co">#library to perform quantile regression</span></span>
 <span id="cb37-3"><a></a></span>
@@ -1594,7 +1586,7 @@ lagged_cases  0.008602685 0.01022547 0.01135643</code></pre>
 </section>
 <section id="predictions-via-quantile-regression-cv-trailing" class="slide level2">
 <h2>Predictions via quantile regression (CV, trailing)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/q-reg-time-series-cv_bf81594ac8eb59c8a77635d3882d6108">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="co"># Initialize matrix to store predictions </span></span>
 <span id="cb39-2"><a></a><span class="co"># 3 columns: lower limit, median, and upper limit</span></span>
 <span id="cb39-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
@@ -1617,10 +1609,10 @@ lagged_cases  0.008602685 0.01022547 0.01135643</code></pre>
 <section id="predictions-via-quantile-regression-cv-trailing-1" class="slide level2">
 <h2>Predictions via quantile regression (CV, trailing)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/q-reg-plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/qr-errors-arx_61c27a50ff196a4abe08f8094bf0db62">
+<img data-src="day2-morning_files/figure-revealjs/q-reg-plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>                  MAE     MASE
-rq.trailing 0.1244401 1159.343</code></pre>
+rq.trailing 0.1016452 946.9752</code></pre>
 </div>
 </div>
 </section>
@@ -1630,10 +1622,10 @@ rq.trailing 0.1244401 1159.343</code></pre>
 <li><p>We would expect the ARX model fitted via <code>lm</code> and via <code>rq</code> to cover the truth about 80% of the times. Is this actually true in practice?</p></li>
 <li><p>The actual coverage of each predictive interval is lower:</p></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lm-coverage-all-past_25c195cf169b67b9dd7ff03f4a5fa6b3">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>         lm.trailing rq.trailing
-Coverage   0.8294118   0.8117647</code></pre>
+Coverage   0.6029412   0.6544118</code></pre>
 </div>
 </div>
 </section>
@@ -1653,7 +1645,7 @@ Coverage   0.8294118   0.8117647</code></pre>
 </section>
 <section id="computing-the-wis" class="slide level2">
 <h2>Computing the WIS</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/wis-function_f9777239a2900a70030d179a61d6796e">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>WIS <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, estimates, quantiles) {</span>
 <span id="cb42-2"><a></a>  <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pmax</span>(</span>
 <span id="cb42-3"><a></a>    quantiles <span class="sc">*</span> (truth <span class="sc">-</span> estimates),</span>
@@ -1676,10 +1668,10 @@ Coverage   0.8294118   0.8117647</code></pre>
 <section id="wis-for-arx-fitted-via-lm-and-rq" class="slide level2">
 <h2>WIS for ARX fitted via <code>lm</code> and <code>rq</code></h2>
 <p>The lowest mean WIS is attained by quantile regression.</p>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/wis-lm_cd7f877d327b6a2f86c7011a7b7aef95">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>  Mean WIS lm Mean WIS rq
-1   0.1335326   0.1056215</code></pre>
+1   0.1670436   0.1578256</code></pre>
 </div>
 </div>
 </section></section>
@@ -1701,7 +1693,7 @@ Coverage   0.8294118   0.8117647</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/versioned-data_b634dc778fc576276d517dc6d46fb863">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a>data_archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
@@ -1730,7 +1722,7 @@ Coverage   0.8294118   0.8117647</code></pre>
 </section>
 <section id="version-aware-forecasting-1" class="slide level2">
 <h2>Version-aware forecasting</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/versioned-quantile-reg_3d59bb33582f1b25eba75a1787dd2eba">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
 <span id="cb46-2"><a></a><span class="co"># 5 columns: forecast date, target date, 10%, 50%, and 90% quantiles</span></span>
 <span id="cb46-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">5</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
@@ -1790,7 +1782,7 @@ Coverage   0.8294118   0.8117647</code></pre>
 </section>
 <section id="geo-pooling-trailing-window" class="slide level2">
 <h2>Geo-pooling (trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/geo-pooling_5849c40d579776a70e16762b09f1c749">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a>usa_archive <span class="ot">&lt;-</span> data_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> </span>
 <span id="cb47-2"><a></a>  <span class="fu">as_epi_archive</span>()</span>
 <span id="cb47-3"><a></a></span>
@@ -1854,7 +1846,7 @@ Coverage   0.8294118   0.8117647</code></pre>
 <img data-src="day2-morning_files/figure-revealjs/plot-geo-pooling-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="partial-geo-pooling-trailing-window" class="slide level2">
 <h2>Partial geo-pooling (trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/partial-geo-pooling_196b5ef26a13a446199058cc30176e21">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
 <span id="cb48-2"><a></a><span class="co"># 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles</span></span>
 <span id="cb48-3"><a></a>pred_trailing <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
