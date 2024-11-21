@@ -9,21 +9,16 @@ talk-date: ""
 format: revealjs
 ---
 
-<!-- Set any of the above to "" to omit them -->
-
-<!-- Or adjust the formatting in _titleslide.qmd -->
 {{< include _titleslide.qmd >}}
 
 
 
 
 ```{r theme-load-pkg}
-theme_set(theme_bw())
 library(tidymodels)
 library(gridExtra)
 library(grid)
 library(epidatasets)
-library(epiprocess)
 library(epipredict)
 ```
 

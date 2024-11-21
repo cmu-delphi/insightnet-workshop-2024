@@ -7,33 +7,12 @@ other-authors: ""
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "Venue -- dd Somemonth yyyy"
 format: revealjs
-execute:
-  cache: true
 ---
 
-<!-- Set any of the above to "" to omit them -->
 
-<!-- Or adjust the formatting in _titleslide.qmd -->
 {{< include _titleslide.qmd >}}
 
-<style>
-.scrollable-output {
-  max-height: 500px; /* Adjust the height as needed */
-  overflow-y: auto;  /* Enables vertical scrolling */
-}
-</style>
 
-<style>
-.inner-list {
-  font-size: 0.85em; /* Adjust size as needed */
-}
-</style>
-
-```{r theme}
-library(tidyverse)
-theme_set(theme_bw())
-theme_update(legend.position = "bottom", legend.title = element_blank())
-```
 
 ## Outline
 

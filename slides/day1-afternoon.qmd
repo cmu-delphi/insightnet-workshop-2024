@@ -7,21 +7,13 @@ other-authors: ""
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: ""
 format: revealjs
-execute:
-  cache: false
 ---
   
-  <!-- Set any of the above to "" to omit them -->
-  
-  <!-- Or adjust the formatting in _titleslide.qmd -->
-  {{< include _titleslide.qmd >}}
+{{< include _titleslide.qmd >}}
 
 ```{r theme-load-pkg}
-theme_set(theme_bw())
-
 library(tidyverse)
 library(epidatr)
-library(epiprocess)
 library(epipredict)
 library(epidatasets)
 # install.packages("remotes")

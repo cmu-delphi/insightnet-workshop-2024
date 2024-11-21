@@ -17,6 +17,8 @@ colvec <- c(base = base, primary = primary, secondary = secondary,
             fifth_colour = fifth_colour)
 library(epiprocess)
 suppressMessages(library(tidyverse))
+theme_set(theme_bw())
+theme_update(legend.position = "bottom", legend.title = element_blank())
 delphi_pal <- function(n) {
   if (n > 6L) warning("Not enough colors in this palette!")
   unname(colvec)[1:n]

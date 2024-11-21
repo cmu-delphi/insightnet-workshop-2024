@@ -25,6 +25,7 @@ format:
 execute:
   echo: false
   warning: false
+  cache: true
 
 knitr:
   opts_chunk:
