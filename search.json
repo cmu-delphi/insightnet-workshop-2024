@@ -3,22 +3,22 @@
     "objectID": "slides/day1-afternoon.html#section",
     "href": "slides/day1-afternoon.html#section",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Explore, clean & transform data",
-    "text": "Explore, clean & transform data"
+    "section": "Data Cleaning, Versioning, and Nowcasting",
+    "text": "Data Cleaning, Versioning, and Nowcasting\nInsightNet Forecasting Workshop 2024\n\nRachel Lobay and Logan C. Brooks\nDaniel J. McDonald, Ryan J. Tibshirani, and Alice Clime\n11 December – Afternoon"
   },
   {
     "objectID": "slides/day1-afternoon.html#outline",
     "href": "slides/day1-afternoon.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\nEssentials of dplyr and tidyr\nEpiverse Software ecosystem\nPanel and Versioned Data in the epiverse\nBasic Nowcasting using epiprocess\nNowcasting with One Variable\nNowcasting with Two Variables\nCase Study - Nowcasting Cases Using %CLI"
+    "text": "Outline\n\nEssentials of {dplyr} and {tidyr}\nEpiverse Software ecosystem\nPanel and Versioned Data in the epiverse\nBasic Nowcasting using {epiprocess}\nNowcasting with One Variable\nNowcasting with Two Variables\nCase Study - Nowcasting Cases Using %CLI"
   },
   {
     "objectID": "slides/day1-afternoon.html#down-with-spreadsheets-for-data-manipulation",
     "href": "slides/day1-afternoon.html#down-with-spreadsheets-for-data-manipulation",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Down with spreadsheets for data manipulation",
-    "text": "Down with spreadsheets for data manipulation\n\nSpreadsheets make it difficult to rerun analyses consistently.\nUsing R (and dplyr) allows for:\n\nReproducibility\nEase of modification\n\nRecommendation: Avoid manual edits; instead, use code for transformations.\nLet’s see what we mean by this…"
+    "text": "Down with spreadsheets for data manipulation\n\nSpreadsheets make it difficult to rerun analyses consistently.\nUsing R (and {dplyr}) allows for:\n\nReproducibility\nEase of modification\n\nRecommendation: Avoid manual edits; instead, use code for transformations.\nLet’s see what we mean by this…"
   },
   {
     "objectID": "slides/day1-afternoon.html#introduction-to-dplyr",
@@ -823,14 +823,14 @@
     "href": "slides/day1-afternoon.html#final-slide",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Final slide",
-    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nExplore, clean & transform data — cmu-delphi/insightnet-workshop-2024"
+    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nNowcasting — cmu-delphi/insightnet-workshop-2024"
   },
   {
     "objectID": "slides/day1-morning.html#section",
     "href": "slides/day1-morning.html#section",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Signal Discovery & Data Fetching",
-    "text": "Signal Discovery & Data Fetching"
+    "section": "Signal Discovery, Data Fetching, & Panel Data",
+    "text": "Signal Discovery, Data Fetching, & Panel Data\nInsightNet Forecasting Workshop 2024\n\nRyan J. Tibshirani\nRachel Lobay, Daniel J. McDonald, Alice Clime, and Logan C. Brooks\n11 December – Morning"
   },
   {
     "objectID": "slides/day1-morning.html#outline",
@@ -1292,35 +1292,35 @@
     "href": "slides/day1-morning.html#final-slide",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Final slide",
-    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nDay 1 Morning — cmu-delphi/insightnet-workshop-2024"
+    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nPanel Data — cmu-delphi/insightnet-workshop-2024"
   },
   {
     "objectID": "index.html#schedule",
     "href": "index.html#schedule",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Schedule",
-    "text": "Schedule\nShort description\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon"
+    "text": "Schedule\nIn this 2-day workshop, we plan to demonstrate how to use R to load, process, inspect, and forecast aggregate epi surveillance data. We will be presenting a few case studies to motivate the entire pipeline from signal discovery to the production of nowcasts and forecasts.\n\nDay 1 Morning\nDay 1 Afternoon\nDay 2 Morning\nDay 2 Afternoon"
   },
   {
     "objectID": "index.html#instructors",
     "href": "index.html#instructors",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Instructors",
-    "text": "Instructors\n\nRyan J. Tibshirani\nDaniel J. McDonald\nAlice Cima\nRachel Lobay"
+    "text": "Instructors\n\nRyan J. Tibshirani\nDaniel J. McDonald\nRachel Lobay\nAlice Cima\nLogan C. Brooks"
   },
   {
     "objectID": "slides/day2-afternoon.html#section",
     "href": "slides/day2-afternoon.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Forecasting with {epipredict}",
-    "text": "Forecasting with {epipredict}\n\n\n\n\nVenue – dd Somemonth yyyy"
+    "text": "Forecasting with {epipredict}\nInsightNet Forecasting Workshop 2024\n\nDaniel J. McDonald and Ryan J. Tibshirani\nAlice Clime, Rachel Lobay, and Logan C. Brooks\n12 December – Afternoon"
   },
   {
     "objectID": "slides/day2-afternoon.html#outline",
     "href": "slides/day2-afternoon.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\n{epipredict}\nPre-processing\nFit and Predict with arx_forecaster\nCustomizing arx_forecaster\nForecasting with Versioned Data\nBuilding a Forecaster"
+    "text": "Outline\n\n{epipredict}\nPre-processing\nFit and Predict with arx_forecaster()\nCustomizing arx_forecaster()\nForecasting with Versioned Data\nBuilding a Forecaster"
   },
   {
     "objectID": "slides/day2-afternoon.html#epipredict-1",
@@ -1621,14 +1621,14 @@
     "href": "slides/day2-afternoon.html#thanks",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Thanks:",
-    "text": "Thanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting with {epipredict} — cmu-delphi/insightnet-workshop-2024"
+    "text": "Thanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting — cmu-delphi/insightnet-workshop-2024"
   },
   {
     "objectID": "slides/day2-morning.html#section",
     "href": "slides/day2-morning.html#section",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Forecasting and Time-Series Models",
-    "text": "Forecasting and Time-Series Models\n\n\n\n\nVenue – dd Somemonth yyyy"
+    "section": "Whirlwind Tour of Forecasting and Time-Series Models",
+    "text": "Whirlwind Tour of Forecasting and Time-Series Models\nInsightNet Forecasting Workshop 2024\n\nRyan J. Tibshirani and Daniel J. McDonald\nAlice Clime, Rachel Lobay, and Logan C. Brooks\n12 December – Morning"
   },
   {
     "objectID": "slides/day2-morning.html#outline",
@@ -2174,6 +2174,6 @@
     "href": "slides/day2-morning.html#final-slide",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Final slide",
-    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nForecasting and Time-Series Models — cmu-delphi/insightnet-workshop-2024"
+    "text": "Final slide\nThanks:\n\nThe whole CMU Delphi Team (across many institutions)\nOptum/UnitedHealthcare, Change Healthcare.\nGoogle, Facebook, Amazon Web Services.\nQuidel, SafeGraph, Qualtrics.\nCenters for Disease Control and Prevention.\nCouncil of State and Territorial Epidemiologists\n\n\n    \n\n\n\n\n\nTime-Series — cmu-delphi/insightnet-workshop-2024"
   }
 ]
