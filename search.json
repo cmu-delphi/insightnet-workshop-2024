@@ -861,20 +861,6 @@
     "text": "What we provide"
   },
   {
-    "objectID": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
-    "href": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Goals of Delphi Epidata platform and repository",
-    "text": "Goals of Delphi Epidata platform and repository\n\n\nBe the one-stop shop for aggregated epi-surveillance time-series (“epi-signals”)\n\nHence: include also signals available elsewhere, especially if they don’t keep data revisions - E.g. CDC’s own NSSP, NWSS\nBe the national historical repository of record & preserve the raw data\n\nBe the national clearinghouse for epi-signals, including those held elsewhere\n\nThe go-to place for signal discovery\n\nAdd value to existing signals and synthesize new ones\n\nAdded value: see next slide\nSynthesize new: via signal fusion, e.g. nowcasting\n\nBe the focal point for community-wide efforts to open up privately held data\n\nBetter positioned than government or industry"
-  },
-  {
-    "objectID": "slides/day1-morning.html#the-bigger-goal",
-    "href": "slides/day1-morning.html#the-bigger-goal",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "The bigger goal",
-    "text": "The bigger goal\nThe goal is to make epi-surveillance more nimble, complete, standardized, robust, and real-time and\nless burdensome on the health system itself.\nEpidata is not the solution; but we hope it is a blueprint towards such a solution."
-  },
-  {
     "objectID": "slides/day1-morning.html#panel-data-1",
     "href": "slides/day1-morning.html#panel-data-1",
     "title": "InsightNet EpiData Workshop 2024",
@@ -992,6 +978,20 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Reporting backlogs - Key takeaways",
     "text": "Reporting backlogs - Key takeaways\n\nReporting issues been common across U.S. jurisdictions.\nFor example, audits have regularly discovered misclassified or unreported cases and deaths.\nThis underscores the value of cross-checking data with external sources not part of the same reporting systems."
+  },
+  {
+    "objectID": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
+    "href": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Goals of Delphi Epidata platform and repository",
+    "text": "Goals of Delphi Epidata platform and repository\n\n\nBe the one-stop shop for aggregated epi-surveillance time-series (“epi-signals”)\n\nHence: include also signals available elsewhere, especially if they don’t keep data revisions - E.g. CDC’s own NSSP, NWSS\nBe the national historical repository of record & preserve the raw data\n\nBe the national clearinghouse for epi-signals, including those held elsewhere\n\nThe go-to place for signal discovery\n\nAdd value to existing signals and synthesize new ones\n\nAdded value: see next slide\nSynthesize new: via signal fusion, e.g. nowcasting\n\nBe the focal point for community-wide efforts to open up privately held data\n\nBetter positioned than government or industry"
+  },
+  {
+    "objectID": "slides/day1-morning.html#the-bigger-goal",
+    "href": "slides/day1-morning.html#the-bigger-goal",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "The bigger goal",
+    "text": "The bigger goal\nThe goal is to make epi-surveillance more nimble, complete, standardized, robust, and real-time and\nless burdensome on the health system itself.\nEpidata is not the solution; but we hope it is a blueprint towards such a solution."
   },
   {
     "objectID": "slides/day1-morning.html#what-is-the-epidata-repository",
