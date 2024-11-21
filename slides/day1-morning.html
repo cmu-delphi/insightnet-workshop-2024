@@ -396,8 +396,6 @@
 
 <section class="slide level2">
 
-<!-- Set any of the above to "" to omit them -->
-<!-- Or adjust the formatting in _titleslide.qmd -->
 <div class="flex">
 <div class="w-20">
 
@@ -537,6 +535,8 @@ a[target="_blank"]::after {
 Example: gathering different signals + visualizing panel data
 
 
+
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/multiple-signals-unscale-1.svg){fig-align='center'}
@@ -544,8 +544,12 @@ Example: gathering different signals + visualizing panel data
 :::
 
 
+
+
 ## All together - Visualizing multiple panel data signals
 Example: gathering different signals + **scaling** + visualizing panel data
+
+
 
 
 
@@ -555,6 +559,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 ![](day1-morning_files/figure-revealjs/scaled-signals-1.svg){fig-align='center'}
 :::
 :::
+
+
 
 <div style="text-align: center;">
 <small>[Figure 1 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
@@ -1625,6 +1631,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 * **Example**: Request  a lag of 7 days fetches only data issued exactly 7 days after the corresponding `time_value`:
 
 
+
+
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -1642,6 +1650,7 @@ epidata <- pub_covidcast(
 
 ::: {.cell layout-align="center"}
 ::: {.cell-output .cell-output-stdout}
+
 ```
 # A tibble: 5 × 8
   geo_value signal           source     time_value issue        lag value stderr
@@ -1652,8 +1661,12 @@ epidata <- pub_covidcast(
 4 pa        smoothed_adj_cli doctor-vi… 2020-05-06 2020-05-13     7  2.56     NA
 5 pa        smoothed_adj_cli doctor-vi… 2020-05-07 2020-05-14     7  2.19     NA
 ```
+
+
 :::
 :::
+
+
 
 </div>
 
@@ -1662,6 +1675,8 @@ epidata <- pub_covidcast(
 * Although the query we ran on the previous slide requested values from May 1 to May 7, May 3 and May 4 were not included due to a 7-day lag.
 
 * Results for those dates appear only if updates are issued on the corresponding lag day (e.g., May 10).
+
+
 
 
 ::: {.cell layout-align="center"}
@@ -1681,6 +1696,7 @@ epidata <- pub_covidcast(
 
 ::: {.cell layout-align="center"}
 ::: {.cell-output .cell-output-stdout}
+
 ```
 # A tibble: 5 × 8
   geo_value signal           source     time_value issue        lag value stderr
@@ -1691,8 +1707,12 @@ epidata <- pub_covidcast(
 4 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-14    11  3.02     NA
 5 pa        smoothed_adj_cli doctor-vi… 2020-05-03 2020-05-15    12  3.05     NA
 ```
+
+
 :::
 :::
+
+
 
 </div>
 -->
@@ -1951,12 +1971,15 @@ epidata <- pub_covidcast(
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -1967,13 +1990,6 @@ epidata <- pub_covidcast(
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy

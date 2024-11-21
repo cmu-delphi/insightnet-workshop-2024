@@ -396,8 +396,6 @@
 
 <section class="slide level2">
 
-<!-- Set any of the above to "" to omit them -->
-<!-- Or adjust the formatting in _titleslide.qmd -->
 <div class="flex">
 <div class="w-20">
 
@@ -411,11 +409,6 @@
 <p>Venue – dd Somemonth yyyy</p>
 </section>
 </div>
-<style>
-.inner-list {
-  font-size: 0.85em; /* Adjust size as needed */
-}
-</style>
 </section>
 <section id="outline" class="slide level2">
 <h2>Outline</h2>
@@ -451,8 +444,7 @@
 <ul>
 <li>Given <span class="math inline">\(p\)</span> different predictors, we seek <span class="math inline">\((p+1)\)</span> coefficients such that</li>
 </ul>
-<p><span class="math display">\[y_i \approx \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}\]</span></p>
-<p>is a good approximation for every <span class="math inline">\(i = 1, \dots, n\)</span>.</p>
+<p><span class="math display">\[y_i \approx \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}\]</span> is a good approximation for every <span class="math inline">\(i = 1, \dots, n\)</span>.</p>
 </section>
 <section id="linear-regression-with-lagged-predictor" class="slide level2">
 <h2>Linear regression with lagged predictor</h2>
@@ -488,8 +480,7 @@
 <ul>
 <li>If we let</li>
 </ul>
-<p><span class="math display">\[y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t\]</span></p>
-<p>is the following a good model?</p>
+<p><span class="math display">\[y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t\]</span> is the following a good model?</p>
 <p><span class="math display">\[\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}\]</span></p>
 </div>
 </section>
@@ -601,8 +592,7 @@
 </section>
 <section id="error-metrics-mse-and-mae" class="slide level2">
 <h2>Error metrics: MSE and MAE</h2>
-<p><span class="math display">\[MSE = \frac{1}{N} \sum_{t=1}^N (y_{new, t}- \hat y_{new, t})^2\]</span></p>
-<p><span class="math display">\[MAE = \frac{1}{N} \sum_{t=1}^N |y_{new, t}- \hat y_{new, t}|\]</span></p>
+<p><span class="math display">\[MSE = \frac{1}{N} \sum_{t=1}^N (y_{new, t}- \hat y_{new, t})^2\]</span> <span class="math display">\[MAE = \frac{1}{N} \sum_{t=1}^N |y_{new, t}- \hat y_{new, t}|\]</span></p>
 <ul>
 <li><p>MAE gives less importance to extreme errors than MSE.</p></li>
 <li><p><span class="primary">Drawback</span>: both metrics are scale-dependent, so they are not universally interpretable. (For example, if <span class="math inline">\(y\)</span> captures height, MSE and MAE will vary depending on whether we measure in feet or meters.)</p></li>
@@ -660,7 +650,10 @@ yhat2 5.382247 36.08279</code></pre>
 </section>
 <section id="error-metrics-mase" class="slide level2">
 <h2>Error metrics: MASE</h2>
-<p>$$MASE = 100 { <em>{t=2}^N |y</em>{new, t}- y_{new, t-1}|}$$</p>
+<p><span class="math display">\[MASE = 100 \times \frac{\frac{1}{N} \sum_{t=1}^N
+|y_{new, t}- \hat y_{new, t}|}
+{\frac{1}{N-1} \sum_{t=2}^N
+|y_{new, t}- y_{new, t-1}|}\]</span></p>
 <ul>
 <li><p><span class="primary">Advantages</span>:</p>
 <ul>
@@ -1138,8 +1131,9 @@ ARX(1) 0.04463132 129.2531</code></pre>
 <section id="arx-model-for-covid-deaths-with-many-predictors" class="slide level2">
 <h2>ARX model for COVID deaths with many predictors</h2>
 <p>When predicting COVID deaths 28 days ahead, we can use more past information and fit a model that includes the past two months of deaths and cases as predictors</p>
-<p>$$y_{t+28} = + <em>0 y</em>{t} + <em>1 y</em>{t-1} + +</p>
-<p><em>{59} y</em>{t-59} + <em>0 x</em>{t} + + <em>{t-59} x</em>{t-59}$$</p>
+<p><span class="math display">\[\hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-1} + \dots +
+\hat\phi_{59} y_{t-59} +
+\hat\beta_0 x_{t} + \dots + \hat\beta_{t-59} x_{t-59}\]</span></p>
 </section>
 <section id="preparing-the-data-1" class="slide level2">
 <h2>Preparing the data</h2>
@@ -1255,8 +1249,8 @@ split-sample truncated 0.3978198 3706.28</code></pre>
 <p><span class="math display">\[\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} +
 \hat\beta_0 x_{t} + \hat\beta_1 x_{t-7}\]</span></p>
 <p>and the <span class="primary">ARX(3)</span> model</p>
-<p>$$y_{t+h} = + <em>0 y</em>{t} + <em>1 y</em>{t-7} + <em>2 y</em>{t-14} +</p>
-<p><em>0 x</em>{t} + <em>1 x</em>{t-7} + <em>2 x</em>{t-14}$$</p>
+<p><span class="math display">\[\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14} +
+\hat\beta_0 x_{t} + \hat\beta_1 x_{t-7} + \hat\beta_2 x_{t-14}\]</span></p>
 <p>and fit them using a trailing window with <span class="math inline">\(w = 120\)</span>.</p>
 </section>
 <section id="fit-arx2-and-arx3-on-trailing-window" class="slide level2">
@@ -1348,7 +1342,7 @@ ARX(3), CV + trailing 0.1248769 1163.4135</code></pre>
 <span id="cb28-20"><a></a></span>
 <span id="cb28-21"><a></a><span class="fu">dim</span>(beta_lasso)                 <span class="co"># One row per coefficient, one column per lambda value</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]  7 85</code></pre>
+<pre><code>[1]  8 85</code></pre>
 </div>
 </div>
 </section>
@@ -1385,6 +1379,7 @@ ARX(3), CV + trailing 0.1248769 1163.4135</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       ridge        lasso
 (Intercept)      0.245113034 0.0793942146
+geo_value        0.000000000 0.0000000000
 lagged_deaths_28 0.073031163 0.1210091477
 lagged_cases_28  0.001708898 0.0095486227
 lagged_deaths_35 0.050223031 0.0000000000
@@ -2156,12 +2151,15 @@ Key: &lt;geo_value, time_value, version&gt;
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -2172,13 +2170,6 @@ Key: &lt;geo_value, time_value, version&gt;
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy
