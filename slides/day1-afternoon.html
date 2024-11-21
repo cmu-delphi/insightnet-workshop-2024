@@ -450,6 +450,8 @@
 </ul>
 <div style="text-align: center;">
 <p><img data-src="gfx/tidyverse_packages.png" style="width: 30%; display: block; margin-left: auto; margin-right: auto;"> <br> <small><a href="https://laddem.github.io/courses/tidyverse/">Source</a></small></p>
+</div>
+</section>
 <section id="introduction-to-dplyr-1" class="slide level2">
 <h2>Introduction to <code>dplyr</code></h2>
 <p><img data-src="gfx/dplyr.png" style="height: 450px"></p>
@@ -1395,7 +1397,8 @@ In this section:</li>
 <p>Alternatively, we can display both the smoothed and the original daily case rates:</p>
 
 <img data-src="day1-afternoon_files/figure-revealjs/smoothed-original-plot-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
-</section>
+</section></section>
+<section>
 <section id="epiverse-software-ecosystem" class="title-slide slide level1 center">
 <h1>Epiverse Software Ecosystem</h1>
 
@@ -1405,8 +1408,8 @@ In this section:</li>
 <p>Interworking, community-driven, packages for epi tracking &amp; forecasting.</p>
 
 <!-- 1. Fetch data: epidatr, epidatpy, and other sources, 2. Explore, clean, transform & backtest 3. Pre-built forecasters, modular forecasting framework: epipredict -->
-<img data-src="gfx/epiverse_packages_flow.jpg" style="width: 60%; display: block; margin-left: auto; margin-right: auto;" class="r-stretch"></section>
-
+<img data-src="gfx/epiverse_packages_flow.jpg" style="width: 60%; display: block; margin-left: auto; margin-right: auto;" class="r-stretch"></section></section>
+<section>
 <section id="panel-and-versioned-data-in-the-epiverse" class="title-slide slide level1 center">
 <h1>Panel and Versioned Data in the Epiverse</h1>
 
@@ -1458,8 +1461,8 @@ In this section:</li>
 </div>
 </div>
 </div>
-</section>
-
+</section></section>
+<section>
 <section id="epi_df-snapshot-of-a-dataset-1" class="title-slide slide level1 center">
 <h1><code>epi_df</code>: Snapshot of a dataset</h1>
 <ul>
@@ -1626,8 +1629,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </dd>
 </dl></li>
 </ul>
-</section>
-
+</section></section>
+<section>
 <section id="basic-nowcasting-in-the-epiverse" class="title-slide slide level1 center">
 <h1>Basic Nowcasting in the Epiverse</h1>
 <!-- predicting a finalized value from a provisional value and making predictions. -->
@@ -1687,8 +1690,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li><p>We also have access to <span class="math inline">\(p\)</span> other time series <span class="math inline">\(x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p\)</span></p></li>
 <li><p>All may be subject to revisions.</p></li>
 </ul>
-</section>
-
+</section></section>
+<section>
 <section id="nowcasting-with-one-variable" class="title-slide slide level1 center">
 <h1>Nowcasting with One Variable</h1>
 
@@ -2073,8 +2076,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <p>Finally, we can compare these nowcast results to the real-time and finalized values:</p>
 
 <img data-src="day1-afternoon_files/figure-revealjs/nowcast-fun-plot-results-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).</p>
-</section>
-
+</section></section>
+<section>
 <section id="nowcasting-with-two-variables" class="title-slide slide level1 center">
 <h1>Nowcasting with Two Variables</h1>
 
@@ -2295,8 +2298,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li><span class="primary"><strong>Sliding Window Approach</strong></span>: Predictions are based on <span class="primary">data up to the current time</span>, ensuring no future information influences the nowcast.</li>
 <li><span class="primary"><strong>Evaluation</strong></span>: Predictions are compared with actual admissions visually.</li>
 </ul>
-</section>
-
+</section></section>
+<section>
 <section id="case-study---nowcasting-cases-using-cli" class="title-slide slide level1 center">
 <h1>Case Study - Nowcasting Cases Using %CLI</h1>
 
@@ -2708,9 +2711,6 @@ Key: &lt;geo_value, time_value, version&gt;
 <div class="footer footer-default">
 <p>Explore, clean &amp; transform data — cmu-delphi/insightnet-workshop-2024</p>
 </div>
-</div>
-</section>
-
 </div>
 </section></section>
     </div>
