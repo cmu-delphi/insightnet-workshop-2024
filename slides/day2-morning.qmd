@@ -744,6 +744,7 @@ $$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 
 
 $$\hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$$
 
+* We will refer to this model as [ARX(1)]{.primary}, as it only includes one lag for each predictor.
 
 ```{r arx-lm}
 #| echo: true
@@ -784,7 +785,7 @@ errors_arx <- rbind(getErrors(train$deaths[-(1:k)], pred_train, "training"),
 errors_arx
 ```
 
-## Time-Series CV: all past and trailing (ARX model)
+## Time-Series CV: all past and trailing, ARX(1) model
 
 ```{r arx-time-series-cv}
 # Getting 28-step ahead predictions through CV 
@@ -868,11 +869,11 @@ ca |>
 
 * So far we only focused on COVID death predictions 28 days ahead.
 
-* We will now compare the first model 
+* We will now compare the model with lagged cases as predictor
 
 $$\hat y_{t+h} = \hat\beta + \hat\beta_0 x_t$$
 
-to the second model
+to the ARX(1) model
 
 $$\hat y_{t+h} = \hat\phi + \hat\phi_0 y_t + \hat\beta_0 x_t$$
 
@@ -925,7 +926,7 @@ for (t in forecast_time) {
 }
 ```
 
-## Predictions for different $h$ (Model 1)
+## Predictions for different $h$, `lm` on lagged cases
 
 ```{r plot-m1}
 #| fig-width: 10
@@ -945,10 +946,10 @@ pred_m1 |>
 
 ```{r m1-error}
 getErrors((ca |> filter(time_value %in% pred_m1$target_date))$deaths, 
-          pred_m1$prediction, "Model 1")
+          pred_m1$prediction, "lm on lagged cases")
 ```
 
-## Predictions for different $h$ (Model 2)
+## Predictions for different $h$, ARX(1)
 
 ```{r plot-m2}
 #| fig-width: 10
@@ -968,7 +969,7 @@ pred_m2 |>
 
 ```{r m2-error}
 getErrors((ca |> filter(time_value %in% pred_m2$target_date))$deaths, 
-          pred_m2$prediction, "Model 2")
+          pred_m2$prediction, "ARX(1)")
 ```
 
 
@@ -980,7 +981,7 @@ Different ways to visualize predictions for multiple $h$
 
 * Other approach: one line and color per horizon $h$
 
-## Predictions by horizon (Model 2)
+## Predictions by horizon, ARX(1)
 
 ```{r weekly-predictions}
 pred_m2_week <- data.frame(matrix(NA, nrow = 0, ncol = 3))  #initialize df for predictions
@@ -1144,24 +1145,79 @@ Some predictions were negative, which doesn't make sense for count data, so we t
 
 ## ARX models with 2 and 3 lags
 
-* The ARX model $\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$ predicted quite well for different $h$
+* The ARX(1) model $\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$ had good predictive performance
 
-* We will now consider two extensions
+* We will now consider two extensions: the [ARX(2)]{.primary} model
 
 $$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + 
 \hat\beta_0 x_{t} + \hat\beta_1 x_{t-7}$$
 
-and
+and the [ARX(3)]{.primary} model
 
 $$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14} +
 \hat\beta_0 x_{t} + \hat\beta_1 x_{t-7} + \hat\beta_2 x_{t-14}$$
 
 and fit them using a trailing window with $w = 120$.
 
-## Fit ARX with 2 and 3 lags on trailing window
+## Fit ARX(2) and ARX(3) on trailing window
 
-```{r arx-multiple-lags}
+```{r arx-2-and-3}
 #| echo: true
+pred_arx2 = pred_arx3 <- rep(NA, length = n)  
+w <- 120     #trailing window size
+h <- 28      #number of days ahead
+
+# create lagged predictors
+ca_lags$lagged_deaths_35 <- dplyr::lag(ca_lags$deaths, n = 35)
+ca_lags$lagged_deaths_42 <- dplyr::lag(ca_lags$deaths, n = 42)
+ca_lags$lagged_cases_35 <- dplyr::lag(ca_lags$cases, n = 35)
+ca_lags$lagged_cases_42 <- dplyr::lag(ca_lags$cases, n = 42)
+
+for (t in t0:(n-h)) {
+  arx2_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
+                                  " + lagged_cases_", h+7, " + lagged_deaths_", h+7))
+  arx3_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
+                                  " + lagged_cases_", h+7, " + lagged_deaths_", h+7,
+                                  " + lagged_cases_", h+14, " + lagged_deaths_", h+14))
+  # fit to trailing window of data
+  arx2_fit = lm(arx2_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-7)) 
+  arx3_fit = lm(arx3_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-14)) 
+  # make h-step ahead predictions
+  pred_arx2[t+h] <- max(0, predict(arx2_fit, newdata = data.frame(ca_lags[t+h, ])))
+  pred_arx3[t+h] <- max(0, predict(arx3_fit, newdata = data.frame(ca_lags[t+h, ])))
+}
+
+```
+
+## Time-Series CV (trailing): ARX(2) and ARX(3) 
+
+```{r arx-2-and-3-plot-cv-predictions}
+#| fig-align: left
+ca |> 
+  mutate(observed = deaths, 
+         `predicted, ARX(2)` = pred_arx2, 
+         `predicted, ARX(3)` = pred_arx3) |>
+  pivot_longer(cols = c(observed, `predicted, ARX(2)`, `predicted, ARX(3)`), 
+               names_to = 'Deaths') |>
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+```
+
+
+```{r arx-2-and-3-cv-error}
+errors_arx <- rbind(getErrors(test_h$deaths, pred_arx2[!is.na(pred_arx2)],
+                              "ARX(2), CV + trailing"),
+                    getErrors(test_h$deaths, pred_arx3[!is.na(pred_arx3)],
+                              "ARX(3), CV + trailing"))
+errors_arx
+```
+
+```{r arx-multiple-lags, eval=FALSE}
 pred_m3 = pred_m4 <- data.frame(matrix(NA, nrow = 0, ncol = 3))  #initialize df for predictions
 colnames(pred_m3) = colnames(pred_m4) = c("forecast_date", "target_date", "prediction")
 w <- 120     #trailing window size
@@ -1197,9 +1253,8 @@ for (t in forecast_time) {
 
 ```
 
-## Predictions using ARX with 2 lags
 
-```{r plot-m3}
+```{r plot-m3, eval=FALSE}
 #| fig-align: left
 #| fig-width: 10
 #| fig-height: 5
@@ -1216,14 +1271,13 @@ pred_m3 |>
 ```
 
 
-```{r m3-error}
+```{r m3-error, eval=FALSE}
 getErrors((ca |> filter(time_value %in% pred_m3$target_date))$deaths, 
                 pred_m3$prediction, "")
 ```
 
-## Predictions using ARX with 3 lags
 
-```{r plot-m4}
+```{r plot-m4, eval=FALSE}
 #| fig-align: left
 #| fig-width: 10
 #| fig-height: 5
@@ -1239,7 +1293,7 @@ pred_m4 |>
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
-```{r m4-error}
+```{r m4-error, eval=FALSE}
 getErrors((ca |> filter(time_value %in% pred_m4$target_date))$deaths, 
           pred_m4$prediction, "")
 ```
