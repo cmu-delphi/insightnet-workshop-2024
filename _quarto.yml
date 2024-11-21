@@ -13,7 +13,7 @@ editor: source
 website:
   title: "InsightNet EpiData Workshop 2024"
   page-footer:
-    center: "This work by the [Delphi Research Group](https://delphi.cmu.edu) is licensed under the [MIT license](LICENSE.md)."
+    left: "This work by the [Delphi Research Group](https://delphi.cmu.edu) is licensed under the [MIT license](LICENSE.md)."
   navbar:
     pinned: false
     title: "<i class='bi bi-graph-down'></i> InsightNet Workshop 2024"
