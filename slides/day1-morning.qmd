@@ -125,33 +125,6 @@ a[target="_blank"]::after {
   </a>
 </div>
 
-## Goals of Delphi Epidata platform and repository
-
-<div style="font-size: 0.9em;">
-1. **Be the one-stop shop for aggregated epi-surveillance time-series ("epi-signals")**
-    + Hence: include also signals available elsewhere, especially if they don't keep data revisions - E.g. CDC's own NSSP, NWSS
-    + Be the national historical repository of record & preserve the raw data
-
-2. **Be the national clearinghouse for epi-signals, including those held elsewhere**
-    + The go-to place for signal discovery
-
-3. **Add value to existing signals and synthesize new ones**
-    + Added value: see next slide
-    + Synthesize new: via signal fusion, e.g. nowcasting
-
-4. **Be the focal point for community-wide efforts to open up privately held data**
-    + Better positioned than government or industry
-</div>
-
-
-
-## The bigger goal
-The goal is to make epi-surveillance [more nimble, complete, standardized, robust, and real-time]{.primary} and
-
-[less burdensome on the health system itself]{.primary}. 
-
-Epidata is not the solution; but we hope it is a blueprint towards such a solution.
-
 # Panel Data
 
 ## Panel data
@@ -724,6 +697,33 @@ grid.arrange(g1, g2, ncol = 2)
 
 
 # Epidata API
+
+## Goals of Delphi Epidata platform and repository
+
+<div style="font-size: 0.9em;">
+1. **Be the one-stop shop for aggregated epi-surveillance time-series ("epi-signals")**
+    + Hence: include also signals available elsewhere, especially if they don't keep data revisions - E.g. CDC's own NSSP, NWSS
+    + Be the national historical repository of record & preserve the raw data
+
+2. **Be the national clearinghouse for epi-signals, including those held elsewhere**
+    + The go-to place for signal discovery
+
+3. **Add value to existing signals and synthesize new ones**
+    + Added value: see next slide
+    + Synthesize new: via signal fusion, e.g. nowcasting
+
+4. **Be the focal point for community-wide efforts to open up privately held data**
+    + Better positioned than government or industry
+</div>
+
+
+## The bigger goal
+The goal is to make epi-surveillance [more nimble, complete, standardized, robust, and real-time]{.primary} and
+
+[less burdensome on the health system itself]{.primary}. 
+
+Epidata is not the solution; but we hope it is a blueprint towards such a solution.
+
 
 ## What is the Epidata repository
 
