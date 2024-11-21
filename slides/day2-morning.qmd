@@ -8,7 +8,7 @@ repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "Venue -- dd Somemonth yyyy"
 format: revealjs
 execute:
-  cache: true
+  cache: false
 ---
 
 <!-- Set any of the above to "" to omit them -->
