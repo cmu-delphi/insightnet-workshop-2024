@@ -837,7 +837,7 @@
     "href": "slides/day1-morning.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\nDelphi\nEpidata API\nEpidatr\nFind Data Sources and Signals\nPanel Data\nVersioned Data\nVersioning in epidatr"
+    "text": "Outline\n\nDelphi\nPanel Data\nVersioned Data\nEpidata API\nEpidatr\nFind Data Sources and Signals\nVersioning in epidatr"
   },
   {
     "objectID": "slides/day1-morning.html#about-delphi",
@@ -873,6 +873,125 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "The bigger goal",
     "text": "The bigger goal\nThe goal is to make epi-surveillance more nimble, complete, standardized, robust, and real-time and\nless burdensome on the health system itself.\nEpidata is not the solution; but we hope it is a blueprint towards such a solution."
+  },
+  {
+    "objectID": "slides/day1-morning.html#panel-data-1",
+    "href": "slides/day1-morning.html#panel-data-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Panel data",
+    "text": "Panel data\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nSince we’re working with aggregated data, the subjects are geographic units (e.g. counties, states) and not individuals.\nIn table form, panel data is a time index + one or more locations/keys.\nFor example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 (docs):\n\n\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-02-01\n\n# A tibble: 6 × 3\n  geo_value time_value percent_cli\n* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01        4.70\n2 wa        2021-12-02        4.60\n3 wa        2021-12-03        4.56\n4 wa        2021-12-04        4.93\n5 wa        2021-12-05        4.17\n6 wa        2021-12-06        4.12"
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
+    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - COVID-19 cases",
+    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days."
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---chng-cli",
+    "href": "slides/day1-morning.html#examples-of-panel-data---chng-cli",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - CHNG-CLI",
+    "text": "Examples of panel data - CHNG-CLI\nChange Healthcare COVID-like illness (CHNG-CLI) reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data."
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---chng-covid",
+    "href": "slides/day1-morning.html#examples-of-panel-data---chng-covid",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - CHNG-COVID",
+    "text": "Examples of panel data - CHNG-COVID\nChange Healthcare COVID (CHNG-COVID) reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data."
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
+    "href": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - HHS Admissions",
+    "text": "Examples of panel data - HHS Admissions\nConfirmed COVID-19 Hospital Admissions per 100k estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days."
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
+    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - COVID-19 cases and deaths in CA",
+    "text": "Examples of panel data - COVID-19 cases and deaths in CA\n\nTakeaway: Cases appear to strongly correlate with deaths several weeks later.\nWe’ll see this again in an upcoming session…"
+  },
+  {
+    "objectID": "slides/day1-morning.html#intro-to-versioned-data",
+    "href": "slides/day1-morning.html#intro-to-versioned-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Intro to versioned data",
+    "text": "Intro to versioned data\n\nIn panel data, we’ve seen that time is indicated by time_value.\nNow, we add a second time index to indicate the data version…\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value version    percent_cli\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01 2021-12-05       0.884\n2 wa        2021-12-01 2021-12-06       0.917\n3 wa        2021-12-01 2021-12-07       0.896\n4 wa        2021-12-01 2021-12-08       0.985\n5 wa        2021-12-01 2021-12-09       1.03 \n6 wa        2021-12-01 2021-12-10       1.00 \n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
+  },
+  {
+    "objectID": "slides/day1-morning.html#versioned-panel-data",
+    "href": "slides/day1-morning.html#versioned-panel-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Versioned panel data",
+    "text": "Versioned panel data\nEstimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:\n\n\nFigure 5 from Reinhart et al. (2021)"
+  },
+  {
+    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals",
+    "href": "slides/day1-morning.html#latency-and-revision-in-signals",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Latency and revision in signals",
+    "text": "Latency and revision in signals\n\nLatency refers to the delay between data collection and availability.\n\nExample: A signal based on medical insurance claims may take several days to appear but is subject to delays as claims are processed over weeks.\n\nRevision occurs when data is updated or corrected after initial publication, often due to new information or late reporting.\n\nExample: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared."
+  },
+  {
+    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals---example",
+    "href": "slides/day1-morning.html#latency-and-revision-in-signals---example",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Latency and revision in signals - Example",
+    "text": "Latency and revision in signals - Example\n\nRecall the first example of panel & versioned data we’ve seen…\nThis signal is 4 days latent (min(version - time_value))\n\n\n\n# A tibble: 6 × 5\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-02 2021-12-06       0.737 4 days           \n3 wa        2021-12-03 2021-12-07       0.662 4 days           \n4 wa        2021-12-04 2021-12-08       0.663 4 days           \n5 wa        2021-12-05 2021-12-09       0.872 4 days           \n6 wa        2021-12-06 2021-12-10       0.642 4 days           \n\n\n\nAnd clearly undergoes revision over time (ex. consider Dec. 1’s percent_cli across version):\n\n\n\n# A tibble: 6 × 5\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-01 2021-12-06       0.917 5 days           \n3 wa        2021-12-01 2021-12-07       0.896 6 days           \n4 wa        2021-12-01 2021-12-08       0.985 7 days           \n5 wa        2021-12-01 2021-12-09       1.03  8 days           \n6 wa        2021-12-01 2021-12-10       1.00  9 days"
+  },
+  {
+    "objectID": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
+    "href": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Revision triangle, Outpatient visits in WA 2022",
+    "text": "Revision triangle, Outpatient visits in WA 2022"
+  },
+  {
+    "objectID": "slides/day1-morning.html#revisions",
+    "href": "slides/day1-morning.html#revisions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Revisions",
+    "text": "Revisions\nMany data sources are subject to revisions:\n\nCase and death counts are frequently corrected or adjusted by authorities.\nMedical claims data can take weeks to be submitted and processed.\n\n\n\nLab tests and medical records can be backlogged for a variety of reasons.\nSurveys are not always completed promptly.\nKey: An accurate revision log is crucial for researchers building forecasts.\n\nA forecast that is made today can should rely on information we have access to today."
+  },
+  {
+    "objectID": "slides/day1-morning.html#three-types-of-revisions",
+    "href": "slides/day1-morning.html#three-types-of-revisions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Three types of revisions",
+    "text": "Three types of revisions\n\nSources that don’t revise - Ex. Facebook or Google symptoms (provisional and final are the same)\nPredictable revisions - Ex. Claims data (CHNG) and public health reports aligned by test, hosp., or death date\nRevisions that are large and erratic to predict - Ex. COVID cases and deaths, especially when aligned by report date (which can be highly variable & less predictable compared to test data)."
+  },
+  {
+    "objectID": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
+    "href": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Types of revisions - Comparison between 2. and 3.",
+    "text": "Types of revisions - Comparison between 2. and 3.\n\nRevision behavior for two indicators in the HRR containing Charlotte, NC.\n\n\n\nDV-CLI signal (left) was regularly revised throughout the period, although effects fade farther back.\nJHU CSSE cases (right) remain “as reported” on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data.\n\n\n\nFigure 1 from McDonald et al. (2021)"
+  },
+  {
+    "objectID": "slides/day1-morning.html#key-takeaways",
+    "href": "slides/day1-morning.html#key-takeaways",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Key takeaways",
+    "text": "Key takeaways\n\nMedical claims revisions: More systematic and predictable.\nCOVID-19 case report revisions: Erratic and often unpredictable.\nLarge spikes or anomalies can occur as\n\nReporting backlogs are cleared.\nChanges in case definitions are implemented."
+  },
+  {
+    "objectID": "slides/day1-morning.html#reporting-backlogs---example",
+    "href": "slides/day1-morning.html#reporting-backlogs---example",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Reporting backlogs - Example",
+    "text": "Reporting backlogs - Example\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends.\n\n\n\nFigure 4 from Reinhart et al. (2021)"
+  },
+  {
+    "objectID": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
+    "href": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Reporting backlogs - Key takeaways",
+    "text": "Reporting backlogs - Key takeaways\n\nReporting issues been common across U.S. jurisdictions.\nFor example, audits have regularly discovered misclassified or unreported cases and deaths.\nThis underscores the value of cross-checking data with external sources not part of the same reporting systems."
   },
   {
     "objectID": "slides/day1-morning.html#what-is-the-epidata-repository",
@@ -998,7 +1117,7 @@
     "href": "slides/day1-morning.html#using-the-covidcast_epidata-function",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Using the covidcast_epidata() function",
-    "text": "Using the covidcast_epidata() function\n\nFunction Overview: covidcast_epidata() provides detailed insights into data sources from the COVIDcast endpoint.\nSource List: Each data source is listed in covid_sources$sources, with associated tibbles describing included signals.\nEditor Support: In RStudio or similar editors, use tab completion to explore:\n  - **Data Sources**: Type `covid_sources$source$` to view available data sources.\n\n  - **Signals**: Type `covid_sources$signals$` to see signal options with autocomplete assistance.\nFiltering Convenience: Signal names are prefixed with their respective data source for easier navigation.\n\n\ncovid_sources &lt;- covidcast_epidata()\nhead(covid_sources$sources, n = 2) # head(list, n = 2) will print the first two elements of the list"
+    "text": "Using the covidcast_epidata() function\n\nFunction Overview: covidcast_epidata() provides detailed insights into data sources from the COVIDcast endpoint.\nSource List: Each data source is listed in covid_sources$sources, with associated tibbles describing included signals.\nEditor Support: In RStudio or similar editors, use tab completion to explore:\n\nData Sources: Type covid_sources$source$ to view available data sources.\nSignals: Type covid_sources$signals$ to see signal options with autocomplete assistance.\n\nFiltering Convenience: Signal names are prefixed with their respective data source for easier navigation.\n\n\ncovid_sources &lt;- covidcast_epidata()\nhead(covid_sources$sources, n = 2) # head(list, n = 2) will print the first two elements of the list"
   },
   {
     "objectID": "slides/day1-morning.html#fetching-data---covidcast-main-endpoint",
@@ -1083,125 +1202,6 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Signal metadata",
     "text": "Signal metadata\n\nSome endpoints provide additional metadata for signals.\n\nTime Information: Details on available time frames and last update times.\nGeography Information: Details on available geography types.\n\nKey Endpoints for Metadata\n\npub_covidcast_meta(): Access metadata for the COVIDcast endpoint.\npub_fluview_meta(): Get metadata for the FluView endpoint.\npub_meta(): General metadata for the Delphi Epidata API."
-  },
-  {
-    "objectID": "slides/day1-morning.html#panel-data-1",
-    "href": "slides/day1-morning.html#panel-data-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Panel data",
-    "text": "Panel data\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nSince we’re working with aggregated data, the subjects are geographic units (e.g. counties, states) and not individuals.\nIn table form, panel data is a time index + one or more locations/keys.\nFor example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 (docs):\n\n\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-02-01\n\n# A tibble: 6 × 3\n  geo_value time_value percent_cli\n* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01        4.70\n2 wa        2021-12-02        4.60\n3 wa        2021-12-03        4.56\n4 wa        2021-12-04        4.93\n5 wa        2021-12-05        4.17\n6 wa        2021-12-06        4.12"
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
-    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - COVID-19 cases",
-    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html"
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---chng-cli",
-    "href": "slides/day1-morning.html#examples-of-panel-data---chng-cli",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - CHNG-CLI",
-    "text": "Examples of panel data - CHNG-CLI\nChange Healthcare COVID-like illness (CHNG-CLI) reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html"
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---chng-covid",
-    "href": "slides/day1-morning.html#examples-of-panel-data---chng-covid",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - CHNG-COVID",
-    "text": "Examples of panel data - CHNG-COVID\nChange Healthcare COVID (CHNG-COVID) reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html"
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
-    "href": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - HHS Admissions",
-    "text": "Examples of panel data - HHS Admissions\nConfirmed COVID-19 Hospital Admissions per 100k estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days.\nAPI docs: https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html"
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
-    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - COVID-19 cases and deaths in CA",
-    "text": "Examples of panel data - COVID-19 cases and deaths in CA\n\nTakeaway: Cases appear to strongly correlate with deaths several weeks later.\nWe’ll see this again in an upcoming session…"
-  },
-  {
-    "objectID": "slides/day1-morning.html#intro-to-versioned-data",
-    "href": "slides/day1-morning.html#intro-to-versioned-data",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Intro to versioned data",
-    "text": "Intro to versioned data\n\nIn panel data, we’ve seen that time is indicated by time_value.\nNow, we add a second time index to indicate the data version…\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value version    percent_cli\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01 2021-12-05       0.884\n2 wa        2021-12-01 2021-12-06       0.917\n3 wa        2021-12-01 2021-12-07       0.896\n4 wa        2021-12-01 2021-12-08       0.985\n5 wa        2021-12-01 2021-12-09       1.03 \n6 wa        2021-12-01 2021-12-10       1.00 \n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
-  },
-  {
-    "objectID": "slides/day1-morning.html#versioned-panel-data",
-    "href": "slides/day1-morning.html#versioned-panel-data",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Versioned panel data",
-    "text": "Versioned panel data\nEstimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:\n\n\nFigure 5 from Reinhart et al. (2021)"
-  },
-  {
-    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals",
-    "href": "slides/day1-morning.html#latency-and-revision-in-signals",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Latency and revision in signals",
-    "text": "Latency and revision in signals\n\nLatency refers to the delay between data collection and availability.\n\nExample: A signal based on medical insurance claims may take several days to appear but is subject to delays as claims are processed over weeks.\n\nRevision occurs when data is updated or corrected after initial publication, often due to new information or late reporting.\n\nExample: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared."
-  },
-  {
-    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals---example",
-    "href": "slides/day1-morning.html#latency-and-revision-in-signals---example",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Latency and revision in signals - Example",
-    "text": "Latency and revision in signals - Example\n\nRecall the first example of panel & versioned data we’ve seen…\nThis signal is 4 days latent (min(version - time_value))\n\n\n\n# A tibble: 6 × 5\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-02 2021-12-06       0.737 4 days           \n3 wa        2021-12-03 2021-12-07       0.662 4 days           \n4 wa        2021-12-04 2021-12-08       0.663 4 days           \n5 wa        2021-12-05 2021-12-09       0.872 4 days           \n6 wa        2021-12-06 2021-12-10       0.642 4 days           \n\n\n\nAnd clearly undergoes revision over time (ex. consider Dec. 1’s percent_cli across version):\n\n\n\n# A tibble: 6 × 5\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-01 2021-12-06       0.917 5 days           \n3 wa        2021-12-01 2021-12-07       0.896 6 days           \n4 wa        2021-12-01 2021-12-08       0.985 7 days           \n5 wa        2021-12-01 2021-12-09       1.03  8 days           \n6 wa        2021-12-01 2021-12-10       1.00  9 days"
-  },
-  {
-    "objectID": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
-    "href": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Revision triangle, Outpatient visits in WA 2022",
-    "text": "Revision triangle, Outpatient visits in WA 2022"
-  },
-  {
-    "objectID": "slides/day1-morning.html#revisions",
-    "href": "slides/day1-morning.html#revisions",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Revisions",
-    "text": "Revisions\nMany data sources are subject to revisions:\n\nCase and death counts are frequently corrected or adjusted by authorities.\nMedical claims data can take weeks to be submitted and processed.\n\n\n\nLab tests and medical records can be backlogged for a variety of reasons.\nSurveys are not always completed promptly.\nKey: An accurate revision log is crucial for researchers building forecasts.\n\nA forecast that is made today can should rely on information we have access to today."
-  },
-  {
-    "objectID": "slides/day1-morning.html#three-types-of-revisions",
-    "href": "slides/day1-morning.html#three-types-of-revisions",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Three types of revisions",
-    "text": "Three types of revisions\n\nSources that don’t revise - Ex. Facebook or Google symptoms (provisional and final are the same)\nPredictable revisions - Ex. Claims data (CHNG) and public health reports aligned by test, hosp., or death date\nRevisions that are large and erratic to predict - Ex. COVID cases and deaths, especially when aligned by report date (which can be highly variable & less predictable compared to test data)."
-  },
-  {
-    "objectID": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
-    "href": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Types of revisions - Comparison between 2. and 3.",
-    "text": "Types of revisions - Comparison between 2. and 3.\n\nRevision behavior for two indicators in the HRR containing Charlotte, NC.\n\n\n\nDV-CLI signal (left) was regularly revised throughout the period, although effects fade farther back.\nJHU CSSE cases (right) remain “as reported” on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data.\n\n\n\nFigure 1 from McDonald et al. (2021)"
-  },
-  {
-    "objectID": "slides/day1-morning.html#key-takeaways",
-    "href": "slides/day1-morning.html#key-takeaways",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Key takeaways",
-    "text": "Key takeaways\n\nMedical claims revisions: More systematic and predictable.\nCOVID-19 case report revisions: Erratic and often unpredictable.\nLarge spikes or anomalies can occur as\n\nReporting backlogs are cleared.\nChanges in case definitions are implemented."
-  },
-  {
-    "objectID": "slides/day1-morning.html#reporting-backlogs---example",
-    "href": "slides/day1-morning.html#reporting-backlogs---example",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Reporting backlogs - Example",
-    "text": "Reporting backlogs - Example\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends.\n\n\n\nFigure 4 from Reinhart et al. (2021)"
-  },
-  {
-    "objectID": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
-    "href": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Reporting backlogs - Key takeaways",
-    "text": "Reporting backlogs - Key takeaways\n\nReporting issues been common across U.S. jurisdictions.\nFor example, audits have regularly discovered misclassified or unreported cases and deaths.\nThis underscores the value of cross-checking data with external sources not part of the same reporting systems."
   },
   {
     "objectID": "slides/day1-morning.html#versioned-data-in-epidatr",
