@@ -16,6 +16,12 @@ execute:
 <!-- Or adjust the formatting in _titleslide.qmd -->
 {{< include _titleslide.qmd >}}
 
+<style>
+.inner-list {
+  font-size: 0.85em; /* Adjust size as needed */
+}
+</style>
+
 ```{r theme}
 library(tidyverse)
 theme_set(theme_bw())
@@ -64,20 +70,29 @@ is a good approximation for every $i = 1, \dots, n$.
 
 ## Linear regression with lagged predictor
 
+
 * In time series, outcomes and predictors are usually indexed by time $t$. 
 
+::: {.fragment .fade-in}
 * [Goal]{.primary}: predicting future $y$, given present $x$. 
 
+:::
+
+::: {.fragment .fade-in}
 * [Model]{.primary}: linear regression with lagged predictor
 
 $$\hat y_t = \hat \beta + \hat \beta_0 x_{t-k}$$
 
 i.e. regress the outcome $y$ at time $t$ on the predictor $x$ at time $t-k$.
 
+:::
+
+::: {.fragment .fade-in}
 * [Equivalent]{.primary} way to write the model: 
 
 $$\hat y_{t+k} = \hat \beta + \hat \beta_0 x_t$$
 
+:::
 
 ## Example: predicting COVID deaths  
 
@@ -85,6 +100,8 @@ $$\hat y_{t+k} = \hat \beta + \hat \beta_0 x_t$$
 
 * Can we reasonably [predict COVID deaths 28 days ahead]{.primary} by just using cases today?
 
+
+::: {.fragment .fade-in}
 * If we let
 
 $$y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time } t$$
@@ -92,12 +109,9 @@ $$y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time 
 
   $$\hat y_{t+28} = \hat\beta_0 + \hat\beta_1 x_{t}$$
 
+:::
 
 ## Example: COVID cases and deaths in California 
-
-* Let's focus on California.
-
-* Cases seem highly correlated with deaths several weeks later.
 
 ::: flex
 ::: w-50
@@ -106,8 +120,8 @@ $$y_{t+28} = \text{deaths at time } t+28 \quad\quad x_{t} = \text{cases at time 
 #| fig-width: 8
 #| fig-height: 5
 source(here::here("_code/ca_cases_deaths.R"))
-ggplot(ca %>% 
-         mutate(deaths = trans21(deaths)) %>%
+ggplot(ca |> 
+         mutate(deaths = trans21(deaths)) |>
          pivot_longer(cols = c(cases, deaths), names_to = 'name'),
        aes(x = time_value, y = value)) + 
   geom_line(aes(color = name)) +
@@ -132,8 +146,15 @@ head(ca)
 :::
 :::
 
+::: {.callout-important icon="false"}
+## Note
+
+[Cases]{.primary} seem [highly correlated]{.primary} with [deaths]{.primary}
+several weeks later (but [relation]{.primary} cases-deaths [changes]{.primary} over time).
+:::
 
 ## Checking correlation
+
 
 * Let’s split the data into a training and a test set (before/after 2021-04-01).
 
@@ -143,8 +164,8 @@ between cases and deaths 28 days ahead (> 0.95).
 ```{r correlation-cases-deaths}
 t0_date <- as.Date('2021-04-01') #split date
 
-train <- ca %>% filter(time_value <= t0_date)
-test <- ca %>% filter(time_value > t0_date)
+train <- ca |> filter(time_value <= t0_date)
+test <- ca |> filter(time_value > t0_date)
 
 t0 <- nrow(train)  #split index
 
@@ -159,7 +180,7 @@ cor_deaths_cases <- list_rbind(cor_deaths_cases, names_to = 'Lag')
 #k <- which.max(cor_deaths_cases$cor)
 k <- 28 # selected lag
 
-cor_deaths_cases %>%
+cor_deaths_cases |>
   ggplot(aes(Lag, cor)) +
   geom_point() +
   geom_line() +
@@ -168,11 +189,12 @@ cor_deaths_cases %>%
   ggtitle('Correlation between cases and deaths by lag')
 ```
 
-
+::: {.fragment .fade-in}
 * Let's use (base) R to prepare the data and fit 
 
 $$\hat y_{t+28} = \hat\beta + \hat\beta_0 x_{t}$$
 
+:::
 
 ## Preparing the data
 
@@ -183,11 +205,11 @@ ca$lagged_cases <- dplyr::lag(ca$cases, n = k)
 
 # Split into train and test (before/after t0_date)
 t0_date <- as.Date('2021-04-01')
-train <- ca %>% filter(time_value <= t0_date)
-test <- ca %>% filter(time_value > t0_date)
+train <- ca |> filter(time_value <= t0_date)
+test <- ca |> filter(time_value > t0_date)
 ```
 
-* Check if `deaths` is approximately linear in `lagged_cases`:
+Check if `deaths` is approximately linear in `lagged_cases`:
 
 ```{r plot-lag-cases}
 ggplot(train, aes(lagged_cases, deaths)) + 
@@ -385,7 +407,7 @@ used to fit the model.
   * [more optimistic the more complex the model!]{.primary}^[More on this when we talk about overfitting.]
 
 
-## Training error
+## Training error 
 #### Linear regression of COVID deaths on lagged cases
 
 ```{r pred-train}
@@ -396,10 +418,10 @@ pred_train <- predict(reg_lagged)
 
 ```{r plot-train-predictions}
 #| fig-align: left
-ca %>%
+ca |>
   mutate(observed = deaths, 
-         predicted = c(rep(NA, k), pred_train, rep(NA, nrow(test)))) %>%
-  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+         predicted = c(rep(NA, k), pred_train, rep(NA, nrow(test)))) |>
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) + 
   geom_line(aes(alpha = ifelse(time_value < t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date) +    
@@ -431,13 +453,13 @@ errors
 
 To compute the split-sample error  
 
-  1. Split data into training (up to time $t_0$), and test set (after $t_0$)
+  1. [Split]{.primary} data into training (up to time $t_0$), and test set (after $t_0$)
 
-  1. Fit the model to the training data only
+  1. [Fit]{.primary} the model to the [training]{.primary} data only
 
-  1. Make predictions for the test set
+  1. Make [predictions]{.primary} for the [test]{.primary} set
 
-  1. Compute the selected error metric on the test set only
+  1. Compute the selected [error]{.primary} metric on the [test]{.primary} set only
 
 
 ::: {.callout-important icon="false"}
@@ -449,7 +471,7 @@ They are [pessimistic]{.primary} if the relation between outcome and predictors
 changes over time.
 :::
 
-## Split-sample error 
+## Split-sample MSE 
 
 Assume we want to make $h$-step ahead predictions, i.e. at time $t$ we want to 
 make a forecast for $t+h$. Then, the split-sample MSE is
@@ -466,7 +488,7 @@ with a model that was fit on data up to time $t_0$.
 
 ```{r test-pred}
 #| echo: true
-# Getting the h-step ahead predictions for the test set
+# Getting h-step ahead predictions for the test set
 h <- k
 test_h <- test[-(1:h-1), ] # drop first h-1 rows to avoid data leakage
 pred_test <- predict(reg_lagged, newdata = test_h)
@@ -474,10 +496,10 @@ pred_test <- predict(reg_lagged, newdata = test_h)
 
 ```{r plot-test-predictions}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, predicted = c(rep(NA, h), pred_train, 
-                                          rep(NA, h-1), pred_test)) %>%
-  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+                                          rep(NA, h-1), pred_test)) |>
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date) +    
@@ -500,19 +522,50 @@ between cases - deaths over time.
 Talk about data leakage.
 :::
 
+## Warning!
+
+* [Predictions]{.primary} are [overshooting]{.primary} the target, 
+especially in early 2022 ([Omicron]{.primary} phase).
+
+* This is because we are predicting [deaths]{.primary} using [lagged cases]{.primary}, 
+but the [relation]{.primary} between 
+the two [changes]{.primary} over time.
+
+
+```{r plot-ca-cases-deaths-again}
+ggplot(ca |> 
+         mutate(deaths = trans21(deaths)) |>
+         pivot_longer(cols = c(cases, deaths), names_to = 'name'),
+       aes(x = time_value, y = value)) + 
+  geom_line(aes(color = name)) +
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  scale_color_manual(values = palette()[c(2,4)]) +
+  scale_y_continuous(
+    name = "Covid-19 cases per 100k people", 
+    limits = range1,
+    sec.axis = sec_axis(
+      trans = trans12, 
+      name = "Deaths per 100k people")) +
+  labs(title = "Covid-19 cases and deaths in California", x = "") +
+  theme(legend.position = "bottom", legend.title = element_blank()) 
+```
+
+
+
 ## Time-series cross-validation (CV) {.smaller}
 #### $h$-step ahead predictions
 
-* If we refit in the future once new data are available, a more 
+* If we [refit]{.primary} in the future once new data are available, a more 
 appropriate way to estimate the prediction error is time-series cross-validation.
 
-* To get $h$-step ahead predictions, we:
+* To get $h$-step ahead predictions, for each time $t = t_0, t_0+1, \dots$,
 
-  * Fit the model using data up to time $t$
+  * [Fit]{.primary} the model using data [up to time $t$]{.primary}
 
-  * Make a prediction for $t+h$ 
+  * Make a [prediction for $t+h$]{.primary} 
 
-  * Record the prediction error
+  * Record the [prediction error]{.primary}
 
 * The cross-validation MSE is then
 
@@ -523,8 +576,6 @@ with data available up to time $t$.
 
 ## Time-series cross-validation (CV) 
 #### Linear regression of COVID deaths on lagged cases
-
-Getting the predictions requires slightly more code:
 
 ```{r time-series-cv}
 #| echo: true
@@ -552,10 +603,10 @@ With the current model, we can only predict $k$ days ahead (where $k$ = number o
 
 ```{r plot-cv-predictions}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
-         `predicted (CV)` = pred_all_past) %>%
-  pivot_longer(cols = c(observed, `predicted (CV)`), names_to = 'Deaths') %>%
+         `predicted (CV)` = pred_all_past) |>
+  pivot_longer(cols = c(observed, `predicted (CV)`), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) +
   geom_vline(xintercept = t0_date) +   
@@ -576,11 +627,30 @@ errors
 Some improvement wrt split-sample, but still overestimating peak. 
 :::
 
-## Regression on a trailing window 
+## Warning!
 
-* So far, to get $h$-step ahead predictions for time $t+h$, we have fitted the 
-model on all data available up to time $t$. We can instead use a trailing 
-window, i.e. fit the model on a window of data of length $w$, starting at $t-w$ and ending at $t$.
+* [Predictions]{.primary} are still [overshooting]{.primary} the target, 
+but [error]{.primary} is [smaller]{.primary} than split-sample.
+
+* Why?
+
+  * <span class="inner-list"> 👍 Forecaster is partially learning the change in cases-deaths relation 
+(especially in late 2022)</span>
+
+  * <span class="inner-list">👎 We refit on all past data, so predictions are still influenced by 
+    old cases-deaths relation</span>
+
+
+::: {.callout-important icon="false"}
+## Idea 💡
+
+**Ignore old data when refitting?**
+:::
+
+## Regression on a trailing window
+
+* [Fit the model on a window of data of length $w$]{.primary}, 
+starting at $t-w$ and ending at $t$.
 
 * [Advantage]{.primary}: if the predictors-outcome relation changes over time,
 training the forecaster on a window of recent data can better capture the recent 
@@ -588,11 +658,15 @@ relation which might be more relevant to predict the outcome in the near future.
 
 * Window length [$w$]{.primary} considerations: 
 
-  * if $w$ is too [big]{.primary}, the model [can't adapt]{.primary} to the 
-  recent predictors-outcome relation 
+  * <span class="inner-list">if $w$ is too [big]{.primary}, 
+  the model [can't adapt]{.primary} to the 
+  recent predictors-outcome relation </span>
+  
 
-  * if $w$ is too [small]{.primary}, the fitted model may be [too volatile]{.primary} 
-  (trained on too little data)
+  * <span class="inner-list">if $w$ is too [small]{.primary}, 
+  the fitted model may be [too volatile]{.primary} 
+  (trained on too little data)</span>
+  
 
 ## Trailing window
 #### Linear regression of COVID deaths on lagged cases
@@ -618,12 +692,12 @@ for (t in t0:(n-h)) {
 
 ```{r plot-cv-predictions-trailing}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
          `predicted (CV)` = pred_all_past, 
-         `predicted (trailing + CV)` = pred_trailing) %>%
+         `predicted (trailing + CV)` = pred_trailing) |>
   pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
-               names_to = 'Deaths') %>%
+               names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date) +    
@@ -645,6 +719,7 @@ errors
 A lot of improvement: trailing window allows to adapt to the change in relationship 
 between cases and deaths over time.
 :::
+
 
 # ARX models
 
@@ -669,6 +744,7 @@ $$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 
 
 $$\hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$$
 
+* We will refer to this model as [ARX(1)]{.primary}, as it only includes one lag for each predictor.
 
 ```{r arx-lm}
 #| echo: true
@@ -680,8 +756,8 @@ ca$lagged_deaths <- dplyr::lag(ca$deaths, n = k)
 
 ```{r arx-training-error}
 # Split into train and test (before/after t0_date)
-train <- ca %>% filter(time_value <= t0_date)
-test <- ca %>% filter(time_value > t0_date)
+train <- ca |> filter(time_value <= t0_date)
+test <- ca |> filter(time_value > t0_date)
 
 # Fit to training set
 arx_fit = lm(deaths ~ lagged_deaths + lagged_cases, data = train)
@@ -692,10 +768,10 @@ pred_test <- predict(arx_fit, newdata = test)   #get test predictions
 ```
 
 ```{r arx-plot-train-test-predictions, eval=FALSE}
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
-         predicted = c(rep(NA, k), pred_train, pred_test)) %>%
-  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+         predicted = c(rep(NA, k), pred_train, pred_test)) |>
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
   geom_vline(xintercept = t0_date) +    geom_vline(xintercept = t0_date + h, lty = 2) +
@@ -709,7 +785,7 @@ errors_arx <- rbind(getErrors(train$deaths[-(1:k)], pred_train, "training"),
 errors_arx
 ```
 
-## Time-Series CV: all past and trailing (ARX model)
+## Time-Series CV: all past and trailing, ARX(1) model
 
 ```{r arx-time-series-cv}
 # Getting 28-step ahead predictions through CV 
@@ -724,20 +800,20 @@ for (t in t0:(n-h)) {
   arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
                     subset = (1:n) <= t & (1:n) > (t-w)) 
   # make h-step ahead prediction
-  pred_all_past[t+h] = predict(arx_all_past, newdata = data.frame(ca[t+h, ]))
-  pred_trailing[t+h] = predict(arx_trailing, newdata = data.frame(ca[t+h, ]))
+  pred_all_past[t+h] = max(0, predict(arx_all_past, newdata = data.frame(ca[t+h, ])))
+  pred_trailing[t+h] = max(0, predict(arx_trailing, newdata = data.frame(ca[t+h, ])))
 }
 ```
 
 
 ```{r arx-plot-cv-predictions}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
          `predicted (CV)` = pred_all_past, 
-         `predicted (trailing + CV)` = pred_trailing) %>%
+         `predicted (trailing + CV)` = pred_trailing) |>
   pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
-               names_to = 'Deaths') %>%
+               names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date) +    
@@ -762,15 +838,42 @@ errors_arx
 Errors under both metrics are smaller than with previous model.
 :::
 
+## Warning!
+
+Regression on a trailing window can be quite sensitive to data issues.
+
+
+```{r warning-cv-predictions}
+#| fig-align: left
+ca |> 
+  mutate(observed = deaths, 
+         `predicted (CV)` = pred_all_past, 
+         `predicted (trailing + CV)` = pred_trailing) |>
+  pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
+               names_to = 'Deaths') |>
+  ggplot(aes(time_value, value)) +
+  geom_line(aes(alpha = ifelse(time_value > as.Date("2021-09-13")-2*h-w &
+                                 time_value < as.Date("2021-09-13") &
+                                 Deaths == "observed", 1, .5), col = Deaths)) + 
+  #geom_vline(xintercept = t0_date) +    
+  #geom_vline(xintercept = t0_date + h, lty = 2) +
+  geom_point(aes(x = as.Date("2021-09-13"), y = 0), size = 1, shape = 3, col = 'darkblue') + 
+  geom_vline(xintercept = as.Date("2021-09-13")-2*h-w, lty = 3, col = 'darkred') +  
+  geom_vline(xintercept = as.Date("2021-09-13")-h, lty = 3, col = 'darkred') +  
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+```
+
 ## Predictions for different $h$
 
 * So far we only focused on COVID death predictions 28 days ahead.
 
-* We will now compare the first model 
+* We will now compare the model with lagged cases as predictor
 
 $$\hat y_{t+h} = \hat\beta + \hat\beta_0 x_t$$
 
-to the second model
+to the ARX(1) model
 
 $$\hat y_{t+h} = \hat\phi + \hat\phi_0 y_t + \hat\beta_0 x_t$$
 
@@ -788,7 +891,7 @@ pred_m1 = pred_m2 <- data.frame(matrix(NA, nrow = 0, ncol = 3))  #initialize df 
 colnames(pred_m1) = colnames(pred_m2) = c("forecast_date", "target_date", "prediction")
 w <- 120    #trailing window size
 
-ca_lags <- ca %>% select(!c(lagged_cases, lagged_deaths))
+ca_lags <- ca |> select(!c(lagged_cases, lagged_deaths))
 
 # Create lagged predictors 
 for (i in seq_along(h_vals)) {
@@ -823,13 +926,13 @@ for (t in forecast_time) {
 }
 ```
 
-## Predictions for different $h$ (Model 1)
+## Predictions for different $h$, `lm` on lagged cases
 
 ```{r plot-m1}
 #| fig-width: 10
 #| fig-height: 5
 #| fig-align: left
-pred_m1 %>%
+pred_m1 |>
   ggplot(aes(target_date, prediction, group = forecast_date)) +
   geom_line(data = ca_lags, aes(x = time_value, y = deaths), 
             inherit.aes = FALSE, col = 'gray50') + 
@@ -842,17 +945,17 @@ pred_m1 %>%
 ```
 
 ```{r m1-error}
-getErrors((ca %>% filter(time_value %in% pred_m1$target_date))$deaths, 
-          pred_m1$prediction, "Model 1")
+getErrors((ca |> filter(time_value %in% pred_m1$target_date))$deaths, 
+          pred_m1$prediction, "lm on lagged cases")
 ```
 
-## Predictions for different $h$ (Model 2)
+## Predictions for different $h$, ARX(1)
 
 ```{r plot-m2}
 #| fig-width: 10
 #| fig-height: 5
 #| fig-align: left
-pred_m2 %>%
+pred_m2 |>
   ggplot(aes(target_date, prediction, group = forecast_date)) +
   geom_line(data = ca_lags, aes(x = time_value, y = deaths), 
             inherit.aes = FALSE, col = 'gray50') + 
@@ -865,139 +968,85 @@ pred_m2 %>%
 ```
 
 ```{r m2-error}
-getErrors((ca %>% filter(time_value %in% pred_m2$target_date))$deaths, 
-          pred_m2$prediction, "Model 2")
+getErrors((ca |> filter(time_value %in% pred_m2$target_date))$deaths, 
+          pred_m2$prediction, "ARX(1)")
 ```
 
-## ARX with more predictors
 
-* The ARX model with only two predictors seems to forecast quite well for different $h$.
+## Visualizing predictions for multiple horizons
 
-* We will try to improve it by adding some more lags. We will fit and compare
+Different ways to visualize predictions for multiple $h$
 
-$$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + 
-\hat\beta_0 x_{t} + \hat\beta_1 x_{t-7}$$
+* Last slides: group by forecast date, and show prediction "trajectories"
 
-and
+* Other approach: one line and color per horizon $h$
 
-$$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14} +
-\hat\beta_0 x_{t} + \hat\beta_1 x_{t-7} + \hat\beta_2 x_{t-14}$$
+## Predictions by horizon, ARX(1)
 
-## Predictions using ARX with 2 lags
+```{r weekly-predictions}
+pred_m2_week <- data.frame(matrix(NA, nrow = 0, ncol = 3))  #initialize df for predictions
+colnames(pred_m2_week) = c("forecast_date", "target_date", "prediction")
 
-```{r arx-multiple-lags}
-pred_m3 = pred_m4 <- data.frame(matrix(NA, nrow = 0, ncol = 3))  #initialize df for predictions
-colnames(pred_m3) = colnames(pred_m4) = c("forecast_date", "target_date", "prediction")
-w <- 120     #trailing window size
+# Only forecast on sundays
+sundays <- which(ca_lags$time_value >= t0_date & 
+                   ca_lags$time_value < ca_lags$time_value[n-max(h_vals)] &
+                   wday(ca_lags$time_value) == 1)
 
-ca_lags$lagged_deaths_35 <- dplyr::lag(ca_lags$deaths, n = 35)
-ca_lags$lagged_deaths_42 <- dplyr::lag(ca_lags$deaths, n = 42)
-ca_lags$lagged_cases_35 <- dplyr::lag(ca_lags$cases, n = 35)
-ca_lags$lagged_cases_42 <- dplyr::lag(ca_lags$cases, n = 42)
-
-for (t in forecast_time) {
+for (t in sundays) {
   for (i in seq_along(h_vals)) {
     h = h_vals[i]
     # formulas including h-lagged variables
-    m3_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
-                                   " + lagged_cases_", h+7, " + lagged_deaths_", h+7))
-    m4_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
-                                   " + lagged_cases_", h+7, " + lagged_deaths_", h+7,
-                                   " + lagged_cases_", h+14, " + lagged_deaths_", h+14))
+    m2_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h))
     # fit to trailing window of data
-    m3_fit = lm(m3_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-7)) 
-    m4_fit = lm(m4_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-14)) 
+    m2_fit = lm(m2_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w)) 
     # make h-step ahead predictions
-    pred_m3 = rbind(pred_m3, 
-                    data.frame(forecast_date = ca_lags$time_value[t],
-                               target_date = ca_lags$time_value[t+h],
-                               prediction = predict(m3_fit, newdata = data.frame(ca_lags[t+h, ]))))
-    pred_m4 = rbind(pred_m4, 
-                    data.frame(forecast_date = ca_lags$time_value[t],
-                               target_date = ca_lags$time_value[t+h],
-                               prediction = predict(m4_fit, newdata = data.frame(ca_lags[t+h, ]))))
-  }
+    pred_m2_week = rbind(pred_m2_week, 
+                         data.frame(forecast_date = ca_lags$time_value[t],
+                                    target_date = ca_lags$time_value[t+h],
+                                    prediction = predict(m2_fit, 
+                                                         newdata = data.frame(ca_lags[t+h, ]))))
+    }
 }
-
 ```
 
-```{r plot-m3}
-#| fig-align: left
+```{r plot-by-h}
 #| fig-width: 10
 #| fig-height: 5
-pred_m3 %>%
-  ggplot(aes(target_date, prediction, group = forecast_date)) +
-  geom_line(data = ca_lags, aes(x = time_value, y = deaths), 
-            inherit.aes = FALSE, col = 'gray50') +  
-  geom_point(col = 'darkgreen') +
-  geom_line(col = 'darkgreen') +
-  geom_vline(xintercept = ca_lags$time_value[forecast_time], 
-             lty = 2, col = 'gray50') +
-  labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
-```
-
-
-```{r m3-error}
-getErrors((ca %>% filter(time_value %in% pred_m3$target_date))$deaths, 
-                pred_m3$prediction, "Model 3")
-```
-
-## Predictions using ARX with 3 lags
-
-```{r plot-m4}
 #| fig-align: left
-#| fig-width: 10
-#| fig-height: 5
-pred_m4 %>%
-  ggplot(aes(target_date, prediction, group = forecast_date)) +
-  geom_line(data = ca_lags, aes(x = time_value, y = deaths), 
-            inherit.aes = FALSE, col = 'gray50') +  
-  geom_point(col = 'orange') +
-  geom_line(col = 'orange') +
-  geom_vline(xintercept = ca_lags$time_value[forecast_time], 
-             lty = 2, col = 'gray50') +
+ca_lags |> 
+  ggplot() +
+  geom_line(aes(x = time_value, y = deaths), col = 'gray50', alpha = .6) +
+  geom_line(data = pred_m2_week |> 
+              mutate(horizon = as.factor(target_date - forecast_date)),
+            aes(target_date, prediction, group = horizon, col = horizon), 
+            inherit.aes = FALSE) +
+  geom_vline(xintercept = ca_lags$time_value[sundays[1]]) +
   labs(x = "", y = "Deaths per 100k people") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_colour_viridis_d(option = "inferno", end = .8) +
+  theme(legend.position = "bottom")
 ```
-
-```{r m4-error}
-getErrors((ca %>% filter(time_value %in% pred_m4$target_date))$deaths, 
-          pred_m4$prediction, "Model 4")
-```
-
-```{r, eval=FALSE}
-rbind(getErrors((ca %>% filter(time_value %in% pred_m3$target_date[1+4*(0:23)]))$deaths, 
-                pred_m2$prediction[1+4*(0:22)], "Model 2"),
-      getErrors((ca %>% filter(time_value %in% pred_m3$target_date[1+4*(0:23)]))$deaths, 
-                pred_m3$prediction[1+4*(0:22)], "Model 3"),
-      getErrors((ca %>% filter(time_value %in% pred_m4$target_date[1+4*(0:23)]))$deaths, 
-          pred_m4$prediction[1+4*(0:22)], "Model 4"))
-```
-
 
 # Overfitting and Regularization
 
 ## Too many predictors
 
-* What if we try to incorporate past information extensively by fitting a model 
-with a very large number of predictors?
+What if we try to incorporate past information extensively by fitting a model 
+with a very [large number of predictors]{.primary}?
 
-  * The estimated coefficients will be chosen to mimic the observed data very 
+* The estimated coefficients will be chosen to mimic the observed data very 
   closely on the training set, leading to [small training error]{.primary}
 
-  * The predictive performance on the test set might be very poor, 
+* The predictive performance on the test set might be very poor, 
   producing [large split-sample and CV error]{.primary}
 
 ::: {.callout-important icon="false"}
-## Issue
-Overfitting!
+## **Overfitting!**
 :::
 
 ## ARX model for COVID deaths with many predictors
 
-* When predicting COVID deaths 28 days ahead, we can try to use more past 
-information by fitting a model that includes the past two months of COVID deaths 
+When predicting COVID deaths 28 days ahead, we can use more past 
+information and fit a model that includes the past two months of deaths 
 and cases as predictors
 
 $$\hat y_{t+28} = \hat\phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-1} + \dots + 
@@ -1046,12 +1095,12 @@ pred_train <- predict(reg)                    #get training predictions
 pred_test <- predict(reg, newdata = X_test)   #get test predictions
 ```
 
-```{r overfit-plot-train-test}
+```{r overfit-plot-train-test, eval=FALSE}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
-         predicted = c(rep(NA, max(lags)), pred_train, rep(NA, h-1), pred_test)) %>%
-  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+         predicted = c(rep(NA, max(lags)), pred_train, rep(NA, h-1), pred_test)) |>
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
   geom_vline(xintercept = t0_date) +    geom_vline(xintercept = t0_date + h, lty = 2) +
@@ -1060,26 +1109,20 @@ ca %>%
 
 ```
 
-```{r overfit-train-test-error}
+```{r overfit-train-test-error, eval=FALSE}
 errors <- rbind(getErrors(y_train[-(1:max(lags))], pred_train, "training"),
                 getErrors(y_test, pred_test, "split-sample"))
 errors
 ```
 
-::: {.callout-important icon="false"}
-## Note
 
-Some predictions are negative, which doesn't make sense for count data, so let's truncate them at 0.
-:::
-
-## Truncated predictions on training and test set 
 
 ```{r overfit-plot-train-test-trunc}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
-         predicted = c(rep(NA, max(lags)), pred_train, rep(NA, h-1), pmax(0, pred_test))) %>%
-  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+         predicted = c(rep(NA, max(lags)), pred_train, rep(NA, h-1), pmax(0, pred_test))) |>
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
   geom_vline(xintercept = t0_date) +    geom_vline(xintercept = t0_date + h, lty = 2) +
@@ -1092,10 +1135,183 @@ ca %>%
 getErrors(y_test, pmax(0, pred_test), "split-sample truncated")
 ```
 
+
+::: {.callout-important icon="false"}
+## Note
+
+Some predictions were negative, which doesn't make sense for count data, so we truncated them at 0.
+:::
+
+
+## ARX models with 2 and 3 lags
+
+* The ARX(1) model $\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$ had good predictive performance
+
+* We will now consider two extensions: the [ARX(2)]{.primary} model
+
+$$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + 
+\hat\beta_0 x_{t} + \hat\beta_1 x_{t-7}$$
+
+and the [ARX(3)]{.primary} model
+
+$$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14} +
+\hat\beta_0 x_{t} + \hat\beta_1 x_{t-7} + \hat\beta_2 x_{t-14}$$
+
+and fit them using a trailing window with $w = 120$.
+
+## Fit ARX(2) and ARX(3) on trailing window
+
+```{r arx-2-and-3}
+#| echo: true
+pred_arx2 = pred_arx3 <- rep(NA, length = n)  
+w <- 120     #trailing window size
+h <- 28      #number of days ahead
+
+# create lagged predictors
+ca_lags$lagged_deaths_35 <- dplyr::lag(ca_lags$deaths, n = 35)
+ca_lags$lagged_deaths_42 <- dplyr::lag(ca_lags$deaths, n = 42)
+ca_lags$lagged_cases_35 <- dplyr::lag(ca_lags$cases, n = 35)
+ca_lags$lagged_cases_42 <- dplyr::lag(ca_lags$cases, n = 42)
+
+for (t in t0:(n-h)) {
+  arx2_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
+                                  " + lagged_cases_", h+7, " + lagged_deaths_", h+7))
+  arx3_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
+                                  " + lagged_cases_", h+7, " + lagged_deaths_", h+7,
+                                  " + lagged_cases_", h+14, " + lagged_deaths_", h+14))
+  # fit to trailing window of data
+  arx2_fit = lm(arx2_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-7)) 
+  arx3_fit = lm(arx3_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-14)) 
+  # make h-step ahead predictions
+  pred_arx2[t+h] <- max(0, predict(arx2_fit, newdata = data.frame(ca_lags[t+h, ])))
+  pred_arx3[t+h] <- max(0, predict(arx3_fit, newdata = data.frame(ca_lags[t+h, ])))
+}
+
+```
+
+## Time-Series CV (trailing): ARX(2) and ARX(3) 
+
+```{r arx-2-and-3-plot-cv-predictions}
+#| fig-align: left
+ca |> 
+  mutate(observed = deaths, 
+         `predicted, ARX(2)` = pred_arx2, 
+         `predicted, ARX(3)` = pred_arx3) |>
+  pivot_longer(cols = c(observed, `predicted, ARX(2)`, `predicted, ARX(3)`), 
+               names_to = 'Deaths') |>
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+```
+
+
+```{r arx-2-and-3-cv-error}
+errors_arx <- rbind(getErrors(test_h$deaths, pred_arx2[!is.na(pred_arx2)],
+                              "ARX(2), CV + trailing"),
+                    getErrors(test_h$deaths, pred_arx3[!is.na(pred_arx3)],
+                              "ARX(3), CV + trailing"))
+errors_arx
+```
+
+```{r arx-multiple-lags, eval=FALSE}
+pred_m3 = pred_m4 <- data.frame(matrix(NA, nrow = 0, ncol = 3))  #initialize df for predictions
+colnames(pred_m3) = colnames(pred_m4) = c("forecast_date", "target_date", "prediction")
+w <- 120     #trailing window size
+
+ca_lags$lagged_deaths_35 <- dplyr::lag(ca_lags$deaths, n = 35)
+ca_lags$lagged_deaths_42 <- dplyr::lag(ca_lags$deaths, n = 42)
+ca_lags$lagged_cases_35 <- dplyr::lag(ca_lags$cases, n = 35)
+ca_lags$lagged_cases_42 <- dplyr::lag(ca_lags$cases, n = 42)
+
+for (t in forecast_time) {
+  for (i in seq_along(h_vals)) {
+    h = h_vals[i]
+    # formulas including h-lagged variables
+    m3_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
+                                   " + lagged_cases_", h+7, " + lagged_deaths_", h+7))
+    m4_formula = as.formula(paste0("deaths ~ lagged_cases_", h, " + lagged_deaths_", h,
+                                   " + lagged_cases_", h+7, " + lagged_deaths_", h+7,
+                                   " + lagged_cases_", h+14, " + lagged_deaths_", h+14))
+    # fit to trailing window of data
+    m3_fit = lm(m3_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-7)) 
+    m4_fit = lm(m4_formula, data = ca_lags, subset = (1:n) <= t & (1:n) > (t-w-14)) 
+    # make h-step ahead predictions
+    pred_m3 = rbind(pred_m3, 
+                    data.frame(forecast_date = ca_lags$time_value[t],
+                               target_date = ca_lags$time_value[t+h],
+                               prediction = max(0, predict(m3_fit, newdata = data.frame(ca_lags[t+h, ])))))
+    pred_m4 = rbind(pred_m4, 
+                    data.frame(forecast_date = ca_lags$time_value[t],
+                               target_date = ca_lags$time_value[t+h],
+                               prediction = max(0, predict(m4_fit, newdata = data.frame(ca_lags[t+h, ])))))
+  }
+}
+
+```
+
+
+```{r plot-m3, eval=FALSE}
+#| fig-align: left
+#| fig-width: 10
+#| fig-height: 5
+pred_m3 |>
+  ggplot(aes(target_date, prediction, group = forecast_date)) +
+  geom_line(data = ca_lags, aes(x = time_value, y = deaths), 
+            inherit.aes = FALSE, col = 'gray50') +  
+  geom_point(col = 'darkgreen') +
+  geom_line(col = 'darkgreen') +
+  geom_vline(xintercept = ca_lags$time_value[forecast_time], 
+             lty = 2, col = 'gray50') +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+```{r m3-error, eval=FALSE}
+getErrors((ca |> filter(time_value %in% pred_m3$target_date))$deaths, 
+                pred_m3$prediction, "")
+```
+
+
+```{r plot-m4, eval=FALSE}
+#| fig-align: left
+#| fig-width: 10
+#| fig-height: 5
+pred_m4 |>
+  ggplot(aes(target_date, prediction, group = forecast_date)) +
+  geom_line(data = ca_lags, aes(x = time_value, y = deaths), 
+            inherit.aes = FALSE, col = 'gray50') +  
+  geom_point(col = 'orange') +
+  geom_line(col = 'orange') +
+  geom_vline(xintercept = ca_lags$time_value[forecast_time], 
+             lty = 2, col = 'gray50') +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+```{r m4-error, eval=FALSE}
+getErrors((ca |> filter(time_value %in% pred_m4$target_date))$deaths, 
+          pred_m4$prediction, "")
+```
+
+
+## Warning!
+
+* As we add more predictors, [forecasts]{.primary} seem more [volatile]{.primary} and errors increase.
+
+* How can we 
+
+  * select the "right" number of lags to include? 
+
+  * avoid overfitting, while considering a large number of predictors? 
+
+
 ## Regularization
 
-* If we want to consider a large number of predictors, 
-how can we avoid overfitting?
 
 * [Idea]{.primary}: introduce a regularization parameter $\lambda$ that [shrinks or sets]{.primary} some 
 of the estimated coefficients to zero, i.e. some predictors are estimated to 
@@ -1108,45 +1324,24 @@ have limited or no predictive power
   * [Lasso]{.primary}: sets some coefficients to zero
 
 
+* Let's predict $h=28$ days ahead by regularizing
 
-## ARX + ridge/lasso for COVID deaths
+$$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14} +
+\hat\beta_0 x_{t} + \hat\beta_1 x_{t-7} + \hat\beta_2 x_{t-14}$$
 
-Let's consider a model with lagged cases and deaths: 7 lags for each, spaced by one week.
-
-```{r overfit-data-reg}
-#| echo: true
-h <- 28
-lags <- h + 7*(0:6)   #lags used for predictors (deaths and cases)
-
-# Build predictor matrix 
-X <- data.frame(matrix(NA, nrow = length(y), ncol = 2*length(lags)))
-colnames(X) <- paste('X', 1:ncol(X), sep = '')
-
-for (j in 1:length(lags)) {
-  # lagged deaths 
-  X[, j] = dplyr::lag(ca$deaths, lags[j])
-  # lagged cases
-  X[, length(lags) + j] = dplyr::lag(ca$cases, lags[j])
-}
-
-# Train/test split
-y_train <- y[1:t0]
-X_train <- X[1:t0, ]
-y_test <- y[(t0+h):length(y)]
-X_test <- X[(t0+h):length(y), ]
-```
-
-
-## Fit ARX + ridge/lasso for COVID deaths
+## Fit ARX (3 lags) + ridge/lasso for COVID deaths
 
 ```{r ridge-lasso-fit}
 #| echo: true
 library(glmnet) # Implements ridge and lasso
 
+h <- 28
+X <- as_tibble(ca_lags) |> select(ends_with("_28"), ends_with("_35"), ends_with("_42"))
+y <- ca_lags$deaths
+
 # We'll need to omit NA values explicitly, as otherwise glmnet will complain
-na_obs <- 1:max(lags)
-X_train <- X_train[-na_obs, ]
-y_train <- y_train[-na_obs]
+X_train <- X[43:t0, ]
+y_train <- y[43:t0]
 
 # Ridge regression: set alpha = 0, lambda sequence will be chosen automatically
 ridge <- glmnet(X_train, y_train, alpha = 0)
@@ -1158,7 +1353,7 @@ lasso <- glmnet(X_train, y_train, alpha = 1)
 beta_lasso <- coef(lasso)       # matrix of estimated coefficients 
 lambda_lasso <- lasso$lambda    # sequence of lambdas used to fit lasso 
 
-dim(beta_lasso)      # One row per coefficient, one column per lambda value
+dim(beta_lasso)                 # One row per coefficient, one column per lambda value
 ```
 
 
@@ -1166,6 +1361,9 @@ dim(beta_lasso)      # One row per coefficient, one column per lambda value
 
 ```{r lasso-ridge-predictions}
 #| echo: true
+X_test <- X[(t0+h):n, ]
+y_test <- y[(t0+h):n]
+
 # Predict values for second half of the time series
 yhat_ridge <- predict(ridge, newx = as.matrix(X_test))
 yhat_lasso <- predict(lasso, newx = as.matrix(X_test))
@@ -1177,10 +1375,8 @@ mae_lasso <- colMeans(abs(yhat_lasso - y_test))
 # Select index of lambda vector which gives lowest MAE
 min_ridge <- which.min(mae_ridge)
 min_lasso <- which.min(mae_lasso)
-paste('Best MAE ridge:', round(min(mae_ridge), 3),
-      '; Best MAE lasso:', round(min(mae_lasso), 3))
 
-# Get predictions for train and test sets
+# Get corresponding predictions for train and test sets
 pred_train_ridge <- predict(ridge, newx = as.matrix(X_train))[, min_ridge] 
 pred_test_ridge <- yhat_ridge[, min_ridge]
 pred_train_lasso <- predict(lasso, newx = as.matrix(X_train))[, min_lasso] 
@@ -1205,8 +1401,8 @@ cbind('ridge' = beta_ridge[, min_ridge],
 #| out-height: "600px"
 data.frame('x'= 1:nrow(beta_lasso),
            'ridge' = beta_ridge[, min_ridge], 
-           'lasso' = beta_lasso[, min_lasso]) %>%
-  pivot_longer(cols = c('ridge', 'lasso'), names_to = 'Method') %>%
+           'lasso' = beta_lasso[, min_lasso]) |>
+  pivot_longer(cols = c('ridge', 'lasso'), names_to = 'Method') |>
   ggplot(aes(x, value, col = Method)) +
   geom_point(alpha = .8) +
   geom_line() +
@@ -1221,14 +1417,14 @@ data.frame('x'= 1:nrow(beta_lasso),
 
 ```{r shrinkage-sparsity}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
-         `predicted (ridge)` = c(rep(NA, max(lags)), pred_train_ridge, 
+         `predicted (ridge)` = c(rep(NA, 42), pred_train_ridge, 
                                  rep(NA, h-1), pred_test_ridge),
-         `predicted (lasso)` = c(rep(NA, max(lags)), pred_train_lasso, 
-                                 rep(NA, h-1), pred_test_lasso)) %>%
+         `predicted (lasso)` = c(rep(NA, 42), pred_train_lasso, 
+                                 rep(NA, h-1), pred_test_lasso)) |>
   pivot_longer(cols = c(observed, `predicted (ridge)`, 
-                        `predicted (lasso)`), names_to = 'Deaths') %>%
+                        `predicted (lasso)`), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line() + 
   geom_vline(xintercept = t0_date) +    geom_vline(xintercept = t0_date + h, lty = 2) +
@@ -1248,8 +1444,33 @@ errors_glmnet
 
 ## Time-series CV for ARX + ridge/lasso (trailing)
 
-```{r regularization-cv}
-#| echo: true
+```{r regularization-cv-worst, eval=FALSE}
+h <- 28  # number of days ahead 
+w <- 120 # window length
+
+# Initialize matrices for predictions (one column per lambda value)
+yhat_ridge <- rep(NA, length = n) 
+yhat_lasso <- rep(NA, length = n) 
+
+cv_inds = 43:t0
+ridge_cv = cv.glmnet(as.matrix(X[cv_inds, ]), y[cv_inds], alpha = 0)
+lasso_cv = cv.glmnet(as.matrix(X[cv_inds, ]), y[cv_inds], alpha = 1)
+best_lambda_ridge = ridge_cv$lambda.1se
+best_lambda_lasso = lasso_cv$lambda.1se
+
+for (t in t0:(n-h)) {
+  # Indices of data within window
+  inds = t-w < 1:n & 1:n <= t
+  # Fit ARX + ridge/lasso
+  ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = best_lambda_ridge)
+  lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = best_lambda_lasso)
+  # Predict
+  yhat_ridge[t+h] = max(0, predict(ridge_trail, newx = as.matrix(X[(t+h), ])))
+  yhat_lasso[t+h] = max(0, predict(lasso_trail, newx = as.matrix(X[(t+h), ])))
+}
+```
+
+```{r regularization-cv-ok, eval=FALSE}
 h <- 28  # number of days ahead 
 w <- 120 # window length
 
@@ -1262,31 +1483,70 @@ for (t in t0:(n-h)) {
   cv_inds = max(lags) < 1:n & 1:n <= t-w
   ridge_cv = cv.glmnet(as.matrix(X[cv_inds, ]), y[cv_inds], alpha = 0)
   lasso_cv = cv.glmnet(as.matrix(X[cv_inds, ]), y[cv_inds], alpha = 1)
-  best_lambda_ridge = ridge_cv$lambda.min
-  best_lambda_lasso = lasso_cv$lambda.min
+  #if (t == t0 + h){plot(ridge_cv)}
+  #if (t == t0 + h){plot(lasso_cv)}
+  best_lambda_ridge = ridge_cv$lambda.1se
+  best_lambda_lasso = lasso_cv$lambda.1se
   # Indices of data within window
   inds = t-w < 1:n & 1:n <= t
   # Fit ARX + ridge/lasso
   ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = best_lambda_ridge)
   lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = best_lambda_lasso)
   # Predict
-  yhat_ridge[t+h] = predict(ridge_trail, newx = as.matrix(X[(t+h), ]))
-  yhat_lasso[t+h] = predict(lasso_trail, newx = as.matrix(X[(t+h), ]))
+  yhat_ridge[t+h] = max(0, predict(ridge_trail, newx = as.matrix(X[(t+h), ])))
+  yhat_lasso[t+h] = max(0, predict(lasso_trail, newx = as.matrix(X[(t+h), ])))
+  
 }
 
 ```
 
+```{r regularization-cv}
+#| echo: true
+h <- 28  # number of days ahead 
+w <- 120 # window length
+
+# Initialize matrices for predictions (one column per lambda value)
+yhat_ridge_mat <- matrix(NA, nrow = n, ncol = length(lambda_ridge))
+yhat_lasso_mat <- matrix(NA, nrow = n, ncol = length(lambda_lasso)) 
+yhat_ridge = yhat_lasso <- rep(NA, length = n)
+
+# Select index of best lambda value on training set
+ridge_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 0, lambda = lambda_ridge)$index[1]
+lasso_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 1, lambda = lambda_lasso)$index[1]
+
+for (t in t0:(n-h)) {
+  # Indices of data within window
+  inds = t-w < 1:n & 1:n <= t
+  # Fit ARX + ridge/lasso for each lambda value
+  ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = lambda_ridge)
+  lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = lambda_lasso)
+  # Predict for each lambda value
+  yhat_ridge_mat[t+h, ] = predict(ridge_trail, newx = as.matrix(X[(t+h), ]))
+  yhat_lasso_mat[t+h, ] = predict(lasso_trail, newx = as.matrix(X[(t+h), ]))
+  # Save prediction corresponding to best lambda so far
+  yhat_ridge[t+h] = max(0, yhat_ridge_mat[t+h, ridge_index])
+  yhat_lasso[t+h] = max(0, yhat_lasso_mat[t+h, lasso_index])
+  if (t >= t0+h) {
+    # Prediction error
+    mae_ridge = colMeans(abs(yhat_ridge_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    mae_lasso = colMeans(abs(yhat_lasso_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    # Select index of lambda vector which gives lowest MAE so far
+    ridge_index <- which.min(mae_ridge)
+    lasso_index <- which.min(mae_lasso)
+  }
+}
+```
 
 ## Predictions: time-series CV for ARX + ridge/lasso (trailing)
 
 ```{r plot-regularization-cv}
 #| fig-align: left
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
-         `predicted (ridge)` = pmax(0, yhat_ridge),
-         `predicted (lasso)` = pmax(0, yhat_lasso)) %>%
+         `predicted (ridge)` = yhat_ridge,
+         `predicted (lasso)` = yhat_lasso) |>
   pivot_longer(cols = c(observed, `predicted (ridge)`, 
-                        `predicted (lasso)`), names_to = 'Deaths') %>%
+                        `predicted (lasso)`), names_to = 'Deaths') |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date) +    
@@ -1298,9 +1558,9 @@ ca %>%
 
 ```{r regularization-cv-errors}
 errors_glmnet_cv <- rbind(
-                       getErrors(y_test, pmax(0, yhat_ridge[!is.na(yhat_ridge)]), 
+                       getErrors(y_test, yhat_ridge[!is.na(yhat_ridge)], 
                                  "ridge CV + trailing"),
-                       getErrors(y_test, pmax(0, yhat_lasso[!is.na(yhat_lasso)]), 
+                       getErrors(y_test, yhat_lasso[!is.na(yhat_lasso)], 
                                  "lasso CV + trailing"))
 errors_glmnet_cv
 ```
@@ -1347,19 +1607,19 @@ arx_fit = lm(deaths ~ lagged_deaths + lagged_cases, data = train)
 pred_test_ci <- predict(arx_fit, 
                         newdata = test, 
                         interval = "prediction", 
-                        level = 0.95)
+                        level = 0.8)
 
 head(pred_test_ci)
 ```
 
 
 ```{r plot-arx-intervals, eval=FALSE}
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
          predicted = c(rep(NA, nrow(train)), pred_test_ci[, 1]), 
          lower = c(rep(NA, nrow(train)), pred_test_ci[, 2]), 
-         upper = c(rep(NA, nrow(train)), pred_test_ci[, 3])) %>%
-  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+         upper = c(rep(NA, nrow(train)), pred_test_ci[, 3])) |>
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') |>
   ggplot(aes(time_value, value)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .3, fill = "#00BFC4") +
   geom_line(aes(col = Deaths, alpha = ifelse(time_value > t0_date, 1, .5))) + 
@@ -1382,8 +1642,9 @@ for (t in t0:(n-h)) {
   # Fit ARX and predict
   arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
                     subset = (1:n) <= t & (1:n) > (t-w)) 
-  pred_trailing[t+h, ] = predict(arx_trailing, newdata = data.frame(ca[t+h, ]),
-                                 interval = "prediction", level = 0.95)
+  pred_trailing[t+h, ] = pmax(0, 
+                              predict(arx_trailing, newdata = data.frame(ca[t+h, ]),
+                                      interval = "prediction", level = 0.8))
 }
 ```
 
@@ -1392,11 +1653,11 @@ for (t in t0:(n-h)) {
 ```{r plot arx-intervals-cv-trailing}
 lm_pred_trailing <- cbind(ca, pred_trailing)
 
-lm_pred_trailing %>%
+lm_pred_trailing |>
   mutate(observed = deaths, 
-         `predicted (CV + trailing)` = prediction) %>%
+         `predicted (CV + trailing)` = prediction) |>
   pivot_longer(cols = c(observed, `predicted (CV + trailing)`), 
-               names_to = 'Deaths') %>%
+               names_to = 'Deaths') |>
   ggplot(aes(time_value, value)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .3, fill = "#00BFC4") +
   geom_line(aes(col = Deaths, alpha = ifelse(time_value > t0_date, 1, .5))) + 
@@ -1432,21 +1693,17 @@ Conditional quantile = value below which a given percentage (e.g. 25%, 50%,
 #install.packages("quantreg")
 library(quantreg)  #library to perform quantile regression
 
-# Set quantiles of interest: we will focus on 2.5%, 50% (i.e. median), and 97.5% quantiles
-quantiles <- c(0.025, 0.5, 0.975)  
+# Set quantiles of interest: we will focus on 10%, 50% (i.e. median), and 90% quantiles
+quantiles <- c(0.1, 0.5, 0.9)  
 
 # Fit quantile regression to training set
 q_reg <- rq(deaths ~ lagged_deaths + lagged_cases, data = train, tau = quantiles)
 
-# Estimated coefficients
-coef(q_reg)
-
 # Sort estimated coefficients 
 coefs_sorted <- t(apply(coef(q_reg), 1, sort))
 colnames(coefs_sorted) <- colnames(coef(q_reg))
-coefs_sorted
-
 q_reg$coefficients <- coefs_sorted
+coefs_sorted
 ```
 
 
@@ -1454,12 +1711,12 @@ q_reg$coefficients <- coefs_sorted
 # Predict on test set
 pred_test <- predict(q_reg, newdata = test)
 
-ca %>% 
+ca |> 
   mutate(observed = deaths, 
          predicted = c(rep(NA, nrow(train)), pred_test[, 2]),
          lower = c(rep(NA, nrow(train)), pred_test[, 1]),
-         upper = c(rep(NA, nrow(train)), pred_test[, 3]))%>%
-  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') %>%
+         upper = c(rep(NA, nrow(train)), pred_test[, 3]))|>
+  pivot_longer(cols = c(predicted, observed), names_to = 'Deaths') |>
   ggplot(aes(time_value, value)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .3, fill = "#00BFC4") +
   geom_line(aes(col = Deaths, alpha = ifelse(time_value > t0_date, 1, .5))) + 
@@ -1482,11 +1739,13 @@ for (t in t0:(n-h)) {
   # Fit quantile regression
   rq_trailing = rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles,
                    data = ca, subset = (1:n) <= t & (1:n) > (t-w)) 
+  
   # Sort estimated coefficients 
   coefs_sorted <- t(apply(coef(rq_trailing), 1, sort))
   rq_trailing$coefficients <- coefs_sorted
+  
   # Predict
-  pred_trailing[t+h, ] = predict(rq_trailing, newdata = data.frame(ca[t+h, ]))
+  pred_trailing[t+h, ] = pmax(0, predict(rq_trailing, newdata = data.frame(ca[t+h, ])))
 }
 ```
 
@@ -1495,11 +1754,11 @@ for (t in t0:(n-h)) {
 ```{r q-reg-plot-cv-predictions-trailing}
 rq_pred_trailing <- cbind(ca, pred_trailing)
 
-rq_pred_trailing %>%
+rq_pred_trailing |>
   mutate(observed = deaths, 
-         `predicted (CV + trailing)` = median) %>%
+         `predicted (CV + trailing)` = median) |>
   pivot_longer(cols = c(`predicted (CV + trailing)`, observed), 
-               names_to = 'Deaths') %>%
+               names_to = 'Deaths') |>
   ggplot(aes(time_value, value)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = .3, fill = "#00BFC4") +
   geom_line(aes(col = Deaths, alpha = ifelse(time_value > t0_date, 1, .5))) + 
@@ -1516,7 +1775,7 @@ getErrors(y_test, pmax(0, pred_trailing[!is.na(pred_trailing)]), "rq.trailing")
 ## Actual Coverage
 
 * We would expect the ARX model fitted via `lm` and via `rq` to cover the truth
-about 95\% of the times. Is this actually true in practice?
+about 80\% of the times. Is this actually true in practice?
 
 * The actual coverage of each predictive interval is lower:
 
@@ -1570,25 +1829,21 @@ coverage (if the interval contains the truth).
 
 ## WIS for ARX fitted via `lm` and `rq`
 
-* The lowest mean WIS is attained by quantile regression. 
-
-* Notice: this method has coverage below 95\% but is still preferred under WIS 
-because its intervals are narrower than for linear regression.
-
+The lowest mean WIS is attained by quantile regression. 
 
 ```{r wis-lm}
 lm_pred_trailing$method <- 'lm.trailing'
 rq_pred_trailing$method <- 'rq.trailing'
 
-lm_pred_trailing %>% 
-  rowwise() %>%
-  mutate(wis = WIS(deaths, c(lower, prediction, upper), quantiles)) %>%
-  ungroup() %>%
-  summarise(`Mean WIS lm` = mean(wis, na.rm = T)) %>%
-  cbind(rq_pred_trailing %>% 
-    rowwise() %>%
-    mutate(wis = WIS(deaths, c(lower, median, upper), quantiles)) %>%
-    ungroup() %>%
+lm_pred_trailing |> 
+  rowwise() |>
+  mutate(wis = WIS(deaths, c(lower, prediction, upper), quantiles)) |>
+  ungroup() |>
+  summarise(`Mean WIS lm` = mean(wis, na.rm = T)) |>
+  cbind(rq_pred_trailing |> 
+    rowwise() |>
+    mutate(wis = WIS(deaths, c(lower, median, upper), quantiles)) |>
+    ungroup() |>
     summarise(`Mean WIS rq` = mean(wis, na.rm = T)))
 
 ```
@@ -1598,12 +1853,12 @@ lm_pred_trailing %>%
 
 ## Versioned data
 
-* In our forecasting examples, we have assumed the data are never revised 
-(or have simply ignored revisions, and used data `as_of` today)
+So far: data never revised 
+(or simply ignored revisions, `as_of` today)
 
 ::: {.callout-important icon="false"}
 ## 
-How can we train forecasters when dealing with versioned data?
+How can we [train forecasters]{.primary} when dealing with [versioned data]{.primary}?
 :::
 
 ```{r get-versioned-data}
@@ -1615,6 +1870,11 @@ source(here::here("_code/versioned_data.R"))
 data_archive
 ```
 
+## Version aware-forecasting
+
+[Important]{.primary}: when fitting and predicting, only use data in the latest 
+version available at the forecast date!
+
 ## Version-aware forecasting
 
 ```{r versioned-weekly-avg}
@@ -1624,29 +1884,29 @@ fc_time_values <- seq(
   by = "1 month"
 )
 
-data_archive <- data_archive %>%
+data_archive <- data_archive |>
   epix_slide(
     .before = Inf, 
     .versions = fc_time_values,
     function(x, gk, rtv) {
-      x %>%
-        group_by(geo_value) %>%
-        epi_slide_mean(case_rate, .window_size = 7L) %>%
-        epi_slide_mean(death_rate, .window_size = 7L) %>%
-        ungroup() %>%
+      x |>
+        group_by(geo_value) |>
+        epi_slide_mean(case_rate, .window_size = 7L) |>
+        epi_slide_mean(death_rate, .window_size = 7L) |>
+        ungroup() |>
         rename(case_rate_7d_av = slide_value_case_rate,
                death_rate_7d_av = slide_value_death_rate)
     }
-  ) %>%
+  ) |>
   rename(
     cases = case_rate_7d_av,
     deaths = death_rate_7d_av
-  ) %>%
-  select(version, time_value, geo_value, cases, deaths) %>%
+  ) |>
+  select(version, time_value, geo_value, cases, deaths) |>
   as_epi_archive(compactify = TRUE)
 
-ca_archive <- data_archive$DT %>% 
-  filter(geo_value == "ca") %>%
+ca_archive <- data_archive$DT |> 
+  filter(geo_value == "ca") |>
   as_epi_archive()
 ```
 
@@ -1654,9 +1914,9 @@ ca_archive <- data_archive$DT %>%
 ```{r versioned-quantile-reg}
 #| echo: true
 # initialize dataframe for predictions
-# 5 columns: forecast date, target date, 2.5%, 50%, and 97.5% quantiles
+# 5 columns: forecast date, target date, 10%, 50%, and 90% quantiles
 pred_trailing <- data.frame(matrix(NA, ncol = 5, nrow = 0))
-colnames(pred_trailing) <- c("forecast_date", "target_date", 'tau..0.025', 'tau..0.500', 'tau..0.975')
+colnames(pred_trailing) <- c("forecast_date", "target_date", 'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -1673,10 +1933,10 @@ for (fc_date in fc_time_values) {
   # perform quantile regression
   rq_trailing <- rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles, 
                     # only consider window of data
-                    data = data %>% filter(time_value > (max(time_value) - w))) 
+                    data = data |> filter(time_value > (max(time_value) - w))) 
   # sort estimated coefficients 
   coefs_sorted <- t(apply(coef(rq_trailing), 1, sort))
-  colnames(coefs_sorted) <- c('tau..0.025', 'tau..0.500', 'tau..0.975')
+  colnames(coefs_sorted) <- c('tau..0.1', 'tau..0.5', 'tau..0.9')
   rq_trailing$coefficients <- coefs_sorted
   # construct data.frame with the right predictors for the target date
   predictors <- data.frame(lagged_deaths = tail(data$deaths, 1), 
@@ -1694,17 +1954,17 @@ for (fc_date in fc_time_values) {
 
 ```{r clean-data-output}
 # clean output and join it with finalized values (`ca` dataset)
-pred_trailing <- pred_trailing %>%
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) %>%
-  full_join(ca %>% select(time_value, deaths), join_by(target_date == time_value)) %>%
+pred_trailing <- pred_trailing |>
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) |>
+  full_join(ca |> select(time_value, deaths), join_by(target_date == time_value)) |>
   arrange(target_date)
 ```
 
 
 ```{r plot-versioned-cv-trailing}
-pred_trailing %>%
+pred_trailing |>
   ggplot(aes(x = target_date)) +
   geom_line(aes(y = deaths), col = 'gray50') + 
   geom_point(aes(y = median), col = 'blue') +
@@ -1713,6 +1973,7 @@ pred_trailing %>%
   labs(x = "", y = "Deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
+
 
 # Modeling Multiple Time Series
 
@@ -1737,14 +1998,14 @@ averages across locations ([partial geo-pooling]{.primary}).
 
 ```{r geo-pooling}
 #| echo: true
-usa_archive <- data_archive$DT %>% 
+usa_archive <- data_archive$DT |> 
   as_epi_archive()
 
 # initialize dataframe for predictions
-# 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles
+# 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles
 pred_trailing <- data.frame(matrix(NA, ncol = 6, nrow = 0))
 colnames(pred_trailing) <- c('geo_value', 'forecast_date', 'target_date',
-                             'tau..0.025', 'tau..0.500', 'tau..0.975')
+                             'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -1754,33 +2015,33 @@ for (fc_date in fc_time_values) {
   data <- epix_as_of(usa_archive, max_version = as.Date(fc_date))
   
   # create lagged predictors for each state 
-  data <- data %>%
-    arrange(geo_value, time_value) %>%  
-    group_by(geo_value) %>%
+  data <- data |>
+    arrange(geo_value, time_value) |>  
+    group_by(geo_value) |>
     mutate(lagged_deaths = dplyr::lag(deaths, h),
-           lagged_cases = dplyr::lag(cases, h)) %>%
+           lagged_cases = dplyr::lag(cases, h)) |>
     ungroup()
   
   # perform quantile regression
   rq_trailing <- rq(deaths ~ lagged_deaths + lagged_cases, tau = quantiles, 
                     # only consider window of data
-                    data = data %>% filter(time_value > (max(time_value) - w))) 
+                    data = data |> filter(time_value > (max(time_value) - w))) 
   # sort estimated coefficients 
   coefs_sorted <- t(apply(coef(rq_trailing), 1, sort))
-  colnames(coefs_sorted) <- c('tau..0.025', 'tau..0.500', 'tau..0.975')
+  colnames(coefs_sorted) <- c('tau..0.1', 'tau..0.5', 'tau..0.9')
   rq_trailing$coefficients <- coefs_sorted
   
   # construct dataframe with the right predictors for the target date
-  new_lagged_deaths <- data %>% 
-    filter(time_value == max(time_value)) %>%
+  new_lagged_deaths <- data |> 
+    filter(time_value == max(time_value)) |>
     select(geo_value, deaths)
   
-  new_lagged_cases <- data %>% 
-    filter(time_value == max(time_value)) %>%
+  new_lagged_cases <- data |> 
+    filter(time_value == max(time_value)) |>
     select(geo_value, cases)
   
-  predictors <- new_lagged_deaths %>%
-    inner_join(new_lagged_cases, join_by(geo_value)) %>%
+  predictors <- new_lagged_deaths |>
+    inner_join(new_lagged_cases, join_by(geo_value)) |>
     rename(lagged_deaths = deaths,
            lagged_cases = cases)
   
@@ -1793,21 +2054,21 @@ for (fc_date in fc_time_values) {
                            predict(rq_trailing, newdata = predictors)))
 }
 
-# geo-pooled predictions for California
-pred_ca <- pred_trailing %>%
-  filter(geo_value == 'ca') %>%
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) %>%
-  full_join(ca %>% select(time_value, deaths), join_by(target_date == time_value)) %>%
-  arrange(target_date)
-
 ```
 
 ## Geo-pooled predictions for California
 
 ```{r plot-geo-pooling}
-pred_ca %>%
+# geo-pooled predictions for California
+pred_ca <- pred_trailing |>
+  filter(geo_value == 'ca') |>
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) |>
+  full_join(ca |> select(time_value, deaths), join_by(target_date == time_value)) |>
+  arrange(target_date)
+
+pred_ca |>
   ggplot(aes(x = target_date)) +
   geom_line(aes(y = deaths), col = 'gray50') + 
   geom_point(aes(y = median), col = 'purple') +
@@ -1817,16 +2078,17 @@ pred_ca %>%
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
+
 ## Partial geo-pooling (trailing window)
 
 ```{r partial-geo-pooling}
 #| echo: true
 
 # initialize dataframe for predictions
-# 6 columns: geo value, forecast date, target date, 2.5%, 50%, and 97.5% quantiles
+# 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles
 pred_trailing <- data.frame(matrix(NA, ncol = 6, nrow = 0))
 colnames(pred_trailing) <- c('geo_value', 'forecast_date', 'target_date',
-                             'tau..0.025', 'tau..0.500', 'tau..0.975')
+                             'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -1836,42 +2098,42 @@ for (fc_date in fc_time_values) {
   data <- epix_as_of(usa_archive, max_version = as.Date(fc_date))
   
   # create lagged predictors 
-  data <- data %>%
-    arrange(geo_value, time_value) %>%  
-    group_by(geo_value) %>%
+  data <- data |>
+    arrange(geo_value, time_value) |>  
+    group_by(geo_value) |>
     mutate(lagged_deaths = dplyr::lag(deaths, h),
-           lagged_cases = dplyr::lag(cases, h)) %>%
-    ungroup() %>%
-    group_by(time_value) %>%
+           lagged_cases = dplyr::lag(cases, h)) |>
+    ungroup() |>
+    group_by(time_value) |>
     mutate(avg_lagged_deaths = mean(lagged_deaths, na.rm = T),
-           avg_lagged_cases = mean(lagged_cases, na.rm = T)) %>%
+           avg_lagged_cases = mean(lagged_cases, na.rm = T)) |>
     ungroup() 
   
   # perform quantile regression
   rq_trailing <- rq(deaths ~ lagged_deaths + lagged_cases + avg_lagged_deaths +
                       avg_lagged_cases, tau = quantiles, 
-                    data = (data %>% filter(geo_value == 'ca'))) 
+                    data = (data |> filter(geo_value == 'ca'))) 
   
   # sort estimated coefficients 
   coefs_sorted <- t(apply(coef(rq_trailing), 1, sort))
-  colnames(coefs_sorted) <- c('tau..0.025', 'tau..0.500', 'tau..0.975')
+  colnames(coefs_sorted) <- c('tau..0.1', 'tau..0.5', 'tau..0.9')
   rq_trailing$coefficients <- coefs_sorted
   
   # construct data.frame with the right predictors for the target date
-  new_lagged_deaths <- data %>% 
-    filter(time_value == max(time_value)) %>%
-    select(geo_value, deaths) %>%
-    mutate(avg_lagged_deaths = mean(deaths, na.rm = T)) %>%
+  new_lagged_deaths <- data |> 
+    filter(time_value == max(time_value)) |>
+    select(geo_value, deaths) |>
+    mutate(avg_lagged_deaths = mean(deaths, na.rm = T)) |>
     filter(geo_value == 'ca')
   
-  new_lagged_cases <- data %>% 
-    filter(time_value == max(time_value)) %>%
-    select(geo_value, cases) %>%
-    mutate(avg_lagged_cases = mean(cases, na.rm = T)) %>%
+  new_lagged_cases <- data |> 
+    filter(time_value == max(time_value)) |>
+    select(geo_value, cases) |>
+    mutate(avg_lagged_cases = mean(cases, na.rm = T)) |>
     filter(geo_value == 'ca')
   
-  predictors <- new_lagged_deaths %>%
-    inner_join(new_lagged_cases, join_by(geo_value)) %>%
+  predictors <- new_lagged_deaths |>
+    inner_join(new_lagged_cases, join_by(geo_value)) |>
     rename(lagged_deaths = deaths,
            lagged_cases = cases)
   
@@ -1884,21 +2146,21 @@ for (fc_date in fc_time_values) {
                            predict(rq_trailing, newdata = predictors)))
 }
 
-# partially geo-pooled predictions for California
-pred_ca <- pred_trailing %>%
-  filter(geo_value == 'ca') %>%
-  rename(median = `tau..0.500`,
-         lower = `tau..0.025`,
-         upper = `tau..0.975`) %>%
-  full_join(ca %>% select(time_value, deaths), join_by(target_date == time_value)) %>%
-  arrange(target_date)
-
 ```
 
 ## Partially geo-pooled predictions for California
 
 ```{r plot-partial-geo-pooling}
-pred_ca %>%
+# partially geo-pooled predictions for California
+pred_ca <- pred_trailing |>
+  filter(geo_value == 'ca') |>
+  rename(median = `tau..0.5`,
+         lower = `tau..0.1`,
+         upper = `tau..0.9`) |>
+  full_join(ca |> select(time_value, deaths), join_by(target_date == time_value)) |>
+  arrange(target_date)
+
+pred_ca |>
   ggplot(aes(x = target_date)) +
   geom_line(aes(y = deaths), col = 'gray50') + 
   geom_point(aes(y = median), col = 'darkgreen') +

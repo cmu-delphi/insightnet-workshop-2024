@@ -142,6 +142,8 @@ a[target="_blank"]::after {
     + Better positioned than government or industry
 </div>
 
+
+
 ## The bigger goal
 The goal is to make epi-surveillance [more nimble, complete, standardized, robust, and real-time]{.primary} and
 
@@ -210,6 +212,7 @@ Epidata is not the solution; but we hope it is a blueprint towards such a soluti
 * [**CTIS ("Delphi Facebook Survey")**]{.primary}: many dozens of questions, by (county x day)
 * [**STLT-reported**]{.primary}: {cases, deaths} via {JHU, USAFacts}, by (country x day)
 * [**Safegraph mobility**]{.primary}: misc measures by {county x day},{county x week}
+
 
 
 
@@ -306,6 +309,7 @@ Install the CRAN version
 
 ```{r install-epidatr-cran}
 #| echo: true
+#| eval: false
 # Install the CRAN version
 pak::pkg_install("epidatr")
 ```
@@ -327,7 +331,7 @@ The CRAN listing is [here](https://cran.r-project.org/package=epidatr/index.html
 
 In Python, install [`delphi-epidata` from PyPI](https://pypi.org/project/delphi-epidata/) with 
 
-```sh
+``` sh
 pip install delphi-epidata
 ```
 
@@ -335,13 +339,15 @@ pip install delphi-epidata
 
 `delphi-epidata` is soon to be replaced with `epidatpy`.
 
-```sh
+``` sh
 # Latest dev version
 pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 # PyPI version (not yet available)
 pip install epidatpy
 ```
+
+
 
 
 ## Using `epidatr` and `epidatpy`
@@ -358,10 +364,12 @@ head(res, n = 3)
 <br>
 
 Python equivalent:
-```sh
+``` python
 res = Epidata.covidcast('hhs', 'confirmed_admissions_influenza_1d', 'day', 'state', [20240401, Epidata.range(20240405, 20240414)], 'nc')
 print(res['result'], res['message'], len(res['epidata']))
 ```
+
+
 
 ## API keys
 
@@ -380,6 +388,8 @@ print(res['result'], res['message'], len(res['epidata']))
 The `epidatr` client automatically searches for the key in the `DELPHI_EPIDATA_KEY` environment variable. We recommend storing it in your `.Renviron` file, which R reads by default. More on setting your API key [here](https://rdrr.io/cran/epidatr/man/get_api_key.html).
 :::
 
+
+
 # Find Data Sources & Signals
 
 ## Finding data sources and signals of interest
@@ -393,6 +403,8 @@ The `epidatr` client automatically searches for the key in the `DELPHI_EPIDATA_K
     +  [**Comprehensive Listings**]{.primary}: Documentation details all available data sources and signals for both [COVID-19](https://cmu-delphi.github.io/delphi-epidata/api/covidcast_signals.html) and other [endpoints](https://cmu-delphi.github.io/delphi-epidata/api/README.html#source-specific-parameters).
 
 * Docs are great for a deep dive into the data, whereas the apps & tools are useful to see what is available...
+
+
 
 
 ## Cheatsheet of web-based apps we provide
@@ -449,6 +461,8 @@ We provide...
 </a>
 
 <!-- To reproduce: Pathogen/Syndrom = flu, Severity pyramid = Dead (top of pyramid), Geo-level = ADM1 (e.g. U.S. states) -->
+
+
 
 ## Interactive tooling in R 
 

@@ -6,12 +6,28 @@
 ```{r setup}
 #| include: false
 options(htmltools.dir.version = FALSE)
-primary <- "#a8201a"
+base <- "#002676"
+primary <- "#941120"
 secondary <- "#f9c80e"
-tertiary <- "#2a76dd"
-fourth_colour <- "#311847"
+tertiary <- "#177245"
+fourth_colour <- "#A393BF"
+fifth_colour <- "#2e8edd"
+colvec <- c(base = base, primary = primary, secondary = secondary,
+            tertiary = tertiary, fourth_colour = fourth_colour,
+            fifth_colour = fifth_colour)
 library(epiprocess)
 suppressMessages(library(tidyverse))
+delphi_pal <- function(n) {
+  if (n > 6L) warning("Not enough colors in this palette!")
+  unname(colvec)[1:n]
+}
+scale_fill_delphi <- function(..., aesthetics = "fill") {
+  discrete_scale(name = "delphi", aesthetics = aesthetics, palette = delphi_pal)
+} 
+scale_color_delphi <- function(..., aesthetics = "color") {
+  discrete_scale(name = "delphi", aesthetics = aesthetics, palette = delphi_pal)
+}
+scale_colour_delphi <- scale_color_delphi
 x <- archive_cases_dv_subset
 x_latest <- epix_as_of(x, max_version = max(x$DT$version))
 self_max = max(x$DT$version)
