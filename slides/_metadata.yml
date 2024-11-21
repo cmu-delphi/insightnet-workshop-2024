@@ -6,8 +6,8 @@ format:
     css: tachyons-minimal.css
     logo: "gfx/delphi.jpg"
     chalkboard: true
-    width: 1280
-    height: 720
+    width: 1600
+    height: 900
     html-math-method: mathjax
     slide-number: true
     fig-format: svg
