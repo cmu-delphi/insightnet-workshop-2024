@@ -16,9 +16,6 @@ library(tidyverse)
 library(epidatr)
 library(epipredict)
 library(epidatasets)
-# install.packages("remotes")
-# remotes::install_github("UBC-STAT/stat-406-rpackage", dependencies = TRUE)
-library(Stat406)
 ```
 
 ## Outline
@@ -926,14 +923,16 @@ ggplot(snapshots |> filter(!latest),
 #| out-height: "400px"
 #| label: nowcasting
 library(rtestim)
-p1 <- Stat406::bccovid |>
+source(here::here("_code/bccovid.R"))
+
+p1 <- bccovid|>
   ggplot(aes(date, cases)) + 
   geom_line(colour = primary) +
   geom_vline(xintercept = ymd("2023-04-15"), colour = secondary,
              linewidth = 2) +
   labs(y = "BC Covid-19 cases", x = "Date") +
   scale_y_continuous(expand = expansion(c(0, NA)))
-bc_rt <- estimate_rt(Stat406::bccovid$cases, x = Stat406::bccovid$date, 
+bc_rt <- estimate_rt(bccovid$cases, x = bccovid$date, 
                      lambda = c(1e6, 1e5))
 p2 <- plot(confband(bc_rt, lambda = 1e5)) + 
   coord_cartesian(ylim = c(0.5, 2)) +
@@ -1784,6 +1783,8 @@ Here's a summary of what `process_data_for_date_range()` does:
 y <- process_data_for_date_range("2021-01-10", "2021-12-01")  # Raw .xlsx data is first released on Jan. 4, 2021
 y
 ```
+
+* Alternatively, you may run the following to load `y` that was previously saved as an RDS file: `y <- readRDS("_data/ma_case_archive.rds")`.
 
 ## Fetch Data - % Outpatient doctors visits for CLI
 
