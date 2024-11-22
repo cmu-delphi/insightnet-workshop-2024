@@ -29,3 +29,12 @@ $link-color: $secondary;
 .reveal code {
   color: #1E90FF;
 }
+
+.scrollable-output {
+  max-height: 500px; /* Adjust the height as needed */
+  overflow-y: auto;  /* Enables vertical scrolling */
+}
+
+.inner-list {
+  font-size: 0.85em; /* Adjust size as needed */
+}

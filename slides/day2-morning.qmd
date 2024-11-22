@@ -1,31 +1,17 @@
 ---
-talk-title: "Forecasting and Time-Series Models"
-talk-short-title: "{{< meta talk-title >}}"
-talk-subtitle: ""
-author: ""
-other-authors: ""
+talk-title: "Whirlwind Tour of Forecasting and Time-Series Models"
+talk-short-title: "Time-Series"
+talk-subtitle: "InsightNet Forecasting Workshop 2024"
+author: "Ryan J. Tibshirani and Daniel J. McDonald"
+other-authors: "Alice Clime, Rachel Lobay, and Logan C. Brooks"
 repo-address: "cmu-delphi/insightnet-workshop-2024"
-talk-date: "Venue -- dd Somemonth yyyy"
+talk-date: "12 December -- Morning"
 format: revealjs
-execute:
-  cache: false
 ---
 
-<!-- Set any of the above to "" to omit them -->
-
-<!-- Or adjust the formatting in _titleslide.qmd -->
 {{< include _titleslide.qmd >}}
 
-<style>
-.inner-list {
-  font-size: 0.85em; /* Adjust size as needed */
-}
-</style>
 
-```{r theme}
-library(tidyverse)
-theme_set(theme_bw())
-```
 
 ## Outline
 

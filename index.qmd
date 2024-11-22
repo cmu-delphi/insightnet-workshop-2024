@@ -5,32 +5,38 @@ toc: false
 ::: {.grid}
 
 
-::: {.g-col-12 .g-col-lg-6 .mr-3}
+::: {.g-col-12 .g-col-lg-6 .px-5}
 
-<br><br>
+<br><br><br><br>
 
 ![](assets/img/cover-art.svg){fig-align="center"}
 
+
 :::
 
-::: {.g-col-12 .g-col-lg-6 .mr-big .ml-big}
+::: {.g-col-12 .g-col-lg-6 .px-5}
 
 ## Schedule
 
-Short description
+In this 2-day workshop, we plan to demonstrate how to use R to load, process, 
+inspect, and forecast aggregate epi surveillance data. We will be presenting a 
+few case studies to motivate the entire pipeline from signal discovery to the 
+production of nowcasts and forecasts. 
 
 1. [Day 1 Morning](slides/day1-morning.qmd)
 1. [Day 1 Afternoon](slides/day1-afternoon.qmd)
 1. [Day 2 Morning](slides/day2-morning.qmd)
 1. [Day 2 Afternoon](slides/day2-afternoon.qmd)
 
-
 ## Instructors
 
 * Ryan J. Tibshirani
 * Daniel J. McDonald
-* Alice Cima
 * Rachel Lobay
+* Alice Cima
+* Logan C. Brooks
+
+
 
 :::
 

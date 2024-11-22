@@ -1,40 +1,32 @@
 ---
-talk-title: "Explore, clean & transform data"
-talk-short-title: "{{< meta talk-title >}}"
-talk-subtitle: ""
-author: ""
-other-authors: ""
+talk-title: "Data Cleaning, Versioning, and Nowcasting"
+talk-short-title: "Nowcasting"
+talk-subtitle: "InsightNet Forecasting Workshop 2024"
+author: "Rachel Lobay and Logan C. Brooks"
+other-authors: "Daniel J. McDonald, Ryan J. Tibshirani, and Alice Clime"
 repo-address: "cmu-delphi/insightnet-workshop-2024"
-talk-date: ""
+talk-date: "11 December -- Afternoon"
 format: revealjs
-execute:
-  cache: false
 ---
   
-  <!-- Set any of the above to "" to omit them -->
-  
-  <!-- Or adjust the formatting in _titleslide.qmd -->
-  {{< include _titleslide.qmd >}}
+{{< include _titleslide.qmd >}}
 
 ```{r theme-load-pkg}
-theme_set(theme_bw())
-
 library(tidyverse)
 library(epidatr)
-library(epiprocess)
 library(epipredict)
 library(epidatasets)
 ```
 
 ## Outline
 
-1. Essentials of `dplyr` and `tidyr` 
+1. Essentials of `{dplyr}` and `{tidyr}` 
 
 1. Epiverse Software ecosystem
 
 1. Panel and Versioned Data in the epiverse
 
-1. Basic Nowcasting using `epiprocess`
+1. Basic Nowcasting using `{epiprocess}`
 
 1. Nowcasting with One Variable
 
@@ -43,12 +35,12 @@ library(epidatasets)
 1. Case Study - Nowcasting Cases Using %CLI
 
 
-# Essentials of `dplyr` and `tidyr` 
+# Essentials of `{dplyr}` and `{tidyr}` 
 
 ## Down with spreadsheets for data manipulation
 
 * Spreadsheets make it difficult to rerun analyses consistently.
-* Using R (and `dplyr`) allows for:
+* Using R (and `{dplyr}`) allows for:
   * Reproducibility 
   * Ease of modification
 * [**Recommendation**]{.primary}: Avoid manual edits; instead, use code for transformations.

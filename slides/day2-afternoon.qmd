@@ -1,39 +1,18 @@
 ---
 talk-title: "Forecasting with `{epipredict}`"
-talk-short-title: "{{< meta talk-title >}}"
-talk-subtitle: ""
-author: ""
-other-authors: ""
+talk-short-title: "Forecasting"
+talk-subtitle: "InsightNet Forecasting Workshop 2024"
+author: "Daniel J. McDonald and Ryan J. Tibshirani"
+other-authors: "Alice Clime, Rachel Lobay, and Logan C. Brooks"
 repo-address: "cmu-delphi/insightnet-workshop-2024"
-talk-date: "Venue -- dd Somemonth yyyy"
+talk-date: "12 December -- Afternoon"
 format: revealjs
-execute:
-  cache: true
 ---
 
-<!-- Set any of the above to "" to omit them -->
 
-<!-- Or adjust the formatting in _titleslide.qmd -->
 {{< include _titleslide.qmd >}}
 
-<style>
-.scrollable-output {
-  max-height: 500px; /* Adjust the height as needed */
-  overflow-y: auto;  /* Enables vertical scrolling */
-}
-</style>
 
-<style>
-.inner-list {
-  font-size: 0.85em; /* Adjust size as needed */
-}
-</style>
-
-```{r theme}
-library(tidyverse)
-theme_set(theme_bw())
-theme_update(legend.position = "bottom", legend.title = element_blank())
-```
 
 ## Outline
 
@@ -41,9 +20,9 @@ theme_update(legend.position = "bottom", legend.title = element_blank())
 
 1. Pre-processing
 
-1. Fit and Predict with `arx_forecaster`
+1. Fit and Predict with `arx_forecaster()`
 
-1. Customizing `arx_forecaster`
+1. Customizing `arx_forecaster()`
 
 1. Forecasting with Versioned Data
 
