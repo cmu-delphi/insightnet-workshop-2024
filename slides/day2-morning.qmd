@@ -3,7 +3,7 @@ talk-title: "Whirlwind Tour of Forecasting and Time-Series Models"
 talk-short-title: "Time-Series"
 talk-subtitle: "InsightNet Forecasting Workshop 2024"
 author: "Ryan J. Tibshirani and Daniel J. McDonald"
-other-authors: "Alice Clime, Rachel Lobay, and Logan C. Brooks"
+other-authors: "Alice Cima, Rachel Lobay, and Logan C. Brooks"
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "12 December -- Morning"
 format: revealjs
@@ -851,6 +851,20 @@ ca |>
   scale_alpha_identity()
 ```
 
+```{r check-issue-trailing, eval=FALSE}
+#which(pred_trailing == 0)
+t_issue = 501 #502, 503
+all_past = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, subset = (1:n) <= t_issue) 
+all_past
+trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
+                    subset = (1:n) <= t_issue & (1:n) > (t_issue-w)) 
+trailing
+predict(all_past, newdata = data.frame(ca[t_issue+h, ]))
+predict(trailing, newdata = data.frame(ca[t_issue+h, ]))
+
+```
+
+
 ## Predictions for different $h$
 
 * So far we only focused on COVID death predictions 28 days ahead.
@@ -1419,13 +1433,10 @@ ca |>
 ```
 
 ```{r regularization-train-test-errors}
-errors_glmnet <- rbind(getErrors(y_train, pred_train_ridge, 
-                                "ridge training"),
-                       getErrors(y_test, pred_test_ridge, "ridge split-sample"),
-                       getErrors(y_train, pred_train_lasso, 
-                                 "lasso training"),
-                       getErrors(y_test, pred_test_lasso, "lasso split-sample"))
-errors_glmnet
+rbind(getErrors(y_train, pred_train_ridge, "ARX(3) + ridge, training"),
+      getErrors(y_test, pred_test_ridge, "ARX(3) + ridge, split-sample"),
+      getErrors(y_train, pred_train_lasso, "ARX(3) + lasso, training"),
+      getErrors(y_test, pred_test_lasso, "ARX(3) + lasso, split-sample"))
 ```
 
 ## Time-series CV for ARX + ridge/lasso (trailing)
@@ -1481,7 +1492,6 @@ for (t in t0:(n-h)) {
   # Predict
   yhat_ridge[t+h] = max(0, predict(ridge_trail, newx = as.matrix(X[(t+h), ])))
   yhat_lasso[t+h] = max(0, predict(lasso_trail, newx = as.matrix(X[(t+h), ])))
-  
 }
 
 ```
@@ -1525,7 +1535,29 @@ for (t in t0:(n-h)) {
 
 ## Predictions: time-series CV for ARX + ridge/lasso (trailing)
 
-```{r plot-regularization-cv}
+```{r plot-arx3-regularization-cv}
+#| fig-align: left
+ca |> 
+  mutate(observed = deaths, 
+         #`ARX(1)` = pred_trailing,
+         `ARX(3)` = pred_arx3,
+         `ARX(3) + ridge` = yhat_ridge,
+         `ARX(3) + lasso` = yhat_lasso) |>
+  pivot_longer(cols = c(observed, #`ARX(1)`, 
+                        `ARX(3)`, `ARX(3) + ridge`, `ARX(3) + lasso`), 
+               names_to = 'Deaths') |>
+  mutate(Deaths = factor(Deaths, levels = c("observed", "ARX(1)", "ARX(3)",
+                                            "ARX(3) + ridge", "ARX(3) + lasso"))) |>
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+```
+
+```{r plot-regularization-cv, eval=FALSE}
 #| fig-align: left
 ca |> 
   mutate(observed = deaths, 
@@ -1543,13 +1575,12 @@ ca |>
 ```
 
 ```{r regularization-cv-errors}
-errors_glmnet_cv <- rbind(
-                       getErrors(y_test, yhat_ridge[!is.na(yhat_ridge)], 
-                                 "ridge CV + trailing"),
-                       getErrors(y_test, yhat_lasso[!is.na(yhat_lasso)], 
-                                 "lasso CV + trailing"))
-errors_glmnet_cv
+rbind(getErrors(y_test, pred_arx3[!is.na(pred_arx3)], "ARX(3), CV + trailing"),
+      getErrors(y_test, yhat_ridge[!is.na(yhat_ridge)], "ARX(3) + ridge, CV + trailing"),
+      getErrors(y_test, yhat_lasso[!is.na(yhat_lasso)], "ARX(3) + lasso, CV + trailing"))
 ```
+
+
 
 # Prediction Intervals
 
@@ -1901,8 +1932,8 @@ ca_archive <- data_archive$DT |>
 #| echo: true
 # initialize dataframe for predictions
 # 5 columns: forecast date, target date, 10%, 50%, and 90% quantiles
-pred_trailing <- data.frame(matrix(NA, ncol = 5, nrow = 0))
-colnames(pred_trailing) <- c("forecast_date", "target_date", 'tau..0.1', 'tau..0.5', 'tau..0.9')
+pred_aware <- data.frame(matrix(NA, ncol = 5, nrow = 0))
+colnames(pred_aware) <- c("forecast_date", "target_date", 'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -1928,10 +1959,10 @@ for (fc_date in fc_time_values) {
   predictors <- data.frame(lagged_deaths = tail(data$deaths, 1), 
                            lagged_cases = tail(data$cases, 1))
   # make predictions for target date and add them to matrix of predictions
-  pred_trailing <- rbind(pred_trailing, 
-                         data.frame('forecast_date' = max(data$time_value),
-                                    'target_date' = max(data$time_value) + h, 
-                                    predict(rq_trailing, newdata = predictors)))
+  pred_aware <- rbind(pred_aware, 
+                      data.frame('forecast_date' = max(data$time_value),
+                                 'target_date' = max(data$time_value) + h, 
+                                 predict(rq_trailing, newdata = predictors)))
 }
 ```
 
@@ -1940,7 +1971,7 @@ for (fc_date in fc_time_values) {
 
 ```{r clean-data-output}
 # clean output and join it with finalized values (`ca` dataset)
-pred_trailing <- pred_trailing |>
+pred_aware <- pred_aware |>
   rename(median = `tau..0.5`,
          lower = `tau..0.1`,
          upper = `tau..0.9`) |>
@@ -1950,7 +1981,7 @@ pred_trailing <- pred_trailing |>
 
 
 ```{r plot-versioned-cv-trailing}
-pred_trailing |>
+pred_aware |>
   ggplot(aes(x = target_date)) +
   geom_line(aes(y = deaths), col = 'gray50') + 
   geom_point(aes(y = median), col = 'blue') +
@@ -1960,6 +1991,11 @@ pred_trailing |>
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
+
+```{r versioned-cv-errors}
+getErrors(pred_aware$deaths[!is.na(pred_aware$median)], 
+          pred_aware$median[!is.na(pred_aware$median)], "")
+```
 
 # Modeling Multiple Time Series
 
@@ -1989,8 +2025,8 @@ usa_archive <- data_archive$DT |>
 
 # initialize dataframe for predictions
 # 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles
-pred_trailing <- data.frame(matrix(NA, ncol = 6, nrow = 0))
-colnames(pred_trailing) <- c('geo_value', 'forecast_date', 'target_date',
+pred_geo_pool <- data.frame(matrix(NA, ncol = 6, nrow = 0))
+colnames(pred_geo_pool) <- c('geo_value', 'forecast_date', 'target_date',
                              'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
@@ -2032,7 +2068,7 @@ for (fc_date in fc_time_values) {
            lagged_cases = cases)
   
   # make predictions for target date and add them to matrix of predictions
-  pred_trailing <- rbind(pred_trailing, 
+  pred_geo_pool <- rbind(pred_geo_pool, 
                          data.frame(
                            'geo_value' = predictors$geo_value,
                            'forecast_date' = max(data$time_value),
@@ -2046,7 +2082,7 @@ for (fc_date in fc_time_values) {
 
 ```{r plot-geo-pooling}
 # geo-pooled predictions for California
-pred_ca <- pred_trailing |>
+pred_ca <- pred_geo_pool |>
   filter(geo_value == 'ca') |>
   rename(median = `tau..0.5`,
          lower = `tau..0.1`,
@@ -2064,6 +2100,10 @@ pred_ca |>
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
+```{r geo-pool-cv-errors}
+getErrors(pred_ca$deaths[!is.na(pred_ca$median)], 
+          pred_ca$median[!is.na(pred_ca$median)], "")
+```
 
 ## Partial geo-pooling (trailing window)
 
@@ -2072,9 +2112,9 @@ pred_ca |>
 
 # initialize dataframe for predictions
 # 6 columns: geo value, forecast date, target date, 10%, 50%, and 90% quantiles
-pred_trailing <- data.frame(matrix(NA, ncol = 6, nrow = 0))
-colnames(pred_trailing) <- c('geo_value', 'forecast_date', 'target_date',
-                             'tau..0.1', 'tau..0.5', 'tau..0.9')
+pred_geo_pool_partial <- data.frame(matrix(NA, ncol = 6, nrow = 0))
+colnames(pred_geo_pool_partial) <- c('geo_value', 'forecast_date', 'target_date',
+                                     'tau..0.1', 'tau..0.5', 'tau..0.9')
 
 w <- 120         #trailing window size
 h <- 28          #number of days ahead
@@ -2124,12 +2164,12 @@ for (fc_date in fc_time_values) {
            lagged_cases = cases)
   
   # make predictions for target date and add them to matrix of predictions
-  pred_trailing <- rbind(pred_trailing, 
-                         data.frame(
-                           'geo_value' = predictors$geo_value,
-                           'forecast_date' = max(data$time_value),
-                           'target_date' = max(data$time_value) + h, 
-                           predict(rq_trailing, newdata = predictors)))
+  pred_geo_pool_partial <- rbind(pred_geo_pool_partial, 
+                                 data.frame(
+                                   'geo_value' = predictors$geo_value,
+                                   'forecast_date' = max(data$time_value),
+                                   'target_date' = max(data$time_value) + h, 
+                                   predict(rq_trailing, newdata = predictors)))
 }
 
 ```
@@ -2138,7 +2178,7 @@ for (fc_date in fc_time_values) {
 
 ```{r plot-partial-geo-pooling}
 # partially geo-pooled predictions for California
-pred_ca <- pred_trailing |>
+pred_ca_partial <- pred_geo_pool_partial |>
   filter(geo_value == 'ca') |>
   rename(median = `tau..0.5`,
          lower = `tau..0.1`,
@@ -2146,7 +2186,7 @@ pred_ca <- pred_trailing |>
   full_join(ca |> select(time_value, deaths), join_by(target_date == time_value)) |>
   arrange(target_date)
 
-pred_ca |>
+pred_ca_partial |>
   ggplot(aes(x = target_date)) +
   geom_line(aes(y = deaths), col = 'gray50') + 
   geom_point(aes(y = median), col = 'darkgreen') +
@@ -2155,6 +2195,12 @@ pred_ca |>
   labs(x = "", y = "Deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
+
+```{r partial-geo-pool-cv-errors}
+getErrors(pred_ca_partial$deaths[!is.na(pred_ca_partial$median)], 
+          pred_ca_partial$median[!is.na(pred_ca_partial$median)], "")
+```
+
 
 ## Final slide {.smaller}
 

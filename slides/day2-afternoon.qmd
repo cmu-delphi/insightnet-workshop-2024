@@ -3,7 +3,7 @@ talk-title: "Forecasting with `{epipredict}`"
 talk-short-title: "Forecasting"
 talk-subtitle: "InsightNet Forecasting Workshop 2024"
 author: "Daniel J. McDonald and Ryan J. Tibshirani"
-other-authors: "Alice Clime, Rachel Lobay, and Logan C. Brooks"
+other-authors: "Alice Cima, Rachel Lobay, and Logan C. Brooks"
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "12 December -- Afternoon"
 format: revealjs
@@ -218,8 +218,6 @@ deaths_outlr <- df |>
   ungroup() |>
   unnest(outlier_info)
 
-df$deaths <- deaths_outlr$combined_replacement
-
 deaths_outlr |>
   filter(geo_value %in% c("ca", "ma", "ny", "tx")) |> 
   ggplot(aes(x = time_value)) +
@@ -242,6 +240,7 @@ cases_outlr <- df |>
   ungroup() |>
   unnest(outlier_info)
 
+df$deaths <- deaths_outlr$combined_replacement
 df$cases <- cases_outlr$combined_replacement
 ```
 
@@ -327,17 +326,20 @@ epi_arx$predictions
 
 ## Extract predictions
 
-We can extract the distribution into a “long” `epi_df`: 
+We can extract the distribution into a “long” `epi_df`
 
-* <span class="inner-list"> one row per quantile </span>
-
-* <span class="inner-list">`values` = value associated to that quantile</span>
-
-```{r epi-pred-arx-unnest}
+```{r epi-pred-quantile-longer}
 #| echo: true
 epi_arx$predictions |>
-  mutate(.pred_distn = nested_quantiles(.pred_distn)) |>  # create a "nested" list-column
-  unnest(.pred_distn)                                     # then unnest it
+  pivot_quantiles_longer(.pred_distn)
+```
+
+or into a "wide" `epi_df`
+
+```{r epi-pred-quantile-wider}
+#| echo: true
+epi_arx$predictions |>
+  pivot_quantiles_wider(.pred_distn)
 ```
 
 
@@ -748,7 +750,7 @@ ca_extend |>
 
 
 ```{r error-arx-random-forests}
-getErrors((ca_extend |> filter(time_value %in% pred_arx_more_lags$target_date))$deaths,
+getErrors((ca_extend |> filter(time_value %in% pred_arx_rf$target_date))$deaths,
           pred_arx_rf$.pred, "time series CV + trailing")
 ```
 
@@ -757,9 +759,60 @@ getErrors((ca_extend |> filter(time_value %in% pred_arx_more_lags$target_date))$
 
 ### Geo-pooling
 
+```{r arx-geo-pooling, eval=FALSE}
+#| echo: true
+#| code-line-numbers: "6"
+pred_arx_geo_pool <- df_extend |>
+  epi_slide(
+    ~ arx_forecaster(epi_data = .x,
+                     outcome = "deaths", 
+                     predictors = c("cases", "deaths", "hospitalizations"), 
+                     trainer = linear_reg() |> set_engine("lm"),
+                     args_list = arx_args_list(
+                       lags = 0,
+                       ahead = 28,
+                       quantile_levels = c(0.1, 0.9))
+                     )$predictions |>
+        pivot_quantiles_wider(.pred_distn),
+  .window_size = w, 
+  .ref_time_values = fc_time_values
+)
+
+```
+
+## Predictions (geo-pooling)
+
+```{r arx-geo-pooling-plot, eval=FALSE}
+#| fig-align: left
+df_extend |> 
+  full_join(pred_arx_geo_pool |> select(!c(cases, deaths, time_value)), 
+            join_by(time_value == target_date, geo_value == geo_value)) |>
+  mutate(observed = deaths, 
+         predicted = .pred) |>
+  pivot_longer(cols = c(observed, predicted), names_to = 'Deaths') |>
+  ggplot(aes(time_value, value)) +
+  geom_ribbon(aes(ymin = `0.1`, ymax = `0.9`), alpha = .3, fill = "#00BFC4") +
+  geom_line(aes(col = Deaths, alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+```
+
+
+```{r error-arx-geo-pooling, eval=FALSE}
+getErrors((ca_extend |> filter(time_value %in% pred_arx_geo_pool$target_date))$deaths,
+          pred_arx_geo_pool$.pred, "time series CV + trailing")
+```
+
+
+
 ## Modifying the ARX forecaster
 
 ### Multiple horizon
+
+
 
 # Forecasting with Versioned Data
 
