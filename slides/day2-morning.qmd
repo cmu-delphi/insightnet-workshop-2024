@@ -7,6 +7,7 @@ other-authors: "Alice Cima, Rachel Lobay, and Logan C. Brooks"
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "12 December -- Morning"
 format: revealjs
+
 ---
 
 {{< include _titleslide.qmd >}}
@@ -771,12 +772,14 @@ errors_arx <- rbind(getErrors(train$deaths[-(1:k)], pred_train, "training"),
 errors_arx
 ```
 
-## Time-Series CV: all past and trailing, ARX(1) model
+
+
+## Time-Series CV (trailing): ARX(1) vs `lm` on lagged cases
 
 ```{r arx-time-series-cv}
 # Getting 28-step ahead predictions through CV 
 h <- k                                                      #number of days ahead 
-pred_all_past = pred_trailing <- rep(NA, length = n)        #initialize vector of predictions
+pred_arx1_all_past = pred_arx1 <- rep(NA, length = n)       #initialize vector of predictions
 w <- 120                                                    #trailing window size
 
 for (t in t0:(n-h)) {
@@ -786,20 +789,20 @@ for (t in t0:(n-h)) {
   arx_trailing = lm(deaths ~ lagged_deaths + lagged_cases, data = ca, 
                     subset = (1:n) <= t & (1:n) > (t-w)) 
   # make h-step ahead prediction
-  pred_all_past[t+h] = max(0, predict(arx_all_past, newdata = data.frame(ca[t+h, ])))
-  pred_trailing[t+h] = max(0, predict(arx_trailing, newdata = data.frame(ca[t+h, ])))
+  pred_arx1_all_past[t+h] = max(0, predict(arx_all_past, newdata = data.frame(ca[t+h, ])))
+  pred_arx1[t+h] = max(0, predict(arx_trailing, newdata = data.frame(ca[t+h, ])))
 }
 ```
 
-
-```{r arx-plot-cv-predictions}
+```{r arx-lm-plot-cv-predictions}
 #| fig-align: left
 ca |> 
   mutate(observed = deaths, 
-         `predicted (CV)` = pred_all_past, 
-         `predicted (trailing + CV)` = pred_trailing) |>
-  pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
-               names_to = 'Deaths') |>
+         `lm on lagged cases` = pred_trailing, 
+         `ARX(1)` = pred_arx1) |>
+  pivot_longer(cols = c(observed, `lm on lagged cases`, `ARX(1)`), names_to = 'Deaths') |>
+  mutate(Deaths = factor(Deaths, 
+                         levels = c("observed", "ARX(1)", "lm on lagged cases"))) |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date) +    
@@ -811,13 +814,10 @@ ca |>
 
 
 ```{r arx-cv-error}
-errors_arx <- rbind(getErrors(test_h$deaths, 
-                              pred_all_past[!is.na(pred_all_past)],
-                              "time series CV"),
-                    getErrors(test_h$deaths, 
-                              pred_trailing[!is.na(pred_trailing)],
-                              "time series CV + trailing"))
-errors_arx
+rbind(getErrors(test_h$deaths, pred_arx1[!is.na(pred_arx1)],
+                "ARX(1)"),
+      getErrors(test_h$deaths, pred_trailing[!is.na(pred_trailing)],
+                "lm on lagged cases"))
 ```
 
 ::: {.notes}
@@ -828,25 +828,23 @@ Errors under both metrics are smaller than with previous model.
 
 Regression on a trailing window can be quite sensitive to data issues.
 
-
 ```{r warning-cv-predictions}
 #| fig-align: left
 ca |> 
-  mutate(observed = deaths, 
-         `predicted (CV)` = pred_all_past, 
-         `predicted (trailing + CV)` = pred_trailing) |>
-  pivot_longer(cols = c(observed, `predicted (CV)`, `predicted (trailing + CV)`), 
-               names_to = 'Deaths') |>
+  mutate(`observed deaths` = deaths, 
+         `observed cases` = cases / 200,
+         `ARX(1)` = pred_arx1) |>
+  pivot_longer(cols = c(`observed deaths`, `observed cases`, `ARX(1)`)) |>
+  mutate(names = factor(name, 
+                        levels = c("observed deaths", "observed cases", "ARX(1)"))) |>  
   ggplot(aes(time_value, value)) +
   geom_line(aes(alpha = ifelse(time_value > as.Date("2021-09-13")-2*h-w &
                                  time_value < as.Date("2021-09-13") &
-                                 Deaths == "observed", 1, .5), col = Deaths)) + 
-  #geom_vline(xintercept = t0_date) +    
-  #geom_vline(xintercept = t0_date + h, lty = 2) +
+                                 name != "ARX(1)", 1, .5), col = name)) + 
   geom_point(aes(x = as.Date("2021-09-13"), y = 0), size = 1, shape = 3, col = 'darkblue') + 
   geom_vline(xintercept = as.Date("2021-09-13")-2*h-w, lty = 3, col = 'darkred') +  
   geom_vline(xintercept = as.Date("2021-09-13")-h, lty = 3, col = 'darkred') +  
-  labs(x = "", y = "Deaths per 100k people") +
+  labs(x = "", y = "") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   scale_alpha_identity()
 ```
@@ -1132,7 +1130,7 @@ ca |>
 ```
 
 ```{r overfit-train-test-error-trunc}
-getErrors(y_test, pmax(0, pred_test), "split-sample truncated")
+getErrors(y_test, pmax(0, pred_test), "split-sample")
 ```
 
 
@@ -1145,7 +1143,9 @@ Some predictions were negative, which doesn't make sense for count data, so we t
 
 ## ARX models with 2 and 3 lags
 
-* The ARX(1) model $\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$ had good predictive performance
+* The [ARX(1)]{.primary} model 
+$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\beta_0 x_{t}$ 
+had good predictive performance
 
 * We will now consider two extensions: the [ARX(2)]{.primary} model
 
@@ -1189,32 +1189,46 @@ for (t in t0:(n-h)) {
 
 ```
 
-## Time-Series CV (trailing): ARX(2) and ARX(3) 
+## Time-Series CV (trailing): ARX(1), ARX(2), and ARX(3) 
 
 ```{r arx-2-and-3-plot-cv-predictions}
 #| fig-align: left
 ca |> 
   mutate(observed = deaths, 
-         `predicted, ARX(2)` = pred_arx2, 
-         `predicted, ARX(3)` = pred_arx3) |>
-  pivot_longer(cols = c(observed, `predicted, ARX(2)`, `predicted, ARX(3)`), 
+         `ARX(1)` = pred_arx1,
+         `ARX(2)` = pred_arx2, 
+         `ARX(3)` = pred_arx3) |>
+  pivot_longer(cols = c(observed, `ARX(1)`, `ARX(2)`, `ARX(3)`), 
                names_to = 'Deaths') |>
+  mutate(Deaths = factor(Deaths, 
+                         levels = c("observed", "ARX(1)", "ARX(2)", "ARX(3)"))) |>
   ggplot(aes(time_value, value, col = Deaths)) +
   geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
   geom_vline(xintercept = t0_date) +    
   geom_vline(xintercept = t0_date + h, lty = 2) +
+  geom_vline(xintercept = as.Date("2022-03-31")) +    
   labs(x = "", y = "Deaths per 100k people") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   scale_alpha_identity()
 ```
 
 
-```{r arx-2-and-3-cv-error}
-errors_arx <- rbind(getErrors(test_h$deaths, pred_arx2[!is.na(pred_arx2)],
-                              "ARX(2), CV + trailing"),
-                    getErrors(test_h$deaths, pred_arx3[!is.na(pred_arx3)],
-                              "ARX(3), CV + trailing"))
-errors_arx
+```{r arx-1-arx-2-and-3-cv-error}
+rbind(getErrors(test_h$deaths, pred_arx1[!is.na(pred_arx1)], "ARX(1)"),
+      getErrors(test_h$deaths, pred_arx2[!is.na(pred_arx2)], "ARX(2)"),
+      getErrors(test_h$deaths, pred_arx3[!is.na(pred_arx3)], "ARX(3)"))
+```
+
+```{r arx-1-arx-2-and-3-no-omicron, eval=FALSE}
+omicron_start = which(ca$time_value == as.Date("2022-01-15"))
+omicron_end = which(ca$time_value == as.Date("2022-03-31"))
+no_omicron = (1:n < omicron_start | 1:n > omicron_end)
+rbind(getErrors(ca$deaths[!is.na(pred_arx1) & no_omicron], 
+                pred_arx1[!is.na(pred_arx1) & no_omicron], "ARX(1)"),
+      getErrors(ca$deaths[!is.na(pred_arx1) & no_omicron], 
+                pred_arx2[!is.na(pred_arx2) & no_omicron], "ARX(2)"),
+      getErrors(ca$deaths[!is.na(pred_arx1) & no_omicron], 
+                pred_arx3[!is.na(pred_arx3) & no_omicron], "ARX(3)"))
 ```
 
 ```{r arx-multiple-lags, eval=FALSE}
@@ -1329,7 +1343,7 @@ have limited or no predictive power
 $$\hat y_{t+h} = \hat \phi + \hat\phi_0 y_{t} + \hat\phi_1 y_{t-7} + \hat\phi_2 y_{t-14} +
 \hat\beta_0 x_{t} + \hat\beta_1 x_{t-7} + \hat\beta_2 x_{t-14}$$
 
-## Fit ARX (3 lags) + ridge/lasso for COVID deaths
+## Fit ARX(3) + ridge/lasso for COVID deaths
 
 ```{r ridge-lasso-fit}
 #| echo: true
@@ -1356,10 +1370,8 @@ lambda_lasso <- lasso$lambda    # sequence of lambdas used to fit lasso
 dim(beta_lasso)                 # One row per coefficient, one column per lambda value
 ```
 
-
+```{r lasso-ridge-predictions, eval=FALSE}
 ## Predictions on test set and best $\lambda$
-
-```{r lasso-ridge-predictions}
 #| echo: true
 X_test <- X[(t0+h):n, ]
 y_test <- y[(t0+h):n]
@@ -1383,21 +1395,14 @@ pred_train_lasso <- predict(lasso, newx = as.matrix(X_train))[, min_lasso]
 pred_test_lasso <- yhat_lasso[, min_lasso]
 ```
 
+```{r lasso-ridge-coeff, eval=FALSE}
 ## Estimated coefficients: shrinkage vs sparsity
-
-::: flex
-::: w-50
-```{r lasso-ridge-coeff}
 # Estimated coefficients
 cbind('ridge' = beta_ridge[, min_ridge], 
       'lasso' = beta_lasso[, min_lasso])
 ```
 
-:::
-
-::: w-50
-
-```{r plot-ridge-lasso-coeff}
+```{r plot-ridge-lasso-coeff, eval=FALSE}
 #| out-height: "600px"
 data.frame('x'= 1:nrow(beta_lasso),
            'ridge' = beta_ridge[, min_ridge], 
@@ -1410,12 +1415,8 @@ data.frame('x'= 1:nrow(beta_lasso),
   ylab('Estimated coefficient')
 ```
 
-:::
-:::
-
+```{r shrinkage-sparsity, eval=FALSE}
 ## Predictions: ARX + ridge/lasso (train and test set)
-
-```{r shrinkage-sparsity}
 #| fig-align: left
 ca |> 
   mutate(observed = deaths, 
@@ -1432,14 +1433,15 @@ ca |>
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
-```{r regularization-train-test-errors}
+```{r regularization-train-test-errors, eval=FALSE}
 rbind(getErrors(y_train, pred_train_ridge, "ARX(3) + ridge, training"),
       getErrors(y_test, pred_test_ridge, "ARX(3) + ridge, split-sample"),
       getErrors(y_train, pred_train_lasso, "ARX(3) + lasso, training"),
       getErrors(y_test, pred_test_lasso, "ARX(3) + lasso, split-sample"))
 ```
 
-## Time-series CV for ARX + ridge/lasso (trailing)
+
+## Time-series CV (trailing) for ARX(3) + ridge/lasso 
 
 ```{r regularization-cv-worst, eval=FALSE}
 h <- 28  # number of days ahead 
@@ -1533,13 +1535,12 @@ for (t in t0:(n-h)) {
 }
 ```
 
-## Predictions: time-series CV for ARX + ridge/lasso (trailing)
+## Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso 
 
 ```{r plot-arx3-regularization-cv}
 #| fig-align: left
 ca |> 
   mutate(observed = deaths, 
-         #`ARX(1)` = pred_trailing,
          `ARX(3)` = pred_arx3,
          `ARX(3) + ridge` = yhat_ridge,
          `ARX(3) + lasso` = yhat_lasso) |>
@@ -1553,6 +1554,7 @@ ca |>
   geom_vline(xintercept = t0_date) +    
   geom_vline(xintercept = t0_date + h, lty = 2) +
   labs(x = "", y = "Deaths per 100k people") +
+  ylim(0, max(pred_arx3, na.rm = T)) +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   scale_alpha_identity()
 ```
@@ -1575,12 +1577,155 @@ ca |>
 ```
 
 ```{r regularization-cv-errors}
-rbind(getErrors(y_test, pred_arx3[!is.na(pred_arx3)], "ARX(3), CV + trailing"),
-      getErrors(y_test, yhat_ridge[!is.na(yhat_ridge)], "ARX(3) + ridge, CV + trailing"),
-      getErrors(y_test, yhat_lasso[!is.na(yhat_lasso)], "ARX(3) + lasso, CV + trailing"))
+rbind(getErrors(y_test, pred_arx3[!is.na(pred_arx3)], "ARX(3)"),
+      getErrors(y_test, yhat_ridge[!is.na(yhat_ridge)], "ARX(3) + ridge"),
+      getErrors(y_test, yhat_lasso[!is.na(yhat_lasso)], "ARX(3) + lasso"))
+```
+
+## Predictions: time-series CV (trailing) for ARX(2) + ridge/lasso 
+
+```{r regularize-arx-2}
+#| fig-align: left
+X_arx2 <- as_tibble(ca_lags) |> select(ends_with("_28"), ends_with("_35"))
+X_arx2_train <- X_arx2[36:t0, ]
+y_arx2_train <- y[36:t0]
+
+ridge_arx2 <- glmnet(X_arx2_train, y_arx2_train, alpha = 0)
+lambda_ridge_arx2 <- ridge_arx2$lambda 
+
+lasso_arx2 <- glmnet(X_arx2_train, y_arx2_train, alpha = 1)
+lambda_lasso_arx2 <- lasso_arx2$lambda   
+
+yhat_ridge_mat <- matrix(NA, nrow = n, ncol = length(lambda_ridge_arx2))
+yhat_lasso_mat <- matrix(NA, nrow = n, ncol = length(lambda_lasso_arx2)) 
+yhat_ridge_arx2 = yhat_lasso_arx2 <- rep(NA, length = n)
+
+# Select index of best lambda value on training set
+ridge_index = cv.glmnet(as.matrix(X_arx2_train), y_arx2_train, alpha = 0, 
+                        lambda = lambda_ridge_arx2)$index[1]
+lasso_index = cv.glmnet(as.matrix(X_arx2_train), y_arx2_train, alpha = 1, 
+                        lambda = lambda_lasso_arx2)$index[1]
+
+for (t in t0:(n-h)) {
+  # Indices of data within window
+  inds = t-w < 1:n & 1:n <= t
+  # Fit ARX + ridge/lasso for each lambda value
+  ridge_trail = glmnet(X_arx2[inds, ], y[inds], alpha = 0, lambda = lambda_ridge_arx2)
+  lasso_trail = glmnet(X_arx2[inds, ], y[inds], alpha = 1, lambda = lambda_lasso_arx2)
+  # Predict for each lambda value
+  yhat_ridge_mat[t+h, ] = predict(ridge_trail, newx = as.matrix(X_arx2[(t+h), ]))
+  yhat_lasso_mat[t+h, ] = predict(lasso_trail, newx = as.matrix(X_arx2[(t+h), ]))
+  # Save prediction corresponding to best lambda so far
+  yhat_ridge_arx2[t+h] = max(0, yhat_ridge_mat[t+h, ridge_index])
+  yhat_lasso_arx2[t+h] = max(0, yhat_lasso_mat[t+h, lasso_index])
+  if (t >= t0+h) {
+    # Prediction error
+    mae_ridge = colMeans(abs(yhat_ridge_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    mae_lasso = colMeans(abs(yhat_lasso_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    # Select index of lambda vector which gives lowest MAE so far
+    ridge_index <- which.min(mae_ridge)
+    lasso_index <- which.min(mae_lasso)
+  }
+}
+
+ca |> 
+  mutate(observed = deaths, 
+         `ARX(2)` = pred_arx2,
+         `ARX(2) + ridge` = yhat_ridge_arx2,
+         `ARX(2) + lasso` = yhat_lasso_arx2) |>
+  pivot_longer(cols = c(observed, `ARX(2)`, `ARX(2) + ridge`, `ARX(2) + lasso`), 
+               names_to = 'Deaths') |>
+  mutate(Deaths = factor(Deaths, levels = c("observed", "ARX(2)",
+                                            "ARX(2) + ridge", "ARX(2) + lasso"))) |>
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  labs(x = "", y = "Deaths per 100k people") +
+  ylim(0, max(pred_arx3, na.rm = T)) +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+
+```
+
+```{r errors-arx2-regularized}
+rbind(getErrors(y_test, pred_arx2[!is.na(pred_arx2)], "ARX(2)"),
+      getErrors(y_test, yhat_ridge_arx2[!is.na(yhat_ridge_arx2)], "ARX(2) + ridge"),
+      getErrors(y_test, yhat_lasso_arx2[!is.na(yhat_lasso_arx2)], "ARX(2) + lasso"))
 ```
 
 
+## Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso 
+
+```{r regularize-arx-1}
+#| fig-align: left
+X_arx1 <- as_tibble(ca_lags) |> select(ends_with("_28"))
+X_arx1_train <- X_arx1[29:t0, ]
+y_arx1_train <- y[29:t0]
+
+ridge_arx1 <- glmnet(X_arx1_train, y_arx1_train, alpha = 0)
+lambda_ridge_arx1 <- ridge_arx1$lambda 
+
+lasso_arx1 <- glmnet(X_arx1_train, y_arx1_train, alpha = 1)
+lambda_lasso_arx1 <- lasso_arx1$lambda   
+
+yhat_ridge_mat <- matrix(NA, nrow = n, ncol = length(lambda_ridge_arx1))
+yhat_lasso_mat <- matrix(NA, nrow = n, ncol = length(lambda_lasso_arx1)) 
+yhat_ridge_arx1 = yhat_lasso_arx1 <- rep(NA, length = n)
+
+# Select index of best lambda value on training set
+ridge_index = cv.glmnet(as.matrix(X_arx1_train), y_arx1_train, alpha = 0, 
+                        lambda = lambda_ridge_arx1)$index[1]
+lasso_index = cv.glmnet(as.matrix(X_arx1_train), y_arx1_train, alpha = 1, 
+                        lambda = lambda_lasso_arx1)$index[1]
+
+for (t in t0:(n-h)) {
+  # Indices of data within window
+  inds = t-w < 1:n & 1:n <= t
+  # Fit ARX + ridge/lasso for each lambda value
+  ridge_trail = glmnet(X_arx1[inds, ], y[inds], alpha = 0, lambda = lambda_ridge_arx1)
+  lasso_trail = glmnet(X_arx1[inds, ], y[inds], alpha = 1, lambda = lambda_lasso_arx1)
+  # Predict for each lambda value
+  yhat_ridge_mat[t+h, ] = predict(ridge_trail, newx = as.matrix(X_arx1[(t+h), ]))
+  yhat_lasso_mat[t+h, ] = predict(lasso_trail, newx = as.matrix(X_arx1[(t+h), ]))
+  # Save prediction corresponding to best lambda so far
+  yhat_ridge_arx1[t+h] = max(0, yhat_ridge_mat[t+h, ridge_index])
+  yhat_lasso_arx1[t+h] = max(0, yhat_lasso_mat[t+h, lasso_index])
+  if (t >= t0+h) {
+    # Prediction error
+    mae_ridge = colMeans(abs(yhat_ridge_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    mae_lasso = colMeans(abs(yhat_lasso_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)
+    # Select index of lambda vector which gives lowest MAE so far
+    ridge_index <- which.min(mae_ridge)
+    lasso_index <- which.min(mae_lasso)
+  }
+}
+
+ca |> 
+  mutate(observed = deaths, 
+         `ARX(1)` = pred_arx1,
+         `ARX(1) + ridge` = yhat_ridge_arx1,
+         `ARX(1) + lasso` = yhat_lasso_arx1) |>
+  pivot_longer(cols = c(observed, `ARX(1)`, `ARX(1) + ridge`, `ARX(1) + lasso`), 
+               names_to = 'Deaths') |>
+  mutate(Deaths = factor(Deaths, levels = c("observed", "ARX(1)",
+                                            "ARX(1) + ridge", "ARX(1) + lasso"))) |>
+  ggplot(aes(time_value, value, col = Deaths)) +
+  geom_line(aes(alpha = ifelse(time_value > t0_date, 1, .5))) + 
+  geom_vline(xintercept = t0_date) +    
+  geom_vline(xintercept = t0_date + h, lty = 2) +
+  ylim(0, max(pred_arx3, na.rm = T)) +
+  labs(x = "", y = "Deaths per 100k people") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  scale_alpha_identity()
+
+```
+
+```{r errors-arx1-regularized}
+rbind(getErrors(y_test, pred_arx1[!is.na(pred_arx1)], "ARX(1)"),
+      getErrors(y_test, yhat_ridge_arx1[!is.na(yhat_ridge_arx1)], "ARX(1) + ridge"),
+      getErrors(y_test, yhat_lasso_arx1[!is.na(yhat_lasso_arx1)], "ARX(1) + lasso"))
+```
 
 # Prediction Intervals
 
