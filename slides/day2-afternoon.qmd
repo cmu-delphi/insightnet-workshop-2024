@@ -2,8 +2,7 @@
 talk-title: "Forecasting with `{epipredict}`"
 talk-short-title: "Forecasting"
 talk-subtitle: "InsightNet Forecasting Workshop 2024"
-author: "Daniel J. McDonald and Ryan J. Tibshirani"
-other-authors: "Alice Cima, Rachel Lobay, and Logan C. Brooks"
+author: "Ailce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani"
 repo-address: "cmu-delphi/insightnet-workshop-2024"
 talk-date: "12 December -- Afternoon"
 format: revealjs
@@ -987,54 +986,5 @@ latest <- get_test_data(r, ca)
 # we could make predictions using the same model on ANY test data
 preds <- trained_ewf |> predict(new_data = latest)
 ```
-
-
-## Thanks:
-
-```{r qr-codes}
-#| include: false
-#| fig-format: png
-# Code to generate QR codes to link to any external sources
-qrdat <- function(text, ecl = c("L", "M", "Q", "H")) {
-  x <- qrcode::qr_code(text, ecl)
-  n <- nrow(x)
-  s <- seq_len(n)
-  tib <- tidyr::expand_grid(x = s, y = rev(s))
-  tib$z <- c(x)
-  tib
-}
-qr1 <- qrdat("https://cmu-delphi.github.io/epiprocess/")
-qr2 <- qrdat("https://cmu-delphi.github.io/epipredict/")
-ggplot(qr1, aes(x, y, fill = z)) +
-  geom_raster() +
-  ggtitle("{epiprocess}") +
-  coord_equal(expand = FALSE) +
-  scale_fill_manual(values = c("white", "black"), guide = "none") +
-  theme_void(base_size = 18) +
-  theme(plot.title = element_text(hjust = .5))
-ggplot(qr2, aes(x, y, fill = z)) +
-  geom_raster() +
-  labs(title = "{epipredict}") +
-  coord_equal(expand = FALSE) +
-  scale_fill_manual(values = c("white", "black"), guide = "none") +
-  theme_void(base_size = 18) +
-  theme(plot.title = element_text(hjust = .5))
-```
-
-- The whole [CMU Delphi Team](https://delphi.cmu.edu/about/team/) (across many institutions)
-- Optum/UnitedHealthcare, Change Healthcare.
-- Google, Facebook, Amazon Web Services.
-- Quidel, SafeGraph, Qualtrics.
-- Centers for Disease Control and Prevention.
-- Council of State and Territorial Epidemiologists
-
-
-::: {layout-row=1 fig-align="center"}
-![](gfx/delphi.jpg){height="100px"}
-![](gfx/berkeley.jpg){height="100px"}
-![](gfx/cmu.jpg){height="100px"}
-![](gfx/ubc.jpg){width="250px"}
-![](gfx/stanford.jpg){width="250px"}
-:::
 
 
