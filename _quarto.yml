@@ -14,6 +14,7 @@ website:
   title: "InsightNet EpiData Workshop 2024"
   page-footer:
     left: "This work by the [Delphi Research Group](https://delphi.cmu.edu) is licensed under the [MIT license](LICENSE.md)."
+    right: "Supported in part by the [CSTE](https://www.cste.org) and the [CDC](https://www.cdc.gov)."
   navbar:
     pinned: false
     title: "<i class='bi bi-graph-down'></i> InsightNet Workshop 2024"

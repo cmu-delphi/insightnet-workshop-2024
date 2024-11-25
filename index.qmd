@@ -7,9 +7,18 @@ toc: false
 
 ::: {.g-col-12 .g-col-lg-6 .px-5}
 
-<br><br><br><br>
-
 ![](assets/img/cover-art.svg){fig-align="center"}
+
+
+::: {layout-ncol=4}
+![](assets/img/delphi.jpg)
+
+![](assets/img/cmu.png)
+
+![](assets/img/berkeley.jpg)
+
+![](assets/img/ubc.jpg)
+:::
 
 
 :::
@@ -30,11 +39,11 @@ production of nowcasts and forecasts.
 
 ## Instructors
 
-* Ryan J. Tibshirani
-* Daniel J. McDonald
-* Rachel Lobay
-* Alice Cima
 * Logan C. Brooks
+* Alice Cima
+* Rachel Lobay
+* Daniel J. McDonald
+* Ryan J. Tibshirani
 
 
 
