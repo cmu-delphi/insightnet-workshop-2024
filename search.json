@@ -1859,7 +1859,7 @@
     "href": "slides/day2-morning.html#arx-model-for-covid-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "ARX model for COVID deaths",
-    "text": "ARX model for COVID deaths\n\nLet’s add lagged deaths as a predictor to our previous forecaster:\n\n\\[\\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\]\n\nWe will refer to this model as ARX(1), as it only includes one lag for each predictor.\n\n\n# Prepare data: add column with deaths lagged by 28\nca$lagged_deaths &lt;- dplyr::lag(ca$deaths, n = k)\n\n\nHow does it compare to the previous model in terms of time-series CV?"
+    "text": "ARX model for COVID deaths\n\nLet’s add lagged deaths as a predictor to our previous forecaster:\n\n\\[\\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\]\n\nWe will refer to this model as ARX(1), as it only includes one lag for each predictor.\n\n\n# Prepare data: add column with deaths lagged by 28\nca$lagged_deaths &lt;- dplyr::lag(ca$deaths, n = k)\n\n\nHow does it compare to the previous model in terms of time-series CV?\n\n\n\n\nNote\n\n\nFrom now on, we will only consider regression on a trailing window, since regression on all past data leads to overshooting during Omicron."
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cv-trailing-arx1-vs-lm-on-lagged-cases",
@@ -1874,6 +1874,13 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Warning!",
     "text": "Warning!\nRegression on a trailing window can be quite sensitive to data issues."
+  },
+  {
+    "objectID": "slides/day2-morning.html#warning-3",
+    "href": "slides/day2-morning.html#warning-3",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Warning!",
+    "text": "Warning!\n\nAt the forecast date when the downward dip in deaths is predicted, the coefficients estimated by ARX(1) are\n\n\n\n  (Intercept) lagged_deaths  lagged_cases \n  0.067259206   0.304075294  -0.004285251 \n\n\n\nThe downward dip is explained by the negative coefficient on lagged_cases, and by the fact that at the forecast date\n\nobserved deaths are exactly equal to 0 (data issue)\nobserved cases are increasing\n\nIn the afternoon, we will see that this prediction issue is fixed if we pre-process the data, taking care of outliers appropriately"
   },
   {
     "objectID": "slides/day2-morning.html#predictions-for-different-h",
@@ -1918,46 +1925,11 @@
     "text": "Predictions by horizon, ARX(1)"
   },
   {
-    "objectID": "slides/day2-morning.html#too-many-predictors",
-    "href": "slides/day2-morning.html#too-many-predictors",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Too many predictors",
-    "text": "Too many predictors\nWhat if we try to incorporate past information extensively by fitting a model with a very large number of predictors?\n\nThe estimated coefficients will be chosen to mimic the observed data very closely on the training set, leading to small training error\nThe predictive performance on the test set might be very poor, producing large split-sample and CV error\n\n\n\n\nOverfitting!"
-  },
-  {
-    "objectID": "slides/day2-morning.html#arx-model-for-covid-deaths-with-many-predictors",
-    "href": "slides/day2-morning.html#arx-model-for-covid-deaths-with-many-predictors",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "ARX model for COVID deaths with many predictors",
-    "text": "ARX model for COVID deaths with many predictors\nWhen predicting COVID deaths 28 days ahead, we can use more past information and fit a model that includes the past two months of deaths and cases as predictors\n\\[\\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\phi_1 y_{t-1} + \\dots +\n\\hat\\phi_{59} y_{t-59} +\n\\hat\\beta_0 x_{t} + \\dots + \\hat\\beta_{t-59} x_{t-59}\\]"
-  },
-  {
-    "objectID": "slides/day2-morning.html#preparing-the-data-1",
-    "href": "slides/day2-morning.html#preparing-the-data-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Preparing the data",
-    "text": "Preparing the data\n\ny &lt;- ca$deaths  #outcome\nlags &lt;- 28:87   #lags used for predictors (deaths and cases)\nh &lt;- 28\n\n# Build predictor matrix with 60 columns\nX &lt;- data.frame(matrix(NA, nrow = length(y), ncol = 2*length(lags)))\ncolnames(X) &lt;- paste('X', 1:ncol(X), sep = '')\n\nfor (j in 1:length(lags)) {\n  # first 60 columns contain deaths lagged by 28, 29, ..., 87\n  X[, j] = dplyr::lag(ca$deaths, lags[j])\n  # last 60 columns contain cases lagged by 28, 29, ..., 87\n  X[, length(lags) + j] = dplyr::lag(ca$cases, lags[j])\n}"
-  },
-  {
-    "objectID": "slides/day2-morning.html#fitting-the-arx-model",
-    "href": "slides/day2-morning.html#fitting-the-arx-model",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fitting the ARX model",
-    "text": "Fitting the ARX model\n\n# Train/test split\ny_train &lt;- y[1:t0]\nX_train &lt;- X[1:t0, ]\ny_test &lt;- y[(t0+h):length(y)]\nX_test &lt;- X[(t0+h):length(y), ]\n\n# Fitting the ARX model\nreg = lm(y_train ~ ., data = X_train)\ncoef(reg)\n\n  (Intercept)            X1            X2            X3            X4 \n 0.0775116437 -0.5593818462  0.7979659233 -0.4175920623 -0.2780809101 \n           X5            X6            X7            X8            X9 \n 0.3031742752 -0.0809244359  0.2548033065 -0.4860940499  0.1322930625 \n          X10           X11           X12           X13           X14 \n-0.2352041391 -0.1327834155  0.2155747658 -0.3380379255  0.4239820677 \n          X15           X16           X17           X18           X19 \n-0.2012041267 -0.3367851572 -0.2889890062  0.5328712849  0.5388650654 \n          X20           X21           X22           X23           X24 \n-0.3065835983  0.0724595436 -0.0168042757 -0.1171985635  0.2046513639 \n          X25           X26           X27           X28           X29 \n 0.1810480128  0.1213875691  0.0230516587  0.0196208441  0.0397085778 \n          X30           X31           X32           X33           X34 \n-0.3884271784  0.2088690345  0.1248242133  0.0706165553 -0.4882035875 \n          X35           X36           X37           X38           X39 \n 0.3609708771 -0.3169047917  0.4216666798  0.1891753615 -0.1106475626 \n          X40           X41           X42           X43           X44 \n 0.1498605000 -0.0692090064  0.1336287081 -0.1875462008 -0.2449003857 \n          X45           X46           X47           X48           X49 \n-0.0001337325 -0.5738823399  0.0695056705 -0.2460256934  1.0173509442 \n          X50           X51           X52           X53           X54 \n-0.1853591480 -0.5428279059  0.2678983608 -0.6935743948  0.3829408389 \n          X55           X56           X57           X58           X59 \n 0.1088530454  0.9466159031 -0.5618240450 -0.4660113206  0.6102916420 \n          X60           X61           X62           X63           X64 \n-0.2859449807  0.0283237204 -0.0099051792 -0.0070208086  0.0021192306 \n          X65           X66           X67           X68           X69 \n-0.0047341417 -0.0111532015  0.0038542335  0.0184565802 -0.0060684485 \n          X70           X71           X72           X73           X74 \n-0.0005801373  0.0048246180 -0.0061516656 -0.0066597399  0.0039021597 \n          X75           X76           X77           X78           X79 \n 0.0126296042 -0.0080708988 -0.0027091539  0.0052517573 -0.0052000323 \n          X80           X81           X82           X83           X84 \n 0.0029961750  0.0013593227  0.0083628716 -0.0063778828 -0.0018882435 \n          X85           X86           X87           X88           X89 \n-0.0097221295  0.0003314155 -0.0013911110  0.0066935430  0.0107961484 \n          X90           X91           X92           X93           X94 \n-0.0052473765 -0.0057177036  0.0023462634 -0.0112827594  0.0008517257 \n          X95           X96           X97           X98           X99 \n-0.0004388072  0.0231342674 -0.0056794349 -0.0046693142 -0.0061536587 \n         X100          X101          X102          X103          X104 \n-0.0094880392  0.0071605921  0.0021423255  0.0108738290 -0.0015420116 \n         X105          X106          X107          X108          X109 \n 0.0015155025  0.0022482275 -0.0148197121  0.0129113709  0.0009150566 \n         X110          X111          X112          X113          X114 \n 0.0021338029 -0.0019029077 -0.0040171812 -0.0025674957 -0.0069761237 \n         X115          X116          X117          X118          X119 \n 0.0226899068 -0.0022271856 -0.0060651747  0.0071536700 -0.0016426930 \n         X120 \n-0.0127949778"
-  },
-  {
-    "objectID": "slides/day2-morning.html#predictions-on-training-and-test-set",
-    "href": "slides/day2-morning.html#predictions-on-training-and-test-set",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions on training and test set",
-    "text": "Predictions on training and test set\n\n\n\n                   MAE    MASE\nsplit-sample 0.3978198 3706.28\n\n\n\n\n\nNote\n\n\nSome predictions were negative, which doesn’t make sense for count data, so we truncated them at 0."
-  },
-  {
     "objectID": "slides/day2-morning.html#arx-models-with-2-and-3-lags",
     "href": "slides/day2-morning.html#arx-models-with-2-and-3-lags",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "ARX models with 2 and 3 lags",
-    "text": "ARX models with 2 and 3 lags\n\nThe ARX(1) model \\(\\hat y_{t+h} = \\hat \\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\) had good predictive performance\nWe will now consider two extensions: the ARX(2) model\n\n\\[\\hat y_{t+h} = \\hat \\phi + \\hat\\phi_0 y_{t} + \\hat\\phi_1 y_{t-7} +\n\\hat\\beta_0 x_{t} + \\hat\\beta_1 x_{t-7}\\]\nand the ARX(3) model\n\\[\\hat y_{t+h} = \\hat \\phi + \\hat\\phi_0 y_{t} + \\hat\\phi_1 y_{t-7} + \\hat\\phi_2 y_{t-14} +\n\\hat\\beta_0 x_{t} + \\hat\\beta_1 x_{t-7} + \\hat\\beta_2 x_{t-14}\\]\nand fit them using a trailing window with \\(w = 120\\)."
+    "text": "ARX models with 2 and 3 lags\n\nThe ARX(1) model \\(\\hat y_{t+h} = \\hat \\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\) has good predictive performance\nWe will now try to improve the ARX(1) model by including more lags in the set of predictors\nLet’s consider two extensions: the ARX(2) model\n\n\\[\\hat y_{t+h} = \\hat \\phi + \\hat\\phi_0 y_{t} + \\hat\\phi_1 y_{t-7} +\n\\hat\\beta_0 x_{t} + \\hat\\beta_1 x_{t-7}\\]\nand the ARX(3) model\n\\[\\hat y_{t+h} = \\hat \\phi + \\hat\\phi_0 y_{t} + \\hat\\phi_1 y_{t-7} + \\hat\\phi_2 y_{t-14} +\n\\hat\\beta_0 x_{t} + \\hat\\beta_1 x_{t-7} + \\hat\\beta_2 x_{t-14}\\]\nand fit them using a trailing window with \\(w = 120\\)."
   },
   {
     "objectID": "slides/day2-morning.html#fit-arx2-and-arx3-on-trailing-window",
@@ -1974,18 +1946,46 @@
     "text": "Time-Series CV (trailing): ARX(1), ARX(2), and ARX(3)\n\n\n\n              MAE      MASE\nARX(1) 0.07852942  731.6178\nARX(2) 0.08716160  812.0393\nARX(3) 0.12487694 1163.4135"
   },
   {
-    "objectID": "slides/day2-morning.html#warning-3",
-    "href": "slides/day2-morning.html#warning-3",
+    "objectID": "slides/day2-morning.html#warning-4",
+    "href": "slides/day2-morning.html#warning-4",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Warning!",
-    "text": "Warning!\n\nAs we add more predictors, forecasts seem more volatile and errors increase.\nHow can we\n\nselect the “right” number of lags to include?\navoid overfitting, while considering a large number of predictors?"
+    "text": "Warning!\nAs we add more predictors, forecasts seem more volatile and errors increase.\n\n\n\nOverfitting"
+  },
+  {
+    "objectID": "slides/day2-morning.html#overfitting-1",
+    "href": "slides/day2-morning.html#overfitting-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Overfitting",
+    "text": "Overfitting\nWhen we introduce too many predictors in the model\n\nThe estimated coefficients will be chosen to mimic the observed data very closely on the training set, leading to small training error\nThe predictive performance on the test set might be very poor, producing large split-sample and CV error"
+  },
+  {
+    "objectID": "slides/day2-morning.html#extreme-case-arx-model-with-120-predictors",
+    "href": "slides/day2-morning.html#extreme-case-arx-model-with-120-predictors",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Extreme case: ARX model with 120 predictors",
+    "text": "Extreme case: ARX model with 120 predictors\n\nWhat happens if we increase the number of predictors to 120?\nLet’s fit\n\n\\[\\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\phi_1 y_{t-1} + \\dots +\n\\hat\\phi_{59} y_{t-59} +\n\\hat\\beta_0 x_{t} + \\dots + \\hat\\beta_{t-59} x_{t-59}\\]\nand compare training vs split-sample errors"
+  },
+  {
+    "objectID": "slides/day2-morning.html#extreme-case-predictions-on-training-and-test-set",
+    "href": "slides/day2-morning.html#extreme-case-predictions-on-training-and-test-set",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Extreme case: predictions on training and test set",
+    "text": "Extreme case: predictions on training and test set\n\n\n\n                   MAE    MASE\nsplit-sample 0.3978198 3706.28\n\n\n\n\n\nNote\n\n\nSome predictions were negative, which doesn’t make sense for count data, so we truncated them at 0."
+  },
+  {
+    "objectID": "slides/day2-morning.html#back-to-arx1-arx2-and-arx3",
+    "href": "slides/day2-morning.html#back-to-arx1-arx2-and-arx3",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Back to ARX(1), ARX(2), and ARX(3)",
+    "text": "Back to ARX(1), ARX(2), and ARX(3)\nHow can we\n\nselect the “right” number of lags to include?\navoid overfitting, while considering a large number of predictors?"
   },
   {
     "objectID": "slides/day2-morning.html#regularization",
     "href": "slides/day2-morning.html#regularization",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Regularization",
-    "text": "Regularization\n\nIdea: introduce a regularization parameter \\(\\lambda\\) that shrinks or sets some of the estimated coefficients to zero, i.e. some predictors are estimated to have limited or no predictive power\nMost common regularization methods\n\nRidge: shrinks coefficients to zero\nLasso: sets some coefficients to zero\n\nLet’s predict \\(h=28\\) days ahead by regularizing\n\n\\[\\hat y_{t+h} = \\hat \\phi + \\hat\\phi_0 y_{t} + \\hat\\phi_1 y_{t-7} + \\hat\\phi_2 y_{t-14} +\n\\hat\\beta_0 x_{t} + \\hat\\beta_1 x_{t-7} + \\hat\\beta_2 x_{t-14}\\]"
+    "text": "Regularization\n\nIdea: introduce a regularization parameter \\(\\lambda\\) that shrinks or sets some of the estimated coefficients to zero, i.e. some predictors are estimated to have limited or no predictive power\nMost common regularization methods\n\nRidge: shrinks coefficients to zero\nLasso: sets some coefficients to zero\n\nLet’s predict \\(h=28\\) days ahead by regularizing\n\nARX(1)\nARX(2)\nARX(3)"
   },
   {
     "objectID": "slides/day2-morning.html#fit-arx3-ridgelasso-for-covid-deaths",
@@ -2002,11 +2002,11 @@
     "text": "Time-series CV (trailing) for ARX(3) + ridge/lasso\n\nh &lt;- 28  # number of days ahead \nw &lt;- 120 # window length\n\n# Initialize matrices for predictions (one column per lambda value)\nyhat_ridge_mat &lt;- matrix(NA, nrow = n, ncol = length(lambda_ridge))\nyhat_lasso_mat &lt;- matrix(NA, nrow = n, ncol = length(lambda_lasso)) \nyhat_ridge = yhat_lasso &lt;- rep(NA, length = n)\n\n# Select index of best lambda value on training set\nridge_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 0, lambda = lambda_ridge)$index[1]\nlasso_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 1, lambda = lambda_lasso)$index[1]\n\nfor (t in t0:(n-h)) {\n  # Indices of data within window\n  inds = t-w &lt; 1:n & 1:n &lt;= t\n  # Fit ARX + ridge/lasso for each lambda value\n  ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = lambda_ridge)\n  lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = lambda_lasso)\n  # Predict for each lambda value\n  yhat_ridge_mat[t+h, ] = predict(ridge_trail, newx = as.matrix(X[(t+h), ]))\n  yhat_lasso_mat[t+h, ] = predict(lasso_trail, newx = as.matrix(X[(t+h), ]))\n  # Save prediction corresponding to best lambda so far\n  yhat_ridge[t+h] = max(0, yhat_ridge_mat[t+h, ridge_index])\n  yhat_lasso[t+h] = max(0, yhat_lasso_mat[t+h, lasso_index])\n  if (t &gt;= t0+h) {\n    # Prediction error\n    mae_ridge = colMeans(abs(yhat_ridge_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)\n    mae_lasso = colMeans(abs(yhat_lasso_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)\n    # Select index of lambda vector which gives lowest MAE so far\n    ridge_index &lt;- which.min(mae_ridge)\n    lasso_index &lt;- which.min(mae_lasso)\n  }\n}"
   },
   {
-    "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx3-ridgelasso",
-    "href": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx3-ridgelasso",
+    "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx1-ridgelasso",
+    "href": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx1-ridgelasso",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso",
-    "text": "Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso\n\n\n\n                      MAE      MASE\nARX(3)         0.12487694 1163.4135\nARX(3) + ridge 0.08555066  797.0310\nARX(3) + lasso 0.07633053  711.1318"
+    "section": "Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso",
+    "text": "Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso\n\n\n\n                      MAE     MASE\nARX(1)         0.07852942 731.6178\nARX(1) + ridge 0.07004585 652.5808\nARX(1) + lasso 0.07887651 734.8514"
   },
   {
     "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx2-ridgelasso",
@@ -2016,11 +2016,18 @@
     "text": "Predictions: time-series CV (trailing) for ARX(2) + ridge/lasso\n\n\n\n                      MAE     MASE\nARX(2)         0.08716160 812.0393\nARX(2) + ridge 0.08143228 758.6622\nARX(2) + lasso 0.07807801 727.4122"
   },
   {
-    "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx1-ridgelasso",
-    "href": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx1-ridgelasso",
+    "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx3-ridgelasso",
+    "href": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx3-ridgelasso",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso",
-    "text": "Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso\n\n\n\n                      MAE     MASE\nARX(1)         0.07852942 731.6178\nARX(1) + ridge 0.07004585 652.5808\nARX(1) + lasso 0.07887651 734.8514"
+    "section": "Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso",
+    "text": "Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso\n\n\n\n                      MAE      MASE\nARX(3)         0.12487694 1163.4135\nARX(3) + ridge 0.08555066  797.0310\nARX(3) + lasso 0.07633053  711.1318"
+  },
+  {
+    "objectID": "slides/day2-morning.html#comparison-of-regularized-arx1-arx2-and-arx3",
+    "href": "slides/day2-morning.html#comparison-of-regularized-arx1-arx2-and-arx3",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Comparison of regularized ARX(1), ARX(2), and ARX(3)",
+    "text": "Comparison of regularized ARX(1), ARX(2), and ARX(3)\n\nBest model: ARX(1) + ridge\nSecond best: ARX(3) + lasso\nRidge worsens as more predictors are included\nLasso improves as more predictors are included"
   },
   {
     "objectID": "slides/day2-morning.html#point-predictions-vs-intervals",
