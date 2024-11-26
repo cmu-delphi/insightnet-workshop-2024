@@ -24,10 +24,10 @@ delphi_pal <- function(n) {
   unname(colvec)[1:n]
 }
 scale_fill_delphi <- function(..., aesthetics = "fill") {
-  discrete_scale(name = "delphi", aesthetics = aesthetics, palette = delphi_pal)
+  discrete_scale(aesthetics = aesthetics, palette = delphi_pal, ...)
 } 
 scale_color_delphi <- function(..., aesthetics = "color") {
-  discrete_scale(name = "delphi", aesthetics = aesthetics, palette = delphi_pal)
+  discrete_scale(aesthetics = aesthetics, palette = delphi_pal, ...)
 }
 scale_colour_delphi <- scale_color_delphi
 x <- archive_cases_dv_subset
