@@ -752,8 +752,10 @@ attr(edf, "metadata")
 
 ```{r corr-lags-ex}
 #| echo: true
-cor0 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value)
-cor14 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, dt1 = -14)
+## cor0 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value)
+## cor14 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, dt1 = -14)
+cor0 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, method = "kendall")
+cor14 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, dt1 = -14, method = "kendall")
 ```
 
 ```{r plot-corr-lags-ex}
@@ -1027,7 +1029,7 @@ check_when_finalized <- function(epi_archive, start_date = NULL, end_date = NULL
   dt <- epi_archive$DT
   
   # Extract the latest (finalized) version
-  mortality_latest <- epix_as_of(epi_archive, max_version = max(dt$version))
+  mortality_latest <- epix_as_of(epi_archive, max(dt$version))
   
   # Merge the finalized mortality data with all versions
   merged_data <- dt |>
@@ -1071,12 +1073,12 @@ revision_dates <- seq(min(mortality_archive$DT$version), end_time, by = "1 week"
 
 # Create a data frame for each version and label them by revision date
 mortality_revisions <- map_dfr(revision_dates, function(date) {
-  epix_as_of(mortality_archive, max_version = date) |>
+  epix_as_of(mortality_archive, date) |>
     mutate(revision_date = date)  # Add a column for the revision date
 })
 
 # Extract the latest/finalized version
-mortality_latest <- epix_as_of(mortality_archive, max_version = max(mortality_archive$DT$version))
+mortality_latest <- epix_as_of(mortality_archive, max(mortality_archive$DT$version))
 
 ```
 
@@ -1133,7 +1135,7 @@ ca_finalized <- mortality_latest |>
   dplyr::select(mortality)
 
 # Load the provisional mortality data for the same week
-mortality_old = epix_as_of(mortality_archive, max_version = as_of_date)
+mortality_old = epix_as_of(mortality_archive, as_of_date)
 
 ca_provisional <- mortality_old |>
   filter(time_value == (as_of_date - fixed_lag)) |>
@@ -1154,7 +1156,7 @@ Let's move from calculating the ratio by using one day to multiple days with the
 #| echo: true
 as_of_date = as.Date("2024-02-25")
 
-provisional <- epix_as_of(mortality_archive, max_version = as_of_date) |>
+provisional <- epix_as_of(mortality_archive, as_of_date) |>
   filter(time_value == as_of_date - 7) |>
   pull(mortality)
 provisional
@@ -1177,7 +1179,7 @@ First, let's download the real-time rates for CA, and compare them to their fina
 #| echo: true
 dates <- seq(start_time, (as_of_date - 7), by = "day")
 mortality_real_time <- function(date) {
-  epix_as_of(mortality_archive, max_version = (date + 7L)) |>
+  epix_as_of(mortality_archive, date + 7) |>
     filter(time_value == date)
 }
 mortality_real_time_df <- map_dfr(dates, mortality_real_time)
@@ -1207,7 +1209,7 @@ ggplot() +
 
 ```{r finalized-data-as-of-feb25}
 #| echo: true
-mortality_as_of_feb25 <- epix_as_of(mortality_archive, max_version = as_of_date)
+mortality_as_of_feb25 <- epix_as_of(mortality_archive, as_of_date)
 head(mortality_as_of_feb25)
 ```
 
@@ -1281,14 +1283,14 @@ So the main steps for this type of fixed lag nowcasting are...
 as_of_date = as.Date("2024-02-25")
 
 # 1. Obtain the provisional value
-provisional <- epix_as_of(mortality_archive, max_version = as_of_date) |>
+provisional <- epix_as_of(mortality_archive, as_of_date) |>
   filter(time_value == as_of_date - 7) |>
   pull(mortality)
 provisional
 
 # 2. Estimate the ratio 
 mortality_real_time_df <- map_dfr(dates, mortality_real_time) |> filter(time_value != "2024-02-18") # Real-time
-mortality_as_of_feb25 <- epix_as_of(mortality_archive, max_version = as_of_date) |> filter(time_value != "2024-02-18")  # "Finalized"
+mortality_as_of_feb25 <- epix_as_of(mortality_archive, as_of_date) |> filter(time_value != "2024-02-18")  # "Finalized"
 
 ratio_real_time_to_feb25 <- mortality_real_time_df$mortality / mortality_as_of_feb25$mortality
 
@@ -1310,7 +1312,7 @@ nowcast_function <- function(nowcast_date, fixed_lag) {
   as_of_date = nowcast_date + fixed_lag
   
   # 1. Obtain the provisional value for the target.
-  provisional <- epix_as_of(mortality_archive, max_version = as_of_date) |>
+  provisional <- epix_as_of(mortality_archive, as_of_date) |>
     filter(time_value == as_of_date - fixed_lag) |>
     pull(mortality)
   
@@ -1320,7 +1322,7 @@ nowcast_function <- function(nowcast_date, fixed_lag) {
   mortality_real_time <- map_dfr(dates_seq, mortality_real_time)
   
   # and "finalized" data
-  finalized <- epix_as_of(mortality_archive, max_version = as_of_date) |> filter(time_value >= start_time & time_value <= (nowcast_date - fixed_lag)) 
+  finalized <- epix_as_of(mortality_archive, as_of_date) |> filter(time_value >= start_time & time_value <= (nowcast_date - fixed_lag)) 
   
   ratios <- mortality_real_time$mortality / finalized$mortality
   
@@ -1557,7 +1559,7 @@ After making predictions, we compare them to the actual hospital admissions.
 #| echo: true
 # Left join with latest results 
 # Latest snapshot of data (with the latest/finalized admissions)
-x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) |> select(-c(avg_search_vol_s01, avg_search_vol_s02))
+x_latest <- epix_as_of(archive, max(archive$DT$version)) |> select(-c(avg_search_vol_s01, avg_search_vol_s02))
 
 res <- nowcast_res |> left_join(x_latest, by = join_by(geo_value, time_value))
 head(res)
@@ -1886,7 +1888,7 @@ Merge the nowcast results with the latest data for more direct comparison:
 
 ```{r join-with-actual-cases}
 #| echo: true
-x_latest <- epix_as_of(archive, max_version = max(archive$DT$version)) |>
+x_latest <- epix_as_of(archive, max(archive$DT$version)) |>
   select(-percent_cli) 
 
 res <- nowcast_res |> left_join(x_latest, by = join_by(geo_value, time_value))
