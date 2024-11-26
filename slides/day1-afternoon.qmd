@@ -48,7 +48,7 @@ library(epidatasets)
 ## Introduction to `dplyr`
 
 * `dplyr` is a powerful package in R for data manipulation.
-* It is part of the `tidyverse`, which includes a collection of packages designed to work together... Here's some of it's greatest hits:
+* It is part of the `tidyverse`, which includes a collection of packages designed to work together... Here's some of its greatest hits:
 
 <div style="text-align: center;">
 ![](gfx/tidyverse_packages.png){style="width: 30%; display: block; margin-left: auto; margin-right: auto;"}
