@@ -592,21 +592,7 @@
     "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Examples of panel data - COVID-19 cases",
-    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days."
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---chng-cli",
-    "href": "slides/day1-morning.html#examples-of-panel-data---chng-cli",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - CHNG-CLI",
-    "text": "Examples of panel data - CHNG-CLI\nChange Healthcare COVID-like illness (CHNG-CLI) reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data."
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---chng-covid",
-    "href": "slides/day1-morning.html#examples-of-panel-data---chng-covid",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - CHNG-COVID",
-    "text": "Examples of panel data - CHNG-COVID\nChange Healthcare COVID (CHNG-COVID) reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data."
+    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.\n\n\n\nWA switch to weekly reporting in 2022\nFL reports “whenever” (weekly, biweekly, three days in a row, then 4 zeros, etc.)"
   },
   {
     "objectID": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
@@ -634,7 +620,7 @@
     "href": "slides/day1-morning.html#versioned-panel-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioned panel data",
-    "text": "Versioned panel data\nEstimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:\n\n\nFigure 5 from Reinhart et al. (2021)"
+    "text": "Versioned panel data\nEstimated percentage of outpatient visits due to CLI in FL across multiple issue dates, with updates and revisions to past data as new issue dates are released:"
   },
   {
     "objectID": "slides/day1-morning.html#latency-and-revision-in-signals",
@@ -655,7 +641,7 @@
     "href": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Revision triangle, Outpatient visits in WA 2022",
-    "text": "Revision triangle, Outpatient visits in WA 2022"
+    "text": "Revision triangle, Outpatient visits in WA 2022\n\n7-day trailing average to smooth day-of-week effects"
   },
   {
     "objectID": "slides/day1-morning.html#revisions",
@@ -690,7 +676,7 @@
     "href": "slides/day1-morning.html#reporting-backlogs---example",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Reporting backlogs - Example",
-    "text": "Reporting backlogs - Example\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends.\n\n\n\nFigure 4 from Reinhart et al. (2021)"
+    "text": "Reporting backlogs - Example\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends."
   },
   {
     "objectID": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
@@ -900,21 +886,7 @@
     "href": "slides/day1-morning.html#example-queries---other-endpoints-flu-endpoints",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example queries - Other endpoints: Flu endpoints",
-    "text": "Example queries - Other endpoints: Flu endpoints\nFluSurv hospitalization data\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html \n\npub_flusurv(locations = \"ca\", epiweeks = 202001) \n\nFluview data\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/fluview.html \n\npub_fluview(regions = \"nat\", epiweeks = epirange(201201, 202001))\n\nNIDSS Flu\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html \n\npub_nidss_flu(regions = \"taipei\", epiweeks = epirange(200901, 201301))"
-  },
-  {
-    "objectID": "slides/day1-morning.html#example-queries---other-endpoints-dengue-endpoints",
-    "href": "slides/day1-morning.html#example-queries---other-endpoints-dengue-endpoints",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Example queries - Other endpoints: Dengue endpoints",
-    "text": "Example queries - Other endpoints: Dengue endpoints\nDelphi’s Dengue Nowcast\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html \n\npub_dengue_nowcast(locations = \"pr\", epiweeks = epirange(201401, 202301))\n\nNIDSS dengue\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html \n\npub_nidss_dengue(locations = \"taipei\", epiweeks = epirange(200301, 201301))\n\nPAHO Dengue\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html \n\npub_paho_dengue(regions = \"ca\", epiweeks = epirange(200201, 202319))"
-  },
-  {
-    "objectID": "slides/day1-morning.html#example-queries---other-endpoints-wikipedia",
-    "href": "slides/day1-morning.html#example-queries---other-endpoints-wikipedia",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Example queries - Other endpoints: Wikipedia",
-    "text": "Example queries - Other endpoints: Wikipedia\nWikipedia access\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/wiki.html \n\npub_wiki(\n  language = \"en\",\n  articles = \"influenza\",\n  time_type = \"week\",\n  time_values = epirange(202001, 202319)\n) |&gt; head()\n\n# A tibble: 6 × 6\n  article   count     total  hour epiweek    value\n  &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;dbl&gt;\n1 influenza  6516 663604044    -1 2019-12-29  9.82\n2 influenza 10244 789885521    -1 2020-01-05 13.0 \n3 influenza 10728 783760384    -1 2020-01-12 13.7 \n4 influenza 24843 785222292    -1 2020-01-19 31.6 \n5 influenza 62850 780291898    -1 2020-01-26 80.5 \n6 influenza 41768 778222703    -1 2020-02-02 53.7 \n\n\n\n\n\n\n\n\nTip - public vs private methods\n\n\nAside from these public methods we’ve gone through (these start with pub_), there are private methods (these start with pvt_ when you type avail_endpoints()). These require private access keys to use (separate from the Delphi Epidata API key). To run these locally, you will need to store these secrets in your .Reviron file, or set them as environmental variables. See Private methods for examples of using private endpoints."
+    "text": "Example queries - Other endpoints: Flu endpoints\nFluSurv hospitalization data – Data ends around 2020\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html \n\npub_flusurv(locations = \"ca\", epiweeks = 202001) \n\nFluview data – Remains active\n API docs: https://cmu-delphi.github.io/delphi-epidata/api/fluview.html \n\npub_fluview(regions = \"nat\", epiweeks = epirange(201201, 202001))\n\n\n\n\n\n\n\nTip - public vs private methods\n\n\nAside from these public methods we’ve gone through (these start with pub_), there are private methods (these start with pvt_ when you type avail_endpoints()). These require private access keys to use (separate from the Delphi Epidata API key). To run these locally, you will need to store these secrets in your .Reviron file, or set them as environmental variables. See Private methods for examples of using private endpoints."
   },
   {
     "objectID": "slides/day1-morning.html#signal-metadata",

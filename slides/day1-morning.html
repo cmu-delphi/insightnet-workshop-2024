@@ -254,31 +254,8 @@
 </section>
 <section id="what-we-provide" class="slide level2">
 <h2>What we provide</h2>
-<style>
-/* Move the external link icon (square with arrow) to the right of the link */
-a[target="_blank"] {
-  position: relative; /* Make the link a positioned container */
-}
 
-/* Style for the external link icon */
-a[target="_blank"]::after {
-  font-size: 16px;   /* Adjust the size of the icon */
-  position: absolute; /* Position the icon absolutely inside the link */
-  right: 0;           /* Move the icon to the right side of the link */
-  top: 80%;           /* Vertically at bottom */
-}
-</style>
-<div style="position: relative; width: 80%; height: auto; margin: 0 auto;">
-<p><!-- Embed the JPG image with 80% width --> <img src="gfx/web_of_parts.jpg" width="100%" height="auto"></p>
-<p><!-- Create clickable areas on top of the JPG --> <!-- Signal discovery --> <a href="https://delphi.cmu.edu/signals/" style="position: absolute; top: 30px; left: 12px; width: 310px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><a href="https://cmu-delphi.github.io/epiprocess/" style="position: absolute; top: 30px; left: 362px; width: 290px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><a href="https://cmu-delphi.github.io/delphi-tooling-book/" style="position: absolute; top: 30px; left: 682px; width: 270px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><a href="https://cmu-delphi.github.io/delphi-epidata/" style="position: absolute; top: 242px; left: 182px; width: 370px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><a href="https://cmu-delphi.github.io/epidatr/" style="position: absolute; top: 222px; left: 582px; width: 260px; height: 140px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><a href="https://cmu-delphi.github.io/epipredict/" style="position: absolute; top: 222px; left: 866px; width: 170px; height: 150px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/" style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-</div>
-</section></section>
+<img data-src="gfx/web_of_parts.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
 <section id="panel-data" class="title-slide slide level1 center">
 <h1>Panel Data</h1>
@@ -315,18 +292,55 @@ a[target="_blank"]::after {
 <h2>Examples of panel data - COVID-19 cases</h2>
 <p><a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html"><span class="primary"><strong>JHU CSSE COVID cases per 100k </strong></span></a> estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.</p>
 
-<img data-src="day1-morning_files/figure-html/examples-panel-covid-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
-<section id="examples-of-panel-data---chng-cli" class="slide level2">
-<h2>Examples of panel data - CHNG-CLI</h2>
-<p><a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html"><span class="primary"><strong>Change Healthcare COVID-like illness (CHNG-CLI)</strong></span></a> reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.</p>
+<img data-src="day1-morning_files/figure-revealjs/examples-panel-covid2-1.svg" class="quarto-figure quarto-figure-center r-stretch"><aside class="notes">
+<ul>
+<li>WA switch to weekly reporting in 2022</li>
+<li>FL reports “whenever” (weekly, biweekly, three days in a row, then 4 zeros, etc.)</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<!--
 
-<img data-src="day1-morning_files/figure-html/examples-chng-cli-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
-<section id="examples-of-panel-data---chng-covid" class="slide level2">
-<h2>Examples of panel data - CHNG-COVID</h2>
-<p><a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html"><span class="primary"><strong>Change Healthcare COVID (CHNG-COVID)</strong></span></a> reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.</p>
+## Examples of panel data - CHNG-CLI
 
+[[**Change Healthcare COVID-like illness (CHNG-CLI)**]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html) reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.
+
+
+
+::: {.cell layout-align="center"}
+::: {.cell-output-display}
+![](day1-morning_files/figure-revealjs/examples-chng-cli-1.svg){fig-align='center'}
+:::
+:::
+
+
+
+## Examples of panel data - CHNG-COVID
+
+[[**Change Healthcare COVID (CHNG-COVID)**]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html) reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.
+
+
+
+::: {.cell layout-align="center"}
+::: {.cell-output-display}
+![](day1-morning_files/figure-revealjs/examples-chng-covid-1.svg){fig-align='center'}
+:::
+:::
+
+
+
+-->
 <!--  Numerator = denote the Covid counts. Denominator be the total count of visits. Scaling by population is not necessary here because the signal is already normalized to the total number of visits, which acts as a proxy for population size. -->
-<img data-src="day1-morning_files/figure-html/examples-chng-covid-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+</section>
 <section id="examples-of-panel-data---hhs-admissions" class="slide level2">
 <h2>Examples of panel data - HHS Admissions</h2>
 <p><a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html"><span class="primary"><strong>Confirmed COVID-19 Hospital Admissions per 100k</strong></span></a> estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days.</p>
@@ -337,15 +351,11 @@ Example: gathering different signals + visualizing panel data
 
 
 
-
-
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
-![](day1-morning_files/figure-html/multiple-signals-unscale-1.svg){fig-align='center' width=511.68}
+![](day1-morning_files/figure-revealjs/multiple-signals-unscale-1.svg){fig-align='center'}
 :::
 :::
-
-
 
 
 
@@ -356,15 +366,11 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 
 
-
-
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
-![](day1-morning_files/figure-html/scaled-signals-1.svg){fig-align='center' width=511.68}
+![](day1-morning_files/figure-revealjs/scaled-signals-1.svg){fig-align='center'}
 :::
 :::
-
-
 
 
 <div style="text-align: center;">
@@ -373,7 +379,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 **Takeaway:** The auxiliary signals track changes in the official reported cases quite well. This is clearer when they have all been placed on the same range as reported cases per 100,000 people.
 -->
-<img data-src="day1-morning_files/figure-html/examples-hhs-admissions-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+<img data-src="day1-morning_files/figure-revealjs/examples-hhs-admissions-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="examples-of-panel-data---covid-19-cases-and-deaths-in-ca" class="slide level2">
 <h2>Examples of panel data - COVID-19 cases and deaths in CA</h2>
 <ul>
@@ -381,7 +387,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <li>We’ll see this again in an upcoming session…</li>
 </ul>
 
-<img data-src="day1-morning_files/figure-html/plot-ca-cases-deaths-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="768"></section></section>
+<img data-src="day1-morning_files/figure-revealjs/plot-ca-cases-deaths-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
 <section id="versioned-data" class="title-slide slide level1 center">
 <h1>Versioned Data</h1>
@@ -412,12 +418,9 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </section>
 <section id="versioned-panel-data" class="slide level2">
 <h2>Versioned panel data</h2>
-<p>Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:</p>
+<p>Estimated percentage of outpatient visits due to CLI in <span class="primary">FL</span> across multiple issue dates, with updates and revisions to past data as new issue dates are released:</p>
 
-<img data-src="day1-morning_files/figure-html/versioned-panel-multi-states-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"><div style="text-align: center;">
-<p><small><a href="https://www.pnas.org/doi/10.1073/pnas.2111452118">Figure 5 from Reinhart et al.&nbsp;(2021)</a></small></p>
-</div>
-</section>
+<img data-src="day1-morning_files/figure-revealjs/versioned-panel-multi-states-ex-2-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="latency-and-revision-in-signals" class="slide level2">
 <h2>Latency and revision in signals</h2>
 <ul>
@@ -470,8 +473,11 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </section>
 <section id="revision-triangle-outpatient-visits-in-wa-2022" class="slide level2">
 <h2>Revision triangle, Outpatient visits in WA 2022</h2>
+<ul>
+<li>7-day trailing average to smooth day-of-week effects</li>
+</ul>
 
-<img data-src="day1-morning_files/figure-html/revision-triangle-1.png" class="quarto-figure quarto-figure-center r-stretch" width="1599"></section>
+<img data-src="day1-morning_files/figure-revealjs/revision-triangle-1.png" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="revisions" class="slide level2">
 <h2>Revisions</h2>
 <p>Many data sources are subject to revisions:</p>
@@ -506,7 +512,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <li><p><span class="tertiary"><strong>JHU CSSE cases (right)</strong></span> remain “as reported” on Sept.&nbsp;28, with a spike toward the end of this period, until a major correction is made on Oct.&nbsp;19, which brings this down &amp; affects prior data.</p></li>
 </ul>
 
-<img data-src="day1-morning_files/figure-html/fig1-McDonald-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"><div style="text-align: center;">
+<img data-src="day1-morning_files/figure-revealjs/fig1-McDonald-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div style="text-align: center;">
 <p><small><a href="https://www.pnas.org/doi/pdf/10.1073/pnas.2111453118">Figure 1 from McDonald et al.&nbsp;(2021)</a></small></p>
 </div>
 </section>
@@ -529,10 +535,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <li><p><strong>Right</strong>: CTIS estimates of CLI-in-community showed more stable underlying trends.</p></li>
 </ul>
 
-<img data-src="day1-morning_files/figure-html/fig4-Reinhart-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"><div style="text-align: center;">
-<p><small><a href="https://www.pnas.org/doi/10.1073/pnas.2111452118">Figure 4 from Reinhart et al.&nbsp;(2021)</a></small></p>
-</div>
-</section>
+<img data-src="day1-morning_files/figure-revealjs/fig4-Reinhart-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="reporting-backlogs---key-takeaways" class="slide level2">
 <h2>Reporting backlogs - Key takeaways</h2>
 <ul>
@@ -659,20 +662,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </section>
 <section id="severity-pyramid" class="slide level2">
 <h2>Severity pyramid</h2>
-<div style="position: relative; width: 90%; height: auto; margin: 0 auto;">
-<p><!-- Embed the JPG image with 80% width --> <img src="gfx/severity_pyramid.jpg" width="100%" height="auto"></p>
-<p><!-- Create clickable areas on top of the JPG --> <!-- NCHS mortality --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nchs-mortality.html" style="position: absolute; top: 85px; left: 685px; width: 170px; height: 25px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- Hospital admissions - medical insurance claims --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hospital-admissions.html" style="position: absolute; top: 165px; left: 685px; width: 245px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- Hospital reporting --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html" style="position: absolute; top: 215px; left: 685px; width: 188px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- Reported cases --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html" style="position: absolute; top: 275px; left: 685px; width: 160px; height: 13px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- Quidel --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/quidel.html" style="position: absolute; top: 295px; left: 685px; width: 227px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- Doctor visits --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html" style="position: absolute; top: 335px; left: 685px; width: 245px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- Google search trends --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/google-symptoms.html" style="position: absolute; top: 390px; left: 685px; width: 209px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- FB survey --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html" style="position: absolute; top: 410px; left: 685px; width: 158px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- SafeGraph --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/safegraph.html" style="position: absolute; top: 530px; left: 685px; width: 175px; height: 18px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-<p><!-- FB survey --> <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html" style="position: absolute; top: 550px; left: 685px; width: 158px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);"> </a></p>
-</div>
-</section></section>
+
+<img data-src="gfx/severity-pyramid.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
 <section id="epidatr" class="title-slide slide level1 center">
 <h1>Epidatr</h1>
@@ -1063,62 +1054,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </section>
 <section id="example-queries---other-endpoints-flu-endpoints" class="slide level2">
 <h2>Example queries - Other endpoints: Flu endpoints</h2>
-<p><span class="primary"><strong>FluSurv hospitalization data</strong></span></p>
+<p><span class="primary"><strong>FluSurv hospitalization data</strong></span> – Data ends around 2020</p>
 <p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="fu">pub_flusurv</span>(<span class="at">locations =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="dv">202001</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><span class="primary"><strong>Fluview data</strong></span></p>
+<p><span class="primary"><strong>Fluview data</strong></span> – Remains active</p>
 <p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/fluview.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/fluview.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">pub_fluview</span>(<span class="at">regions =</span> <span class="st">"nat"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201201</span>, <span class="dv">202001</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><span class="primary"><strong>NIDSS Flu</strong></span></p>
-<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html</a> </small></p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="fu">pub_nidss_flu</span>(<span class="at">regions =</span> <span class="st">"taipei"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200901</span>, <span class="dv">201301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="example-queries---other-endpoints-dengue-endpoints" class="slide level2">
-<h2>Example queries - Other endpoints: Dengue endpoints</h2>
-<p><span class="primary"><strong>Delphi’s Dengue Nowcast</strong></span></p>
-<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html</a> </small></p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">pub_dengue_nowcast</span>(<span class="at">locations =</span> <span class="st">"pr"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201401</span>, <span class="dv">202301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><span class="primary"><strong>NIDSS dengue</strong></span></p>
-<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html</a> </small></p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="fu">pub_nidss_dengue</span>(<span class="at">locations =</span> <span class="st">"taipei"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200301</span>, <span class="dv">201301</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><span class="primary"><strong>PAHO Dengue</strong></span></p>
-<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html</a> </small></p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">pub_paho_dengue</span>(<span class="at">regions =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">200201</span>, <span class="dv">202319</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="example-queries---other-endpoints-wikipedia" class="slide level2">
-<h2>Example queries - Other endpoints: Wikipedia</h2>
-<p><span class="primary"><strong>Wikipedia access</strong></span></p>
-<p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/wiki.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/wiki.html</a> </small></p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="fu">pub_wiki</span>(</span>
-<span id="cb34-2"><a></a>  <span class="at">language =</span> <span class="st">"en"</span>,</span>
-<span id="cb34-3"><a></a>  <span class="at">articles =</span> <span class="st">"influenza"</span>,</span>
-<span id="cb34-4"><a></a>  <span class="at">time_type =</span> <span class="st">"week"</span>,</span>
-<span id="cb34-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">202001</span>, <span class="dv">202319</span>)</span>
-<span id="cb34-6"><a></a>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 6
-  article   count     total  hour epiweek    value
-  &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;dbl&gt;
-1 influenza  6516 663604044    -1 2019-12-29  9.82
-2 influenza 10244 789885521    -1 2020-01-05 13.0 
-3 influenza 10728 783760384    -1 2020-01-12 13.7 
-4 influenza 24843 785222292    -1 2020-01-19 31.6 
-5 influenza 62850 780291898    -1 2020-01-26 80.5 
-6 influenza 41768 778222703    -1 2020-02-02 53.7 </code></pre>
-</div>
 </div>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
@@ -1177,15 +1121,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </ul></li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb36-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb36-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb36-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb36-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
-<span id="cb36-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb36-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb36-8"><a></a>  <span class="at">as_of =</span> <span class="st">"2020-05-07"</span></span>
-<span id="cb36-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb30-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb30-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb30-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb30-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb30-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb30-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb30-8"><a></a>  <span class="at">as_of =</span> <span class="st">"2020-05-07"</span></span>
+<span id="cb30-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1203,14 +1147,14 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <h2>Obtaining data “as of” a specific date</h2>
 <p><span class="primary"><strong>Default behaviour:</strong></span> If we don’t specify <code>as_of</code>, we get the most recent estimate:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb38-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb38-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb38-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb38-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
-<span id="cb38-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb38-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span></span>
-<span id="cb38-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb32-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb32-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb32-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb32-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb32-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb32-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span></span>
+<span id="cb32-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1235,15 +1179,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <h2>Obtaining multiple specific issues for one state</h2>
 <p>By using the <code>issues</code> argument, we can request all issues in a certain time period:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb40-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb40-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb40-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb40-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
-<span id="cb40-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb40-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb40-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-15"</span>)</span>
-<span id="cb40-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb34-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb34-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb34-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb34-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb34-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb34-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb34-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-15"</span>)</span>
+<span id="cb34-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1263,15 +1207,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <h2>Obtaining multiple issues for one state</h2>
 <p>To ensure that you’ve captured all issues up to a specific date (e.g., “2020-05-15”), set an extreme lower bound: <code>issues = epirange("1900-01-01", "2020-05-15")</code>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb42-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb42-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb42-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb42-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
-<span id="cb42-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb42-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb42-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2020-05-15"</span>)</span>
-<span id="cb42-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb36-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb36-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb36-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb36-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb36-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb36-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb36-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2020-05-15"</span>)</span>
+<span id="cb36-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1298,15 +1242,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <li><p>For example, the last issue is from July 2020 and so the data is finalized as of July 2020 (not the last issue we requested).</p></li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb44-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb44-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb44-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb44-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
-<span id="cb44-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb44-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb44-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2024-12-11"</span>) <span class="co"># From the 1900s to today</span></span>
-<span id="cb44-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb38-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb38-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb38-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb38-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-01"</span>),</span>
+<span id="cb38-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb38-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb38-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2024-12-11"</span>) <span class="co"># From the 1900s to today</span></span>
+<span id="cb38-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1329,15 +1273,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <h2>Obtaining all issues for one state</h2>
 <p>The fast way to obtain all available issues for PA, set <code>issues</code> to be <code>*</code>:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb46-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb46-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb46-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb46-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
-<span id="cb46-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb46-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb46-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb46-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb40-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb40-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb40-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb40-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb40-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb40-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb40-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
+<span id="cb40-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1359,15 +1303,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <h2>Obtaining all issues for all states</h2>
 <p>A very useful feature is the ability to extract all <code>geo_values</code> and <code>issues</code> by using <code>*</code> in both.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb48-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb48-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb48-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb48-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
-<span id="cb48-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb48-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"*"</span>,</span>
-<span id="cb48-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb48-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb42-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb42-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb42-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb42-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb42-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb42-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"*"</span>,</span>
+<span id="cb42-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
+<span id="cb42-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1393,13 +1337,13 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <p><strong>Final question:</strong> What do you think happens when we adopt a “do nothing” approach to <code>geo_values</code> and <code>issues</code> (take both of them out) for this example?</p>
 <p><small> <strong>Hint</strong>: remember a couple slides ago, when we removed <code>as_of</code>, we got the most recent estimate for PA. </small></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb50-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb50-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb50-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb50-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
-<span id="cb50-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span></span>
-<span id="cb50-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb44-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb44-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb44-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb44-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb44-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span></span>
+<span id="cb44-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="obtaining-one-issue-for-all-states" class="slide level2">
@@ -1407,13 +1351,13 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <p><span class="primary"><strong>Final question:</strong></span> What do you think happens when we adopt a “do nothing” approach to <code>geo_values</code> and <code>issues</code> (take both of them out)?</p>
 <p><small> <span class="primary"><strong>Hint</strong></span>: remember a couple slides ago, when we removed <code>as_of</code>, we got the most recent estimate for PA. </small></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb51-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb51-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb51-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb51-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
-<span id="cb51-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span></span>
-<span id="cb51-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>epidata <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb45-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb45-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb45-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb45-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb45-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span></span>
+<span id="cb45-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1434,8 +1378,6 @@ Example: gathering different signals + **scaling** + visualizing panel data
 * We can use the `lag` argument to request only data reported with a certain lag. 
 
 * **Example**: Request  a lag of 7 days fetches only data issued exactly 7 days after the corresponding `time_value`:
-
-
 
 
 
@@ -1473,8 +1415,6 @@ epidata <- pub_covidcast(
 :::
 
 
-
-
 </div>
 
 ## Query results exclusion
@@ -1482,8 +1422,6 @@ epidata <- pub_covidcast(
 * Although the query we ran on the previous slide requested values from May 1 to May 7, May 3 and May 4 were not included due to a 7-day lag.
 
 * Results for those dates appear only if updates are issued on the corresponding lag day (e.g., May 10).
-
-
 
 
 
@@ -1519,8 +1457,6 @@ epidata <- pub_covidcast(
 
 :::
 :::
-
-
 
 
 </div>
@@ -1760,6 +1696,44 @@ epidata <- pub_covidcast(
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
