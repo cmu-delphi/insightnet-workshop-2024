@@ -69,55 +69,7 @@ library(epidatr)
 
 ## What we provide
 
-<style>
-/* Move the external link icon (square with arrow) to the right of the link */
-a[target="_blank"] {
-  position: relative; /* Make the link a positioned container */
-}
-
-/* Style for the external link icon */
-a[target="_blank"]::after {
-  font-size: 16px;   /* Adjust the size of the icon */
-  position: absolute; /* Position the icon absolutely inside the link */
-  right: 0;           /* Move the icon to the right side of the link */
-  top: 80%;           /* Vertically at bottom */
-}
-</style>
-
-<div style="position: relative; width: 80%; height: auto; margin: 0 auto;">
-  <!-- Embed the JPG image with 80% width -->
-  <img src="gfx/web_of_parts.jpg" width="100%" height="auto">
-  
-  <!-- Create clickable areas on top of the JPG -->
-  <!-- Signal discovery -->
-  <a href="https://delphi.cmu.edu/signals/"
-     style="position: absolute; top: 30px; left: 12px; width: 310px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-  
-  <a href="https://cmu-delphi.github.io/epiprocess/"
-     style="position: absolute; top: 30px; left: 362px; width: 290px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-
-  <a href="https://cmu-delphi.github.io/delphi-tooling-book/"
-     style="position: absolute; top: 30px; left: 682px; width: 270px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-
-  <a href="https://cmu-delphi.github.io/delphi-epidata/"
-     style="position: absolute; top: 242px; left: 182px; width: 370px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-
-  <a href="https://cmu-delphi.github.io/epidatr/"
-     style="position: absolute; top: 222px; left: 582px; width: 260px; height: 140px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-  
-  <a href="https://cmu-delphi.github.io/epipredict/"
-     style="position: absolute; top: 222px; left: 866px; width: 170px; height: 150px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-  
-<a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/"
-     style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-</div>
+![](gfx/web_of_parts.svg){fig-align=center}
 
 # Panel Data
 
@@ -158,6 +110,7 @@ head(epix_as_of(x, max_version = max(x$DT$version)))
 
 ```{r examples-panel-covid}
 #| echo: false
+#| eval: false
 SOURCES <- c("jhu-csse", "chng", "chng", "hhs")
 SIGNALS <- c("confirmed_7dav_incidence_prop",
              "smoothed_adj_outpatient_cli",
@@ -176,7 +129,12 @@ for (i in seq_along(SOURCES)) {
     time_values = epirange(20210915, 20220915)
   )
 }
+saveRDS(data_list, "_data/four_covidcast_signals.rds")
+```
 
+```{r examples-panel-covid2}
+#| echo: false
+data_list <- read_rds("_data/four_covidcast_signals.rds")
 colors <- c("black", scales::hue_pal()(4))
 names <- c("COVID-19 cases", "CHNG-CLI", "CHNG-COVID", "COVID-19 hospital admissions")
 units <- c("Reported cases per 100k people",
@@ -184,15 +142,22 @@ units <- c("Reported cases per 100k people",
            "% doctor's visits due to COVID-19",
            "Hospital admissions per 100k people")
 
-
-ggplot(data_list[[1]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[1]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
+as_epi_df(data_list[[1]]) %>%
+  autoplot("value") +
+  scale_color_delphi() +
+  theme(legend.title = element_blank()) +
+  xlab("Date") + ylab(units[1]) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
+
+::: {.notes}
+
+* WA switch to weekly reporting in 2022
+* FL reports "whenever" (weekly, biweekly, three days in a row, then 4 zeros, etc.)
+
+:::
+
+<!--
 
 ## Examples of panel data - CHNG-CLI
 
@@ -200,13 +165,12 @@ ggplot(data_list[[1]], aes(x = time_value, y = value, color = geo_value)) +
 
 ```{r examples-chng-cli}
 #| echo: false
-ggplot(data_list[[2]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[2]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
+as_epi_df(data_list[[2]]) %>%
+  autoplot("value") +
+  scale_color_delphi() +
+  theme(legend.title = element_blank()) +
+  xlab("Date") + ylab(units[2]) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 ## Examples of panel data - CHNG-COVID
@@ -215,14 +179,15 @@ ggplot(data_list[[2]], aes(x = time_value, y = value, color = geo_value)) +
 
 ```{r examples-chng-covid}
 #| echo: false
-ggplot(data_list[[3]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[3]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
+as_epi_df(data_list[[3]]) %>%
+  autoplot("value") +
+  scale_color_delphi() +
+  theme(legend.title = element_blank()) +
+  xlab("Date") + ylab(units[3]) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
+
+-->
 
 <!--  Numerator = denote the Covid counts. Denominator be the total count of visits. Scaling by population is not necessary here because the signal is already normalized to the total number of visits, which acts as a proxy for population size. -->
 
@@ -232,13 +197,12 @@ ggplot(data_list[[3]], aes(x = time_value, y = value, color = geo_value)) +
 
 ```{r examples-hhs-admissions}
 #| echo: false
-ggplot(data_list[[4]], aes(x = time_value, y = value, color = geo_value)) +
-  geom_line() +
-  labs(x = "Date", y = units[4]) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y",
-               date_minor_breaks = "1 month") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.title = element_blank())
+as_epi_df(data_list[[4]]) %>%
+  autoplot("value") +
+  scale_color_delphi() +
+  theme(legend.title = element_blank()) +
+  xlab("Date") + ylab(units[4]) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
 <!-- 
@@ -318,23 +282,22 @@ ggplot(rescaled_df, aes(x = time_value, y = value, color = signal)) +
 
 ```{r plot-ca-cases-deaths}
 #| echo: false
-#| fig-width: 8
-#| fig-height: 5
 source(here::here("_code/ca_cases_deaths.R"))
 ggplot(ca |> 
          mutate(deaths = trans21(deaths)) |>
          pivot_longer(cols = c(cases, deaths), names_to = 'name'),
        aes(x = time_value, y = value)) + 
-  geom_line(aes(color = name)) +
-  scale_color_manual(values = palette()[c(2,4)]) +
+  geom_line(aes(color = name), key_glyph = "timeseries") +
+  scale_color_delphi() +
   scale_y_continuous(
-    name = "Reported Covid-19 cases per 100k people", 
+    expand = expansion(c(0, 0.05)),
+    name = "Incident cases per 100k people", 
     limits = range1,
     sec.axis = sec_axis(
       trans = trans12, 
-      name = "Reported Deaths per 100k people")) +
-  labs(title = "Covid-19 cases and deaths in California", x = "Date") +
-  theme(legend.position = "bottom", legend.title = element_blank()) 
+      name = "Incident deaths per 100k people")) +
+  labs(x = "Date") +
+  theme(legend.position = "right", legend.title = element_blank()) 
 ```
 
 # Versioned Data
@@ -345,55 +308,67 @@ ggplot(ca |>
 * Now, we add a second time index to indicate the data version...
 ```{r versioned-wa-ex}
 #| echo: false
+states <- c("fl", "ca", "ny", "tx")
 head(x$DT) |> as_tibble()
 ```
 
 * Note that this feature can be indicated in different ways (ex. `version`, `issue`, `release`, `as_of`). 
 
 ## Versioned panel data
-Estimated percentage of outpatient (DV-CLI) data across multiple issue dates, with updates and revisions to past data as new issue dates are released:
+Estimated percentage of outpatient visits due to CLI in [FL]{.primary} across multiple issue dates, 
+with updates and revisions to past data as new issue dates are released:
 
 ```{r versioned-panel-multi-states-ex}
 #| echo: false
-# different as_of dates
-as_ofs <- seq(as.Date("2020-06-08"), as.Date("2020-08-01"), by = "week")
-# choose 4 states
-states <- c("az", "ca", "ny", "tx")
+#| eval: false
+dv <- pub_covidcast(source = "doctor-visits", 
+                    signals = "smoothed_adj_cli", 
+                    geo_type = "state", 
+                    geo_values = "fl,ca,ny,tx", 
+                    time_type = "day",
+                    time_values = epirange(20200601, 20211201),
+                    issues = epirange(20200601, 20211201)
+) |>
+  select(time_value, geo_value, percent_cli = value, version = issue)
+dv_final <- pub_covidcast(source = "doctor-visits", 
+                    signals = "smoothed_adj_cli", 
+                    geo_type = "state", 
+                    geo_values = "fl,ca,ny,tx", 
+                    time_type = "day",
+                    time_values = epirange(20200601, 20211201)
+) |>
+  select(time_value, geo_value, percent_cli = value, version = issue)
+write_rds(list(dv_version = dv, dv_final = dv_final), 
+          "slides/_data/four-state-dv-all-versions.rds")
+```
 
-dv_as_of <- map_dfr(as_ofs, function(as_of) {
-  pub_covidcast(source = "doctor-visits", 
-                signals = "smoothed_adj_cli", 
-                geo_type = "state", 
-                geo_values = states, 
-                time_type = "day",
-                time_values = epirange(as.Date("2020-06-01"), 
-                                       as.Date(as_of - 1L)),
-                as_of = as_of) |>
-    mutate(as_of = as_of)
-})
 
-# plot each as_of time series curve, faceted by state
-dv_as_of |>
-  mutate(geo_label = factor(
-    geo_value, levels = states,
-    )) |>
-  mutate(as_of = factor(format(as.Date(as_of), "%b %d"))) |>
-  ggplot(aes(x = time_value, y = value, color = as_of)) +
-  geom_line() +
-  facet_wrap(vars(geo_label), nrow = 2) +
-  labs(color = "As of:", x = "Date", y = "% doctor's visits due to CLI") +
+```{r versioned-panel-multi-states-ex-2}
+dvall <- read_rds("_data/four-state-dv-all-versions.rds")
+dv_archive <- dvall[["dv_version"]] |>
+  as_epi_archive(compactify = TRUE)
+dv_final <- dvall[["dv_final"]]
+max_version <- max(dv_archive$DT$version)
+versions <- seq(as.Date("2020-06-01"), max_version - 1, by = "1 week")
+weekly_snapshots <- map(versions, function(v) {
+  epix_as_of(dv_archive, v) %>% mutate(version = v)
+}) |> list_rbind()
+weekly_snapshots |>
+  filter(geo_value == "fl") |>
+  ggplot(aes(x = time_value, y = percent_cli)) +
+  geom_line(aes(color = factor(version))) +
+  # geom_vline(aes(color = factor(version), xintercept = version), lty = 3) +
+  geom_line(data = dv_final |> filter(geo_value == "fl"), color = "black") +
+  labs(x = "Date", y = "% doctor's visits with CLI") +
   expand_limits(y = 0) +
-  scale_y_continuous(labels = label_percent(scale = 1, accuracy = 1),
-                     breaks = seq(0, 12, by = 4)) +
+  scale_x_date(date_labels = "%b %Y", expand = expansion(0)) +
+  scale_y_continuous(expand = expansion(c(0, 0.05))) +
   theme_bw() +
-  theme(legend.position = "right", legend.direction = "vertical") +
-  scale_color_brewer(palette = "Set1")
+  theme(legend.position = "none") +
+  scale_color_viridis_d() 
 
 #ggsave("fig_covidcast_signals/dv_as_of.pdf", width = 5, height = 4)
 ```
-<div style="text-align: center;">
-<small>[Figure 5 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
-</div>
 
 ## Latency and revision in signals
 
@@ -428,12 +403,16 @@ head(x_dt_with_diff) |> as_tibble()
 <!-- max_lag: the amount of time until the final (new) version -->
 <!-- revision_summary computes some basic statistics about the revision behavior of an archive, returning a tibble summarizing the revisions per time_value+epi_key features. -->
 
-## Revision triangle, Outpatient visits in WA 2022
+## Revision triangle, Outpatient visits in WA 2022 
+
+* 7-day trailing average to smooth day-of-week effects
 
 ```{r revision-triangle}
 #| echo: false
 #| dpi: 300
 #| fig-format: png
+#| fig-width: 8
+#| fig-height: 4.5
 dv_cli <- pub_covidcast(
   source = "doctor-visits",
   signals = "smoothed_cli",
@@ -456,8 +435,10 @@ dv_cli_finalized <- pub_covidcast(
 ) |>
   select(time_value, final_value = value)
 
-dv_cli <- left_join(dv_cli, dv_cli_finalized, by = join_by(time_value))
-
+dv_cli <- left_join(dv_cli, dv_cli_finalized, by = join_by(time_value)) |>
+  mutate(value = zoo::rollmeanr(value, k = 7, na.pad = TRUE), 
+         final_value = zoo::rollmeanr(final_value, k = 7, na.pad = TRUE),
+         .by = issue)
 
 p1 <- dv_cli |>
   filter(time_value > ymd("2021-12-31"), issue >= "2021-12-31") |>
@@ -634,52 +615,60 @@ invisible(p3)
 
 
 ```{r fig4-Reinhart}
-# |echo: false
-# |message: false
+#| echo: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 3
 
 # Figure 4 from https://www.pnas.org/doi/10.1073/pnas.2111452118
 sa_fips <- "48029"
 sa_start <- "2020-06-15"
 sa_end <- "2020-08-15"
 sa_anomaly_date <- as.Date("2020-07-16")
+sources <- c("jhu-csse", "fb-survey", "doctor-visits", "google-symptoms", "chng")
+signals <- c("confirmed_7dav_incidence_num", "smoothed_whh_cmnty_cli",
+             "smoothed_adj_cli", "sum_anosmia_ageusia_smoothed_search", 
+             "smoothed_adj_outpatient_cli")
+reinhart <- map2(sources, signals, 
+                 ~ pub_covidcast(.x, .y, time_type = "day", geo_type = "county",
+                                 time_values = epirange(sa_start, sa_end),
+                                 geo_values = sa_fips) |>
+                   select(source, time_value, value))
+sa_cross <- reinhart[[1]]$value[33]
+sa_scale <- sd(reinhart[[1]]$value, na.rm = TRUE)
+reinhart[-1] <- map(
+  reinhart[-1], 
+  ~ mutate(.x, value = (value - value[33]) / sd(value, na.rm = TRUE) *
+             sa_scale + sa_cross))
+reinhart <- list_rbind(reinhart)
 
-sa_cases <- pub_covidcast(source = "jhu-csse", 
-                          signals = "confirmed_7dav_incidence_num",
-                          time_type = "day",
-                          geo_type = "county",
-                          time_values = epirange(sa_start, sa_end), 
-                          geo_values = sa_fips)
-
-sa_cli <- pub_covidcast(source = "fb-survey", 
-                           signals = "smoothed_whh_cmnty_cli",
-                           time_type = "day",
-                           geo_type = "county",
-                           time_values = epirange(sa_start, sa_end), 
-                           geo_values = sa_fips)
-
-g1 <- ggplot(sa_cases, aes(x = time_value, y = value)) +
+g1 <- ggplot(reinhart |> filter(source == "jhu-csse"), aes(x = time_value, y = value)) +
   geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
-             size = 0.75, alpha = 0.75) +
+             alpha = 0.75) +
   geom_line() +
   labs(x = "", y = "Cases", title = "Cases") +
   theme_bw()
 
-g2 <- ggplot(sa_cli, aes(x = time_value, y = value)) +
+labels <- c(
+  `fb-survey` = "Survey-based CLI",
+  chng = "Outpatient CLI",
+  `google-symptoms` = "Google searches",
+  `doctor-visits` = "Insurance claims"
+)
+
+
+g2 <- reinhart |>
+  filter(source != "jhu-csse") |>
+  ggplot(aes(x = time_value, y = value, color = source)) +
   geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
              size = 0.75, alpha = 0.75) +
   geom_line() +
-  labs(x = "", y = "% CLI-in-community", title = "CTIS-CLI-in-community") +
-  scale_y_continuous(labels = scales::label_percent(scale = 1, accuracy = 1),
-                     limits = c(NA, 75)) +
+  scale_color_delphi(labels = labels, name = "") +
+  labs(x = "", y = "Signal value (rescaled)", title = "Auxiliary signals") +
   theme_bw()
 
-grid.arrange(g1, g2, ncol = 2)
-
-# ggsave("../paper/fig/bexar_compare.pdf", g, width = 6, height = 4)
+cowplot::plot_grid(g1, g2, ncol = 2, rel_widths = c(.35, .65))
 ```
-<div style="text-align: center;">
-<small>[Figure 4 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
-</div>
 
 ## Reporting backlogs - Key takeaways
 
@@ -809,62 +798,7 @@ Epidata is not the solution; but we hope it is a blueprint towards such a soluti
 
 ## Severity pyramid
 
-<div style="position: relative; width: 90%; height: auto; margin: 0 auto;">
-  <!-- Embed the JPG image with 80% width -->
-  <img src="gfx/severity_pyramid.jpg" width="100%" height="auto">
-
-  <!-- Create clickable areas on top of the JPG -->
-  <!-- NCHS mortality -->
-  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nchs-mortality.html"
-     style="position: absolute; top: 85px; left: 685px; width: 170px; height: 25px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-
-  <!-- Hospital admissions - medical insurance claims -->
-  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hospital-admissions.html"
-     style="position: absolute; top: 165px; left: 685px; width: 245px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-  
-  <!-- Hospital reporting -->
-  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html"
-     style="position: absolute; top: 215px; left: 685px; width: 188px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-
-  <!-- Reported cases -->
-  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html"
-     style="position: absolute; top: 275px; left: 685px; width: 160px; height: 13px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>  
-  
-  <!-- Quidel -->
-  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/quidel.html"
-     style="position: absolute; top: 295px; left: 685px; width: 227px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-
-  <!-- Doctor visits -->
-  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html"
-     style="position: absolute; top: 335px; left: 685px; width: 245px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a> 
-  
-   <!-- Google search trends -->
-   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/google-symptoms.html"
-     style="position: absolute; top: 390px; left: 685px; width: 209px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-
-   <!-- FB survey -->
-   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html"
-     style="position: absolute; top: 410px; left: 685px; width: 158px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-  
-   <!-- SafeGraph -->
-   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/safegraph.html"
-     style="position: absolute; top: 530px; left: 685px; width: 175px; height: 18px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-  
-   <!-- FB survey -->
-   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html"
-     style="position: absolute; top: 550px; left: 685px; width: 158px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
-  </a>
-  
-</div>
+![](gfx/severity-pyramid.svg){fig-align=center}
 
 # Epidatr
 
@@ -1232,7 +1166,7 @@ pub_covid_hosp_state_timeseries(states = "MA", dates = "20200510")
 
 ## Example queries - Other endpoints: Flu endpoints
 
-[**FluSurv hospitalization data**]{.primary}
+[**FluSurv hospitalization data**]{.primary} -- Data ends around 2020
 
 <small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html> </small>
 ```{r flusurv}
@@ -1241,66 +1175,13 @@ pub_covid_hosp_state_timeseries(states = "MA", dates = "20200510")
 pub_flusurv(locations = "ca", epiweeks = 202001) 
 ```
 
-[**Fluview data**]{.primary}
+[**Fluview data**]{.primary} -- Remains active
 
 <small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/fluview.html> </small>
 ```{r fluview}
 #| echo: true
 #| results: hide
 pub_fluview(regions = "nat", epiweeks = epirange(201201, 202001))
-```
-
-[**NIDSS Flu**]{.primary}
-
-<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/nidss_flu.html> </small>
-```{r NIDSS-flu}
-#| echo: true
-#| results: hide
-pub_nidss_flu(regions = "taipei", epiweeks = epirange(200901, 201301))
-```
-
-## Example queries - Other endpoints: Dengue endpoints
-
-[**Delphi’s Dengue Nowcast**]{.primary}
-
-<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/dengue_nowcast.html> </small>
-```{r Delphi-dengue-nowcast}
-#| echo: true
-#| results: hide
-pub_dengue_nowcast(locations = "pr", epiweeks = epirange(201401, 202301))
-```
-
-[**NIDSS dengue**]{.primary}
-
-<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/nidss_dengue.html> </small>
-```{r NIDSS-dengue}
-#| echo: true
-#| results: hide
-pub_nidss_dengue(locations = "taipei", epiweeks = epirange(200301, 201301))
-```
-
-[**PAHO Dengue**]{.primary}
-
-<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/paho_dengue.html> </small>
-```{r PAHO-Dengue}
-#| echo: true
-#| results: hide
-pub_paho_dengue(regions = "ca", epiweeks = epirange(200201, 202319))
-```
-
-## Example queries - Other endpoints: Wikipedia
-
-[**Wikipedia access**]{.primary}
-
-<small> API docs: <https://cmu-delphi.github.io/delphi-epidata/api/wiki.html> </small>
-```{r pub-wiki}
-#| echo: true
-pub_wiki(
-  language = "en",
-  articles = "influenza",
-  time_type = "week",
-  time_values = epirange(202001, 202319)
-) |> head()
 ```
 
 ::: {.callout-tip}

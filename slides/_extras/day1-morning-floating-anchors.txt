@@ -1,0 +1,115 @@
+## -------------------
+## What do we provide?
+## -------------------
+
+<style>
+/* Move the external link icon (square with arrow) to the right of the link */
+a[target="_blank"] {
+  position: relative; /* Make the link a positioned container */
+}
+
+/* Style for the external link icon */
+a[target="_blank"]::after {
+  font-size: 16px;   /* Adjust the size of the icon */
+  position: absolute; /* Position the icon absolutely inside the link */
+  right: 0;           /* Move the icon to the right side of the link */
+  top: 80%;           /* Vertically at bottom */
+}
+</style>
+
+<div style="position: relative; width: 80%; height: auto; margin: 0 auto;">
+  <!-- Embed the JPG image with 80% width -->
+  <img src="gfx/web_of_parts.jpg" width="100%" height="auto">
+
+  <!-- Create clickable areas on top of the JPG -->
+  <!-- Signal discovery -->
+  <a href="https://delphi.cmu.edu/signals/"
+     style="position: absolute; top: 30px; left: 12px; width: 310px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <a href="https://cmu-delphi.github.io/epiprocess/"
+     style="position: absolute; top: 30px; left: 362px; width: 290px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <a href="https://cmu-delphi.github.io/delphi-tooling-book/"
+     style="position: absolute; top: 30px; left: 682px; width: 270px; height: 90px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <a href="https://cmu-delphi.github.io/delphi-epidata/"
+     style="position: absolute; top: 242px; left: 182px; width: 370px; height: 100px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <a href="https://cmu-delphi.github.io/epidatr/"
+     style="position: absolute; top: 222px; left: 582px; width: 260px; height: 140px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <a href="https://cmu-delphi.github.io/epipredict/"
+     style="position: absolute; top: 222px; left: 866px; width: 170px; height: 150px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+<a href="https://delphi.cmu.edu/epidemic-signals/about-delphi-epidata-covidcast/"
+     style="position: absolute; top: 392px; left: 192px; width: 760px; height: 120px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+</div>
+
+
+## -------------------
+## Severity pyramid
+## -------------------
+
+<div style="position: relative; width: 90%; height: auto; margin: 0 auto;">
+  <!-- Embed the JPG image with 80% width -->
+  <img src="gfx/severity_pyramid.jpg" width="100%" height="auto">
+
+  <!-- Create clickable areas on top of the JPG -->
+  <!-- NCHS mortality -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nchs-mortality.html"
+     style="position: absolute; top: 85px; left: 685px; width: 170px; height: 25px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Hospital admissions - medical insurance claims -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hospital-admissions.html"
+     style="position: absolute; top: 165px; left: 685px; width: 245px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Hospital reporting -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/hhs.html"
+     style="position: absolute; top: 215px; left: 685px; width: 188px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Reported cases -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/jhu-csse.html"
+     style="position: absolute; top: 275px; left: 685px; width: 160px; height: 13px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Quidel -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/quidel.html"
+     style="position: absolute; top: 295px; left: 685px; width: 227px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+  <!-- Doctor visits -->
+  <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html"
+     style="position: absolute; top: 335px; left: 685px; width: 245px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+   <!-- Google search trends -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/google-symptoms.html"
+     style="position: absolute; top: 390px; left: 685px; width: 209px; height: 19px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+   <!-- FB survey -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html"
+     style="position: absolute; top: 410px; left: 685px; width: 158px; height: 20px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+   <!-- SafeGraph -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/safegraph.html"
+     style="position: absolute; top: 530px; left: 685px; width: 175px; height: 18px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+   <!-- FB survey -->
+   <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html"
+     style="position: absolute; top: 550px; left: 685px; width: 158px; height: 16px; border: 0px solid blue; background-color: rgba(0, 0, 0, 0);">
+  </a>
+
+</div>
