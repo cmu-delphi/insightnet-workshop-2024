@@ -599,16 +599,7 @@ head(cases_full_join)
 
 ## Three review questions
 
-**Q1)**: What can we use to fill in the missing daily `time_value` for the states in `cases_full_join`?
-
-```{r question-1}
-#| echo: true
-#| code-fold: true
-#| results: hide
-cases_full_join |>
-     complete(geo_value, time_value = full_seq(time_value, period = 1))
-```
-**Q2)**: Now, what join function should you use if your goal is to scale the cases by population in `cases_df`?
+**Q1)**: Now, what join function should you use if your goal is to scale the cases by population in `cases_df`?
 ```{r question-2}
 #| echo: true
 #| code-fold: true
@@ -627,7 +618,7 @@ cases_inner_join <- cases_df |>
 cases_inner_join
 ```
 
-**Q3)**: Finally, please create a new column in `cases_df` where you scale the cases by population and multiply by `1e5` to get cases / 100k.
+**Q2)**: Finally, please create a new column in `cases_df` where you scale the cases by population and multiply by `1e5` to get cases / 100k.
 ```{r question-3}
 #| echo: true
 #| code-fold: true
