@@ -90,7 +90,7 @@ Our focus will be on basic operations like selecting and filtering data.
 #| code-fold: true
 library(epidatr)
 
-cases_df <- pub_covidcast(
+cases_df_api <- pub_covidcast(
   source = "jhu-csse",
   signals = "confirmed_incidence_num",
   geo_type = "state",
@@ -104,7 +104,7 @@ cases_df <- pub_covidcast(
 Now we only really need a few columns here...
 ```{r head-jhu-dplyr-demo-data}
 #| echo: true
-cases_df <- cases_df |> 
+cases_df <- cases_df_api |>
   select(geo_value, time_value, raw_cases = value) # We'll talk more about this soon :)
 ```
 
@@ -444,9 +444,11 @@ ca_missing
 
 A simple workflow to handle missing data relies on one or both of these functions:
 
-1. `complete()`: Adds missing rows for combinations of specified variables.
+1. `complete()`: Adds missing rows for combinations of label variables (e.g.,
+   `geo_value`, `time_value`). Can replace gaps or gaps+NAs in value columns with
+   some constant.
 
-2. `fill()`: Fills missing values in columns, typically from previous or next available values (default is LOCF).
+2. `fill()`: Replaces NAs in value columns, typically from previous or next available values (default is LOCF).
 
 ## Data only reported on certain days
 
@@ -457,8 +459,8 @@ A simple workflow to handle missing data relies on one or both of these function
 #| echo: true
 # First, use complete() to add missing time_value (2022-03-03)
 ca_complete <- ca_missing |>
-  complete(geo_value, time_value = seq(min(time_value), max(time_value), by = "day"),
-           fill = list(raw_cases = 0))
+  complete(geo_value, time_value = full_seq(time_value, period = 1),
+           fill = list(raw_cases = 0), explicit = FALSE)
 ca_complete
 ```
 <!-- Using complete(time_value) doesn't work as expected because it doesn't automatically generate a sequence of missing dates between the min and max values of time_value. Instead, it simply tries to match the unique values in time_value and doesn't infer a complete range. To ensure complete() does what you want for time, it is best practice to explicitly create a sequence of dates that covers the entire range of time_value. -->
@@ -474,7 +476,7 @@ ca_complete
 #| echo: true
 # First, use complete() to add missing time_value (2022-03-03)
 ca_complete <- ca_missing |>
-  complete(geo_value, time_value = seq(min(time_value), max(time_value), by = "day"))
+  complete(geo_value, time_value = full_seq(time_value, period = 1))
 head(ca_complete, n = 4) # notice no fill with 0s this time, NA by default
 ```
 
@@ -483,8 +485,11 @@ Then, use `fill()` to fill the counts using LOCF (default):
 
 ```{r fill-ex}
 #| echo: true
-ca_complete |>
-  fill(raw_cases)
+ca_complete <- ca_complete |>
+  group_by(geo_value) |>
+  fill(raw_cases) |>
+  ungroup()
+ca_complete
 ```
 
 ## Introduction to joins in `dplyr`
@@ -594,14 +599,14 @@ head(cases_full_join)
 
 ## Three review questions
 
-**Q1)**: What can we use to fill in the missing `time_value` for the states in `cases_full_join`?
+**Q1)**: What can we use to fill in the missing daily `time_value` for the states in `cases_full_join`?
 
 ```{r question-1}
 #| echo: true
 #| code-fold: true
 #| results: hide
-cases_full_join |> 
-     fill(time_value)
+cases_full_join |>
+     complete(geo_value, time_value = full_seq(time_value, period = 1))
 ```
 **Q2)**: Now, what join function should you use if your goal is to scale the cases by population in `cases_df`?
 ```{r question-2}
@@ -627,9 +632,9 @@ cases_inner_join
 #| echo: true
 #| code-fold: true
 #| results: hide
-cases_df <- cases_df |>
+case_rates_df <- cases_inner_join |>
   mutate(scaled_cases = raw_cases / pop * 1e5) # cases / 100K
-head(cases_df)
+head(case_rates_df)
 ```
 
 ## Epi. data processing with `epiprocess`
@@ -640,19 +645,19 @@ head(cases_df)
 
 ```{r trailing-average-ex}
 #| echo: true
-cases_df <- cases_df |>
+case_rates_df <- case_rates_df |>
   as_epi_df(as_of = as.Date("2024-01-01")) |>
   group_by(geo_value) |>
   epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) |>
-  rename(smoothed_scaled_cases = slide_value_scaled_cases) 
-head(cases_df)
+  rename(smoothed_scaled_cases = slide_value_scaled_cases)
+head(case_rates_df)
 ```
 
 ## Epi. data processing with `epiprocess`
 It is easy to produce an autoplot the smoothed confirmed daily cases for each `geo_value`:
 ```{r autoplot-ex}
 #| echo: true
-cases_df |>
+case_rates_df |>
   autoplot(smoothed_scaled_cases)
 ```
 
