@@ -1,0 +1,3 @@
+# Don't try to text-diff json and svg files:
+*.json binary
+*.svg binary
