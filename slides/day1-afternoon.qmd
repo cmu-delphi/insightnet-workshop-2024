@@ -1797,8 +1797,8 @@ x <- pub_covidcast(
   geo_type = "state",
   time_type = "day",
   geo_values = "ma", # Just for MA to keep it simple (& to go with the case data by test date for that state)
-  time_value = epirange(20210301, 20212101), 
-  issues = epirange(20210301, 20212101)
+  time_values = epirange(20210301, 20211231),
+  issues = epirange(20210301, 20211231)
 ) |>
   select(geo_value, time_value,
          version = issue,
