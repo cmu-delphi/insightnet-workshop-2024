@@ -869,9 +869,10 @@ edfo |>
   facet_wrap(vars(geo_value), scales = "free_y", nrow = 1) +
   scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
   labs(x = "Date", y = "COVID-19 case rates") +
-  theme(legend.position = c(.075, .8), legend.background = element_rect(fill = NA), legend.key = element_rect(fill = NA))
+  theme(legend.position = c(.120, .8), legend.background = element_rect(fill = NA), legend.key = element_rect(fill = NA))
 ```
 
+## Bexar County
 
 ```{r outlier-bexar}
 edfo_bexar <-
