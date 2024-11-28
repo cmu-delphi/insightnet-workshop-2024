@@ -46,7 +46,7 @@
     "href": "slides/day2-morning.html#example-covid-cases-and-deaths-in-california",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Example: COVID cases and deaths in California",
-    "text": "Example: COVID cases and deaths in California\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nhead(ca)\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-06 08:50:44.00687\n\n# A tibble: 6 × 4\n# Groups:   geo_value [1]\n  geo_value time_value cases deaths\n* &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt;\n1 ca        2020-04-01  3.17 0.0734\n2 ca        2020-04-02  3.48 0.0835\n3 ca        2020-04-03  3.44 0.0894\n4 ca        2020-04-04  3.05 0.0778\n5 ca        2020-04-05  3.28 0.0876\n6 ca        2020-04-06  3.37 0.0848\n\n\n\n\n\n\n\nNote\n\n\nCases seem highly correlated with deaths several weeks later (but relation cases-deaths changes over time)."
+    "text": "Example: COVID cases and deaths in California\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nhead(ca)\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-05 23:50:44.00687\n\n# A tibble: 6 × 4\n# Groups:   geo_value [1]\n  geo_value time_value cases deaths\n* &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt;\n1 ca        2020-04-01  3.17 0.0734\n2 ca        2020-04-02  3.48 0.0835\n3 ca        2020-04-03  3.44 0.0894\n4 ca        2020-04-04  3.05 0.0778\n5 ca        2020-04-05  3.28 0.0876\n6 ca        2020-04-06  3.37 0.0848\n\n\n\n\n\n\n\nNote\n\n\nCases seem highly correlated with deaths several weeks later (but relation cases-deaths changes over time)."
   },
   {
     "objectID": "slides/day2-morning.html#checking-correlation",
@@ -60,7 +60,7 @@
     "href": "slides/day2-morning.html#preparing-the-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Preparing the data",
-    "text": "Preparing the data\n\n# Add column with cases lagged by k\nca$lagged_cases &lt;- dplyr::lag(ca$cases, n = k)\n\n# Split into train and test (before/after t0_date)\nt0_date &lt;- as.Date('2021-04-01')\ntrain &lt;- ca |&gt; filter(time_value &lt;= t0_date)\ntest &lt;- ca |&gt; filter(time_value &gt; t0_date)\n\nCheck if deaths is approximately linear in lagged_cases:"
+    "text": "Preparing the data\n\nca$lagged_cases &lt;- dplyr::lag(ca$cases, n = k)     # Add column with cases lagged by k\nt0_date &lt;- as.Date('2021-04-01')                   # Split into train and test (before/after t0_date)\ntrain &lt;- ca |&gt; filter(time_value &lt;= t0_date)\ntest &lt;- ca |&gt; filter(time_value &gt; t0_date)\n\nCheck if deaths is approximately linear in lagged_cases:"
   },
   {
     "objectID": "slides/day2-morning.html#fitting-lagged-linear-regression-in-r",
@@ -95,7 +95,7 @@
     "href": "slides/day2-morning.html#comparing-mae-and-mape",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Comparing MAE and MAPE",
-    "text": "Comparing MAE and MAPE\n\n\n\nNote\n\n\nThere are situations when MAPE is problematic!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n           MAE     MAPE\nyhat1 2.873328 43.14008\nyhat2 5.382247 36.08279"
+    "text": "Comparing MAE and MAPE\n\n\n\n\n\n\nImportant\n\n\nThere are situations when MAPE is problematic!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMAE\nMAPE\n\n\n\n\nyhat1\n2.873\n43.140\n\n\nyhat2\n5.382\n36.083"
   },
   {
     "objectID": "slides/day2-morning.html#error-metrics-mase",
@@ -109,7 +109,7 @@
     "href": "slides/day2-morning.html#comparing-mae-mape-and-mase",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Comparing MAE, MAPE and MASE",
-    "text": "Comparing MAE, MAPE and MASE\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n           MAE     MAPE      MASE\nyhat1 2.873328 43.14008  66.10004\nyhat2 5.382247 36.08279 123.81696"
+    "text": "Comparing MAE, MAPE and MASE\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMAE\nMAPE\nMASE\n\n\n\n\nyhat1\n2.873\n43.140\n66.100\n\n\nyhat2\n5.382\n36.083\n123.817"
   },
   {
     "objectID": "slides/day2-morning.html#defining-the-error-metrics-in-r",
@@ -361,7 +361,7 @@
     "href": "slides/day2-morning.html#fit-arx3-ridgelasso-for-covid-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Fit ARX(3) + ridge/lasso for COVID deaths",
-    "text": "Fit ARX(3) + ridge/lasso for COVID deaths\n\nlibrary(glmnet) # Implements ridge and lasso\n\nh &lt;- 28\nX &lt;- as_tibble(ca_lags) |&gt; select(ends_with(\"_28\"), ends_with(\"_35\"), ends_with(\"_42\"))\ny &lt;- ca_lags$deaths\n\n# We'll need to omit NA values explicitly, as otherwise glmnet will complain\nX_train &lt;- X[43:t0, ]\ny_train &lt;- y[43:t0]\n\n# Ridge regression: set alpha = 0, lambda sequence will be chosen automatically\nridge &lt;- glmnet(X_train, y_train, alpha = 0)\nbeta_ridge &lt;- coef(ridge)       # matrix of estimated coefficients \nlambda_ridge &lt;- ridge$lambda    # sequence of lambdas used to fit ridge \n\n# Lasso regression: set alpha = 1, lambda sequence will be chosen automatically\nlasso &lt;- glmnet(X_train, y_train, alpha = 1)\nbeta_lasso &lt;- coef(lasso)       # matrix of estimated coefficients \nlambda_lasso &lt;- lasso$lambda    # sequence of lambdas used to fit lasso \n\ndim(beta_lasso)                 # One row per coefficient, one column per lambda value\n\n[1]  7 85"
+    "text": "Fit ARX(3) + ridge/lasso for COVID deaths\n\nlibrary(glmnet) # Implements ridge and lasso\n\nh &lt;- 28\nX &lt;- as_tibble(ca_lags) |&gt; select(ends_with(\"_28\"), ends_with(\"_35\"), ends_with(\"_42\"))\ny &lt;- ca_lags$deaths\n\n# We'll need to omit NA values explicitly, as otherwise glmnet will complain\nX_train &lt;- X[43:t0, ]\ny_train &lt;- y[43:t0]\n\n# Ridge regression: set alpha = 0, lambda sequence will be chosen automatically\nridge &lt;- glmnet(X_train, y_train, alpha = 0)\nbeta_ridge &lt;- coef(ridge)       # matrix of estimated coefficients \nlambda_ridge &lt;- ridge$lambda    # sequence of lambdas used to fit ridge \n\n# Lasso regression: set alpha = 1, lambda sequence will be chosen automatically\nlasso &lt;- glmnet(X_train, y_train, alpha = 1)\nbeta_lasso &lt;- coef(lasso)       # matrix of estimated coefficients \nlambda_lasso &lt;- lasso$lambda    # sequence of lambdas used to fit lasso \n\ndim(beta_lasso)                 # One row per coefficient, one column per lambda value\n\n[1]  8 85"
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cv-trailing-for-arx3-ridgelasso",
@@ -424,7 +424,7 @@
     "href": "slides/day2-morning.html#prediction-intervals-for-arx-cv-trailing-window-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Prediction intervals for ARX (CV, trailing window)",
-    "text": "Prediction intervals for ARX (CV, trailing window)\n\n\n\n                 MAE     MASE\nlm.trailing 0.104397 972.6125"
+    "text": "Prediction intervals for ARX (CV, trailing window)\n\n\n\n                   MAE     MASE\nlm.trailing 0.08932857 832.2278"
   },
   {
     "objectID": "slides/day2-morning.html#quantile-regression",
@@ -452,14 +452,14 @@
     "href": "slides/day2-morning.html#predictions-via-quantile-regression-cv-trailing-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions via quantile regression (CV, trailing)",
-    "text": "Predictions via quantile regression (CV, trailing)\n\n\n\n                  MAE     MASE\nrq.trailing 0.1244401 1159.343"
+    "text": "Predictions via quantile regression (CV, trailing)\n\n\n\n                  MAE     MASE\nrq.trailing 0.1016452 946.9752"
   },
   {
     "objectID": "slides/day2-morning.html#actual-coverage",
     "href": "slides/day2-morning.html#actual-coverage",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Actual Coverage",
-    "text": "Actual Coverage\n\nWe would expect the ARX model fitted via lm and via rq to cover the truth about 80% of the times. Is this actually true in practice?\nThe actual coverage of each predictive interval is lower:\n\n\n\n         lm.trailing rq.trailing\nCoverage   0.8294118   0.8117647"
+    "text": "Actual Coverage\n\nWe would expect the ARX model fitted via lm and via rq to cover the truth about 80% of the times. Is this actually true in practice?\nThe actual coverage of each predictive interval is lower:\n\n\n\n         lm.trailing rq.trailing\nCoverage   0.6029412   0.6544118"
   },
   {
     "objectID": "slides/day2-morning.html#evaluation-1",
@@ -480,14 +480,14 @@
     "href": "slides/day2-morning.html#wis-for-arx-fitted-via-lm-and-rq",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "WIS for ARX fitted via lm and rq",
-    "text": "WIS for ARX fitted via lm and rq\nThe lowest mean WIS is attained by quantile regression.\n\n\n  Mean WIS lm Mean WIS rq\n1   0.1335326   0.1056215"
+    "text": "WIS for ARX fitted via lm and rq\nThe lowest mean WIS is attained by quantile regression.\n\n\n  Mean WIS lm Mean WIS rq\n1   0.1670436   0.1578256"
   },
   {
     "objectID": "slides/day2-morning.html#versioned-data",
     "href": "slides/day2-morning.html#versioned-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioned data",
-    "text": "Versioned data\nSo far: data never revised (or simply ignored revisions, as_of today)\n\n\n\nImportant\n\n\nHow can we train forecasters when dealing with versioned data?\n\n\n\n\ndata_archive\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-04-01 / 2023-03-09\nℹ First/last version with update: 2020-04-02 / 2023-03-10\nℹ Versions end: 2023-03-10\nℹ A preview of the table (148820 rows x 5 columns):\n        geo_value time_value    version case_rate death_rate\n     1:        ak 2020-04-01 2020-04-02  1.797489  0.0000000\n     2:        ak 2020-04-01 2020-05-07  1.777061  0.0000000\n     3:        ak 2020-04-01 2020-10-28  1.106147  0.0000000\n     4:        ak 2020-04-01 2020-10-29  1.797489  0.0000000\n     5:        ak 2020-04-01 2020-10-30  1.797489  0.0000000\n    ---                                                     \n148816:        wy 2023-03-05 2023-03-06  0.000000  0.0000000\n148817:        wy 2023-03-06 2023-03-07  0.000000  0.0000000\n148818:        wy 2023-03-07 2023-03-08 38.809743  0.3434491\n148819:        wy 2023-03-08 2023-03-09  0.000000  0.0000000\n148820:        wy 2023-03-09 2023-03-10  0.000000  0.0000000"
+    "text": "Versioned data\nSo far: data never revised (or simply ignored revisions, as_of today)\n\n\n\nImportant\n\n\nHow can we train forecasters when dealing with versioned data?\n\n\n\n\ndata_archive\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-04-01 / 2023-03-09\nℹ First/last version with update: 2020-04-02 / 2023-03-10\nℹ Versions end: 2023-03-10\nℹ A preview of the table (148820 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version case_rate death_rate\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;     &lt;num&gt;      &lt;num&gt;\n     1:        ak 2020-04-01 2020-04-02  1.797489  0.0000000\n     2:        ak 2020-04-01 2020-05-07  1.777061  0.0000000\n     3:        ak 2020-04-01 2020-10-28  1.106147  0.0000000\n     4:        ak 2020-04-01 2020-10-29  1.797489  0.0000000\n     5:        ak 2020-04-01 2020-10-30  1.797489  0.0000000\n    ---                                                     \n148816:        wy 2023-03-05 2023-03-06  0.000000  0.0000000\n148817:        wy 2023-03-06 2023-03-07  0.000000  0.0000000\n148818:        wy 2023-03-07 2023-03-08 38.809743  0.3434491\n148819:        wy 2023-03-08 2023-03-09  0.000000  0.0000000\n148820:        wy 2023-03-09 2023-03-10  0.000000  0.0000000"
   },
   {
     "objectID": "slides/day2-morning.html#version-aware-forecasting",
@@ -551,209 +551,6 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Signal Discovery, Data Fetching, & Panel Data",
     "text": "Signal Discovery, Data Fetching, & Panel Data\nInsightNet Forecasting Workshop 2024\n\nAilce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n11 December – Morning"
-  },
-  {
-    "objectID": "slides/day1-morning.html#outline",
-    "href": "slides/day1-morning.html#outline",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Outline",
-    "text": "Outline\n\nDelphi\nPanel Data\nVersioned Data\nEpidata API\nEpidatr\nFind Data Sources and Signals\nVersioning in epidatr"
-  },
-  {
-    "objectID": "slides/day1-morning.html#about-delphi",
-    "href": "slides/day1-morning.html#about-delphi",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "About Delphi",
-    "text": "About Delphi\n\nFounded in 2012 at Carnegie Mellon University, now expanded to UC Berkeley, and University of British Columbia.\nCurrently 5 faculty, ~10 PhD students, ~15 staff (mostly software engineers).\nEasy to join us from anywhere (lots of volunteers during Covid-19 pandemic).\nWe are:\n\nCDC Center of Excellence for Influenza and Covid-19 Forecasting (2019-24).\nCDC Innovation Center for Outbreak Analytics and Disease Modeling (2024-29).\n\n\nOur mission: To develop the theory and practice of epidemic detection, tracking and forecasting, and their use in decision making, both public and private."
-  },
-  {
-    "objectID": "slides/day1-morning.html#what-does-delphi-do",
-    "href": "slides/day1-morning.html#what-does-delphi-do",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "What does Delphi do?",
-    "text": "What does Delphi do?\n\nProcure real-time, aggregated data streams informative of infectious diseases and syndromes, in collaboration with partners in industry and government.\nExtract signals and make them widely available via the Epidata platform & API.\nDevelop and deploy algorithms for epidemic detection, tracking, forecasting.\nDevelop and maintain statistical software packages for these tasks.\nMake it all production-grade, maximally-accessible, and open-source (to serve CDC, state and local public health agencies, epi-forecasting researchers, data journalists, the public)"
-  },
-  {
-    "objectID": "slides/day1-morning.html#what-we-provide",
-    "href": "slides/day1-morning.html#what-we-provide",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "What we provide",
-    "text": "What we provide"
-  },
-  {
-    "objectID": "slides/day1-morning.html#panel-data-1",
-    "href": "slides/day1-morning.html#panel-data-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Panel data",
-    "text": "Panel data\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nSince we’re working with aggregated data, the subjects are geographic units (e.g. counties, states) and not individuals.\nIn table form, panel data is a time index + one or more locations/keys.\nFor example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 (docs):\n\n\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-02-01\n\n# A tibble: 6 × 3\n  geo_value time_value percent_cli\n* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01        4.70\n2 wa        2021-12-02        4.60\n3 wa        2021-12-03        4.56\n4 wa        2021-12-04        4.93\n5 wa        2021-12-05        4.17\n6 wa        2021-12-06        4.12"
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
-    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - COVID-19 cases",
-    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.\n\n\n\nWA switch to weekly reporting in 2022\nFL reports “whenever” (weekly, biweekly, three days in a row, then 4 zeros, etc.)"
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
-    "href": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - HHS Admissions",
-    "text": "Examples of panel data - HHS Admissions\nConfirmed COVID-19 Hospital Admissions per 100k estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days."
-  },
-  {
-    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
-    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Examples of panel data - COVID-19 cases and deaths in CA",
-    "text": "Examples of panel data - COVID-19 cases and deaths in CA\n\nTakeaway: Cases appear to strongly correlate with deaths several weeks later.\nWe’ll see this again in an upcoming session…"
-  },
-  {
-    "objectID": "slides/day1-morning.html#intro-to-versioned-data",
-    "href": "slides/day1-morning.html#intro-to-versioned-data",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Intro to versioned data",
-    "text": "Intro to versioned data\n\nIn panel data, we’ve seen that time is indicated by time_value.\nNow, we add a second time index to indicate the data version…\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value version    percent_cli\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01 2021-12-05       0.884\n2 wa        2021-12-01 2021-12-06       0.917\n3 wa        2021-12-01 2021-12-07       0.896\n4 wa        2021-12-01 2021-12-08       0.985\n5 wa        2021-12-01 2021-12-09       1.03 \n6 wa        2021-12-01 2021-12-10       1.00 \n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
-  },
-  {
-    "objectID": "slides/day1-morning.html#versioned-panel-data",
-    "href": "slides/day1-morning.html#versioned-panel-data",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Versioned panel data",
-    "text": "Versioned panel data\nEstimated percentage of outpatient visits due to CLI in FL across multiple issue dates, with updates and revisions to past data as new issue dates are released:"
-  },
-  {
-    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals",
-    "href": "slides/day1-morning.html#latency-and-revision-in-signals",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Latency and revision in signals",
-    "text": "Latency and revision in signals\n\nLatency refers to the delay between data collection and availability.\n\nExample: A signal based on medical insurance claims may take several days to appear but is subject to delays as claims are processed over weeks.\n\nRevision occurs when data is updated or corrected after initial publication, often due to new information or late reporting.\n\nExample: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared."
-  },
-  {
-    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals---example",
-    "href": "slides/day1-morning.html#latency-and-revision-in-signals---example",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Latency and revision in signals - Example",
-    "text": "Latency and revision in signals - Example\n\nRecall the first example of panel & versioned data we’ve seen…\nThis signal is 4 days latent (min(version - time_value))\n\n\n\n# A tibble: 6 × 5\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-02 2021-12-06       0.737 4 days           \n3 wa        2021-12-03 2021-12-07       0.662 4 days           \n4 wa        2021-12-04 2021-12-08       0.663 4 days           \n5 wa        2021-12-05 2021-12-09       0.872 4 days           \n6 wa        2021-12-06 2021-12-10       0.642 4 days           \n\n\n\nAnd clearly undergoes revision over time (ex. consider Dec. 1’s percent_cli across version):\n\n\n\n# A tibble: 6 × 5\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-01 2021-12-06       0.917 5 days           \n3 wa        2021-12-01 2021-12-07       0.896 6 days           \n4 wa        2021-12-01 2021-12-08       0.985 7 days           \n5 wa        2021-12-01 2021-12-09       1.03  8 days           \n6 wa        2021-12-01 2021-12-10       1.00  9 days"
-  },
-  {
-    "objectID": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
-    "href": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Revision triangle, Outpatient visits in WA 2022",
-    "text": "Revision triangle, Outpatient visits in WA 2022\n\n7-day trailing average to smooth day-of-week effects"
-  },
-  {
-    "objectID": "slides/day1-morning.html#revisions",
-    "href": "slides/day1-morning.html#revisions",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Revisions",
-    "text": "Revisions\nMany data sources are subject to revisions:\n\nCase and death counts are frequently corrected or adjusted by authorities.\nMedical claims data can take weeks to be submitted and processed.\n\n\n\nLab tests and medical records can be backlogged for a variety of reasons.\nSurveys are not always completed promptly.\nKey: An accurate revision log is crucial for researchers building forecasts.\n\nA forecast that is made today can should rely on information we have access to today."
-  },
-  {
-    "objectID": "slides/day1-morning.html#three-types-of-revisions",
-    "href": "slides/day1-morning.html#three-types-of-revisions",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Three types of revisions",
-    "text": "Three types of revisions\n\nSources that don’t revise - Ex. Facebook or Google symptoms (provisional and final are the same)\nPredictable revisions - Ex. Claims data (CHNG) and public health reports aligned by test, hosp., or death date\nRevisions that are large and erratic to predict - Ex. COVID cases and deaths, especially when aligned by report date (which can be highly variable & less predictable compared to test data)."
-  },
-  {
-    "objectID": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
-    "href": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Types of revisions - Comparison between 2. and 3.",
-    "text": "Types of revisions - Comparison between 2. and 3.\n\nRevision behavior for two indicators in the HRR containing Charlotte, NC.\n\n\n\nDV-CLI signal (left) was regularly revised throughout the period, although effects fade farther back.\nJHU CSSE cases (right) remain “as reported” on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data.\n\n\n\nFigure 1 from McDonald et al. (2021)"
-  },
-  {
-    "objectID": "slides/day1-morning.html#key-takeaways",
-    "href": "slides/day1-morning.html#key-takeaways",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Key takeaways",
-    "text": "Key takeaways\n\nMedical claims revisions: More systematic and predictable.\nCOVID-19 case report revisions: Erratic and often unpredictable.\nLarge spikes or anomalies can occur as\n\nReporting backlogs are cleared.\nChanges in case definitions are implemented."
-  },
-  {
-    "objectID": "slides/day1-morning.html#reporting-backlogs---example",
-    "href": "slides/day1-morning.html#reporting-backlogs---example",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Reporting backlogs - Example",
-    "text": "Reporting backlogs - Example\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends."
-  },
-  {
-    "objectID": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
-    "href": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Reporting backlogs - Key takeaways",
-    "text": "Reporting backlogs - Key takeaways\n\nReporting issues been common across U.S. jurisdictions.\nFor example, audits have regularly discovered misclassified or unreported cases and deaths.\nThis underscores the value of cross-checking data with external sources not part of the same reporting systems."
-  },
-  {
-    "objectID": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
-    "href": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Goals of Delphi Epidata platform and repository",
-    "text": "Goals of Delphi Epidata platform and repository\n\n\nBe the one-stop shop for aggregated epi-surveillance time-series (“epi-signals”)\n\nHence: include also signals available elsewhere, especially if they don’t keep data revisions - E.g. CDC’s own NSSP, NWSS\nBe the national historical repository of record & preserve the raw data\n\nBe the national clearinghouse for epi-signals, including those held elsewhere\n\nThe go-to place for signal discovery\n\nAdd value to existing signals and synthesize new ones\n\nAdded value: see next slide\nSynthesize new: via signal fusion, e.g. nowcasting\n\nBe the focal point for community-wide efforts to open up privately held data\n\nBetter positioned than government or industry"
-  },
-  {
-    "objectID": "slides/day1-morning.html#the-bigger-goal",
-    "href": "slides/day1-morning.html#the-bigger-goal",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "The bigger goal",
-    "text": "The bigger goal\nThe goal is to make epi-surveillance more nimble, complete, standardized, robust, and real-time and\nless burdensome on the health system itself.\nEpidata is not the solution; but we hope it is a blueprint towards such a solution."
-  },
-  {
-    "objectID": "slides/day1-morning.html#what-is-the-epidata-repository",
-    "href": "slides/day1-morning.html#what-is-the-epidata-repository",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "What is the Epidata repository",
-    "text": "What is the Epidata repository\nEpidata is a repository of aggregated epi-surveillance time series. To the full extent we can, we make everything free and open-source.\n\nTo date, it has accumulated over 5 billion records (each record is the value of a signal, at a particular date, and a particular location).\nAt the peak of the pandemic, we were receiving millions of API queries per day.\nData comes from: public health reporting, medical insurance claims, medical device data, Google search queries, wastewater, app-based mobility patterns.\nMany of our data streams simply aren’t available anywhere else.\nAdded value we provide: revision tracking, anomaly detection, trend detection, smoothing, imputation, geo-temporal-demographic disaggregation"
-  },
-  {
-    "objectID": "slides/day1-morning.html#features-of-delphi-epidata",
-    "href": "slides/day1-morning.html#features-of-delphi-epidata",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Features of Delphi Epidata",
-    "text": "Features of Delphi Epidata\n\nBuilt-in support for:\n\nData revisions (“backfill”). Concepts of “reporting date” and “as of”.\nBackfill projection and alerting to changes in backfill dynamics\nGeo levels w/ auto-aggregation: county, MSA, HRR, state, HHS region, nation\n\nAlso esoteric ones: DMA, sewer sheds\n\nDemographic breakdown\nRepresentation for missingness and censoring\nPopulation sizes and fine-grained population density\n\nPre-computed smoothing and normalization (customization planned)\nAccess control\nCode is Open Source. Signals are as accessible (w/ API, SDK) as allowed by DUAs"
-  },
-  {
-    "objectID": "slides/day1-morning.html#epidata-api-1",
-    "href": "slides/day1-morning.html#epidata-api-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Epidata API",
-    "text": "Epidata API\n\nDelphi’s Epidata API provides real-time access to epidemiological surveillance data.\nThe main endpoint (covidcast) providing daily updates about current COVID-19 and influenza activity across the United States.\nA variety of other endpoints, providing primarily historical data about various diseases including COVID-19, influenza, dengue fever, and norovirus in several countries.\nA full-featured R client is available for quick access to all data.\nA Legacy Python client is available, full-featured Python client in development."
-  },
-  {
-    "objectID": "slides/day1-morning.html#some-of-our-data-sources",
-    "href": "slides/day1-morning.html#some-of-our-data-sources",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Some of our data sources",
-    "text": "Some of our data sources\nOngoing Sources:\n\nInsurance claims: %Covid {inpatient, outpatient}, by {county x day}\nGoogle Symptom searches: 7 symptoms groups, by {county x day}\nQuidel/Ortho antigen tests: %Covid by age group, by {county x day}\nNCHS Deaths: all-cause, pneumonia, flu, Covid, by {state x week}\nNSSP ED visits: %Covid, %flu, %RSV, by {county x week} (new!)\nNWSS Covid, by {sampling-site x day} (in progress)"
-  },
-  {
-    "objectID": "slides/day1-morning.html#some-of-our-data-sources-1",
-    "href": "slides/day1-morning.html#some-of-our-data-sources-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Some of our data sources",
-    "text": "Some of our data sources\nActive during pandemic, could be restarted for the next PHE:\n\nHHS Hosp/ICU beds: Covid, flu, by age-group, by {state x day}, {facility x week}\nCTIS (“Delphi Facebook Survey”): many dozens of questions, by (county x day)\nSTLT-reported: {cases, deaths} via {JHU, USAFacts}, by (country x day)\nSafegraph mobility: misc measures by {county x day},{county x week}"
-  },
-  {
-    "objectID": "slides/day1-morning.html#some-of-our-pre-pandemic-data-sources",
-    "href": "slides/day1-morning.html#some-of-our-pre-pandemic-data-sources",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Some of our pre-pandemic data sources",
-    "text": "Some of our pre-pandemic data sources\n\nFluView ILINet, by {state x week}\nFluView Clinical (% positive flu, PH and clinical labs)\nGoogle Health Trends (GHT), precursor to Google Symptoms\nGoogle Flu Trends (GFT), precursor to to GHT\nTwitter flu\nAccess counts for flu-related CDC pages, by {city x week}\nAccess counts for flu-related Wikipedia entries by {day x hour}\nFlu-surv (flu hosp rates, now expanded to RESP-NET)\nMisc signals for dengue, norovirus\nMisc signals for PAHO countries, ECDC, KCDC, Taiwan,…\nDelphi ILI nowcasts, by {state x week}, visualized in “ILI Nearby” website\nDelphi ILI forecasts, by {state x week}"
-  },
-  {
-    "objectID": "slides/day1-morning.html#severity-pyramid",
-    "href": "slides/day1-morning.html#severity-pyramid",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Severity pyramid",
-    "text": "Severity pyramid"
-  },
-  {
-    "objectID": "slides/day1-morning.html#installing-epidatr",
-    "href": "slides/day1-morning.html#installing-epidatr",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Installing epidatr",
-    "text": "Installing epidatr\nInstalling the package in R is straightforward…\nInstall the CRAN version\n\n# Install the CRAN version\npak::pkg_install(\"epidatr\")\n\n\nor the development version\n\n# Install the development version from the GitHub dev branch\n# pak::pkg_install(\"cmu-delphi/epidatr@dev\")\n\nThe CRAN listing is here."
   },
   {
     "objectID": "slides/day1-morning.html#python",
