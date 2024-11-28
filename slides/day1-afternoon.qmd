@@ -503,7 +503,7 @@ ca_complete
 To simplify things, let's use `filter()` to only grab one date of `cases_df`:
 ```{r cases-df-one-date}
 #| echo: true
-cases_df_sub = cases_df |> filter(time_value == "2022-03-01") 
+cases_df_sub <- cases_df |> filter(time_value == "2022-03-01")
 cases_df_sub
 ```
 
@@ -532,10 +532,10 @@ Notice that this includes many states that are not in `cases_df_sub`.
 ```{r left-join}
 #| echo: true
 # Left join: combining March 1, 2022 state case data with the census data
-cases_left_join <- cases_df_sub |>
+cases_sub_left_join <- cases_df_sub |>
   left_join(state_census, join_by(geo_value == abbr))
 
-cases_left_join
+cases_sub_left_join
 ```
 
 ## Right Join: Keep all rows from the second dataset
@@ -546,10 +546,10 @@ cases_left_join
 ```{r right-join}
 #| echo: true
 # Right join: keep all rows from state_census
-cases_right_join <- cases_df_sub |>
+cases_sub_right_join <- cases_df_sub |>
   right_join(state_census, join_by(geo_value == abbr))
 
-head(cases_right_join)
+head(cases_sub_right_join)
 ```
 
 ## Inner Join: Only keeping matching rows
@@ -558,10 +558,10 @@ head(cases_right_join)
 ```{r inner-join}
 #| echo: true
 # Inner join: only matching rows are kept
-cases_inner_join <- cases_df_sub |>
+cases_sub_inner_join <- cases_df_sub |>
   inner_join(state_census, join_by(geo_value == abbr))
 
-cases_inner_join
+cases_sub_inner_join
 ```
 
 ## Full Join: Keeping all rows from both datasets
@@ -571,10 +571,10 @@ cases_inner_join
 ```{r full-join}
 #| echo: true
 # Full join: keep all rows from both datasets
-cases_full_join <- cases_df_sub |>
+cases_sub_full_join <- cases_df_sub |>
   full_join(state_census, join_by(geo_value == abbr))
 
-head(cases_full_join)
+head(cases_sub_full_join)
 ```
 
 ## Pictorial summary of the four join functions
@@ -609,7 +609,6 @@ cases_left_join <- cases_df |>
   left_join(state_census, join_by(geo_value == abbr))
 
 cases_left_join
-cases_df = cases_left_join
 
 # Or inner_join
 cases_inner_join <- cases_df |>
@@ -658,7 +657,7 @@ Alternatively, we can display both the smoothed and the original daily case rate
 
 ```{r smoothed-original-plot}
 #| echo: false
-ggplot(cases_df) +
+ggplot(case_rates_df) +
   geom_line(aes(x = time_value, y = scaled_cases, color = geo_value), size = 0.25) +
   geom_line(aes(x = time_value, y = smoothed_scaled_cases, color = geo_value), size = 1) +
   facet_wrap(vars(geo_value), nrow = 1, scales = "free") +
