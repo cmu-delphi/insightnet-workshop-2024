@@ -4,7 +4,7 @@
     "href": "slides/day2-morning.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Whirlwind Tour of Forecasting and Time-Series Models",
-    "text": "Whirlwind Tour of Forecasting and Time-Series Models\nInsightNet Forecasting Workshop 2024\n\nAilce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n12 December – Morning"
+    "text": "Whirlwind Tour of Forecasting and Time-Series Models\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n12 December – Morning"
   },
   {
     "objectID": "slides/day2-morning.html#outline",
@@ -550,7 +550,210 @@
     "href": "slides/day1-morning.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Signal Discovery, Data Fetching, & Panel Data",
-    "text": "Signal Discovery, Data Fetching, & Panel Data\nInsightNet Forecasting Workshop 2024\n\nAilce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n11 December – Morning"
+    "text": "Signal Discovery, Data Fetching, & Panel Data\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n11 December – Morning"
+  },
+  {
+    "objectID": "slides/day1-morning.html#outline",
+    "href": "slides/day1-morning.html#outline",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Outline",
+    "text": "Outline\n\nDelphi\nPanel Data\nVersioned Data\nEpidata API\nEpidatr\nFind Data Sources and Signals\nVersioning in epidatr"
+  },
+  {
+    "objectID": "slides/day1-morning.html#about-delphi",
+    "href": "slides/day1-morning.html#about-delphi",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "About Delphi",
+    "text": "About Delphi\n\nFounded in 2012 at Carnegie Mellon University, now expanded to UC Berkeley, and University of British Columbia.\nCurrently 5 faculty, ~10 PhD students, ~15 staff (mostly software engineers).\nEasy to join us from anywhere (lots of volunteers during Covid-19 pandemic).\nWe are:\n\nCDC Center of Excellence for Influenza and Covid-19 Forecasting (2019-24).\nCDC Innovation Center for Outbreak Analytics and Disease Modeling (2024-29).\n\n\nOur mission: To develop the theory and practice of epidemic detection, tracking and forecasting, and their use in decision making, both public and private."
+  },
+  {
+    "objectID": "slides/day1-morning.html#what-does-delphi-do",
+    "href": "slides/day1-morning.html#what-does-delphi-do",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "What does Delphi do?",
+    "text": "What does Delphi do?\n\nProcure real-time, aggregated data streams informative of infectious diseases and syndromes, in collaboration with partners in industry and government.\nExtract signals and make them widely available via the Epidata platform & API.\nDevelop and deploy algorithms for epidemic detection, tracking, forecasting.\nDevelop and maintain statistical software packages for these tasks.\nMake it all production-grade, maximally-accessible, and open-source (to serve CDC, state and local public health agencies, epi-forecasting researchers, data journalists, the public)"
+  },
+  {
+    "objectID": "slides/day1-morning.html#what-we-provide",
+    "href": "slides/day1-morning.html#what-we-provide",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "What we provide",
+    "text": "What we provide"
+  },
+  {
+    "objectID": "slides/day1-morning.html#panel-data-1",
+    "href": "slides/day1-morning.html#panel-data-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Panel data",
+    "text": "Panel data\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nSince we’re working with aggregated data, the subjects are geographic units (e.g. counties, states) and not individuals.\nIn table form, panel data is a time index + one or more locations/keys.\nFor example: The estimated percentage of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 (docs):\n\n\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-02-01\n\n# A tibble: 6 × 3\n  geo_value time_value percent_cli\n* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01        4.70\n2 wa        2021-12-02        4.60\n3 wa        2021-12-03        4.56\n4 wa        2021-12-04        4.93\n5 wa        2021-12-05        4.17\n6 wa        2021-12-06        4.12"
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
+    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - COVID-19 cases",
+    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.\n\n\n\nWA switch to weekly reporting in 2022\nFL reports “whenever” (weekly, biweekly, three days in a row, then 4 zeros, etc.)"
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
+    "href": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - HHS Admissions",
+    "text": "Examples of panel data - HHS Admissions\nConfirmed COVID-19 Hospital Admissions per 100k estimates the daily sum of adult and pediatric confirmed COVID-19 hospital admissions, per 100,000 population, averaged over the past 7 days."
+  },
+  {
+    "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
+    "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases-and-deaths-in-ca",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Examples of panel data - COVID-19 cases and deaths in CA",
+    "text": "Examples of panel data - COVID-19 cases and deaths in CA\n\nTakeaway: Cases appear to strongly correlate with deaths several weeks later.\nWe’ll see this again in an upcoming session…"
+  },
+  {
+    "objectID": "slides/day1-morning.html#intro-to-versioned-data",
+    "href": "slides/day1-morning.html#intro-to-versioned-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Intro to versioned data",
+    "text": "Intro to versioned data\n\nIn panel data, we’ve seen that time is indicated by time_value.\nNow, we add a second time index to indicate the data version…\n\n\n\n# A tibble: 6 × 4\n  geo_value version    time_value percent_cli\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-05 2021-12-01       0.884\n2 wa        2021-12-06 2021-12-01       0.917\n3 wa        2021-12-07 2021-12-01       0.896\n4 wa        2021-12-08 2021-12-01       0.985\n5 wa        2021-12-09 2021-12-01       1.03 \n6 wa        2021-12-10 2021-12-01       1.00 \n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
+  },
+  {
+    "objectID": "slides/day1-morning.html#versioned-panel-data",
+    "href": "slides/day1-morning.html#versioned-panel-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Versioned panel data",
+    "text": "Versioned panel data\nEstimated percentage of outpatient visits due to CLI in FL across multiple issue dates, with updates and revisions to past data as new issue dates are released:"
+  },
+  {
+    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals",
+    "href": "slides/day1-morning.html#latency-and-revision-in-signals",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Latency and revision in signals",
+    "text": "Latency and revision in signals\n\nLatency refers to the delay between data collection and availability.\n\nExample: A signal based on medical insurance claims may take several days to appear but is subject to delays as claims are processed over weeks.\n\nRevision occurs when data is updated or corrected after initial publication, often due to new information or late reporting.\n\nExample: COVID-19 case reports are revised frequently after initial publication as new data comes in or reporting backlogs are cleared."
+  },
+  {
+    "objectID": "slides/day1-morning.html#latency-and-revision-in-signals---example",
+    "href": "slides/day1-morning.html#latency-and-revision-in-signals---example",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Latency and revision in signals - Example",
+    "text": "Latency and revision in signals - Example\n\nRecall the first example of panel & versioned data we’ve seen…\nThis signal is 4 days latent (min(version - time_value))\n\n\n\n# A tibble: 6 × 5\n  geo_value version    time_value percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-05 2021-12-01       0.884 4 days           \n2 wa        2021-12-06 2021-12-02       0.737 4 days           \n3 wa        2021-12-07 2021-12-03       0.662 4 days           \n4 wa        2021-12-08 2021-12-04       0.663 4 days           \n5 wa        2021-12-09 2021-12-05       0.872 4 days           \n6 wa        2021-12-10 2021-12-06       0.642 4 days           \n\n\n\nAnd clearly undergoes revision over time (ex. consider Dec. 1’s percent_cli across version):\n\n\n\n# A tibble: 6 × 5\n  geo_value time_value version    percent_cli version_time_diff\n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;           &lt;dbl&gt; &lt;drtn&gt;           \n1 wa        2021-12-01 2021-12-05       0.884 4 days           \n2 wa        2021-12-01 2021-12-06       0.917 5 days           \n3 wa        2021-12-01 2021-12-07       0.896 6 days           \n4 wa        2021-12-01 2021-12-08       0.985 7 days           \n5 wa        2021-12-01 2021-12-09       1.03  8 days           \n6 wa        2021-12-01 2021-12-10       1.00  9 days"
+  },
+  {
+    "objectID": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
+    "href": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Revision triangle, Outpatient visits in WA 2022",
+    "text": "Revision triangle, Outpatient visits in WA 2022\n\n7-day trailing average to smooth day-of-week effects"
+  },
+  {
+    "objectID": "slides/day1-morning.html#revisions",
+    "href": "slides/day1-morning.html#revisions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Revisions",
+    "text": "Revisions\nMany data sources are subject to revisions:\n\nCase and death counts are frequently corrected or adjusted by authorities.\nMedical claims data can take weeks to be submitted and processed.\n\n\n\nLab tests and medical records can be backlogged for a variety of reasons.\nSurveys are not always completed promptly.\nKey: An accurate revision log is crucial for researchers building forecasts.\n\nA forecast that is made today can should rely on information we have access to today."
+  },
+  {
+    "objectID": "slides/day1-morning.html#three-types-of-revisions",
+    "href": "slides/day1-morning.html#three-types-of-revisions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Three types of revisions",
+    "text": "Three types of revisions\n\nSources that don’t revise - Ex. Facebook or Google symptoms (provisional and final are the same)\nPredictable revisions - Ex. Claims data (CHNG) and public health reports aligned by test, hosp., or death date\nRevisions that are large and erratic to predict - Ex. COVID cases and deaths, especially when aligned by report date (which can be highly variable & less predictable compared to test data)."
+  },
+  {
+    "objectID": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
+    "href": "slides/day1-morning.html#types-of-revisions---comparison-between-2.-and-3.",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Types of revisions - Comparison between 2. and 3.",
+    "text": "Types of revisions - Comparison between 2. and 3.\n\nRevision behavior for two indicators in the HRR containing Charlotte, NC.\n\n\n\nDV-CLI signal (left) was regularly revised throughout the period, although effects fade farther back.\nJHU CSSE cases (right) remain “as reported” on Sept. 28, with a spike toward the end of this period, until a major correction is made on Oct. 19, which brings this down & affects prior data."
+  },
+  {
+    "objectID": "slides/day1-morning.html#key-takeaways",
+    "href": "slides/day1-morning.html#key-takeaways",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Key takeaways",
+    "text": "Key takeaways\n\nMedical claims revisions: More systematic and predictable.\nCOVID-19 case report revisions: Erratic and often unpredictable.\nLarge spikes or anomalies can occur as\n\nReporting backlogs are cleared.\nChanges in case definitions are implemented."
+  },
+  {
+    "objectID": "slides/day1-morning.html#reporting-backlogs---example",
+    "href": "slides/day1-morning.html#reporting-backlogs---example",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Reporting backlogs - Example",
+    "text": "Reporting backlogs - Example\n\nLeft: Reported cases per day in Bexar County, Texas, during the summer of 2020. On July 16, 4,810 backlogged cases were reported, reflecting a 2-week delay. This caused a prolonged spike due to the 7-day trailing average applied to the counts.\nRight: CTIS estimates of CLI-in-community showed more stable underlying trends."
+  },
+  {
+    "objectID": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
+    "href": "slides/day1-morning.html#reporting-backlogs---key-takeaways",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Reporting backlogs - Key takeaways",
+    "text": "Reporting backlogs - Key takeaways\n\nReporting issues been common across U.S. jurisdictions.\nFor example, audits have regularly discovered misclassified or unreported cases and deaths.\nThis underscores the value of cross-checking data with external sources not part of the same reporting systems."
+  },
+  {
+    "objectID": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
+    "href": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Goals of Delphi Epidata platform and repository",
+    "text": "Goals of Delphi Epidata platform and repository\n\nBe the one-stop shop for aggregated epi-surveillance time-series (“epi-signals”)\n\nHence: include also signals available elsewhere, especially if they don’t keep data revisions - E.g. CDC’s own NSSP, NWSS\nBe the national historical repository of record & preserve the raw data\n\nBe the national clearinghouse for epi-signals, including those held elsewhere\n\nThe go-to place for signal discovery\n\nAdd value to existing signals and synthesize new ones\n\nAdded value: see next slide\nSynthesize new: via signal fusion, e.g. nowcasting\n\nBe the focal point for community-wide efforts to open up privately held data\n\nBetter positioned than government or industry"
+  },
+  {
+    "objectID": "slides/day1-morning.html#the-bigger-goal",
+    "href": "slides/day1-morning.html#the-bigger-goal",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "The bigger goal",
+    "text": "The bigger goal\nThe goal is to make epi-surveillance more nimble, complete, standardized, robust, and real-time and\nless burdensome on the health system itself.\nEpidata is not the solution; but we hope it is a blueprint towards such a solution."
+  },
+  {
+    "objectID": "slides/day1-morning.html#what-is-the-epidata-repository",
+    "href": "slides/day1-morning.html#what-is-the-epidata-repository",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "What is the Epidata repository",
+    "text": "What is the Epidata repository\nEpidata is a repository of aggregated epi-surveillance time series. To the full extent we can, we make everything free and open-source.\n\nTo date, it has accumulated over 5 billion records (each record is the value of a signal, at a particular date, and a particular location).\nAt the peak of the pandemic, we were receiving millions of API queries per day.\nData comes from: public health reporting, medical insurance claims, medical device data, Google search queries, wastewater, app-based mobility patterns.\nMany of our data streams simply aren’t available anywhere else.\nAdded value we provide: revision tracking, anomaly detection, trend detection, smoothing, imputation, geo-temporal-demographic disaggregation"
+  },
+  {
+    "objectID": "slides/day1-morning.html#features-of-delphi-epidata",
+    "href": "slides/day1-morning.html#features-of-delphi-epidata",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features of Delphi Epidata",
+    "text": "Features of Delphi Epidata\n\nBuilt-in support for:\n\nData revisions (“backfill”). Concepts of “reporting date” and “as of”.\nBackfill projection and alerting to changes in backfill dynamics\nGeo levels w/ auto-aggregation: county, MSA, HRR, state, HHS region, nation\n\nAlso esoteric ones: DMA, sewer sheds\n\nDemographic breakdown\nRepresentation for missingness and censoring\nPopulation sizes and fine-grained population density\n\nPre-computed smoothing and normalization (customization planned)\nAccess control\nCode is Open Source. Signals are as accessible (w/ API, SDK) as allowed by DUAs"
+  },
+  {
+    "objectID": "slides/day1-morning.html#epidata-api-1",
+    "href": "slides/day1-morning.html#epidata-api-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Epidata API",
+    "text": "Epidata API\n\nDelphi’s Epidata API provides real-time access to epidemiological surveillance data.\nThe main endpoint (covidcast) providing daily updates about current COVID-19 and influenza activity across the United States.\nA variety of other endpoints, providing primarily historical data about various diseases including COVID-19, influenza, dengue fever, and norovirus in several countries.\nA full-featured R client is available for quick access to all data.\nA Legacy Python client is available, full-featured Python client in development."
+  },
+  {
+    "objectID": "slides/day1-morning.html#some-of-our-data-sources",
+    "href": "slides/day1-morning.html#some-of-our-data-sources",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Some of our data sources",
+    "text": "Some of our data sources\nOngoing Sources:\n\nInsurance claims: %Covid {inpatient, outpatient}, by {county x day}\nGoogle Symptom searches: 7 symptoms groups, by {county x day}\nQuidel/Ortho antigen tests: %Covid by age group, by {county x day}\nNCHS Deaths: all-cause, pneumonia, flu, Covid, by {state x week}\nNSSP ED visits: %Covid, %flu, %RSV, by {county x week} (new!)\nNWSS Covid, by {sampling-site x day} (in progress)"
+  },
+  {
+    "objectID": "slides/day1-morning.html#some-of-our-data-sources-1",
+    "href": "slides/day1-morning.html#some-of-our-data-sources-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Some of our data sources",
+    "text": "Some of our data sources\nActive during pandemic, could be restarted for the next PHE:\n\nHHS Hosp/ICU beds: Covid, flu, by age-group, by {state x day}, {facility x week}\nCTIS (“Delphi Facebook Survey”): many dozens of questions, by (county x day)\nSTLT-reported: {cases, deaths} via {JHU, USAFacts}, by (country x day)\nSafegraph mobility: misc measures by {county x day},{county x week}"
+  },
+  {
+    "objectID": "slides/day1-morning.html#some-of-our-pre-pandemic-data-sources",
+    "href": "slides/day1-morning.html#some-of-our-pre-pandemic-data-sources",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Some of our pre-pandemic data sources",
+    "text": "Some of our pre-pandemic data sources\n\nFluView ILINet, by {state x week}\nFluView Clinical (% positive flu, PH and clinical labs)\nGoogle Health Trends (GHT), precursor to Google Symptoms\nGoogle Flu Trends (GFT), precursor to to GHT\nTwitter flu\nAccess counts for flu-related CDC pages, by {city x week}\nAccess counts for flu-related Wikipedia entries by {day x hour}\nFlu-surv (flu hosp rates, now expanded to RESP-NET)\nMisc signals for dengue, norovirus\nMisc signals for PAHO countries, ECDC, KCDC, Taiwan,…\nDelphi ILI nowcasts, by {state x week}, visualized in “ILI Nearby” website\nDelphi ILI forecasts, by {state x week}"
+  },
+  {
+    "objectID": "slides/day1-morning.html#severity-pyramid",
+    "href": "slides/day1-morning.html#severity-pyramid",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Severity pyramid",
+    "text": "Severity pyramid"
+  },
+  {
+    "objectID": "slides/day1-morning.html#installing-epidatr",
+    "href": "slides/day1-morning.html#installing-epidatr",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Installing epidatr",
+    "text": "Installing epidatr\nInstalling the package in R is straightforward…\nInstall the CRAN version\n\n# Install the CRAN version\npak::pkg_install(\"epidatr\")\n\n\nor the development version\n\n# Install the development version from the GitHub dev branch\npak::pkg_install(\"cmu-delphi/epidatr@dev\")\n\nThe CRAN listing is here."
   },
   {
     "objectID": "slides/day1-morning.html#python",
@@ -564,7 +767,7 @@
     "href": "slides/day1-morning.html#using-epidatr-and-epidatpy",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Using epidatr and epidatpy",
-    "text": "Using epidatr and epidatpy\nThe following shows how to import the library and fetch all confirmed influenza hospital admissions occurring each day for North Carolina:\n\nlibrary(epidatr)\nres &lt;- pub_covidcast('hhs', 'confirmed_admissions_influenza_1d', 'state', 'day', geo_values = 'nc',\n                     time_values = c(20240401, 20240405:20240414))\nhead(res, n = 3)\n\n# A tibble: 3 × 15\n  geo_value signal     source geo_type time_type time_value direction issue     \n  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;  &lt;fct&gt;    &lt;fct&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;date&gt;    \n1 nc        confirmed… hhs    state    day       2024-04-01        NA 2024-04-22\n2 nc        confirmed… hhs    state    day       2024-04-05        NA 2024-04-22\n3 nc        confirmed… hhs    state    day       2024-04-06        NA 2024-04-22\n# ℹ 7 more variables: lag &lt;dbl&gt;, missing_value &lt;dbl&gt;, missing_stderr &lt;dbl&gt;,\n#   missing_sample_size &lt;dbl&gt;, value &lt;dbl&gt;, stderr &lt;dbl&gt;, sample_size &lt;dbl&gt;\n\n\n\nPython equivalent:\nres = Epidata.covidcast('hhs', 'confirmed_admissions_influenza_1d', 'day', 'state', [20240401, Epidata.range(20240405, 20240414)], 'nc')\nprint(res['result'], res['message'], len(res['epidata']))"
+    "text": "Using epidatr and epidatpy\nThe following shows how to import the library and fetch all confirmed influenza hospital admissions occurring each day for North Carolina:\n\nlibrary(epidatr)\nhhs_flu_nc &lt;- pub_covidcast('hhs', 'confirmed_admissions_influenza_1d', 'state', 'day', geo_values = 'nc',\n                     time_values = c(20240401, 20240405:20240414))\nhead(hhs_flu_nc, n = 3)\n\n\n\n# A tibble: 3 × 15\n  geo_value signal     source geo_type time_type time_value direction issue     \n  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;  &lt;fct&gt;    &lt;fct&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;date&gt;    \n1 nc        confirmed… hhs    state    day       2024-04-01        NA 2024-04-22\n2 nc        confirmed… hhs    state    day       2024-04-05        NA 2024-04-22\n3 nc        confirmed… hhs    state    day       2024-04-06        NA 2024-04-22\n# ℹ 7 more variables: lag &lt;dbl&gt;, missing_value &lt;dbl&gt;, missing_stderr &lt;dbl&gt;,\n#   missing_sample_size &lt;dbl&gt;, value &lt;dbl&gt;, stderr &lt;dbl&gt;, sample_size &lt;dbl&gt;\n\n\n\nPython equivalent:\nres = Epidata.covidcast('hhs', 'confirmed_admissions_influenza_1d', 'day', 'state', [20240401, Epidata.range(20240405, 20240414)], 'nc')\nprint(res['result'], res['message'], len(res['epidata']))"
   },
   {
     "objectID": "slides/day1-morning.html#api-keys",
@@ -634,7 +837,7 @@
     "href": "slides/day1-morning.html#fetching-data---covidcast-main-endpoint-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Fetching data - COVIDcast main endpoint",
-    "text": "Fetching data - COVIDcast main endpoint\n\nlibrary(epidatr)\nlibrary(dplyr)\n\nepidata &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\", \n  geo_type = \"nation\",\n  time_type = \"day\",\n  geo_values = \"us\",\n  time_values = epirange(20210101, 20210401)\n)\n\n\n\n# A tibble: 3 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 us        confirmed_7dav_in… jhu-c… nation   2021-01-01 2023-03-10   798  61.9\n2 us        confirmed_7dav_in… jhu-c… nation   2021-01-02 2023-03-10   797  64.2\n3 us        confirmed_7dav_in… jhu-c… nation   2021-01-03 2023-03-10   796  67.1\n\n\nHere value is the requested signal – in this case, the number of daily new confirmed COVID-19 cases per 100,000 population from January to April 2021."
+    "text": "Fetching data - COVIDcast main endpoint\n\nlibrary(epidatr)\nlibrary(dplyr)\n\njhu_us_cases &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\", \n  geo_type = \"nation\",\n  time_type = \"day\",\n  geo_values = \"us\",\n  time_values = epirange(20210101, 20210401)\n)\n\n\n\n# A tibble: 3 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 us        confirmed_7dav_in… jhu-c… nation   2021-01-01 2023-03-10   798  61.9\n2 us        confirmed_7dav_in… jhu-c… nation   2021-01-02 2023-03-10   797  64.2\n3 us        confirmed_7dav_in… jhu-c… nation   2021-01-03 2023-03-10   796  67.1\n\n\nHere value is the requested signal – in this case, the number of daily new confirmed COVID-19 cases per 100,000 population from January to April 2021."
   },
   {
     "objectID": "slides/day1-morning.html#returned-data---covidcast-main-endpoint",
@@ -655,14 +858,14 @@
     "href": "slides/day1-morning.html#geographic-levels",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Geographic levels",
-    "text": "Geographic levels\n\nThe Epidata API makes signals available at different geographic levels, depending on the endpoint.\nFor the confirmed_7dav_incidence_prop signal, we can obtain values for each state.\nSimply change geo_type and geo_values in the previous example to get…\n\n\n# Obtain the most up-to-date version of the smoothed covid-like illness (CLI)\n# signal from the COVID-19 Trends and Impact survey for all states\nstate_epidata &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"*\",\n  time_values = epirange(20210101, 20210401)\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 ak        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  35.9\n2 al        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  67.7\n3 ar        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  76.2\n4 as        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791   0  \n5 az        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  83.4\n6 ca        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-10   798 104."
+    "text": "Geographic levels\n\nThe Epidata API makes signals available at different geographic levels, depending on the endpoint.\nFor the confirmed_7dav_incidence_prop signal, we can obtain values for each state.\nSimply change geo_type and geo_values in the previous example to get…\n\n\n# Obtain the most up-to-date version of the smoothed covid-like illness (CLI)\n# signal from the COVID-19 Trends and Impact survey for all states\njhu_state_cases &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"*\",\n  time_values = epirange(20210101, 20210401)\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 ak        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  35.9\n2 al        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  67.7\n3 ar        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  76.2\n4 as        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791   0  \n5 az        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  83.4\n6 ca        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-10   798 104."
   },
   {
     "objectID": "slides/day1-morning.html#covidcast-main-endpoint---example-query",
     "href": "slides/day1-morning.html#covidcast-main-endpoint---example-query",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "COVIDcast main endpoint - Example query",
-    "text": "COVIDcast main endpoint - Example query\nCounty geo_values are FIPS codes and are discussed in the API docs here. The example below is for Orange County, California.\n\njhu_county_data &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\",\n  geo_type = \"county\",\n  time_type = \"day\",\n  time_values = epirange(20210101, 20210401),\n  geo_values = \"06059\"\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 06059     confirmed_7dav_in… jhu-c… county   2021-01-01 2023-03-03   791  105.\n2 06059     confirmed_7dav_in… jhu-c… county   2021-01-02 2023-03-03   790  107.\n3 06059     confirmed_7dav_in… jhu-c… county   2021-01-03 2023-03-03   789  108.\n4 06059     confirmed_7dav_in… jhu-c… county   2021-01-04 2023-03-03   788  107.\n5 06059     confirmed_7dav_in… jhu-c… county   2021-01-05 2023-03-03   787  105.\n6 06059     confirmed_7dav_in… jhu-c… county   2021-01-06 2023-03-03   786  104.\n\n\n\n\n\nNote\n\n\nThe covidcast endpoint supports * in its time and geo fields. Try to obtain the signal values for all available counties by replacing geo_values = \"06059\" with geo_values = \"*\"."
+    "text": "COVIDcast main endpoint - Example query\nCounty geo_values are FIPS codes and are discussed in the API docs here. The example below is for Orange County, California.\n\njhu_county_cases &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\",\n  geo_type = \"county\",\n  time_type = \"day\",\n  time_values = epirange(20210101, 20210401),\n  geo_values = \"06059\"\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 06059     confirmed_7dav_in… jhu-c… county   2021-01-01 2023-03-03   791  105.\n2 06059     confirmed_7dav_in… jhu-c… county   2021-01-02 2023-03-03   790  107.\n3 06059     confirmed_7dav_in… jhu-c… county   2021-01-03 2023-03-03   789  108.\n4 06059     confirmed_7dav_in… jhu-c… county   2021-01-04 2023-03-03   788  107.\n5 06059     confirmed_7dav_in… jhu-c… county   2021-01-05 2023-03-03   787  105.\n6 06059     confirmed_7dav_in… jhu-c… county   2021-01-06 2023-03-03   786  104.\n\n\n\n\n\nNote\n\n\nThe covidcast endpoint supports * in its time and geo fields. Try to obtain the signal values for all available counties by replacing geo_values = \"06059\" with geo_values = \"*\"."
   },
   {
     "objectID": "slides/day1-morning.html#example-queries---other-endpoints-hospitalizations",
@@ -704,49 +907,49 @@
     "href": "slides/day1-morning.html#obtaining-data-as-of-a-specific-date",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining data “as of” a specific date",
-    "text": "Obtaining data “as of” a specific date\n\nExample: Doctor Visits Signal (from the covidcast endpoint)\n\nEstimates the percentage of outpatient doctor visits that are COVID-related. To give a specific example, let’s consider the estimate for PA on May 1, 2020:\n\n\n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  as_of = \"2020-05-07\"\n)\n\n\n\n# A tibble: 1 × 7\n  geo_value signal           source        time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;         &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-visits 2020-05-01 2020-05-07     6  2.58\n\n\n\nInitial estimate was issued on May 7, 2020 (due to delay from aggregation and ingestion by the API)."
+    "text": "Obtaining data “as of” a specific date\n\nExample: Doctor Visits Signal (from the covidcast endpoint)\n\nEstimates the percentage of outpatient doctor visits that are COVID-related. To give a specific example, let’s consider the estimate for PA on May 1, 2020:\n\n\n\ndv_pa_as_of &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  as_of = \"2020-05-07\"\n)\n\n\n\n# A tibble: 1 × 7\n  geo_value signal           source        time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;         &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-visits 2020-05-01 2020-05-07     6  2.58\n\n\n\nInitial estimate was issued on May 7, 2020 (due to delay from aggregation and ingestion by the API)."
   },
   {
     "objectID": "slides/day1-morning.html#obtaining-data-as-of-a-specific-date-1",
     "href": "slides/day1-morning.html#obtaining-data-as-of-a-specific-date-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining data “as of” a specific date",
-    "text": "Obtaining data “as of” a specific date\nDefault behaviour: If we don’t specify as_of, we get the most recent estimate:\n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\"\n)\n\n\n\n# A tibble: 1 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  5.97     NA\n\n\n\nSubstantial Estimate Change:\n\nEstimate increased from &lt;3% to almost 6% after May 7, reflecting new data on visits from May 1.\n\nVersioning is Important in Forecasting:\n\nAccurate backtesting requires using data available at the time of model fitting, not later updates, for accurate forecasting results."
+    "text": "Obtaining data “as of” a specific date\nDefault behaviour: If we don’t specify as_of, we get the most recent estimate:\n\ndv_pa_final &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\"\n)\n\n\n\n# A tibble: 1 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  5.97     NA\n\n\n\nSubstantial Estimate Change:\n\nEstimate increased from &lt;3% to almost 6% after May 7, reflecting new data on visits from May 1.\n\nVersioning is Important in Forecasting:\n\nAccurate backtesting requires using data available at the time of model fitting, not later updates, for accurate forecasting results."
   },
   {
     "objectID": "slides/day1-morning.html#obtaining-multiple-specific-issues-for-one-state",
     "href": "slides/day1-morning.html#obtaining-multiple-specific-issues-for-one-state",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining multiple specific issues for one state",
-    "text": "Obtaining multiple specific issues for one state\nBy using the issues argument, we can request all issues in a certain time period:\n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = epirange(\"2020-05-01\", \"2020-05-15\")\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  3.32     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  3.59     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  3.63     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA"
+    "text": "Obtaining multiple specific issues for one state\nBy using the issues argument, we can request all issues in a certain time period:\n\ndv_pa_issues &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = epirange(\"2020-05-01\", \"2020-05-15\")\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  3.32     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  3.59     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  3.63     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA"
   },
   {
     "objectID": "slides/day1-morning.html#obtaining-multiple-issues-for-one-state",
     "href": "slides/day1-morning.html#obtaining-multiple-issues-for-one-state",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining multiple issues for one state",
-    "text": "Obtaining multiple issues for one state\nTo ensure that you’ve captured all issues up to a specific date (e.g., “2020-05-15”), set an extreme lower bound: issues = epirange(\"1900-01-01\", \"2020-05-15\").\n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = epirange(\"1900-01-01\", \"2020-05-15\")\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  3.32     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  3.59     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  3.63     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA\n\n\n\nThis doesn’t change anything here, but it may matter for other types of data where you don’t know the latency or reporting lag.\nWhen in doubt, refer to the signal’s API documentation to find the earliest date available."
+    "text": "Obtaining multiple issues for one state\nTo ensure that you’ve captured all issues up to a specific date (e.g., “2020-05-15”), set an extreme lower bound: issues = epirange(\"1900-01-01\", \"2020-05-15\").\n\ndv_pa_issues_sub &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = epirange(\"1900-01-01\", \"2020-05-15\")\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  3.32     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  3.59     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  3.63     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA\n\n\n\nThis doesn’t change anything here, but it may matter for other types of data where you don’t know the latency or reporting lag.\nWhen in doubt, refer to the signal’s API documentation to find the earliest date available."
   },
   {
     "objectID": "slides/day1-morning.html#obtaining-multiple-issues-for-one-state-1",
     "href": "slides/day1-morning.html#obtaining-multiple-issues-for-one-state-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining multiple issues for one state",
-    "text": "Obtaining multiple issues for one state\n\nOnce the maximum issue is reached and there are no more issues to come, the data is considered finalized, regardless of the maximum issue you requested.\nFor example, the last issue is from July 2020 and so the data is finalized as of July 2020 (not the last issue we requested).\n\n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = epirange(\"1900-01-01\", \"2024-12-11\") # From the 1900s to today\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-06-29    59  5.99     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-06-30    60  5.99     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-01    61  5.95     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-02    62  5.97     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-03    63  5.97     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  5.97     NA\n\n\n\nWe caution against starting queries with too late a minimum issue or too early maximum issue, as it could lead to incorrect or misleading results. You’re safest bet to capture all issues is on the next slide…"
+    "text": "Obtaining multiple issues for one state\n\nOnce the maximum issue is reached and there are no more issues to come, the data is considered finalized, regardless of the maximum issue you requested.\nFor example, the last issue is from July 2020 and so the data is finalized as of July 2020 (not the last issue we requested).\n\n\ndv_pa_issues_all &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-01\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = epirange(\"1900-01-01\", \"2024-12-11\") # From the 1900s to today\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-06-29    59  5.99     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-06-30    60  5.99     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-01    61  5.95     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-02    62  5.97     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-03    63  5.97     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  5.97     NA\n\n\n\nWe caution against starting queries with too late a minimum issue or too early maximum issue, as it could lead to incorrect or misleading results. You’re safest bet to capture all issues is on the next slide…"
   },
   {
     "objectID": "slides/day1-morning.html#obtaining-all-issues-for-one-state",
     "href": "slides/day1-morning.html#obtaining-all-issues-for-one-state",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining all issues for one state",
-    "text": "Obtaining all issues for one state\nThe fast way to obtain all available issues for PA, set issues to be *:\n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = \"*\"\n)\n\n\n\n# A tibble: 8 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  3.32     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  3.59     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  3.63     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA\n7 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-15    14  3.66     NA\n8 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-16    15  3.61     NA"
+    "text": "Obtaining all issues for one state\nThe fast way to obtain all available issues for PA, set issues to be *:\n\ndv_pa_issues_star &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\",\n  geo_values = \"pa\",\n  issues = \"*\"\n)\n\n\n\n# A tibble: 8 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  2.58     NA\n2 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  3.28     NA\n3 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  3.32     NA\n4 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  3.59     NA\n5 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  3.63     NA\n6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA\n7 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-15    14  3.66     NA\n8 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-16    15  3.61     NA"
   },
   {
     "objectID": "slides/day1-morning.html#obtaining-all-issues-for-all-states",
     "href": "slides/day1-morning.html#obtaining-all-issues-for-all-states",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining all issues for all states",
-    "text": "Obtaining all issues for all states\nA very useful feature is the ability to extract all geo_values and issues by using * in both.\n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\",\n  geo_values = \"*\",\n  issues = \"*\"\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  1.61     NA\n2 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  2.40     NA\n3 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  2.38     NA\n4 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  2.38     NA\n5 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  2.36     NA\n6 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  2.36     NA\n\n\nSo, now we obtain all available issues for all states (not just PA) for the specified date range. Neat!"
+    "text": "Obtaining all issues for all states\nA very useful feature is the ability to extract all geo_values and issues by using * in both.\n\ndv_state_issues_star &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\",\n  geo_values = \"*\",\n  issues = \"*\"\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-07     6  1.61     NA\n2 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-08     7  2.40     NA\n3 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-09     8  2.38     NA\n4 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-12    11  2.38     NA\n5 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-13    12  2.36     NA\n6 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  2.36     NA\n\n\nSo, now we obtain all available issues for all states (not just PA) for the specified date range. Neat!"
   },
   {
     "objectID": "slides/day1-morning.html#last-but-not-least-the-do-nothing-approach",
@@ -760,14 +963,14 @@
     "href": "slides/day1-morning.html#last-but-not-least-the-do-nothing-approach-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Last but not least… The do nothing approach",
-    "text": "Last but not least… The do nothing approach\nFinal question: What do you think happens when we adopt a “do nothing” approach to geo_values and issues (take both of them out) for this example?\n Hint: remember a couple slides ago, when we removed as_of, we got the most recent estimate for PA. \n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\"\n)"
+    "text": "Last but not least… The do nothing approach\nFinal question: What do you think happens when we adopt a “do nothing” approach to geo_values and issues (take both of them out) for this example?\n Hint: remember a couple slides ago, when we removed as_of, we got the most recent estimate for PA. \n\ndv_state_default &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\"\n)"
   },
   {
     "objectID": "slides/day1-morning.html#obtaining-one-issue-for-all-states",
     "href": "slides/day1-morning.html#obtaining-one-issue-for-all-states",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Obtaining one issue for all states",
-    "text": "Obtaining one issue for all states\nFinal question: What do you think happens when we adopt a “do nothing” approach to geo_values and issues (take both of them out)?\n Hint: remember a couple slides ago, when we removed as_of, we got the most recent estimate for PA. \n\nepidata &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\"\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  5.72     NA\n2 al        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  2.74     NA\n3 ar        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  4.23     NA\n4 az        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  2.78     NA\n5 ca        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  4.25     NA\n6 co        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  8.77     NA\n\n\nWe get the most recent issue for all states!"
+    "text": "Obtaining one issue for all states\nFinal question: What do you think happens when we adopt a “do nothing” approach to geo_values and issues (take both of them out)?\n Hint: remember a couple slides ago, when we removed as_of, we got the most recent estimate for PA. \n\ndv_state_default &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\"\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal           source     time_value issue        lag value stderr\n  &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 ak        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  5.72     NA\n2 al        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  2.74     NA\n3 ar        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  4.23     NA\n4 az        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  2.78     NA\n5 ca        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  4.25     NA\n6 co        smoothed_adj_cli doctor-vi… 2020-05-01 2020-07-04    64  8.77     NA\n\n\nWe get the most recent issue for all states!"
   },
   {
     "objectID": "slides/day1-morning.html#main-takeaways",
@@ -775,6 +978,349 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Main takeaways",
     "text": "Main takeaways\n\nDelphi Epidata: A one-stop platform for real-time epidemic data, providing aggregated signals for disease tracking and forecasting from diverse sources like health records, mobility patterns, and more.\nEpidata API: Open-access API delivering up-to-date, granular epidemiological data + makes all historical versions available.\nEpidatr: Enables you to access Delphi’s epidemiological data through R and Python, offering easy installation, powerful API functions, and interactive tools for discovering and analyzing health signals.\nVersioned Data and Latency: Panel data captures time-series trends, which are often subject to revision. A standout feature of this API is its inclusion of two critical fields…\n\nas_of: One version of the data, and referring to the specific date when the data was last update (i.e. the data was updated as_of this date)\nissues: Multiple versions of the data, each corresponding to different as_of dates, capturing revisions over time.\n\n\nTheir purpose is to manage the record of revisions for transparency and accuracy in data analysis."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#section",
+    "href": "slides/appendix-tidyverse.html#section",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Background on {tidyverse}",
+    "text": "Background on {tidyverse}\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n11 December – Afternoon"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#down-with-spreadsheets-for-data-manipulation",
+    "href": "slides/appendix-tidyverse.html#down-with-spreadsheets-for-data-manipulation",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Down with spreadsheets for data manipulation",
+    "text": "Down with spreadsheets for data manipulation\n\nSpreadsheets make it difficult to rerun analyses consistently.\nUsing R (and {dplyr}) allows for:\n\nReproducibility\nEase of modification\n\nRecommendation: Avoid manual edits; instead, use code for transformations.\nLet’s see what we mean by this…"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#introduction-to-dplyr",
+    "href": "slides/appendix-tidyverse.html#introduction-to-dplyr",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Introduction to dplyr",
+    "text": "Introduction to dplyr\n\ndplyr is a powerful package in R for data manipulation.\nIt is part of the tidyverse, which includes a collection of packages designed to work together… Here’s some of it’s greatest hits:\n\n\n  Source"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#introduction-to-dplyr-1",
+    "href": "slides/appendix-tidyverse.html#introduction-to-dplyr-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Introduction to dplyr",
+    "text": "Introduction to dplyr\n\nTo load dplyr you may simply load the tidyverse package:\n\n# install.packages(\"tidyverse\")\nlibrary(tidyverse)  # Load tidyverse, which includes dplyr & tidyr"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#introduction-to-dplyr-2",
+    "href": "slides/appendix-tidyverse.html#introduction-to-dplyr-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Introduction to dplyr",
+    "text": "Introduction to dplyr\nOur focus will be on basic operations like selecting and filtering data.\n\n\nSource"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#downloading-jhu-csse-covid-19-case-data",
+    "href": "slides/appendix-tidyverse.html#downloading-jhu-csse-covid-19-case-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Downloading JHU CSSE COVID-19 case data",
+    "text": "Downloading JHU CSSE COVID-19 case data\n\nLet’s start with something familiar… Here’s a task for you:\nUse pub_covidcast() to download JHU CSSE COVID-19 confirmed case data (confirmed_incidence_num) for CA, NC, and NY from March 1, 2022 to March 31, 2022 as of January 1, 2024.\nTry this for yourself. Then click the dropdown on the next slide to check your work…"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#downloading-jhu-csse-covid-19-case-data-1",
+    "href": "slides/appendix-tidyverse.html#downloading-jhu-csse-covid-19-case-data-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Downloading JHU CSSE COVID-19 case data",
+    "text": "Downloading JHU CSSE COVID-19 case data\n\n\nCode\nlibrary(epidatr)\n\ncases_df &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_incidence_num\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ca,nc,ny\",\n  time_values = epirange(20220301, 20220331),\n  as_of = as.Date(\"2024-01-01\")\n)\n\n\nNow we only really need a few columns here…\n\ncases_df &lt;- cases_df |&gt; \n  select(geo_value, time_value, raw_cases = value) # We'll talk more about this soon :)"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#ways-to-inspect-the-dataset",
+    "href": "slides/appendix-tidyverse.html#ways-to-inspect-the-dataset",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Ways to inspect the dataset",
+    "text": "Ways to inspect the dataset\nUse head() to view the first six row of the data\n\nhead(cases_df)  # First 6 rows\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 nc        2022-03-01      1231\n3 ny        2022-03-01      1487\n4 ca        2022-03-02      7044\n5 nc        2022-03-02      2243\n6 ny        2022-03-02      1889\n\n\nand tail to view the last six\n\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-30      3785\n2 nc        2022-03-30      1067\n3 ny        2022-03-30      3127\n4 ca        2022-03-31      4533\n5 nc        2022-03-31      1075\n6 ny        2022-03-31      4763"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#ways-to-inspect-the-dataset-1",
+    "href": "slides/appendix-tidyverse.html#ways-to-inspect-the-dataset-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Ways to inspect the dataset",
+    "text": "Ways to inspect the dataset\nNow, for our first foray into the tidyverse…\nUse glimpse() to get a compact overview of the dataset.\n\nglimpse(cases_df)\n\nRows: 93\nColumns: 3\n$ geo_value  &lt;chr&gt; \"ca\", \"nc\", \"ny\", \"ca\", \"nc\", \"ny\", \"ca\", \"nc\", \"ny\", \"ca\",…\n$ time_value &lt;date&gt; 2022-03-01, 2022-03-01, 2022-03-01, 2022-03-02, 2022-03-02…\n$ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3586,…"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#creating-tibbles",
+    "href": "slides/appendix-tidyverse.html#creating-tibbles",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating tibbles",
+    "text": "Creating tibbles\n\nTibbles: Modern data frames with enhanced features.\nRows represent observations (or cases).\nColumns represent variables (or features).\nYou can create tibbles manually using the tibble() function.\n\n\ntibble(x = letters, y = 1:26)\n\n# A tibble: 26 × 2\n   x         y\n   &lt;chr&gt; &lt;int&gt;\n 1 a         1\n 2 b         2\n 3 c         3\n 4 d         4\n 5 e         5\n 6 f         6\n 7 g         7\n 8 h         8\n 9 i         9\n10 j        10\n# ℹ 16 more rows"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#selecting-columns-with-select",
+    "href": "slides/appendix-tidyverse.html#selecting-columns-with-select",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Selecting columns with select()",
+    "text": "Selecting columns with select()\nThe select() function is used to pick specific columns from your dataset.\n\nselect(cases_df, geo_value, time_value)  # Select the 'geo_value' and 'time_value' columns\n\n# A tibble: 93 × 2\n   geo_value time_value\n   &lt;chr&gt;     &lt;date&gt;    \n 1 ca        2022-03-01\n 2 nc        2022-03-01\n 3 ny        2022-03-01\n 4 ca        2022-03-02\n 5 nc        2022-03-02\n 6 ny        2022-03-02\n 7 ca        2022-03-03\n 8 nc        2022-03-03\n 9 ny        2022-03-03\n10 ca        2022-03-04\n# ℹ 83 more rows"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#selecting-columns-with-select-1",
+    "href": "slides/appendix-tidyverse.html#selecting-columns-with-select-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Selecting columns with select()",
+    "text": "Selecting columns with select()\nYou can exclude columns by prefixing the column names with a minus sign -.\n\nselect(cases_df, -raw_cases)  # Exclude the 'raw_cases' column from the dataset\n\n# A tibble: 93 × 2\n   geo_value time_value\n   &lt;chr&gt;     &lt;date&gt;    \n 1 ca        2022-03-01\n 2 nc        2022-03-01\n 3 ny        2022-03-01\n 4 ca        2022-03-02\n 5 nc        2022-03-02\n 6 ny        2022-03-02\n 7 ca        2022-03-03\n 8 nc        2022-03-03\n 9 ny        2022-03-03\n10 ca        2022-03-04\n# ℹ 83 more rows"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#extracting-columns-with-pull",
+    "href": "slides/appendix-tidyverse.html#extracting-columns-with-pull",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Extracting columns with pull()",
+    "text": "Extracting columns with pull()\n\npull(): Extract a column as a vector.\nLet’s try this with the cases column…\n\n\npull(cases_df, raw_cases) \n\n [1] 4310 1231 1487 7044 2243 1889 7509 2377 2390 3586 2646  350 1438    0 3372\n[16] 6465    0 2343 6690 4230 1033 3424  894 1025 4591 1833 1691 5359 1783 1747\n[31] 2713 1849 2229 1623    0 1396 5151    0 2202 4826 3130  982 1831  649 3128\n[46] 3706    0 2039 6143 2742 2356 4204 1740 2052 3256    0 2188 4659    0 2667\n[61] 5499 2508 1177 3004  819 1603 3943 1602  551 3550 1288 6596 1960 1224 3542\n[76] 1035    0    0 3384    0 5908 2811 2291 2286 1846  624 2394 3785 1067 3127\n[91] 4533 1075 4763"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#subsetting-rows-with-filter",
+    "href": "slides/appendix-tidyverse.html#subsetting-rows-with-filter",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Subsetting rows with filter()",
+    "text": "Subsetting rows with filter()\n\n  Artwork by @allison_horst"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#subsetting-rows-with-filter-1",
+    "href": "slides/appendix-tidyverse.html#subsetting-rows-with-filter-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Subsetting rows with filter()",
+    "text": "Subsetting rows with filter()\n\nThe filter() function allows you to subset rows that meet specific conditions.\nConditions regard column values, such as filtering for only NC or cases higher than some threshold.\nThis enables you to narrow down your dataset to focus on relevant data.\n\n\nfilter(cases_df, geo_value == \"nc\", raw_cases &gt; 500)  # Filter for NC with raw daily cases &gt; 500\n\n# A tibble: 22 × 3\n   geo_value time_value raw_cases\n   &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n 1 nc        2022-03-01      1231\n 2 nc        2022-03-02      2243\n 3 nc        2022-03-03      2377\n 4 nc        2022-03-04      2646\n 5 nc        2022-03-07      4230\n 6 nc        2022-03-08       894\n 7 nc        2022-03-09      1833\n 8 nc        2022-03-10      1783\n 9 nc        2022-03-11      1849\n10 nc        2022-03-14      3130\n# ℹ 12 more rows"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#combining-select-and-filter-functions",
+    "href": "slides/appendix-tidyverse.html#combining-select-and-filter-functions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Combining select() and filter() functions",
+    "text": "Combining select() and filter() functions\n\nYou can further combine select() and filter() to further refine the dataset.\nUse select() to choose columns and filter() to narrow down rows.\nThis helps in extracting the exact data needed for analysis.\n\n\nselect(filter(cases_df, geo_value == \"nc\", raw_cases &gt; 1000), time_value, raw_cases) |&gt; \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-09      1833"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#using-the-pipe-operator",
+    "href": "slides/appendix-tidyverse.html#using-the-pipe-operator",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Using the pipe operator |>",
+    "text": "Using the pipe operator |&gt;\n\nThe pipe operator (|&gt;) makes code more readable by chaining multiple operations together.\nThe output of one function is automatically passed to the next function.\nThis allows you to perform multiple steps (e.g., filter() followed by select()) in a clear and concise manner.\n\n\n# This code reads more like poetry!\ncases_df |&gt; \n  filter(geo_value == \"nc\", raw_cases &gt; 1000) |&gt; \n  select(time_value, raw_cases) |&gt; \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-09      1833"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#key-practices-in-dplyr",
+    "href": "slides/appendix-tidyverse.html#key-practices-in-dplyr",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Key practices in dplyr",
+    "text": "Key practices in dplyr\n\nUse tibbles for easier data handling.\nUse select() and filter() for data manipulation.\nUse pull() to extract columns as vectors.\nUse head(), tail(), and glimpse() for quick data inspection.\nChain functions with |&gt; for cleaner code."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#grouping-data-with-group_by",
+    "href": "slides/appendix-tidyverse.html#grouping-data-with-group_by",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Grouping data with group_by()",
+    "text": "Grouping data with group_by()\n\nUse group_by() to group data by one or more columns.\nAllows performing operations on specific groups of data.\n\n\ncases_df |&gt;\n  group_by(geo_value) |&gt;\n  filter(raw_cases == max(raw_cases, na.rm = TRUE))\n\n# A tibble: 3 × 3\n# Groups:   geo_value [3]\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-03      7509\n2 nc        2022-03-07      4230\n3 ny        2022-03-24      6596"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#creating-new-columns-with-mutate",
+    "href": "slides/appendix-tidyverse.html#creating-new-columns-with-mutate",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating new columns with mutate()",
+    "text": "Creating new columns with mutate()\n\n  Artwork by @allison_horst"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#creating-new-columns-with-mutate-1",
+    "href": "slides/appendix-tidyverse.html#creating-new-columns-with-mutate-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating new columns with mutate()",
+    "text": "Creating new columns with mutate()\n\nmutate() is used to create new columns.\nPerform calculations using existing columns and assign to new columns.\n\n\nny_subset = cases_df |&gt;\n  filter(geo_value == \"ny\")\n\nny_subset |&gt; \n  mutate(cumulative_cases = cumsum(raw_cases)) |&gt; \n  head()\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases cumulative_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;            &lt;dbl&gt;\n1 ny        2022-03-01      1487             1487\n2 ny        2022-03-02      1889             3376\n3 ny        2022-03-03      2390             5766\n4 ny        2022-03-04       350             6116\n5 ny        2022-03-05      3372             9488\n6 ny        2022-03-06      2343            11831"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#creating-new-columns-with-mutate-2",
+    "href": "slides/appendix-tidyverse.html#creating-new-columns-with-mutate-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Creating new columns with mutate()",
+    "text": "Creating new columns with mutate()\n\nmutate() can create multiple new columns in one step.\nLogical comparisons (e.g., over_5000 = raw_cases &gt; 5000) can be used within mutate().\n\n\nny_subset |&gt; \n  mutate(over_5000 = raw_cases &gt; 5000,\n         cumulative_cases = cumsum(raw_cases)) |&gt; \n  head()\n\n# A tibble: 6 × 5\n  geo_value time_value raw_cases over_5000 cumulative_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;lgl&gt;                &lt;dbl&gt;\n1 ny        2022-03-01      1487 FALSE                 1487\n2 ny        2022-03-02      1889 FALSE                 3376\n3 ny        2022-03-03      2390 FALSE                 5766\n4 ny        2022-03-04       350 FALSE                 6116\n5 ny        2022-03-05      3372 FALSE                 9488\n6 ny        2022-03-06      2343 FALSE                11831"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#combining-group_by-and-mutate",
+    "href": "slides/appendix-tidyverse.html#combining-group_by-and-mutate",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Combining group_by() and mutate()",
+    "text": "Combining group_by() and mutate()\n\nFirst, group data using group_by().\nThen, use mutate to perform the calculations for each group.\nFinally, use arrange to display the output by geo_value.\n\n\ncases_df |&gt;\n  group_by(geo_value) |&gt;\n  mutate(cumulative_cases = cumsum(raw_cases)) |&gt; \n  arrange(geo_value) |&gt; \n  head()\n\n# A tibble: 6 × 4\n# Groups:   geo_value [1]\n  geo_value time_value raw_cases cumulative_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;            &lt;dbl&gt;\n1 ca        2022-03-01      4310             4310\n2 ca        2022-03-02      7044            11354\n3 ca        2022-03-03      7509            18863\n4 ca        2022-03-04      3586            22449\n5 ca        2022-03-05      1438            23887\n6 ca        2022-03-06      6465            30352"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#conditional-calculations-with-if_else",
+    "href": "slides/appendix-tidyverse.html#conditional-calculations-with-if_else",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Conditional calculations with if_else()",
+    "text": "Conditional calculations with if_else()\n\nif_else() allows conditional logic within mutate().\nPerform different operations depending on conditions, like “high” or “low.”\n\n\nt &lt;- 5000\n\ncases_df |&gt;\n  mutate(high_low_cases = if_else(raw_cases &gt; t, \"high\", \"low\")) |&gt; \n  head()\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases high_low_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;chr&gt;         \n1 ca        2022-03-01      4310 low           \n2 nc        2022-03-01      1231 low           \n3 ny        2022-03-01      1487 low           \n4 ca        2022-03-02      7044 high          \n5 nc        2022-03-02      2243 low           \n6 ny        2022-03-02      1889 low"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#summarizing-data-with-summarise",
+    "href": "slides/appendix-tidyverse.html#summarizing-data-with-summarise",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Summarizing data with summarise()",
+    "text": "Summarizing data with summarise()\n\nsummarise() reduces data to summary statistics (e.g., mean, median).\nTypically used after group_by() to summarize each group.\n\n\ncases_df |&gt;\n  group_by(geo_value) |&gt;\n  summarise(median_cases = median(raw_cases))\n\n# A tibble: 3 × 2\n  geo_value median_cases\n  &lt;chr&gt;            &lt;dbl&gt;\n1 ca                3785\n2 nc                1224\n3 ny                2188"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#using-count-to-aggregate-data",
+    "href": "slides/appendix-tidyverse.html#using-count-to-aggregate-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Using count() to aggregate data",
+    "text": "Using count() to aggregate data\ncount() is a shortcut for grouping and summarizing the data.\nFor example, if we want to get the total number of complete rows for each state, then\n\ncases_count &lt;- cases_df |&gt;\n  drop_na() |&gt; # Removes rows where any value is missing (from tidyr)\n  group_by(geo_value) |&gt;\n  summarize(count = n())\n\n is equivalent to\n\ncases_count &lt;- cases_df |&gt;\n  drop_na() |&gt; \n  count(geo_value)\n\ncases_count # Let's see what the counts are.\n\n# A tibble: 3 × 2\n  geo_value     n\n  &lt;chr&gt;     &lt;int&gt;\n1 ca           31\n2 nc           31\n3 ny           31"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#key-practices-in-dplyr-round-2",
+    "href": "slides/appendix-tidyverse.html#key-practices-in-dplyr-round-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Key practices in dplyr: Round 2",
+    "text": "Key practices in dplyr: Round 2\n\nUse group_by() to group data by one or more variables before applying functions.\nUse mutate to create new columns or modify existing ones by applying functions to existing data.\nUse summarise to reduce data to summary statistics (e.g., mean, median).\ncount() is a convenient shortcut for counting rows by group without needing group_by() and summarise()."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#tidy-data-and-tolstoy",
+    "href": "slides/appendix-tidyverse.html#tidy-data-and-tolstoy",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidy data and Tolstoy",
+    "text": "Tidy data and Tolstoy\n\n“Happy families are all alike; every unhappy family is unhappy in its own way.” — Leo Tolstoy\n\n\nTidy datasets are like happy families: consistent, standardized, and easy to work with.\n\nMessy datasets are like unhappy families: each one messy in its own unique way.\nIn this section:\nWe’ll define what makes data tidy and how to transform between the tidy and messy formats."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#tidy-data-and-tolstoy-1",
+    "href": "slides/appendix-tidyverse.html#tidy-data-and-tolstoy-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidy data and Tolstoy",
+    "text": "Tidy data and Tolstoy\n\nArtwork by @allison_horst"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#what-is-tidy-data",
+    "href": "slides/appendix-tidyverse.html#what-is-tidy-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "What is tidy data?",
+    "text": "What is tidy data?\n\nTidy data follows a consistent structure: each row represents one observation, and each column represents one variable.\ncases_df is one classic example of tidy data.\n\n\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 nc        2022-03-01      1231\n3 ny        2022-03-01      1487\n4 ca        2022-03-02      7044\n5 nc        2022-03-02      2243\n6 ny        2022-03-02      1889\n\n\n\nTo convert between tidy and messy data, we can use the tidyr package in the tidyverse."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#pivot_wider-and-pivot_longer",
+    "href": "slides/appendix-tidyverse.html#pivot_wider-and-pivot_longer",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "pivot_wider() and pivot_longer()",
+    "text": "pivot_wider() and pivot_longer()\n\n  Artwork by @allison_horst"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#making-data-wider-with-pivot_wider",
+    "href": "slides/appendix-tidyverse.html#making-data-wider-with-pivot_wider",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Making data wider with pivot_wider()",
+    "text": "Making data wider with pivot_wider()\n\nTo convert data from long format to wide/messy format usepivot_wider().\nFor example, let’s try creating a column for each time value in cases_df:\n\n\n\nmessy_cases_df &lt;- cases_df |&gt;\n  pivot_wider(\n    names_from = time_value,   # Create new columns for each unique date\n    values_from = raw_cases    # Fill those columns with the raw_case values\n  )\n\n# View the result\nmessy_cases_df\n\n# A tibble: 3 × 32\n  geo_value `2022-03-01` `2022-03-02` `2022-03-03` `2022-03-04` `2022-03-05`\n  &lt;chr&gt;            &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;\n1 ca                4310         7044         7509         3586         1438\n2 nc                1231         2243         2377         2646            0\n3 ny                1487         1889         2390          350         3372\n# ℹ 26 more variables: `2022-03-06` &lt;dbl&gt;, `2022-03-07` &lt;dbl&gt;,\n#   `2022-03-08` &lt;dbl&gt;, `2022-03-09` &lt;dbl&gt;, `2022-03-10` &lt;dbl&gt;,\n#   `2022-03-11` &lt;dbl&gt;, `2022-03-12` &lt;dbl&gt;, `2022-03-13` &lt;dbl&gt;,\n#   `2022-03-14` &lt;dbl&gt;, `2022-03-15` &lt;dbl&gt;, `2022-03-16` &lt;dbl&gt;,\n#   `2022-03-17` &lt;dbl&gt;, `2022-03-18` &lt;dbl&gt;, `2022-03-19` &lt;dbl&gt;,\n#   `2022-03-20` &lt;dbl&gt;, `2022-03-21` &lt;dbl&gt;, `2022-03-22` &lt;dbl&gt;,\n#   `2022-03-23` &lt;dbl&gt;, `2022-03-24` &lt;dbl&gt;, `2022-03-25` &lt;dbl&gt;, …"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#tidying-messy-data-with-pivot_longer",
+    "href": "slides/appendix-tidyverse.html#tidying-messy-data-with-pivot_longer",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidying messy data with pivot_longer()",
+    "text": "Tidying messy data with pivot_longer()\n\nUse pivot_longer() to convert data from wide format (multiple columns for the same variable) to long format (one column per variable).\nLet’s try turning messy_cases_df back into the original tidy cases_df!\n\n\ntidy_cases_df &lt;- messy_cases_df |&gt;\n  pivot_longer(\n    cols = -geo_value,          # Keep the 'geo_value' column as it is\n    names_to = \"time_value\",    # Create a new 'time_value' column from the column names\n    values_to = \"raw_cases\"     # Values from the wide columns should go into 'raw_cases'\n  )\n\n# View the result\nhead(tidy_cases_df, n = 3) # Notice the class of time_value here\n\n# A tibble: 3 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03      7509"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#tidying-messy-data-with-pivot_longer-1",
+    "href": "slides/appendix-tidyverse.html#tidying-messy-data-with-pivot_longer-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Tidying messy data with pivot_longer()",
+    "text": "Tidying messy data with pivot_longer()\n\nWhen we used pivot_longer(), the time_value column is converted to a character class because the column names are treated as strings.\nSo, to truly get the original cases_df we need to convert time_value back to the Date class.\nThen, we can use identical() to check if the two data frames are exactly the same.\n\n\ntidy_cases_df = tidy_cases_df |&gt; mutate(time_value = as.Date(time_value))\n\nidentical(tidy_cases_df |&gt; arrange(time_value), cases_df)\n\n[1] TRUE\n\n\nGreat. That was a success!"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#missing-data",
+    "href": "slides/appendix-tidyverse.html#missing-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Missing data",
+    "text": "Missing data\n\nSometimes you may have missing data in your time series.\nCan be due to actual missing data, or it can be due to the fact that the data is only reported on certain days.\nLet’s create a dataset with missing data & consider each of those cases:\n\n\nca_missing &lt;- cases_df |&gt;\n  filter(geo_value == \"ca\") |&gt;\n  slice(1:2, 4:6) # Subset rows 1 to 2 and 4 to 6; ie. omit 2022-03-03\n\nca_missing\n\n# A tibble: 5 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-04      3586\n4 ca        2022-03-05      1438\n5 ca        2022-03-06      6465"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#complete-and-fill-to-handle-missing-data",
+    "href": "slides/appendix-tidyverse.html#complete-and-fill-to-handle-missing-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "complete() and fill() to handle missing data",
+    "text": "complete() and fill() to handle missing data\nA simple workflow to handle missing data relies on one or both of these functions:\n\ncomplete(): Adds missing rows for combinations of specified variables.\nfill(): Fills missing values in columns, typically from previous or next available values (default is LOCF)."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#data-only-reported-on-certain-days",
+    "href": "slides/appendix-tidyverse.html#data-only-reported-on-certain-days",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Data only reported on certain days",
+    "text": "Data only reported on certain days\n\nIf the data is only reported on certain days, it is often useful to fill in the missing data with explicit zeros.\ncomplete() is enough to handle this:\n\n\n# First, use complete() to add missing time_value (2022-03-03)\nca_complete &lt;- ca_missing |&gt;\n  complete(geo_value, time_value = seq(min(time_value), max(time_value), by = \"day\"),\n           fill = list(raw_cases = 0))\nca_complete\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03         0\n4 ca        2022-03-04      3586\n5 ca        2022-03-05      1438\n6 ca        2022-03-06      6465"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#data-is-genuinely-missing",
+    "href": "slides/appendix-tidyverse.html#data-is-genuinely-missing",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Data is genuinely missing",
+    "text": "Data is genuinely missing\n\nIf the data is truly missing, then there are multiple options (ex. omission, single imputation, multiple imputation).\nA common single imputation method used to handle missing data in time series or longitudinal datasets is LOCF.\nWe can easily perform LOCF using complete() followed by fill().\nStart with complete():\n\n\n# First, use complete() to add missing time_value (2022-03-03)\nca_complete &lt;- ca_missing |&gt;\n  complete(geo_value, time_value = seq(min(time_value), max(time_value), by = \"day\"))\nhead(ca_complete, n = 4) # notice no fill with 0s this time, NA by default\n\n# A tibble: 4 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03        NA\n4 ca        2022-03-04      3586"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#data-is-genuinely-missing-1",
+    "href": "slides/appendix-tidyverse.html#data-is-genuinely-missing-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Data is genuinely missing",
+    "text": "Data is genuinely missing\nThen, use fill() to fill the counts using LOCF (default):\n\nca_complete |&gt;\n  fill(raw_cases)\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03      7044\n4 ca        2022-03-04      3586\n5 ca        2022-03-05      1438\n6 ca        2022-03-06      6465"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#introduction-to-joins-in-dplyr",
+    "href": "slides/appendix-tidyverse.html#introduction-to-joins-in-dplyr",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Introduction to joins in dplyr",
+    "text": "Introduction to joins in dplyr\n\nJoining datasets is a powerful tool for combining info. from multiple sources.\nIn R, dplyr provides several functions to perform different types of joins.\nWe’ll demonstrate joining a subset of cases_df (our case counts dataset) with state_census.\nMotivation: We can scale the case counts by population to make them comparable across regions of different sizes."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#subset-cases_df",
+    "href": "slides/appendix-tidyverse.html#subset-cases_df",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Subset cases_df",
+    "text": "Subset cases_df\nTo simplify things, let’s use filter() to only grab one date of cases_df:\n\ncases_df_sub = cases_df |&gt; filter(time_value == \"2022-03-01\") \ncases_df_sub\n\n# A tibble: 3 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 nc        2022-03-01      1231\n3 ny        2022-03-01      1487\n\n\nThough note that what we’re going to do can be applied to the entirety of cases_df."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#load-state-census-data",
+    "href": "slides/appendix-tidyverse.html#load-state-census-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Load state census data",
+    "text": "Load state census data\nThe state_census dataset from epidatasets contains state populations from the 2019 census.\n\n# State census dataset from epidatasets\nlibrary(epidatasets)\nstate_census = state_census |&gt; select(abbr, pop) |&gt; filter(abbr != \"us\")\n\nstate_census |&gt; head()\n\n# A tibble: 6 × 2\n  abbr       pop\n  &lt;chr&gt;    &lt;dbl&gt;\n1 al     4903185\n2 ak      731545\n3 az     7278717\n4 ar     3017804\n5 ca    39512223\n6 co     5758736\n\n\nNotice that this includes many states that are not in cases_df_sub."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#left-join-keep-all-rows-from-the-first-dataset",
+    "href": "slides/appendix-tidyverse.html#left-join-keep-all-rows-from-the-first-dataset",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Left Join: Keep all rows from the first dataset",
+    "text": "Left Join: Keep all rows from the first dataset\n\nA left join keeps all rows from the first dataset (cases_df_sub), and adds matching data from the second dataset (state_census).\nSo all rows from the first dataset (cases_df_sub) will be preserved.\nThe datasets are joined by matching the geo_value column, specified by the by argument.\n\n\n# Left join: combining March 1, 2022 state case data with the census data\ncases_left_join &lt;- cases_df_sub |&gt;\n  left_join(state_census, join_by(geo_value == abbr))\n\ncases_left_join\n\n# A tibble: 3 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#right-join-keep-all-rows-from-the-second-dataset",
+    "href": "slides/appendix-tidyverse.html#right-join-keep-all-rows-from-the-second-dataset",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Right Join: Keep all rows from the second dataset",
+    "text": "Right Join: Keep all rows from the second dataset\n\nA right join keeps all rows from the second dataset (state_census), and adds matching data from the first dataset (cases_df_sub).\nIf a row in the second dataset doesn’t have a match in the first, then the columns from the first will be filled with NA.\nFor example, can see this for the al row from state_census…\n\n\n# Right join: keep all rows from state_census\ncases_right_join &lt;- cases_df_sub |&gt;\n  right_join(state_census, join_by(geo_value == abbr))\n\nhead(cases_right_join)\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561\n4 al        NA                NA  4903185\n5 ak        NA                NA   731545\n6 az        NA                NA  7278717"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#inner-join-only-keeping-matching-rows",
+    "href": "slides/appendix-tidyverse.html#inner-join-only-keeping-matching-rows",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Inner Join: Only keeping matching rows",
+    "text": "Inner Join: Only keeping matching rows\n\nAn inner join will only keep rows where there is a match in both datasets.\nSo, if a state in state_census does not have a corresponding entry in cases_df_sub, then that row will be excluded.\n\n\n# Inner join: only matching rows are kept\ncases_inner_join &lt;- cases_df_sub |&gt;\n  inner_join(state_census, join_by(geo_value == abbr))\n\ncases_inner_join\n\n# A tibble: 3 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#full-join-keeping-all-rows-from-both-datasets",
+    "href": "slides/appendix-tidyverse.html#full-join-keeping-all-rows-from-both-datasets",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Full Join: Keeping all rows from both datasets",
+    "text": "Full Join: Keeping all rows from both datasets\n\nA full join will keep all rows from both datasets.\nIf a state in either dataset has no match in the other, the missing values will be filled with NA.\n\n\n# Full join: keep all rows from both datasets\ncases_full_join &lt;- cases_df_sub |&gt;\n  full_join(state_census, join_by(geo_value == abbr))\n\nhead(cases_full_join)\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases      pop\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;\n1 ca        2022-03-01      4310 39512223\n2 nc        2022-03-01      1231 10488084\n3 ny        2022-03-01      1487 19453561\n4 al        NA                NA  4903185\n5 ak        NA                NA   731545\n6 az        NA                NA  7278717"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#pictorial-summary-of-the-four-join-functions",
+    "href": "slides/appendix-tidyverse.html#pictorial-summary-of-the-four-join-functions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Pictorial summary of the four join functions",
+    "text": "Pictorial summary of the four join functions\n\n\n\nSource"
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#final-thoughts-on-joins",
+    "href": "slides/appendix-tidyverse.html#final-thoughts-on-joins",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Final thoughts on joins",
+    "text": "Final thoughts on joins\n\nJoins are an essential part of data wrangling in R.\nThe choice of join depends on the analysis you need to perform:\n\nUse left joins when you want to keep all data from the first dataset.\nUse right joins when you want to keep all data from the second dataset.\nUse inner joins when you’re only interested in matching rows.\nUse full joins when you want to preserve all information from both datasets."
+  },
+  {
+    "objectID": "slides/appendix-tidyverse.html#three-review-questions",
+    "href": "slides/appendix-tidyverse.html#three-review-questions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Three review questions",
+    "text": "Three review questions\nQ1): What can we use to fill in the missing time_value for the states in cases_full_join?\n\n\nCode\ncases_full_join |&gt; \n     fill(time_value)\n\n\nQ2): Now, what join function should you use if your goal is to scale the cases by population in cases_df?\n\n\nCode\n# Either left_join\ncases_left_join &lt;- cases_df |&gt;\n  left_join(state_census, join_by(geo_value == abbr))\n\ncases_left_join\ncases_df = cases_left_join\n\n# Or inner_join\ncases_inner_join &lt;- cases_df |&gt;\n  inner_join(state_census, join_by(geo_value == abbr))\n\ncases_inner_join\n\n\nQ3): Finally, please create a new column in cases_df where you scale the cases by population and multiply by 1e5 to get cases / 100k.\n\n\nCode\ncases_df &lt;- cases_df |&gt;\n  mutate(scaled_cases = raw_cases / pop * 1e5) # cases / 100K\nhead(cases_df)"
   },
   {
     "objectID": "index.html#schedule",
@@ -795,7 +1341,7 @@
     "href": "slides/day1-afternoon.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Data Cleaning, Versioning, and Nowcasting",
-    "text": "Data Cleaning, Versioning, and Nowcasting\nInsightNet Forecasting Workshop 2024\n\nAilce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n11 December – Afternoon"
+    "text": "Data Cleaning, Versioning, and Nowcasting\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n11 December – Afternoon"
   },
   {
     "objectID": "slides/day1-afternoon.html#outline",
@@ -1181,6 +1727,13 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "epi_df: Snapshot of a dataset",
     "text": "epi_df: Snapshot of a dataset\n\nYou can convert panel data into an epi_df with the required geo_value and time_value columns\n\nTherefore, an epi_df is…\n\na tibble that requires columns geo_value and time_value.\narbitrary additional columns containing measured values\nadditional keys to index (age_group, ethnicity, etc.)\n\n\n\n\n\n\n\nepi_df\n\n\nRepresents a snapshot that contains the most up-to-date values of the signal variables, as of a given time."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#epi_df-snapshot-of-a-dataset-1",
+    "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-dataset-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "epi_df: Snapshot of a dataset",
+    "text": "epi_df: Snapshot of a dataset\n\nConsider the same dataset we just encountered on JHU daily COVID-19 cases and deaths rates from all states as of May 31, 2022.\nWe can see that it meets the criteria epi_df (has geo_value and time_value columns) and in this form it contains additional metadata (i.e. geo_type, time_type, as_of, and other_keys).\n\n\nedf |&gt; head()\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 6 × 4\n  geo_value time_value case_rate death_rate\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ak        2020-12-31      35.9      0.158\n2 al        2020-12-31      65.1      0.438\n3 ar        2020-12-31      66.0      1.27 \n4 as        2020-12-31       0        0    \n5 az        2020-12-31      76.8      1.10 \n6 ca        2020-12-31      96.0      0.751\n\n\n\n\n$geo_type\n[1] \"state\"\n\n$time_type\n[1] \"day\"\n\n$as_of\n[1] \"2022-05-31\"\n\n$other_keys\ncharacter(0)"
   },
   {
     "objectID": "slides/day1-afternoon.html#examples-of-preprocessing",
@@ -1614,7 +2167,7 @@
     "href": "slides/day2-afternoon.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Forecasting with {epipredict}",
-    "text": "Forecasting with {epipredict}\nInsightNet Forecasting Workshop 2024\n\nAilce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n12 December – Afternoon"
+    "text": "Forecasting with {epipredict}\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith thanks to Delphi Tooling & Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber\n12 December – Afternoon"
   },
   {
     "objectID": "slides/day2-afternoon.html#outline",
@@ -1663,7 +2216,7 @@
     "href": "slides/day2-afternoon.html#create-an-epi_df",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Create an epi_df",
-    "text": "Create an epi_df\n\ndf &lt;- left_join(cases, deaths, by = c(\"time_value\", \"geo_value\")) |&gt;\n  as_epi_df()\n\ndf\n\nAn `epi_df` object, 60,036 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-21 13:21:56.503191\n\n# A tibble: 60,036 × 4\n   geo_value time_value cases deaths\n * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt;\n 1 ak        2020-04-01    13      0\n 2 al        2020-04-01   112      4\n 3 ar        2020-04-01    61      2\n 4 as        2020-04-01     0      0\n 5 az        2020-04-01   124      7\n 6 ca        2020-04-01  1254     29\n 7 co        2020-04-01  4655    388\n 8 ct        2020-04-01   429     16\n 9 dc        2020-04-01    91      0\n10 de        2020-04-01    49     10\n# ℹ 60,026 more rows"
+    "text": "Create an epi_df\n\ndf &lt;- left_join(cases, deaths, by = c(\"time_value\", \"geo_value\")) |&gt;\n  as_epi_df()\n\ndf\n\nAn `epi_df` object, 60,036 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-21 13:40:43.941989\n\n# A tibble: 60,036 × 4\n   geo_value time_value cases deaths\n * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt;\n 1 ak        2020-04-01    13      0\n 2 al        2020-04-01   112      4\n 3 ar        2020-04-01    61      2\n 4 as        2020-04-01     0      0\n 5 az        2020-04-01   124      7\n 6 ca        2020-04-01  1254     29\n 7 co        2020-04-01  4655    388\n 8 ct        2020-04-01   429     16\n 9 dc        2020-04-01    91      0\n10 de        2020-04-01    49     10\n# ℹ 60,026 more rows"
   },
   {
     "objectID": "slides/day2-afternoon.html#pre-processing-data-scaling",
@@ -1719,14 +2272,14 @@
     "href": "slides/day2-afternoon.html#arx_forecaster-output-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "arx_forecaster output",
-    "text": "arx_forecaster output\n\nepi_arx \n\n══ A basic forecaster of type ARX Forecaster ═══════════════════════════════════\n\n\n\n\n\nThis forecaster was fit on 2024-11-12 08:50:39.\n\n\n\n\n\nTraining data was an &lt;epi_df&gt; with:\n\n\n• Geography: state,\n\n\n• Other keys: ,\n\n\n• Time type: day,\n\n\n• Using data up-to-date as of: 2024-11-06 08:50:44.\n\n\n• With the last data available on 2021-04-01\n\n\n\n\n\n── Predictions ─────────────────────────────────────────────────────────────────\n\n\n\n\n\nA total of 1 prediction is available for\n\n\n• 1 unique geographic region,\n\n\n• At forecast date: 2021-04-01,\n\n\n• For target date: 2021-04-29,"
+    "text": "arx_forecaster output\n\nepi_arx \n\n══ A basic forecaster of type ARX Forecaster ═══════════════════════════════════\n\n\n\n\n\nThis forecaster was fit on 2024-11-21 13:41:47.\n\n\n\n\n\nTraining data was an &lt;epi_df&gt; with:\n\n\n• Geography: state,\n\n\n• Other keys: ,\n\n\n• Time type: day,\n\n\n• Using data up-to-date as of: 2024-11-21 13:40:43.\n\n\n\n\n\n── Predictions ─────────────────────────────────────────────────────────────────\n\n\n\n\n\nA total of 1 prediction is available for\n\n\n• 1 unique geographic region,\n\n\n• At forecast date: 2021-04-01,\n\n\n• For target date: 2021-04-29."
   },
   {
     "objectID": "slides/day2-afternoon.html#extract-fitted-object",
     "href": "slides/day2-afternoon.html#extract-fitted-object",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Extract fitted object",
-    "text": "Extract fitted object\n\n\nepi_arx$epi_workflow\n\n\n\n\n══ Epi Workflow [trained] ══════════════════════════════════════════════════════\n\n\nPreprocessor: Recipe\n\n\nModel: linear_reg()\n\n\nPostprocessor: Frosting\n\n\n\n\n\n── Preprocessor ────────────────────────────────────────────────────────────────\n\n\n\n\n\n6 Recipe steps.\n\n\n1. step_epi_lag()\n\n\n2. step_epi_lag()\n\n\n3. step_epi_ahead()\n\n\n4. step_naomit()\n\n\n5. step_naomit()\n\n\n6. step_training_window()\n\n\n\n\n\n── Model ───────────────────────────────────────────────────────────────────────\n\n\n\nCall:\nstats::lm(formula = ..y ~ ., data = data)\n\nCoefficients:\n (Intercept)   lag_0_cases  lag_0_deaths  \n    0.076884      0.009858      0.200700  \n\n\n\n\n\n── Postprocessor ───────────────────────────────────────────────────────────────\n\n\n\n\n\n5 Frosting layers.\n\n\n1. layer_predict()\n\n\n2. layer_residual_quantiles()\n\n\n3. layer_add_forecast_date()\n\n\n4. layer_add_target_date()\n\n\n5. layer_threshold()"
+    "text": "Extract fitted object\n\n\nepi_arx$epi_workflow\n\n\n\n\n══ Epi Workflow [trained] ══════════════════════════════════════════════════════\n\n\nPreprocessor: Recipe\n\n\nModel: linear_reg()\n\n\nPostprocessor: Frosting\n\n\n\n\n\n── Preprocessor ────────────────────────────────────────────────────────────────\n\n\n\n\n\n6 Recipe steps.\n\n\n1. step_epi_lag()\n\n\n2. step_epi_lag()\n\n\n3. step_epi_ahead()\n\n\n4. step_naomit()\n\n\n5. step_naomit()\n\n\n6. step_training_window()\n\n\n\n\n\n── Model ───────────────────────────────────────────────────────────────────────\n\n\n\nCall:\nstats::lm(formula = ..y ~ ., data = data)\n\nCoefficients:\n (Intercept)   lag_0_cases  lag_0_deaths  \n    0.037694      0.009953      0.201329  \n\n\n\n\n\n── Postprocessor ───────────────────────────────────────────────────────────────\n\n\n\n\n\n5 Frosting layers.\n\n\n1. layer_predict()\n\n\n2. layer_residual_quantiles()\n\n\n3. layer_add_forecast_date()\n\n\n4. layer_add_target_date()\n\n\n5. layer_threshold()"
   },
   {
     "objectID": "slides/day2-afternoon.html#epi_workflow",
@@ -1740,21 +2293,21 @@
     "href": "slides/day2-afternoon.html#extract-predictions",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Extract predictions",
-    "text": "Extract predictions\n\nepi_arx$predictions\n\n# A tibble: 1 × 5\n  geo_value .pred        .pred_distn forecast_date target_date\n  &lt;chr&gt;     &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     \n1 ca        0.219 quantiles(0.22)[2] 2021-04-01    2021-04-29 \n\n\n\n\n\nNote\n\n\n.pred_dstn is actually a “distribution”, parameterized by its quantiles."
+    "text": "Extract predictions\n\nepi_arx$predictions\n\n# A tibble: 1 × 5\n  geo_value .pred        .pred_distn forecast_date target_date\n  &lt;chr&gt;     &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     \n1 ca        0.109 quantiles(0.11)[2] 2021-04-01    2021-04-29 \n\n\n\n\n\nNote\n\n\n.pred_dstn is actually a “distribution”, parameterized by its quantiles."
   },
   {
     "objectID": "slides/day2-afternoon.html#extract-predictions-1",
     "href": "slides/day2-afternoon.html#extract-predictions-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Extract predictions",
-    "text": "Extract predictions\nWe can extract the distribution into a “long” epi_df\n\nepi_arx$predictions |&gt;\n  pivot_quantiles_longer(.pred_distn)\n\n# A tibble: 2 × 6\n  geo_value .pred values quantile_levels forecast_date target_date\n  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;     \n1 ca        0.218  0.137             0.1 2021-04-01    2021-04-29 \n2 ca        0.218  0.300             0.9 2021-04-01    2021-04-29 \n\n\nor into a “wide” epi_df\n\nepi_arx$predictions |&gt;\n  pivot_quantiles_wider(.pred_distn)\n\n# A tibble: 1 × 6\n  geo_value .pred forecast_date target_date `0.1` `0.9`\n  &lt;chr&gt;     &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;      &lt;dbl&gt; &lt;dbl&gt;\n1 ca        0.218 2021-04-01    2021-04-29  0.137 0.300"
+    "text": "Extract predictions\nWe can extract the distribution into a “long” epi_df\n\nepi_arx$predictions |&gt;\n  pivot_quantiles_longer(.pred_distn)\n\n# A tibble: 2 × 6\n  geo_value .pred values quantile_levels forecast_date target_date\n  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;     \n1 ca        0.109 0.0684             0.1 2021-04-01    2021-04-29 \n2 ca        0.109 0.150              0.9 2021-04-01    2021-04-29 \n\n\nor into a “wide” epi_df\n\nepi_arx$predictions |&gt;\n  pivot_quantiles_wider(.pred_distn)\n\n# A tibble: 1 × 6\n  geo_value .pred forecast_date target_date  `0.1` `0.9`\n  &lt;chr&gt;     &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;       &lt;dbl&gt; &lt;dbl&gt;\n1 ca        0.109 2021-04-01    2021-04-29  0.0684 0.150"
   },
   {
     "objectID": "slides/day2-afternoon.html#predict-with-fitted-arx-split-sample",
     "href": "slides/day2-afternoon.html#predict-with-fitted-arx-split-sample",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predict with fitted ARX (split-sample)",
-    "text": "Predict with fitted ARX (split-sample)\n\narx_forecaster fits a model to the training set, and outputs only one prediction (for time \\(t_0+h\\)).\nTo get predictions for the test set:\n\n\npredict(epi_arx$epi_workflow, test)\n\nAn `epi_df` object, 707 x 6 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-06 08:50:44.00687\n\n# A tibble: 707 × 6\n   geo_value time_value .pred        .pred_distn forecast_date target_date\n * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     \n 1 ca        2021-04-02 0.217 quantiles(0.22)[2] 2021-04-01    2021-04-29 \n 2 ca        2021-04-03 0.203  quantiles(0.2)[2] 2021-04-01    2021-04-29 \n 3 ca        2021-04-04 0.197  quantiles(0.2)[2] 2021-04-01    2021-04-29 \n 4 ca        2021-04-05 0.202  quantiles(0.2)[2] 2021-04-01    2021-04-29 \n 5 ca        2021-04-06 0.199  quantiles(0.2)[2] 2021-04-01    2021-04-29 \n 6 ca        2021-04-07 0.196  quantiles(0.2)[2] 2021-04-01    2021-04-29 \n 7 ca        2021-04-08 0.193 quantiles(0.19)[2] 2021-04-01    2021-04-29 \n 8 ca        2021-04-09 0.195  quantiles(0.2)[2] 2021-04-01    2021-04-29 \n 9 ca        2021-04-10 0.209 quantiles(0.21)[2] 2021-04-01    2021-04-29 \n10 ca        2021-04-11 0.214 quantiles(0.21)[2] 2021-04-01    2021-04-29 \n# ℹ 697 more rows"
+    "text": "Predict with fitted ARX (split-sample)\n\narx_forecaster fits a model to the training set, and outputs only one prediction (for time \\(t_0+h\\)).\nTo get predictions for the test set:\n\n\npredict(epi_arx$epi_workflow, test)\n\nAn `epi_df` object, 707 x 6 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-21 13:40:43.941989\n\n# A tibble: 707 × 6\n   geo_value time_value  .pred        .pred_distn forecast_date target_date\n * &lt;chr&gt;     &lt;date&gt;      &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     \n 1 ca        2021-04-02 0.106  quantiles(0.11)[2] 2021-04-01    2021-04-29 \n 2 ca        2021-04-03 0.101   quantiles(0.1)[2] 2021-04-01    2021-04-29 \n 3 ca        2021-04-04 0.0984  quantiles(0.1)[2] 2021-04-01    2021-04-29 \n 4 ca        2021-04-05 0.100   quantiles(0.1)[2] 2021-04-01    2021-04-29 \n 5 ca        2021-04-06 0.0993  quantiles(0.1)[2] 2021-04-01    2021-04-29 \n 6 ca        2021-04-07 0.0976  quantiles(0.1)[2] 2021-04-01    2021-04-29 \n 7 ca        2021-04-08 0.0975  quantiles(0.1)[2] 2021-04-01    2021-04-29 \n 8 ca        2021-04-09 0.0979  quantiles(0.1)[2] 2021-04-01    2021-04-29 \n 9 ca        2021-04-10 0.104   quantiles(0.1)[2] 2021-04-01    2021-04-29 \n10 ca        2021-04-11 0.106  quantiles(0.11)[2] 2021-04-01    2021-04-29 \n# ℹ 697 more rows"
   },
   {
     "objectID": "slides/day2-afternoon.html#predict-with-arx-when-re-fitting",
@@ -1782,14 +2335,14 @@
     "href": "slides/day2-afternoon.html#predict-with-arx-re-fitting-on-trailing-window-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predict with ARX (re-fitting on trailing window)",
-    "text": "Predict with ARX (re-fitting on trailing window)\n\n\npred_arx \n\nAn `epi_df` object, 680 x 9 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-21 09:53:50.8601\n\n# A tibble: 680 × 9\n# Groups:   geo_value [1]\n   geo_value time_value cases deaths .pred forecast_date target_date `0.1` `0.9`\n * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;      &lt;dbl&gt; &lt;dbl&gt;\n 1 ca        2021-04-01  6.77  0.375 0.332 2021-04-01    2021-04-29  0.219 0.444\n 2 ca        2021-04-02  6.93  0.340 0.331 2021-04-02    2021-04-30  0.221 0.442\n 3 ca        2021-04-03  6.79  0.293 0.325 2021-04-03    2021-05-01  0.215 0.435\n 4 ca        2021-04-04  6.51  0.281 0.321 2021-04-04    2021-05-02  0.207 0.435\n 5 ca        2021-04-05  6.87  0.284 0.324 2021-04-05    2021-05-03  0.198 0.451\n 6 ca        2021-04-06  6.97  0.267 0.323 2021-04-06    2021-05-04  0.198 0.448\n 7 ca        2021-04-07  6.92  0.253 0.319 2021-04-07    2021-05-05  0.192 0.446\n 8 ca        2021-04-08  6.97  0.250 0.317 2021-04-08    2021-05-06  0.190 0.444\n 9 ca        2021-04-09  7.07  0.249 0.316 2021-04-09    2021-05-07  0.190 0.443\n10 ca        2021-04-10  8.33  0.246 0.326 2021-04-10    2021-05-08  0.200 0.451\n# ℹ 670 more rows"
+    "text": "Predict with ARX (re-fitting on trailing window)\n\n\npred_arx \n\nAn `epi_df` object, 680 x 9 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-11-21 13:40:43.941989\n\n# A tibble: 680 × 9\n# Groups:   geo_value [1]\n   geo_value time_value cases deaths .pred forecast_date target_date  `0.1`\n * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;       &lt;dbl&gt;\n 1 ca        2021-04-01  3.39  0.187 0.166 2021-04-01    2021-04-29  0.109 \n 2 ca        2021-04-02  3.46  0.170 0.166 2021-04-02    2021-04-30  0.110 \n 3 ca        2021-04-03  3.40  0.146 0.162 2021-04-03    2021-05-01  0.108 \n 4 ca        2021-04-04  3.25  0.141 0.161 2021-04-04    2021-05-02  0.103 \n 5 ca        2021-04-05  3.44  0.142 0.162 2021-04-05    2021-05-03  0.0992\n 6 ca        2021-04-06  3.49  0.134 0.161 2021-04-06    2021-05-04  0.0988\n 7 ca        2021-04-07  3.46  0.126 0.160 2021-04-07    2021-05-05  0.0962\n 8 ca        2021-04-08  3.49  0.125 0.159 2021-04-08    2021-05-06  0.0952\n 9 ca        2021-04-09  3.53  0.124 0.158 2021-04-09    2021-05-07  0.0948\n10 ca        2021-04-10  4.17  0.123 0.163 2021-04-10    2021-05-08  0.100 \n# ℹ 670 more rows\n# ℹ 1 more variable: `0.9` &lt;dbl&gt;"
   },
   {
     "objectID": "slides/day2-afternoon.html#predict-with-arx-re-fitting-on-trailing-window-2",
     "href": "slides/day2-afternoon.html#predict-with-arx-re-fitting-on-trailing-window-2",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predict with ARX (re-fitting on trailing window)",
-    "text": "Predict with ARX (re-fitting on trailing window)\n\n\n\n                                 MAE     MASE\ntime series CV + trailing 0.07415961 796.6647"
+    "text": "Predict with ARX (re-fitting on trailing window)\n\n\n\n                                 MAE     MASE\ntime series CV + trailing 0.03707981 796.6647"
   },
   {
     "objectID": "slides/day2-afternoon.html#simple-adjustments",
@@ -1831,7 +2384,7 @@
     "href": "slides/day2-afternoon.html#predictions-hospitalizations-instead-of-cases-in-predictor-set",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (hospitalizations instead of cases in predictor set)",
-    "text": "Predictions (hospitalizations instead of cases in predictor set)\n\n\n\n        MAE     MASE\n 0.04617467 496.0346"
+    "text": "Predictions (hospitalizations instead of cases in predictor set)\n\n\n\n        MAE     MASE\n 0.02308733 496.0346"
   },
   {
     "objectID": "slides/day2-afternoon.html#modifying-the-arx-forecaster-2",
@@ -1845,7 +2398,7 @@
     "href": "slides/day2-afternoon.html#predictions-more-lags",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (more lags)",
-    "text": "Predictions (more lags)\n\n\n\n        MAE     MASE\n 0.06634971 712.7663"
+    "text": "Predictions (more lags)\n\n\n\n        MAE     MASE\n 0.03317485 712.7663"
   },
   {
     "objectID": "slides/day2-afternoon.html#modifying-the-arx-forecaster-3",
@@ -1859,7 +2412,7 @@
     "href": "slides/day2-afternoon.html#predictions-trained-using-random-forest",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (trained using random forest)",
-    "text": "Predictions (trained using random forest)\n\n\n\n        MAE    MASE\n 0.06351451 682.309"
+    "text": "Predictions (trained using random forest)\n\n\n\n        MAE     MASE\n 0.03168015 680.6524"
   },
   {
     "objectID": "slides/day2-afternoon.html#modifying-the-arx-forecaster-4",
@@ -1894,7 +2447,7 @@
     "href": "slides/day2-afternoon.html#versioned-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioned data",
-    "text": "Versioned data\n\nus_data\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-04-01 / 2023-01-31\nℹ First/last version with update: 2021-04-01 / 2023-02-01\nℹ Versions end: 2023-02-01\nℹ A preview of the table (92197 rows x 5 columns):\n          version time_value geo_value     cases     deaths\n    1: 2021-04-01 2020-04-01        ak        NA         NA\n    2: 2021-04-01 2020-04-02        ak        NA         NA\n    3: 2021-04-01 2020-04-03        ak        NA         NA\n    4: 2021-04-01 2020-04-04        ak        NA         NA\n    5: 2021-04-01 2020-04-05        ak        NA         NA\n   ---                                                     \n92193: 2023-02-01 2023-01-27        wy   4.61203 0.17172453\n92194: 2023-02-01 2023-01-28        wy   4.61203 0.17172453\n92195: 2023-02-01 2023-01-29        wy   4.61203 0.17172453\n92196: 2023-02-01 2023-01-30        wy   4.61203 0.17172453\n92197: 2023-02-01 2023-01-31        wy -14.74378 0.04906416"
+    "text": "Versioned data\n\nus_data\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-04-01 / 2023-01-31\nℹ First/last version with update: 2021-04-01 / 2023-02-01\nℹ Versions end: 2023-02-01\nℹ A preview of the table (92197 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n          version time_value geo_value     cases     deaths\n           &lt;Date&gt;     &lt;Date&gt;    &lt;char&gt;     &lt;num&gt;      &lt;num&gt;\n    1: 2021-04-01 2020-04-01        ak        NA         NA\n    2: 2021-04-01 2020-04-02        ak        NA         NA\n    3: 2021-04-01 2020-04-03        ak        NA         NA\n    4: 2021-04-01 2020-04-04        ak        NA         NA\n    5: 2021-04-01 2020-04-05        ak        NA         NA\n   ---                                                     \n92193: 2023-02-01 2023-01-27        wy   4.61203 0.17172453\n92194: 2023-02-01 2023-01-28        wy   4.61203 0.17172453\n92195: 2023-02-01 2023-01-29        wy   4.61203 0.17172453\n92196: 2023-02-01 2023-01-30        wy   4.61203 0.17172453\n92197: 2023-02-01 2023-01-31        wy -14.74378 0.04906416"
   },
   {
     "objectID": "slides/day2-afternoon.html#version-aware-forecasting-with-geo-pooling",

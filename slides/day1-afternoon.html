@@ -9,7 +9,7 @@
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.6.39">
 
-  <meta name="author" content="Ailce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani">
+  <meta name="author" content="Alice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani">
   <title>InsightNet EpiData Workshop 2024 – day1-afternoon</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -205,7 +205,7 @@
 <h2>Data Cleaning, Versioning, and Nowcasting</h2>
 <h3 id="section-1">InsightNet Forecasting Workshop 2024</h3>
 <p><br></p>
-<h4 id="section-2">Ailce Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani</h4>
+<h4 id="section-2">Alice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani</h4>
 <p><span class="fstyle">with thanks to Delphi Tooling &amp; Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber</span></p>
 <p>11 December – Afternoon</p>
 </section>
@@ -1190,12 +1190,12 @@ In this section:</li>
 <span id="cb70-2"><a></a>  <span class="fu">autoplot</span>(smoothed_scaled_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="day1-afternoon_files/figure-html/autoplot-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/autoplot-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="epi.-data-processing-with-epiprocess-2" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
 <p>Alternatively, we can display both the smoothed and the original daily case rates:</p>
 
-<img data-src="day1-afternoon_files/figure-html/smoothed-original-plot-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
+<img data-src="day1-afternoon_files/figure-revealjs/smoothed-original-plot-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
 </section></section>
 <section>
 <section id="epiverse-software-ecosystem" class="title-slide slide level1 center" data-number="2">
@@ -1260,10 +1260,9 @@ In this section:</li>
 </div>
 </div>
 </div>
-</section></section>
-<section>
-<section id="epi_df-snapshot-of-a-dataset-1" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> <code>epi_df</code>: Snapshot of a dataset</h1>
+</section>
+<section id="epi_df-snapshot-of-a-dataset-1" class="slide level2">
+<h2><code>epi_df</code>: Snapshot of a dataset</h2>
 <ul>
 <li><p>Consider the same dataset we just encountered on JHU daily COVID-19 cases and deaths rates from all states <span class="primary">as of</span> May 31, 2022.</p></li>
 <li><p>We can see that it meets the criteria <code>epi_df</code> (has <code>geo_value</code> and <code>time_value</code> columns) and in this form it contains additional metadata (i.e.&nbsp;<code>geo_type</code>, <code>time_type</code>, <code>as_of</code>, and <code>other_keys</code>).</p></li>
@@ -1321,7 +1320,7 @@ character(0)</code></pre>
 <span id="cb75-2"><a></a>cor14 <span class="ot">&lt;-</span> <span class="fu">epi_cor</span>(edf, case_rate, death_rate, <span class="at">cor_by =</span> time_value, <span class="at">dt1 =</span> <span class="sc">-</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-html/plot-corr-lags-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-corr-lags-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="features---compute-growth-rates" class="slide level2">
 <h2>Features - Compute growth rates</h2>
 <div class="cell" data-layout-align="center">
@@ -1330,7 +1329,7 @@ character(0)</code></pre>
 <span id="cb76-3"><a></a>  <span class="fu">mutate</span>(<span class="at">gr_cases =</span> <span class="fu">growth_rate</span>(time_value, case_rate, <span class="at">method =</span> <span class="st">"trend_filter"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-html/plot-growth-rates-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-growth-rates-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="features---outlier-detection" class="slide level2">
 <h2>Features - Outlier detection</h2>
 <div class="cell" data-layout-align="center">
@@ -1343,7 +1342,7 @@ character(0)</code></pre>
 <span id="cb77-7"><a></a>  )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="day1-afternoon_files/figure-html/plot-outlier-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="768"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-outlier-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="epi_archive-collection-of-epi_dfs" class="slide level2">
 <h2><code>epi_archive</code>: Collection of <code>epi_df</code>s</h2>
 <ul>
@@ -1400,7 +1399,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <section id="revision-patterns" class="slide level2">
 <h2>Revision patterns</h2>
 
-<img data-src="day1-afternoon_files/figure-html/plot-revision-patterns-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-revision-patterns-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="finalized-data" class="slide level2">
 <h2>Finalized data</h2>
 <ul>
@@ -1430,8 +1429,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </ul>
 </section></section>
 <section>
-<section id="basic-nowcasting-in-the-epiverse" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> Basic Nowcasting in the Epiverse</h1>
+<section id="basic-nowcasting-in-the-epiverse" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> Basic Nowcasting in the Epiverse</h1>
 <!-- predicting a finalized value from a provisional value and making predictions. -->
 </section>
 <section id="backfill-canadian-edition" class="slide level2">
@@ -1456,7 +1455,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="day1-afternoon_files/figure-html/nowcasting-1.svg" class="quarto-figure quarto-figure-center" width="864" height="400"></p>
+<p><img data-src="day1-afternoon_files/figure-revealjs/nowcasting-1.svg" class="quarto-figure quarto-figure-center" height="400"></p>
 </figure>
 </div>
 </div>
@@ -1491,8 +1490,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </ul>
 </section></section>
 <section>
-<section id="nowcasting-with-one-variable" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> Nowcasting with One Variable</h1>
+<section id="nowcasting-with-one-variable" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> Nowcasting with One Variable</h1>
 
 </section>
 <section id="nowcasting-simple-ratio-ex-nchs-mortality" class="slide level2">
@@ -1591,7 +1590,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="day1-afternoon_files/figure-html/final-vs-revisions-plot-1.svg" class="quarto-figure quarto-figure-center" width="864" height="500"></p>
+<p><img data-src="day1-afternoon_files/figure-revealjs/final-vs-revisions-plot-1.svg" class="quarto-figure quarto-figure-center" height="500"></p>
 </figure>
 </div>
 </div>
@@ -1604,7 +1603,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="day1-afternoon_files/figure-html/one-revision-final-plot-1.svg" class="quarto-figure quarto-figure-center" width="511" height="400"></p>
+<p><img data-src="day1-afternoon_files/figure-revealjs/one-revision-final-plot-1.svg" class="quarto-figure quarto-figure-center" height="400"></p>
 </figure>
 </div>
 </div>
@@ -1698,7 +1697,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Calculating the ratio using multiple dates</h2>
 <p>Now, let’s plot the real-time vs the finalized mortality rates:</p>
 
-<img data-src="day1-afternoon_files/figure-html/real-time-vs-finalized-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"><ul>
+<img data-src="day1-afternoon_files/figure-revealjs/real-time-vs-finalized-1.svg" class="quarto-figure quarto-figure-center r-stretch"><ul>
 <li><span class="primary"><strong>Takeaways</strong></span>: The real-time counts are biased <span class="primary"><strong>well below</strong></span> the finalized counts.</li>
 <li>Systematic underreporting tends to lessen over time (the gap between the lines decreases).</li>
 </ul>
@@ -1746,7 +1745,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </div>
 <p>On average, the real-time rates are ~25.7% of the finalized.</p>
 
-<img data-src="day1-afternoon_files/figure-html/boxplot-ratio-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"><p>Tells us the distribution is right-skewed (mean &gt; median) and so we should opt for the median.</p>
+<img data-src="day1-afternoon_files/figure-revealjs/boxplot-ratio-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Tells us the distribution is right-skewed (mean &gt; median) and so we should opt for the median.</p>
 </section>
 <section id="nowcasting-on-feb.-25" class="slide level2">
 <h2>Nowcasting on Feb.&nbsp;25</h2>
@@ -1874,11 +1873,11 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Visualize nowcast, real-time, and finalized values</h2>
 <p>Finally, we can compare these nowcast results to the real-time and finalized values:</p>
 
-<img data-src="day1-afternoon_files/figure-html/nowcast-fun-plot-results-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"><p>The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).</p>
+<img data-src="day1-afternoon_files/figure-revealjs/nowcast-fun-plot-results-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).</p>
 </section></section>
 <section>
-<section id="nowcasting-with-two-variables" class="title-slide slide level1 center" data-number="7">
-<h1><span class="header-section-number">7</span> Nowcasting with Two Variables</h1>
+<section id="nowcasting-with-two-variables" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> Nowcasting with Two Variables</h1>
 
 </section>
 <section id="nowcasting-moving-from-one-signal-to-two" class="slide level2">
@@ -2087,7 +2086,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Visualizing the nowcast results</h2>
 <p>We can then visualize the nowcast results alongside the true values using <code>ggplot2</code>:</p>
 
-<img data-src="day1-afternoon_files/figure-html/plot-multiple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-multiple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="key-takeaways-linear-regression-nowcasting-example" class="slide level2">
 <h2>Key Takeaways: Linear regression nowcasting example</h2>
 <ul>
@@ -2099,8 +2098,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </ul>
 </section></section>
 <section>
-<section id="case-study---nowcasting-cases-using-cli" class="title-slide slide level1 center" data-number="8">
-<h1><span class="header-section-number">8</span> Case Study - Nowcasting Cases Using %CLI</h1>
+<section id="case-study---nowcasting-cases-using-cli" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> Case Study - Nowcasting Cases Using %CLI</h1>
 
 </section>
 <section id="goal-of-this-case-study" class="slide level2">
@@ -2479,7 +2478,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <h2>Visualizing nowcasts vs.&nbsp;actual values</h2>
 <p>Finally, plot the predictions &amp; real-time values on top of latest COVID-19 cases using <code>ggplot2</code>:</p>
 
-<img data-src="day1-afternoon_files/figure-html/plot-simple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch" width="511"></section>
+<img data-src="day1-afternoon_files/figure-revealjs/plot-simple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="takeaways" class="slide level2">
 <h2>Takeaways</h2>
 <p><span class="primary"><strong>Goal</strong></span>: Predict COVID-19 cases using %CLI, overcoming delays in report data.</p>
@@ -2713,6 +2712,44 @@ Key: &lt;geo_value, time_value, version&gt;
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
