@@ -539,18 +539,53 @@
     "text": "Version-unaware predictions (CV, trailing)\n\n\n\n                      MAE     MASE\nversion-unaware 0.0694222 646.7705"
   },
   {
+    "objectID": "slides/day2-morning.html#traditional-time-series-forecasting",
+    "href": "slides/day2-morning.html#traditional-time-series-forecasting",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Traditional Time Series Forecasting",
+    "text": "Traditional Time Series Forecasting\nTwo popular frameworks:\n\nExponential Smoothing with Trend and Seasonality (ETS)\nAutoregressive Integrated Moving Average (ARIMA)"
+  },
+  {
     "objectID": "slides/day2-morning.html#ets",
     "href": "slides/day2-morning.html#ets",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "ETS",
-    "text": "ETS\nDamped Holt"
+    "text": "ETS\nSimple Exponential Smoothing (SES)\n\nThe \\(h\\)-step ahead prediction is a weighted average of the current observation \\(y_t\\) and the forecast \\(\\hat y_{t|t-1}\\):\n\n\\[\\hat y_{t+h|t} = \\alpha y_t + (1- \\alpha) \\hat y_{t|t-1}\\]\nwhere \\(\\alpha \\in [0,1]\\)\n\nForecasts are flat, i.e. do not depend on \\(h\\)\nIf \\(\\alpha = 1\\), we retrieve the naive flatline forecaster\n\n\\[ y_{t+h|t} = y_t\\]"
+  },
+  {
+    "objectID": "slides/day2-morning.html#ets-1",
+    "href": "slides/day2-morning.html#ets-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "ETS",
+    "text": "ETS\nSimple Exponential Smoothing (SES)\n\nThe SES forecast can be re-expressed as\n\n\\[\\hat y_{t+h|t} = \\alpha y_t + \\alpha (1- \\alpha) y_{t-1}  + \\alpha (1- \\alpha)^2 y_{t-2} + \\dots\\]\ni.e. observations \\(y_{t-k}\\) that are \\(k\\) steps into the past are exponentially down-weighted, with weight \\((1- \\alpha)^2\\). Hence the name exponential smoothing.\n\nComponent form of the SES forecast\n\n\\[\\begin{align*}\n\\hat y_{t+h | t} & = l_t \\\\\nl_t & = \\alpha y_t + (1- \\alpha) l_{t-1}\n\\end{align*}\\]"
+  },
+  {
+    "objectID": "slides/day2-morning.html#ets-2",
+    "href": "slides/day2-morning.html#ets-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "ETS",
+    "text": "ETS\nHolt’s linear trend method\n\nExpands SES component form by introducing a trend \\(b_t\\)\n\n\\[\\begin{align*}\n\\hat y_{t+h | t} &= l_t + b_t h\\\\\nl_t &= \\alpha y_t + (1- \\alpha) (l_{t-1} + b_{t-1}) \\\\\nb_t & = \\beta (l_{t} - l_{t-1}) + (1-\\beta) b_{t-1}\n\\end{align*}\\]\nwhere \\(\\alpha, \\beta \\in [0,1]\\).\n\nForecasts are linear in \\(h\\), with slope \\(b_t\\).\n\n\n\n\nNote\n\n\nLinear trend forecasts can be erratic for large \\(h\\)!"
+  },
+  {
+    "objectID": "slides/day2-morning.html#ets-3",
+    "href": "slides/day2-morning.html#ets-3",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "ETS",
+    "text": "ETS\nDamped Holt’s method\n\nIntroduces a parameter \\(\\phi\\) to dampen the forecast trajectory\n\n\\[\\begin{align*}\n\\hat y_{t+h | t} &= l_t + b_t (\\phi +\\phi^2 + \\dots + \\phi^h)\\\\\nl_t &= \\alpha y_t + (1- \\alpha) (l_{t-1} + b_{t-1}\\phi) \\\\\nb_t & = \\beta (l_{t} - l_{t-1}) + (1-\\beta) b_{t-1}\\phi\n\\end{align*}\\]\nwhere \\(\\alpha, \\beta, \\phi \\in [0,1]\\)\n\nContribution of slope \\(b_t\\) to a forecast diminishes at each step into the future, by a multiplicative factor \\(\\phi\\)\nAs \\(h\\to \\infty\\), forecasts approach a constant level\n\n\\[ y_{t+h | t} \\to l_t + b_t \\sum_{j=1}^\\infty \\phi^j = l_t + b_t \\frac{\\phi}{1-\\phi}\\]"
   },
   {
     "objectID": "slides/day2-morning.html#arima",
     "href": "slides/day2-morning.html#arima",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "ARIMA",
-    "text": "ARIMA"
+    "text": "ARIMA\nAR(p)\nAuto-regressive model of order \\(p\\)\n\\[y_t = \\sum_{j=1}^p \\phi_j y_{t-j} + w_t\\]\nMA(q)\nMoving average model of order \\(q\\)\n\\[y_t = w_t + \\sum_{j=1}^q \\theta_j w_{t-j} \\]\nwhere \\(w_t\\) is a white noise sequence, i.e.  \\(\\mathbb{E}(w_t)=0\\) and \\(\\text{Var}(w_t)=\\sigma^2\\) for all \\(t\\), and \\(\\text{Cov}(w_s, w_t)=0\\) for all \\(s \\neq t\\)"
+  },
+  {
+    "objectID": "slides/day2-morning.html#arima-1",
+    "href": "slides/day2-morning.html#arima-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "ARIMA",
+    "text": "ARIMA\nARMA(p, q)\n\\[y_t = \\sum_{j=1}^p \\phi_j y_{t-j} + \\sum_{j=0}^q \\theta_j w_{t-j} \\]\nwith \\(\\theta_0 = 1\\)\nARIMA(p, d, q)\nAssumes an \\(ARMA(p, q)\\) model on the \\(d^{th}\\)-order differences of \\(y_t\\)"
   },
   {
     "objectID": "slides/day2-morning.html#mechanistic-models",
@@ -2531,14 +2566,21 @@
     "href": "slides/day2-afternoon.html#ensembling",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ensembling",
-    "text": "Ensembling"
+    "text": "Ensembling\n\nInstead of choosing one model, combine the predictions from multiple constituent models\nEnsemble types\n\nuntrained: combines multiple constituent models without considering their past performance\ntrained: weights different constituent models based on their accuracy\n\nGoals\n\ncompete-with-best: ensemble should have accuracy competitive with best individual constituent model\nrobustness-over-all: ensemble should have greater robustness than any individual constituent model\n\nTypically: untrained ensembles are robust but less accurate, and trained ensembles are accurate but less robust."
   },
   {
-    "objectID": "slides/day2-afternoon.html#recalibration",
-    "href": "slides/day2-afternoon.html#recalibration",
+    "objectID": "slides/day2-afternoon.html#calibration",
+    "href": "slides/day2-afternoon.html#calibration",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Recalibration",
-    "text": "Recalibration"
+    "section": "Calibration",
+    "text": "Calibration\n\nWe have seen that prediction intervals often have nominal coverage &lt;&lt; actual empirical coverage, e.g. 80% predictive intervals that in practice cover the truth \\(\\approx\\) 60% of the times\nCalibration aims at adjusting the intervals so that nominal coverage \\(\\approx\\) empirical coverage"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#calibration-1",
+    "href": "slides/day2-afternoon.html#calibration-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Calibration",
+    "text": "Calibration\nQuantile tracking\n\nLet \\(\\hat q_{t}^{1-\\alpha}\\) = predicted level \\(1-\\alpha\\) quantile of the distribution of \\(e_t\\), the absolute forecast error at time \\(t\\):\n\n\\[e_t = |y_t - \\hat y_{t|t-1}|.\\]\n\nGiven a learning rate \\(\\eta&gt;0\\), update the quantiles as\n\n\\[\\hat q_{t+1}^{1-\\alpha} = \\begin{cases}\n\\hat q_{t}^{1-\\alpha} + \\eta(1-\\alpha) \\quad \\text{if } x_t\\notin I_{t|t-1}^{1-\\alpha} \\\\\n\\hat q_{t}^{1-\\alpha} - \\eta\\alpha \\quad \\quad \\quad \\,\\,\\, \\text{if } x_t\\in I_{t|t-1}^{1-\\alpha}\n\\end{cases}\\]\nwhere \\(I_{t|t-1}^{1-\\alpha}\\) is the \\(1-\\alpha\\) prediction interval made by a forecaster at time \\(t\\) for time \\(t+1\\).\n\nQuantile tracking in words: if the latest interval does not cover, increase the quantile by \\(\\eta(1-\\alpha)\\) (make the next interval wider), otherwise decrease the quantile by \\(\\eta\\alpha\\) (make the next interval narrower)."
   },
   {
     "objectID": "slides/day2-afternoon.html#multi-horizon-smoothing",

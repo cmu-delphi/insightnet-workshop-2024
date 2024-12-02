@@ -1553,12 +1553,105 @@ version-unaware 0.0694222 646.7705</code></pre>
 <h1><span class="header-section-number">7</span> Other Approaches to Time Series Data</h1>
 
 </section>
+<section id="traditional-time-series-forecasting" class="slide level2">
+<h2>Traditional Time Series Forecasting</h2>
+<p>Two popular frameworks:</p>
+<ul>
+<li><p>Exponential Smoothing with Trend and Seasonality (<span class="primary">ETS</span>)</p></li>
+<li><p>Autoregressive Integrated Moving Average (<span class="primary">ARIMA</span>)</p></li>
+</ul>
+</section>
 <section id="ets" class="slide level2">
 <h2>ETS</h2>
-<h3 id="damped-holt">Damped Holt</h3>
+<h3 id="simple-exponential-smoothing-ses">Simple Exponential Smoothing (SES)</h3>
+<ul>
+<li>The <span class="math inline">\(h\)</span>-step ahead prediction is a weighted average of the current observation <span class="math inline">\(y_t\)</span> and the forecast <span class="math inline">\(\hat y_{t|t-1}\)</span>:</li>
+</ul>
+<p><span class="math display">\[\hat y_{t+h|t} = \alpha y_t + (1- \alpha) \hat y_{t|t-1}\]</span></p>
+<p>where <span class="math inline">\(\alpha \in [0,1]\)</span></p>
+<ul>
+<li><p><span class="primary">Forecasts are flat</span>, i.e.&nbsp;do not depend on <span class="math inline">\(h\)</span></p></li>
+<li><p>If <span class="math inline">\(\alpha = 1\)</span>, we retrieve the <span class="primary">naive flatline</span> forecaster</p></li>
+</ul>
+<p><span class="math display">\[ y_{t+h|t} = y_t\]</span></p>
+</section>
+<section id="ets-1" class="slide level2">
+<h2>ETS</h2>
+<h3 id="simple-exponential-smoothing-ses-1">Simple Exponential Smoothing (SES)</h3>
+<ul>
+<li>The SES forecast can be re-expressed as</li>
+</ul>
+<p><span class="math display">\[\hat y_{t+h|t} = \alpha y_t + \alpha (1- \alpha) y_{t-1}  + \alpha (1- \alpha)^2 y_{t-2} + \dots\]</span></p>
+<p>i.e.&nbsp;observations <span class="primary"><span class="math inline">\(y_{t-k}\)</span></span> that are <span class="math inline">\(k\)</span> steps into the past are <span class="primary">exponentially down-weighted</span>, with weight <span class="math inline">\((1- \alpha)^2\)</span>. Hence the name exponential smoothing.</p>
+<ul>
+<li><span class="primary">Component form</span> of the SES forecast</li>
+</ul>
+<p><span class="math display">\[\begin{align*}
+\hat y_{t+h | t} &amp; = l_t \\
+l_t &amp; = \alpha y_t + (1- \alpha) l_{t-1}
+\end{align*}\]</span></p>
+</section>
+<section id="ets-2" class="slide level2">
+<h2>ETS</h2>
+<h3 id="holts-linear-trend-method">Holt’s linear trend method</h3>
+<ul>
+<li>Expands SES component form by introducing a <span class="primary">trend</span> <span class="math inline">\(b_t\)</span></li>
+</ul>
+<p><span class="math display">\[\begin{align*}
+\hat y_{t+h | t} &amp;= l_t + b_t h\\
+l_t &amp;= \alpha y_t + (1- \alpha) (l_{t-1} + b_{t-1}) \\
+b_t &amp; = \beta (l_{t} - l_{t-1}) + (1-\beta) b_{t-1}
+\end{align*}\]</span></p>
+<p>where <span class="math inline">\(\alpha, \beta \in [0,1]\)</span>.</p>
+<ul>
+<li><span class="primary">Forecasts are linear</span> in <span class="math inline">\(h\)</span>, with slope <span class="math inline">\(b_t\)</span>.</li>
+</ul>
+<div class="callout callout-important no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Linear trend forecasts can be erratic for large <span class="math inline">\(h\)</span>!</p>
+</div>
+</div>
+</div>
+</section>
+<section id="ets-3" class="slide level2">
+<h2>ETS</h2>
+<h3 id="damped-holts-method">Damped Holt’s method</h3>
+<ul>
+<li>Introduces a parameter <span class="math inline">\(\phi\)</span> to <span class="primary">dampen the forecast trajectory</span></li>
+</ul>
+<p><span class="math display">\[\begin{align*}
+\hat y_{t+h | t} &amp;= l_t + b_t (\phi +\phi^2 + \dots + \phi^h)\\
+l_t &amp;= \alpha y_t + (1- \alpha) (l_{t-1} + b_{t-1}\phi) \\
+b_t &amp; = \beta (l_{t} - l_{t-1}) + (1-\beta) b_{t-1}\phi
+\end{align*}\]</span></p>
+<p>where <span class="math inline">\(\alpha, \beta, \phi \in [0,1]\)</span></p>
+<ul>
+<li><p>Contribution of slope <span class="math inline">\(b_t\)</span> to a forecast diminishes at each step into the future, by a multiplicative factor <span class="math inline">\(\phi\)</span></p></li>
+<li><p>As <span class="math inline">\(h\to \infty\)</span>, forecasts approach a constant level</p></li>
+</ul>
+<p><span class="math display">\[ y_{t+h | t} \to l_t + b_t \sum_{j=1}^\infty \phi^j = l_t + b_t \frac{\phi}{1-\phi}\]</span></p>
 </section>
 <section id="arima" class="slide level2">
 <h2>ARIMA</h2>
+<h3 id="arp">AR(p)</h3>
+<p>Auto-regressive model of order <span class="math inline">\(p\)</span></p>
+<p><span class="math display">\[y_t = \sum_{j=1}^p \phi_j y_{t-j} + w_t\]</span></p>
+<h3 id="maq">MA(q)</h3>
+<p>Moving average model of order <span class="math inline">\(q\)</span></p>
+<p><span class="math display">\[y_t = w_t + \sum_{j=1}^q \theta_j w_{t-j} \]</span></p>
+<p>where <span class="math inline">\(w_t\)</span> is a white noise sequence, i.e.&nbsp; <span class="math inline">\(\mathbb{E}(w_t)=0\)</span> and <span class="math inline">\(\text{Var}(w_t)=\sigma^2\)</span> for all <span class="math inline">\(t\)</span>, and <span class="math inline">\(\text{Cov}(w_s, w_t)=0\)</span> for all <span class="math inline">\(s \neq t\)</span></p>
+</section>
+<section id="arima-1" class="slide level2">
+<h2>ARIMA</h2>
+<h3 id="armap-q">ARMA(p, q)</h3>
+<p><span class="math display">\[y_t = \sum_{j=1}^p \phi_j y_{t-j} + \sum_{j=0}^q \theta_j w_{t-j} \]</span></p>
+<p>with <span class="math inline">\(\theta_0 = 1\)</span></p>
+<h3 id="arimap-d-q">ARIMA(p, d, q)</h3>
+<p>Assumes an <span class="math inline">\(ARMA(p, q)\)</span> model on the <span class="math inline">\(d^{th}\)</span>-order differences of <span class="math inline">\(y_t\)</span></p>
 </section>
 <section id="mechanistic-models" class="slide level2">
 <h2>Mechanistic Models</h2>

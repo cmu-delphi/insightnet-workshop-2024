@@ -1280,9 +1280,46 @@ time series CV + trailing 0.07373572 257.1147</code></pre>
 </section>
 <section id="ensembling" class="slide level2">
 <h2>Ensembling</h2>
+<ul>
+<li><p>Instead of choosing one model, <span class="primary">combine</span> the predictions from multiple constituent models</p></li>
+<li><p>Ensemble types</p>
+<ul>
+<li><p><span class="primary">untrained</span>: combines multiple constituent models without considering their past performance</p></li>
+<li><p><span class="primary">trained</span>: weights different constituent models based on their accuracy</p></li>
+</ul></li>
+<li><p>Goals</p>
+<ul>
+<li><p><span class="primary">compete-with-best</span>: ensemble should have accuracy competitive with best individual constituent model</p></li>
+<li><p><span class="primary">robustness-over-all</span>: ensemble should have greater robustness than any individual constituent model</p></li>
+</ul></li>
+<li><p>Typically: untrained ensembles are robust but less accurate, and trained ensembles are accurate but less robust.</p></li>
+</ul>
 </section>
-<section id="recalibration" class="slide level2">
-<h2>Recalibration</h2>
+<section id="calibration" class="slide level2">
+<h2>Calibration</h2>
+<ul>
+<li><p>We have seen that prediction intervals often have <span class="primary">nominal coverage &lt;&lt; actual empirical coverage</span>, e.g.&nbsp;80% predictive intervals that in practice cover the truth <span class="math inline">\(\approx\)</span> 60% of the times</p></li>
+<li><p>Calibration aims at adjusting the intervals so that nominal coverage <span class="math inline">\(\approx\)</span> empirical coverage</p></li>
+</ul>
+</section>
+<section id="calibration-1" class="slide level2">
+<h2>Calibration</h2>
+<h3 id="quantile-tracking">Quantile tracking</h3>
+<ul>
+<li>Let <span class="math inline">\(\hat q_{t}^{1-\alpha}\)</span> = predicted level <span class="math inline">\(1-\alpha\)</span> quantile of the distribution of <span class="math inline">\(e_t\)</span>, the absolute forecast error at time <span class="math inline">\(t\)</span>:</li>
+</ul>
+<p><span class="math display">\[e_t = |y_t - \hat y_{t|t-1}|.\]</span></p>
+<ul>
+<li>Given a learning rate <span class="math inline">\(\eta&gt;0\)</span>, update the quantiles as</li>
+</ul>
+<p><span class="math display">\[\hat q_{t+1}^{1-\alpha} = \begin{cases}
+\hat q_{t}^{1-\alpha} + \eta(1-\alpha) \quad \text{if } x_t\notin I_{t|t-1}^{1-\alpha} \\
+\hat q_{t}^{1-\alpha} - \eta\alpha \quad \quad \quad \,\,\, \text{if } x_t\in I_{t|t-1}^{1-\alpha}
+\end{cases}\]</span></p>
+<p>where <span class="math inline">\(I_{t|t-1}^{1-\alpha}\)</span> is the <span class="math inline">\(1-\alpha\)</span> prediction interval made by a forecaster at time <span class="math inline">\(t\)</span> for time <span class="math inline">\(t+1\)</span>.</p>
+<ul>
+<li>Quantile tracking in words: if the latest interval does not cover, increase the quantile by <span class="math inline">\(\eta(1-\alpha)\)</span> (make the next interval wider), otherwise decrease the quantile by <span class="math inline">\(\eta\alpha\)</span> (make the next interval narrower).</li>
+</ul>
 </section>
 <section id="multi-horizon-smoothing" class="slide level2">
 <h2>Multi-horizon smoothing</h2>
