@@ -254,7 +254,7 @@
 <section id="introduction-to-dplyr-1" class="slide level2">
 <h2>Introduction to <code>dplyr</code></h2>
 <p>To load <code>dplyr</code>, you may simply load the <code>tidyverse</code> package:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/load-tidyverse_f3a47aff884384bc794f48d11e55c35d">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="co"># install.packages("tidyverse")</span></span>
 <span id="cb1-2"><a></a><span class="fu">library</span>(tidyverse)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -274,7 +274,7 @@
 </section>
 <section id="downloading-jhu-csse-covid-19-case-data-1" class="slide level2">
 <h2>Downloading JHU CSSE COVID-19 case data</h2>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/fetch-jhu-dplyr-demo-data_d9dc32a4b4829b15c46f5a61f834a734">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(epidatr)</span>
@@ -291,7 +291,7 @@
 </details>
 </div>
 <p>Now we only really need a few columns here…</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/head-jhu-dplyr-demo-data_7585946028dcbc4019f349b456759a9f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>cases_df <span class="ot">&lt;-</span> cases_df_api <span class="sc">|&gt;</span></span>
 <span id="cb3-2"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">raw_cases =</span> value) <span class="co"># We'll talk more about this soon :)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -299,7 +299,7 @@
 <section id="ways-to-inspect-the-dataset" class="slide level2">
 <h2>Ways to inspect the dataset</h2>
 <p>Use <code>head()</code> to view the first six row of the data</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/head_5d214d7f0e8532391d5809ee3b274c69">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">head</span>(cases_df)  <span class="co"># First 6 rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 3
@@ -314,7 +314,7 @@
 </div>
 </div>
 <p>and tail to view the last six</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/tail_feca1b99f7202820d7220de8e72bc87f">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 3
   geo_value time_value raw_cases
@@ -332,7 +332,7 @@
 <h2>Ways to inspect the dataset</h2>
 <p>Now, for our first foray into the <code>tidyverse</code>…</p>
 <p>Use <code>glimpse()</code> to get a compact overview of the dataset.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/glimpse_b41e0d9ba6d5f7aac40912420aca0069">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">glimpse</span>(cases_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 93
@@ -350,13 +350,16 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 * You can create tibbles manually using the `tibble()` function.
 
 
-::: {.cell layout-align="center" hash='day1-afternoon_cache/revealjs/create-tibble_ed1bd94b7f59d67aeb51bd13162e2ce8'}
+
+
+::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
 tibble(x = letters, y = 1:26)
 ```
 
 ::: {.cell-output .cell-output-stdout}
+
 ```
 # A tibble: 26 × 2
    x         y
@@ -373,15 +376,19 @@ tibble(x = letters, y = 1:26)
 10 j        10
 # ℹ 16 more rows
 ```
+
+
 :::
 :::
+
+
 
 -->
 </section>
 <section id="selecting-columns-with-select" class="slide level2">
 <h2>Selecting columns with <code>select()</code></h2>
 <p>The <code>select()</code> function is used to pick specific columns from your dataset.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/select-columns_c162a2621e0cd96909fa67df5796934f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">select</span>(cases_df, geo_value, time_value)  <span class="co"># Select the 'geo_value' and 'time_value' columns</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 93 × 2
@@ -404,7 +411,7 @@ tibble(x = letters, y = 1:26)
 <section id="selecting-columns-with-select-1" class="slide level2">
 <h2>Selecting columns with <code>select()</code></h2>
 <p>You can exclude columns by prefixing the column names with a minus sign <code>-</code>.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/select-columns-exclude_f2f035efc8a3fa9a559e59f79b7d29ed">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">select</span>(cases_df, <span class="sc">-</span>raw_cases)  <span class="co"># Exclude the 'raw_cases' column from the dataset</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 93 × 2
@@ -429,13 +436,16 @@ tibble(x = letters, y = 1:26)
 * Let's try this with the `cases` column...
 
 
-::: {.cell layout-align="center" hash='day1-afternoon_cache/revealjs/pull-column-direct_322312e2640270e8c0886c4bae130edb'}
+
+
+::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
 pull(cases_df, raw_cases) 
 ```
 
 ::: {.cell-output .cell-output-stdout}
+
 ```
  [1] 4310 1231 1487 7044 2243 1889 7509 2377 2390 3586 2646  350 1438    0 3372
 [16] 6465    0 2343 6690 4230 1033 3424  894 1025 4591 1833 1691 5359 1783 1747
@@ -445,8 +455,12 @@ pull(cases_df, raw_cases)
 [76] 1035    0    0 3384    0 5908 2811 2291 2286 1846  624 2394 3785 1067 3127
 [91] 4533 1075 4763
 ```
+
+
 :::
 :::
+
+
 
 -->
 </section>
@@ -463,7 +477,7 @@ pull(cases_df, raw_cases)
 <li>Conditions regard column values, such as filtering for only NC or cases higher than some threshold.</li>
 <li>This enables you to narrow down your dataset to focus on relevant data.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/filter-rows_be7feecf3ee016298c22f91a633be5b2">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">filter</span>(cases_df, geo_value <span class="sc">==</span> <span class="st">"nc"</span>, raw_cases <span class="sc">&gt;</span> <span class="dv">500</span>)  <span class="co"># Filter for NC with raw daily cases &gt; 500</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 22 × 3
@@ -490,7 +504,7 @@ pull(cases_df, raw_cases)
 <li>Use <code>select()</code> to choose columns and <code>filter()</code> to narrow down rows.</li>
 <li>This helps in extracting the exact data needed for analysis.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/select-filter-combine_f52a8d90d63cb06845dd9c28a64ead34">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">select</span>(<span class="fu">filter</span>(cases_df, geo_value <span class="sc">==</span> <span class="st">"nc"</span>, raw_cases <span class="sc">&gt;</span> <span class="dv">1000</span>), time_value, raw_cases) <span class="sc">|&gt;</span> </span>
 <span id="cb15-2"><a></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -513,7 +527,7 @@ pull(cases_df, raw_cases)
 <li>The output of one function is automatically passed to the next function.</li>
 <li>This allows you to perform multiple steps (e.g., <code>filter()</code> followed by <code>select()</code>) in a clear and concise manner.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/pipe-operator_7a3611826242bae5eadb6d1ab4dc59ca">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="co"># This code reads more like poetry!</span></span>
 <span id="cb17-2"><a></a>cases_df <span class="sc">|&gt;</span> </span>
 <span id="cb17-3"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"nc"</span>, raw_cases <span class="sc">&gt;</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span> </span>
@@ -548,7 +562,7 @@ pull(cases_df, raw_cases)
 <li>Use <code>group_by()</code> to group data by one or more columns.</li>
 <li>Allows performing operations on specific groups of data.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/group-by-ex_f4f037ff36068f5ed671b3bd75027bd2">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>cases_df <span class="sc">|&gt;</span></span>
 <span id="cb19-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb19-3"><a></a>  <span class="fu">filter</span>(raw_cases <span class="sc">==</span> <span class="fu">max</span>(raw_cases, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -575,7 +589,7 @@ pull(cases_df, raw_cases)
 <li><code>mutate()</code> is used to create new columns.</li>
 <li>Perform calculations using existing columns and assign to new columns.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/mutate-one-var-ex_392a1a92b16f0e080e9e6cb76a7b1c9a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>ny_subset <span class="ot">=</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb21-2"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"ny"</span>)</span>
 <span id="cb21-3"><a></a></span>
@@ -600,7 +614,9 @@ pull(cases_df, raw_cases)
 * Logical comparisons (e.g., `over_5000 = raw_cases > 5000`) can be used within `mutate()`.
 
 
-::: {.cell layout-align="center" hash='day1-afternoon_cache/revealjs/mutate-two-var-ex_0dae8ce2336d8f2207c818a283c7376b'}
+
+
+::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
 ny_subset |> 
@@ -610,6 +626,7 @@ ny_subset |>
 ```
 
 ::: {.cell-output .cell-output-stdout}
+
 ```
 # A tibble: 6 × 5
   geo_value time_value raw_cases over_5000 cumulative_cases
@@ -621,8 +638,12 @@ ny_subset |>
 5 ny        2022-03-05      3372 FALSE                 9488
 6 ny        2022-03-06      2343 FALSE                11831
 ```
+
+
 :::
 :::
+
+
 
 -->
 </section>
@@ -633,7 +654,7 @@ ny_subset |>
 <li>Then, use <code>mutate</code> to perform the calculations for each group.</li>
 <li>Finally, use <code>arrange</code> to display the output by <code>geo_value</code>.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/group-by-mutate-combo_22e78858af001d5718ddd57c22268910">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>cases_df <span class="sc">|&gt;</span></span>
 <span id="cb23-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb23-3"><a></a>  <span class="fu">mutate</span>(<span class="at">cumulative_cases =</span> <span class="fu">cumsum</span>(raw_cases)) <span class="sc">|&gt;</span> </span>
@@ -657,7 +678,9 @@ ny_subset |>
 * Perform different operations depending on conditions, like "high" or "low."
 
 
-::: {.cell layout-align="center" hash='day1-afternoon_cache/revealjs/cond-calc-if-else_73ae583b8d973775e39c9108a3435ac4'}
+
+
+::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
 t <- 5000
@@ -668,6 +691,7 @@ cases_df |>
 ```
 
 ::: {.cell-output .cell-output-stdout}
+
 ```
 # A tibble: 6 × 4
   geo_value time_value raw_cases high_low_cases
@@ -679,8 +703,12 @@ cases_df |>
 5 nc        2022-03-02      2243 low           
 6 ny        2022-03-02      1889 low           
 ```
+
+
 :::
 :::
+
+
 
 -->
 </section>
@@ -690,7 +718,7 @@ cases_df |>
 <li><code>summarise()</code> reduces data to summary statistics (e.g., mean, median).</li>
 <li>Typically used after <code>group_by()</code> to summarize each group.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/summarise-median-one-var_e049e659e3f0e256b4f4d061c16d3978">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>cases_df <span class="sc">|&gt;</span></span>
 <span id="cb25-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb25-3"><a></a>  <span class="fu">summarise</span>(<span class="at">median_cases =</span> <span class="fu">median</span>(raw_cases))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -708,14 +736,14 @@ cases_df |>
 <h2>Using <code>count()</code> to aggregate data</h2>
 <p><code>count()</code> is a shortcut for grouping and summarizing the data.</p>
 <p>For example, if we want to get the total number of complete rows for each state, then</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/summarise-count_c7cc89546297c484fb23af72222e9004">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>cases_count <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb27-2"><a></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span> <span class="co"># Removes rows where any value is missing (from tidyr)</span></span>
 <span id="cb27-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb27-4"><a></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br> is equivalent to</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/count-fun_c64a15877cdcbb89f5d149ad594a45e9">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a>cases_count <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb28-2"><a></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb28-3"><a></a>  <span class="fu">count</span>(geo_value)</span>
@@ -764,7 +792,7 @@ In this section:</li>
 <li>Tidy data follows a consistent structure: <span class="primary"><strong>each row represents one observation, and each column represents one variable.</strong></span></li>
 <li><code>cases_df</code> is one classic example of tidy data.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/head-tidy-ex_6da4ab99994c35883ec6720db9ec0563">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 3
   geo_value time_value raw_cases
@@ -794,7 +822,7 @@ In this section:</li>
 <li>For example, let’s try creating a column for each time value in <code>cases_df</code>:</li>
 </ul>
 <!-- Example. Spreadsheet from hell -->
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/pivot-wider-ex_64c886729a8dc4580ebb3a1ac06b8326">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a>messy_cases_df <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span></span>
 <span id="cb31-2"><a></a>  <span class="fu">pivot_wider</span>(</span>
 <span id="cb31-3"><a></a>    <span class="at">names_from =</span> time_value,   <span class="co"># Create new columns for each unique date</span></span>
@@ -826,7 +854,7 @@ In this section:</li>
 <li>Use <code>pivot_longer()</code> to convert data from <span class="primary"><strong>wide format</strong></span> (multiple columns for the same variable) to <span class="primary"><strong>long format</strong></span> (one column per variable).</li>
 <li>Let’s try turning <code>messy_cases_df</code> back into the original tidy <code>cases_df</code>!</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/pivot-longer-ex_86854c1e30d96676a9de624f56aacd43">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>tidy_cases_df <span class="ot">&lt;-</span> messy_cases_df <span class="sc">|&gt;</span></span>
 <span id="cb33-2"><a></a>  <span class="fu">pivot_longer</span>(</span>
 <span id="cb33-3"><a></a>    <span class="at">cols =</span> <span class="sc">-</span>geo_value,          <span class="co"># Keep the 'geo_value' column as it is</span></span>
@@ -853,7 +881,7 @@ In this section:</li>
 <li>So, to truly get the original <code>cases_df</code> we need to convert <code>time_value</code> back to the <code>Date</code> class.</li>
 <li>Then, we can use <code>identical()</code> to check if the two data frames are exactly the same.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/check-identical_1c76b3f5b71d3406f5f7941dc46cd84c">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a>tidy_cases_df <span class="ot">=</span> tidy_cases_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">time_value =</span> <span class="fu">as.Date</span>(time_value))</span>
 <span id="cb35-2"><a></a></span>
 <span id="cb35-3"><a></a><span class="fu">identical</span>(tidy_cases_df <span class="sc">|&gt;</span> <span class="fu">arrange</span>(time_value), cases_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -875,7 +903,7 @@ In this section:</li>
 <section id="subset-cases_df" class="slide level2">
 <h2>Subset <code>cases_df</code></h2>
 <p>To simplify things, let’s use <code>filter()</code> to only grab one date of <code>cases_df</code>:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/cases-df-one-date_5f5629a2d714a4fb511f03878e6b9b2a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a>cases_df_sub <span class="ot">&lt;-</span> cases_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="st">"2022-03-01"</span>)</span>
 <span id="cb37-2"><a></a>cases_df_sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -892,7 +920,7 @@ In this section:</li>
 <section id="load-state-census-data" class="slide level2">
 <h2>Load state census data</h2>
 <p>The <code>state_census</code> dataset from <code>epidatasets</code> contains state populations from the 2019 census.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/state-census_b67421e1bd70753debf09e21a0eaa44f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="co"># State census dataset from epidatasets</span></span>
 <span id="cb39-2"><a></a><span class="fu">library</span>(epidatasets)</span>
 <span id="cb39-3"><a></a>state_census <span class="ot">=</span> state_census <span class="sc">|&gt;</span> <span class="fu">select</span>(abbr, pop) <span class="sc">|&gt;</span> <span class="fu">filter</span>(abbr <span class="sc">!=</span> <span class="st">"us"</span>)</span>
@@ -919,7 +947,7 @@ In this section:</li>
 <li>So <span class="primary"><strong>all rows from the first dataset</strong></span> (<code>cases_df_sub</code>) will be preserved.</li>
 <li>The datasets are joined by matching the <code>geo_value</code> column, specified by the by argument.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/left-join_6dcf6657e1b069fe1e58e37c6b5cb057">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a><span class="co"># Left join: combining March 1, 2022 state case data with the census data</span></span>
 <span id="cb41-2"><a></a>cases_sub_left_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb41-3"><a></a>  <span class="fu">left_join</span>(state_census, <span class="fu">join_by</span>(geo_value <span class="sc">==</span> abbr))</span>
@@ -942,7 +970,7 @@ In this section:</li>
 <li>If a row in the second dataset doesn’t have a match in the first, then the columns from the first will be filled with NA.</li>
 <li>For example, can see this for the <code>al</code> row from <code>state_census</code>…</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/right-join_b54d0f7bab351489f1f59c607693472c">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a><span class="co"># Right join: keep all rows from state_census</span></span>
 <span id="cb43-2"><a></a>cases_sub_right_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb43-3"><a></a>  <span class="fu">right_join</span>(state_census, <span class="fu">join_by</span>(geo_value <span class="sc">==</span> abbr))</span>
@@ -967,7 +995,7 @@ In this section:</li>
 <li>An <span class="primary"><strong>inner join</strong></span> will only keep rows where there is a match in both datasets.</li>
 <li>So, if a state in <code>state_census</code> does not have a corresponding entry in <code>cases_df_sub</code>, then that row will be excluded.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/inner-join_5c469f3481798ff61def5138cf6a23fc">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a><span class="co"># Inner join: only matching rows are kept</span></span>
 <span id="cb45-2"><a></a>cases_sub_inner_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb45-3"><a></a>  <span class="fu">inner_join</span>(state_census, <span class="fu">join_by</span>(geo_value <span class="sc">==</span> abbr))</span>
@@ -989,7 +1017,7 @@ In this section:</li>
 <li>A <span class="primary"><strong>full join</strong></span> will keep all rows from both datasets.</li>
 <li>If a state in either dataset has no match in the other, the missing values will be filled with NA.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/full-join_c35aae68e757de4d9798beb868077d67">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a><span class="co"># Full join: keep all rows from both datasets</span></span>
 <span id="cb47-2"><a></a>cases_sub_full_join <span class="ot">&lt;-</span> cases_df_sub <span class="sc">|&gt;</span></span>
 <span id="cb47-3"><a></a>  <span class="fu">full_join</span>(state_census, <span class="fu">join_by</span>(geo_value <span class="sc">==</span> abbr))</span>
@@ -1030,7 +1058,7 @@ In this section:</li>
 <section id="two-review-questions" class="slide level2">
 <h2>Two review questions</h2>
 <p><strong>Q1)</strong>: What join function should you use if your goal is to scale the cases by population in <code>cases_df</code>?</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/question-2_3c642c8d747716d0d0c83bd54ed9c48f">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a></a><span class="co"># Either left_join</span></span>
@@ -1047,7 +1075,7 @@ In this section:</li>
 </details>
 </div>
 <p><strong>Q2)</strong>: Lastly, please create a new column in <code>cases_df</code> where you scale the cases by population and multiply by <code>1e5</code> to get cases / 100k.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/question-3_a841cd5686dd3a3d3b82ba92b580cd1f">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a></a>case_rates_df <span class="ot">&lt;-</span> cases_inner_join <span class="sc">|&gt;</span></span>
@@ -1064,7 +1092,7 @@ In this section:</li>
 <li>You can work with an <code>epi_df</code> like you can with a tibble by using dplyr verbs.</li>
 <li>For example, on <code>cases_df</code>, we can easily use <code>epi_slide_mean()</code> to calculate trailing 14 day averages of cases:</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/trailing-average-ex_ae53329f59c963c6c57c4539a1433713">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>case_rates_df <span class="ot">&lt;-</span> case_rates_df <span class="sc">|&gt;</span></span>
 <span id="cb51-2"><a></a>  <span class="fu">as_epi_df</span>(<span class="at">as_of =</span> <span class="fu">as.Date</span>(<span class="st">"2024-01-01"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb51-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
@@ -1093,7 +1121,7 @@ In this section:</li>
 <section id="epi.-data-processing-with-epiprocess-1" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
 <p>It is easy to produce an autoplot the smoothed confirmed daily cases for each <code>geo_value</code>:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/autoplot-ex_60fa9bf369196dc4d19afe3cb338feb0">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a></a>case_rates_df <span class="sc">|&gt;</span></span>
 <span id="cb53-2"><a></a>  <span class="fu">autoplot</span>(smoothed_scaled_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
@@ -1127,7 +1155,7 @@ In this section:</li>
 <li>Recall that <a href="https://en.wikipedia.org/wiki/Panel_data">panel data</a>, or longitudinal data, contain cross-sectional measurements of subjects over time.</li>
 <li>Built-in example: <a href="https://cmu-delphi.github.io/epidatasets/reference/covid_case_death_rates.html"><code>covid_case_death_rates</code></a> dataset, which is a snapshot <span class="primary"><strong>as of</strong></span> May 31, 2022 that contains daily state-wise measures of <code>case_rate</code> and <code>death_rate</code> for COVID-19 over 2021:</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/head-edf_32ac00a8fed145c0049a25b3b6be664c">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
   geo_value time_value case_rate death_rate
@@ -1177,7 +1205,7 @@ In this section:</li>
 </ul>
 <div class="columns">
 <div class="column" style="width:60%;">
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/epi-df-ex_556c03152d805ff845987267360ccf7f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a></a>edf <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `epi_df` object, 6 x 4 with metadata:
@@ -1197,7 +1225,7 @@ In this section:</li>
 </div>
 </div>
 </div><div class="column" style="width:40%;">
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/extract-metadata_0b6ca5b208306cffb28bb0a689c5ca7f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a></a><span class="fu">attr</span>(edf, <span class="st">"metadata"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$geo_type
@@ -1236,7 +1264,7 @@ character(0)</code></pre>
 <li><p>To explore <strong>lagged correlations</strong> and how case rates associate with future death rates, we can use the <code>dt1</code> parameter in <code>epi_cor()</code> to shift case rates by a specified number of days.</p></li>
 </ul>
 <!--  * For example, setting `dt1 = -14` means that case rates on June 1st will be correlated with death rates on June 15th, assessing how past case rates influence future death rates. -->
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/corr-lags-ex_b6b5449fa4e46705498bb76f768f3eee">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a></a>cor0 <span class="ot">&lt;-</span> <span class="fu">epi_cor</span>(edf, case_rate, death_rate, <span class="at">cor_by =</span> geo_value)</span>
 <span id="cb59-2"><a></a>cor14 <span class="ot">&lt;-</span> <span class="fu">epi_cor</span>(edf, case_rate, death_rate, <span class="at">cor_by =</span> geo_value, <span class="at">dt1 =</span> <span class="sc">-</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1257,10 +1285,11 @@ character(0)</code></pre>
 <li><p>Growth rate measures the relative change in a signal over time. <!-- indicating how quickly a quantity (like case rates) is increasing or decreasing. --></p></li>
 <li><p>We can compute time-varying growth rates for the two states, and see how this cases evolves over time.</p></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/growth-rates-ex_7b535d14fafcca9871da21a59b8766d1">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a></a>edfg <span class="ot">&lt;-</span> <span class="fu">filter</span>(edf, geo_value <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ut"</span>, <span class="st">"ca"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb60-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
-<span id="cb60-3"><a></a>  <span class="fu">mutate</span>(<span class="at">gr_cases =</span> <span class="fu">growth_rate</span>(time_value, case_rate, <span class="at">method =</span> <span class="st">"trend_filter"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb60-3"><a></a>  <span class="fu">mutate</span>(<span class="at">gr_cases =</span> <span class="fu">growth_rate</span>(time_value, case_rate, <span class="at">method =</span> <span class="st">"trend_filter"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb60-4"><a></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 <img data-src="day1-afternoon_files/figure-revealjs/plot-growth-rates-ex-1.svg" class="quarto-figure quarto-figure-center r-stretch"><ul>
@@ -1279,14 +1308,15 @@ character(0)</code></pre>
 <li>Note that the default number of time steps to use in the rolling window by default is 21 and is centrally aligned.</li>
 <li>The detection multiplier default is 2 and controls how far away a data point must be from the median to be considered an outlier.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/outlier-ex_a3130b6e4c700531b2a863b2e7675f05">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a></a>edfo <span class="ot">&lt;-</span> <span class="fu">filter</span>(edf, geo_value <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"nc"</span>, <span class="st">"ak"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb61-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(geo_value, time_value, case_rate) <span class="sc">|&gt;</span></span>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a></a>edfo <span class="ot">&lt;-</span> <span class="fu">filter</span>(edf, geo_value <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ut"</span>, <span class="st">"ca"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb61-2"><a></a>  <span class="fu">select</span>(geo_value, time_value, case_rate) <span class="sc">|&gt;</span></span>
 <span id="cb61-3"><a></a>  <span class="fu">as_epi_df</span>() <span class="sc">|&gt;</span></span>
 <span id="cb61-4"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb61-5"><a></a>  <span class="fu">mutate</span>(<span class="at">outlier_info =</span> <span class="fu">detect_outlr_rm</span>(</span>
 <span id="cb61-6"><a></a>    <span class="at">x =</span> time_value, <span class="at">y =</span> case_rate</span>
-<span id="cb61-7"><a></a>  )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb61-7"><a></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb61-8"><a></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="features---outlier-detection-1" class="slide level2">
@@ -1325,7 +1355,7 @@ character(0)</code></pre>
 <section id="epi_archive-collection-of-epi_dfs-1" class="slide level2">
 <h2><code>epi_archive</code>: Collection of <code>epi_df</code>s</h2>
 <p>Subset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in `archive format:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/archive-ex_6bde561aabc639948f636d3edbc67d73">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a></a>archive_cases_dv_subset</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
@@ -1441,7 +1471,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li><p>Ex. using the number of reported COVID-19 cases in British Columbia between Jan.&nbsp;2020 and Apr.&nbsp;15, 2023.</p></li>
 </ul>
 <!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. -->
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/nowcasting_980a21c73e9cc0d20d8a7104f7d59584">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1471,7 +1501,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="fetch-versioned-data" class="slide level2">
 <h2>Fetch versioned data</h2>
 <p>Let’s fetch versioned mortality data from the API (<code>pub_covidcast</code>) for CA (<code>geo_values = "ca"</code>) and the signal of interest (<code>deaths_covid_incidence_num</code>) over early 2024.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/mortality-archive-construct_8604eeeab18df799641449218885fa1b">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a><span class="co"># Fetch the versioned NCHS mortality data (weekly)</span></span>
 <span id="cb64-2"><a></a>mortality_archive <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
 <span id="cb64-3"><a></a>  <span class="at">source =</span> <span class="st">"nchs-mortality"</span>,</span>
@@ -1496,7 +1526,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <ul>
 <li>A quick inspection reveals that mortality rates are systematically 7 days latent (<span class="primary"><strong>fixed lag</strong></span>).</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/inspect-latency-dplyr-way_cb4f250c2562b8fadfb69538ffca08f2">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a></a>mortality_revision_inspect <span class="ot">=</span> mortality_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">version_time_diff =</span> version <span class="sc">-</span> time_value)</span>
 <span id="cb65-2"><a></a></span>
 <span id="cb65-3"><a></a><span class="co"># Look at the first revision for each week</span></span>
@@ -1524,7 +1554,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li><span class="primary"><strong>Question:</strong></span> When is the <span class="primary"><strong>finalized value</strong></span> first attained for each date? Would we have access to any in real-time?</li>
 <li>How fast are the final values attained &amp; what’s the pattern for these times, if any?</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/check-when-finalized-run_c9924bc537a3c7f70ec4c613ea851528">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
   geo_value time_value min_version diff    
@@ -1538,7 +1568,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </div>
 </div>
 <p>And here’s a numerical summary:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/summary-diff_45653852ddbdd40bff60f95e81ede611">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    84.0   147.0   189.0   192.8   259.0   294.0 </code></pre>
@@ -1552,7 +1582,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="comparison-of-final-vs.-multiple-revisions" class="slide level2">
 <h2>Comparison of final vs.&nbsp;multiple revisions</h2>
 <p>This shows the finalized rates in comparison to <span class="primary"><strong>multiple revisions</strong></span> to see how the data changes over time:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/final-vs-revisions-plot_1d71f2e5eb5c098ed22a135ff5cdb784">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1565,7 +1595,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="comparison-of-final-vs.-one-revision" class="slide level2">
 <h2>Comparison of final vs.&nbsp;one revision</h2>
 <p>The below figure compares the finalized rates (in black) to <span class="primary"><strong>one revision</strong></span> (in yellow) from March 3, 2024.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/one-revision-final-plot_b749d9ca8efed85c3b49d46ad48e1a34">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1580,7 +1610,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Calculate one ratio: Provisional vs.&nbsp;finalized data</h2>
 <!-- * Let's start simple with computing one ratio. -->
 <p>Suppose that the day is March 10, 2024. Then, because the data is 7 days latent, we can compute the ratio between provisional and finalized data for <span class="primary"><strong>March 3, 2024</strong></span>.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/one-ratio-calc_c1deb75d8f86b3074febf5926bad01cb">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-03-10"</span>); fixed_lag <span class="ot">=</span> <span class="dv">7</span></span>
 <span id="cb69-2"><a></a></span>
 <span id="cb69-3"><a></a><span class="co"># Load the finalized mortality data for CA</span></span>
@@ -1608,7 +1638,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="calculating-the-ratio-using-multiple-dates" class="slide level2">
 <h2>Calculating the ratio using multiple dates</h2>
 <p>Let’s move from calculating the ratio by using one day to multiple days with the goal to use it to nowcast for Feb.&nbsp;18, which has a <span class="primary"><strong>provisional value</strong></span> of 23</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/provisional-val-feb18_67e246752d7743c2882d45a2e188d4bd">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-02-25"</span>)</span>
 <span id="cb71-2"><a></a></span>
 <span id="cb71-3"><a></a>provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date) <span class="sc">|&gt;</span></span>
@@ -1620,7 +1650,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </div>
 </div>
 <p><br> and a <span class="primary"><strong>finalized value</strong></span> of 104</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/finalized-val-feb18_c08f38584a0246bfe049e0066d3a51fd">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a>finalized <span class="ot">&lt;-</span> mortality_latest <span class="sc">|&gt;</span></span>
 <span id="cb73-2"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
 <span id="cb73-3"><a></a>  <span class="fu">pull</span>(mortality)</span>
@@ -1633,7 +1663,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="calculating-the-ratio-using-multiple-dates-1" class="slide level2">
 <h2>Calculating the ratio using multiple dates</h2>
 <p>First, let’s download the real-time rates for CA, and compare them to their finalized version.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/real-time-mortality_2dbe315d9e57d75edd87929f7835ea47">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a>dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(start_time, (as_of_date <span class="sc">-</span> <span class="dv">7</span>), <span class="at">by =</span> <span class="st">"day"</span>)</span>
 <span id="cb75-2"><a></a>mortality_real_time <span class="ot">&lt;-</span> <span class="cf">function</span>(date) {</span>
 <span id="cb75-3"><a></a>  <span class="fu">epix_as_of</span>(mortality_archive, date <span class="sc">+</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
@@ -1674,7 +1704,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li>Recall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Jan.&nbsp;7 is finalized 294 days later).</li>
 <li>To nowcast accurately, we must rely on the <span class="primary"><strong>best available approximation of finalized data</strong></span> at the time of estimation (Feb.&nbsp;25).</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/finalized-data-as-of-feb25_c2830bb2b55406848e9f64db5bcd31a6">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a></a>mortality_as_of_feb25 <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date)</span>
 <span id="cb77-2"><a></a><span class="fu">head</span>(mortality_as_of_feb25)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1698,7 +1728,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="ratio-calculation-summary" class="slide level2">
 <h2>Ratio calculation &amp; summary</h2>
 <p>We then use these “finalized” and real-time values to compute the mean ratio:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/ratio-calc-summary_d64e9f72334671ff235270746fb9d3b8">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a><span class="co"># exclude date we're nowcasting for</span></span>
 <span id="cb79-2"><a></a>mortality_real_time_df <span class="ot">=</span> mortality_real_time_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>) </span>
 <span id="cb79-3"><a></a>mortality_as_of_feb25 <span class="ot">=</span> mortality_as_of_feb25 <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>)</span>
@@ -1718,7 +1748,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <ul>
 <li>Since the <span class="primary"><strong>median ratio</strong></span> between real-time and finalized values is <span class="primary"><strong>0.250</strong></span> (i.e., real-time values are typically 25% of the finalized), then the nowcast is</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/nowcast-feb25-point_f6d5e248bff0578a654abe9e3e40850c">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a><span class="co"># Now we can nowcast properly:</span></span>
 <span id="cb81-2"><a></a>nowcast <span class="ot">&lt;-</span> provisional <span class="sc">*</span></span>
 <span id="cb81-3"><a></a>  <span class="dv">1</span> <span class="sc">/</span> <span class="fu">median</span>(ratio_real_time_to_feb25)</span>
@@ -1730,7 +1760,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <ul>
 <li>To get the accompanying 95% prediction interval, calculate the 2.5th and 97.5th percentiles:</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/nowcast-feb25-lower_fef07877a9497550c9d28b8864414bf9">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a>percentile_97<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">quantile</span>(ratio_real_time_to_feb25, <span class="fl">0.975</span>) <span class="sc">|&gt;</span> <span class="fu">unname</span>()</span>
 <span id="cb83-2"><a></a></span>
 <span id="cb83-3"><a></a>(lower_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> percentile_97<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1738,7 +1768,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <pre><code>[1] 61.3268</code></pre>
 </div>
 </div>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/nowcast-feb25-upper_68aa54c508714e39b9819373dd8a9061">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a></a>percentile_2<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">quantile</span>(ratio_real_time_to_feb25, <span class="fl">0.025</span>) <span class="sc">|&gt;</span> <span class="fu">unname</span>()</span>
 <span id="cb85-2"><a></a>(upper_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> percentile_2<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1757,7 +1787,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li><p>Estimate the ratio using the <span class="primary"><strong>real-time</strong></span> and <span class="primary"><strong>“finalized”</strong></span> data (for all previous dates that follow a consistent pattern in reporting).</p></li>
 <li><p>Profit.</p></li>
 </ol>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/ratio-summary-steps_07a5e81ae433bc272763eaee7e445502">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Expand for the accompanying code</summary>
 <div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a></a><span class="co"># Today</span></span>
@@ -1792,7 +1822,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li><span class="primary"><strong>Output</strong></span>: The nowcasted mortality rates based on the ratio of real-time to finalized data.</li>
 </ul></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/nowcasting-multipl-dates-fun_9e6825f67f8490aad7810a819edd95d6">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a>nowcast_function <span class="ot">&lt;-</span> <span class="cf">function</span>(nowcast_date, fixed_lag) {</span>
@@ -1838,27 +1868,27 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li>We can use <code>map2()</code> to apply the function to a series of weeks (e.g., Jan.&nbsp;28 to Mar.&nbsp;24).</li>
 <li>Returns a <span class="primary"><strong>dataframe</strong></span> with nowcasted results.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/map-nowcast-fun-multiple-dates_05634d09dec88d3b9cb1dcb696fb54aa">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a></a><span class="co"># Apply Nowcast Function Over Multiple Dates</span></span>
 <span id="cb89-2"><a></a>nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2024-01-28"</span>), <span class="fu">as.Date</span>(<span class="st">"2024-03-24"</span>), <span class="at">by =</span> <span class="st">"week"</span>)</span>
 <span id="cb89-3"><a></a>fixed_lag <span class="ot">&lt;-</span> <span class="dv">7</span></span>
 <span id="cb89-4"><a></a>nowcast_results_df <span class="ot">&lt;-</span> <span class="fu">map2</span>(nowcast_dates, fixed_lag, nowcast_function) <span class="sc">|&gt;</span> <span class="fu">list_rbind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s smooth with a rolling trailing mean (window size 4) &amp; see the results:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/smooth-print-res_79c7b2734b65f3cee5e713d509390e8b">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 9 × 4
-  time_value nowcast lower_PI upper_PI
-  &lt;date&gt;       &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 2024-01-28   116.      80.7     181.
-2 2024-02-04   145.     109.      234.
-3 2024-02-11   114.      83.1     187.
-4 2024-02-18   109.      77.6     175.
-5 2024-02-25   110.      79.0     178.
-6 2024-03-03    92.8     59.3     148.
-7 2024-03-10    90.3     57.3     144.
-8 2024-03-17    82.6     51.2     134.
-9 2024-03-24    65.4     38.3     108.</code></pre>
+<pre><code># A tibble: 9 × 2
+  time_value nowcast_mortality
+  &lt;date&gt;                 &lt;dbl&gt;
+1 2024-01-28             116. 
+2 2024-02-04             145. 
+3 2024-02-11             114. 
+4 2024-02-18             109. 
+5 2024-02-25             110. 
+6 2024-03-03              92.8
+7 2024-03-10              90.3
+8 2024-03-17              82.6
+9 2024-03-24              65.4</code></pre>
 </div>
 </div>
 </section>
@@ -1887,7 +1917,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Evaluation using MAE</h2>
 <p>Let’s numerically evaluate our point nowcasts for the provisional values of a time series (e.g., COVID-19 mortality) using MAE.</p>
 <!-- Accuracy of nowcast is assessed by how close provisional estimates are to the finalized values to gauge the model's performance. -->
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/mae-code_feb60f140450c68a009e2077d13cc5e2">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a></a><span class="co"># Step 1: Join the mortality data with nowcast data</span></span>
 <span id="cb91-2"><a></a>mae_data <span class="ot">&lt;-</span> mortality_latest <span class="sc">|&gt;</span> </span>
 <span id="cb91-3"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">%in%</span> nowcast_dates) <span class="sc">|&gt;</span>   </span>
@@ -1914,7 +1944,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">14.89813</td>
+<td style="text-align: right;">28.88889</td>
 <td style="text-align: right;">71.44444</td>
 </tr>
 </tbody>
@@ -1958,7 +1988,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </section>
 <section id="data-sources-google-searches-hospital-admissions-1" class="slide level2">
 <h2>Data Sources: Google searches &amp; hospital admissions</h2>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/fetch-google-data_1dde6c099a7c1a1f0f1617363a5adfe7">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a><span class="co"># Fetch Google symptom data for s01 and s02</span></span>
 <span id="cb92-2"><a></a>x1 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
 <span id="cb92-3"><a></a>  <span class="at">source =</span> <span class="st">"google-symptoms"</span>,</span>
@@ -2044,7 +2074,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </section>
 <section id="multiple-linear-regression-model-1" class="slide level2">
 <h2>Multiple linear regression model</h2>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/multiple-lr-mod-predict_42a9d1b493755b9df28fc52dd6b88cf8">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a></a><span class="co"># Define the function for lm model fit and prediction</span></span>
 <span id="cb93-2"><a></a>lm_mod_pred <span class="ot">&lt;-</span> <span class="cf">function</span>(data, gk, rtv, ...) {</span>
 <span id="cb93-3"><a></a>  </span>
@@ -2079,7 +2109,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </section>
 <section id="nowcasting-with-epix_slide-1" class="slide level2">
 <h2>Nowcasting with <code>epix_slide()</code></h2>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/nowcasting-epix-slide_42b60769a028467b75859a1b33d68519">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a></a><span class="co"># Define the reference time points for nowcasting</span></span>
 <span id="cb94-2"><a></a>targeted_nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2023-04-15"</span>), <span class="fu">as.Date</span>(<span class="st">"2023-06-15"</span>), <span class="at">by =</span> <span class="st">"1 week"</span>)</span>
 <span id="cb94-3"><a></a>ref_time_values <span class="ot">=</span> targeted_nowcast_dates <span class="sc">+</span> <span class="dv">2</span>  <span class="co"># Adjust for the systematic 2-day latency in the response</span></span>
@@ -2113,7 +2143,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="compare-with-the-actual-admissions" class="slide level2">
 <h2>Compare with the actual admissions</h2>
 <p>After making predictions, we compare them to the actual hospital admissions.</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/join-with-actual-admissions_46c09833615f1953c70e5d2764222d53">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a></a><span class="co"># Left join with latest results </span></span>
 <span id="cb96-2"><a></a><span class="co"># Latest snapshot of data (with the latest/finalized admissions)</span></span>
 <span id="cb96-3"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(avg_search_vol_s01, avg_search_vol_s02))</span>
@@ -2145,7 +2175,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <ul>
 <li>As before, we can evaluate our point nowcasts numerically using MAE.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/mae-code-hosp_e814e8ac16ce94242d40dca5a24152f4">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a></a><span class="co"># Calculate the absolute error between actual and nowcasted values</span></span>
 <span id="cb98-2"><a></a>mae_data_admissions <span class="ot">&lt;-</span> res <span class="sc">|&gt;</span> </span>
 <span id="cb98-3"><a></a>  <span class="fu">mutate</span>(<span class="at">nc_abs_error =</span> <span class="fu">abs</span>(admissions <span class="sc">-</span> fit),  <span class="co"># Nowcast vs Finalized admissions</span></span>
@@ -2270,7 +2300,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </section>
 <section id="fetch-data---code-for-one-date" class="slide level2">
 <h2>Fetch Data - Code for one date</h2>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/fetch-web-data-one-date_f71308f8781123a50ee63a0429ca8d77">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a></a><span class="co"># Load required libraries</span></span>
 <span id="cb99-2"><a></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb99-3"><a></a><span class="fu">library</span>(readxl)</span>
@@ -2343,7 +2373,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </section>
 <section id="fetch-data---process-range-of-dates" class="slide level2">
 <h2>Fetch Data - Process range of dates</h2>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/process-range-of-dates_90fa3edf2bc4564c84d5e796ddc7d73a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a></a><span class="co"># Function to process data for a range of dates</span></span>
 <span id="cb100-2"><a></a>process_data_for_date_range <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date) {</span>
 <span id="cb100-3"><a></a>  <span class="co"># Generate a sequence of dates between start_date and end_date</span></span>
@@ -2386,7 +2416,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li>Expect building the archive to some time (enough for a cup of coffee or to meditate on life).</li>
 </ul>
 <!-- To wonder why you chose Expect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to wonder why you chose coding in the first place). -->
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/run-fun-process-data-range_109542692e47ad7f0a671477bd538b97">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a></a><span class="co"># Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021</span></span>
 <span id="cb101-2"><a></a>y <span class="ot">&lt;-</span> <span class="fu">process_data_for_date_range</span>(<span class="st">"2021-01-10"</span>, <span class="st">"2021-12-01"</span>)  <span class="co"># Raw .xlsx data is first released on Jan. 4, 2021</span></span>
 <span id="cb101-3"><a></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2415,7 +2445,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <ul>
 <li>Alternatively, you may run the following to load <code>y</code> that was previously saved as an RDS file:</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/load-ma-case-data_97998f3240ed37dfb039415eb7efd982">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a></a>y <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"_data/ma_case_archive.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -2426,7 +2456,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <li>Comes pre-smoothed in time using a Gaussian linear smoother</li>
 <li>This will be the predictor when we nowcast COVID-19 cases in MA.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/fetch-outpatient-cli_b0094da5b4429238d70471e0493ed9d9">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a></a><span class="co"># Step 1: Fetch Versioned Data </span></span>
 <span id="cb104-2"><a></a>x <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
 <span id="cb104-3"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
@@ -2448,7 +2478,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <h2>Use <code>epix_merge()</code> to merge the two archives</h2>
 <p>Now we’ll use <code>epix_merge()</code> to combine the two <code>epi_archive</code>s that share the same <code>geo_value</code> &amp; <code>time_value</code>.</p>
 <!-- LOCF is used to ensure missing data is handled by filling forward. -->
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/merge-archives-one-pred_73d22155ce1b621ec4715e6d55d2c4bd">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a></a>archive <span class="ot">&lt;-</span> <span class="fu">epix_merge</span>(</span>
 <span id="cb105-2"><a></a>  x, y,</span>
 <span id="cb105-3"><a></a>  <span class="at">sync =</span> <span class="st">"locf"</span>,</span>
@@ -2485,7 +2515,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <li>Use <code>predict()</code> with a 90% prediction interval.</li>
 <li>Save the actual cases to compare to the nowcasts later.</li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/simple-lr-mod-predict_746168e55629baada23c8d7eff6be6c0">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a></a>lm_mod_pred <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
 <span id="cb107-2"><a></a>  <span class="co"># Linear model</span></span>
 <span id="cb107-3"><a></a>  model <span class="ot">&lt;-</span> <span class="fu">lm</span>(case_rate_7d_av <span class="sc">~</span> percent_cli, <span class="at">data =</span> data)</span>
@@ -2515,7 +2545,7 @@ Key: &lt;geo_value, time_value, version&gt;
 </section>
 <section id="nowcasting-with-epix_slide-3" class="slide level2">
 <h2>Nowcasting with <code>epix_slide()</code></h2>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/nowcasting-epix-slide-cases_e31eea378cf247e2a21ef3c5aa68f73a">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb108"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a></a><span class="co"># Define the reference time points (to give the training/test split)</span></span>
 <span id="cb108-2"><a></a>targeted_nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2021-04-01"</span>), <span class="fu">as.Date</span>(<span class="st">"2021-11-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>) </span>
 <span id="cb108-3"><a></a>ref_time_values <span class="ot">=</span> targeted_nowcast_dates <span class="sc">+</span> <span class="dv">1</span> <span class="co"># + 1 because the case data is 1 day latent. </span></span>
@@ -2549,7 +2579,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <section id="visualizing-nowcasts-vs.-actual-values" class="slide level2">
 <h2>Visualizing nowcasts vs.&nbsp;actual values</h2>
 <p>Merge the nowcast results with the latest data for more direct comparison:</p>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/join-with-actual-cases_9ced7ffcc12c452188920234fa3369e0">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span></span>
 <span id="cb110-2"><a></a>  <span class="fu">select</span>(<span class="sc">-</span>percent_cli) </span>
 <span id="cb110-3"><a></a></span>
@@ -2585,7 +2615,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <li><p>Finally, we numerically evaluate our nowcasts using MAE.</p></li>
 <li><p>Shows that the nowcast errors are lower than those of the real-time estimates.</p></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day1-afternoon_cache/revealjs/mae-code-cases_be2aadcaff427c96c7526f6459acba98">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a></a><span class="co"># Calculate the absolute error between actual and nowcasted COVID-19 cases</span></span>
 <span id="cb112-2"><a></a>mae_data_cases <span class="ot">&lt;-</span> res <span class="sc">|&gt;</span> </span>
 <span id="cb112-3"><a></a>  <span class="fu">mutate</span>(<span class="at">nc_abs_error =</span> <span class="fu">abs</span>(case_rate_7d_av <span class="sc">-</span> fit),  <span class="co"># Nowcast vs Finalized cases (7-day average)</span></span>
@@ -2860,12 +2890,15 @@ Key: &lt;geo_value, time_value, version&gt;
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -2876,13 +2909,6 @@ Key: &lt;geo_value, time_value, version&gt;
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy
