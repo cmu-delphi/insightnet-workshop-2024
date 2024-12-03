@@ -785,19 +785,21 @@ edfg <- filter(edf, geo_value %in% c("ut", "ca")) |>
 #| fig-height: 5
 edfg |>
   select(-death_rate) |>
-  mutate(gr_cases_dup = gr_cases) |>
+  mutate(`Growth Rate` = gr_cases) |>
   pivot_longer(c(case_rate, gr_cases)) |>
-  ggplot(aes(x = time_value, y = value, color = gr_cases_dup)) +
-  facet_grid(name ~ geo_value, scales = "free_y",
-             switch = "y") +
+  mutate(name = recode(name, case_rate = "Case Rate", gr_cases = "Growth Rate")) |>
+  ggplot(aes(x = time_value, y = value, color = `Growth Rate`)) +
+  facet_grid(name ~ geo_value, scales = "free_y", switch = "y") +
   geom_line(linewidth = 1) +
   scale_color_binned(type = function(...) continuous_scale("colour", ..., palette = function(x) {
     scales::pal_gradient_n(scales::pal_brewer(palette = "RdPu")(9))(x * 0.75 + 0.25)
   })) +
   geom_hline(aes(yintercept = 0),
-             data = tibble(name = "gr_cases"),
+             data = tibble(name = "Growth Rate"),
              linetype = "dashed") +
-  theme_bw()
+  theme_bw() +
+  scale_x_date(name = "Date") +
+  scale_y_continuous(name = NULL)
 ```
 
 ## Features - Outlier detection
