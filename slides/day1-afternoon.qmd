@@ -781,53 +781,24 @@ edfg <- filter(edf, geo_value %in% c("ut", "ca")) |>
 
 ```{r plot-growth-rates-ex}
 #| fig-align: center
+#| fig-width: 12
+#| fig-height: 5
 edfg |>
   select(-death_rate) |>
   mutate(gr_cases_dup = gr_cases) |>
   pivot_longer(c(case_rate, gr_cases)) |>
   ggplot(aes(x = time_value, y = value, color = gr_cases_dup)) +
-  facet_grid(name ~ geo_value, scales = "free_y") +
+  facet_grid(name ~ geo_value, scales = "free_y",
+             switch = "y") +
+  guides(x = guide_axis(check.overlap = TRUE)) +
   geom_line(linewidth = 1) +
-  ## ggforce::geom_link2(linewidth = 1) +
-  ## scale_color_viridis_c(option = "C", end = .85) +
-  ## scale_color_viridis_b(option = "C", end = .85, breaks = seq(-0.05, 0.10, by = 0.05)) +
-  scale_color_fermenter(palette = "RdPu", transform = "reverse", breaks = seq(-0.05, 0.10, by = 0.05)) +
-  ## scale_color_fermenter(palette = "RdPu", transform = "reverse", breaks = seq(-0.05, 0.10, by = 0.05),
-  ##                       rescaler = function(...) scales::rescale(...) * 0.2) +
-  ## scale_color_fermenter(palette = "PuRd", transform = "reverse", breaks = seq(-0.10, 0.15, by = 0.05)) +
-  ## scale_color_fermenter(palette = "RdPu", transform = "reverse") +
-  ## scale_color_fermenter(palette = "Paired", breaks = seq(-0.10, 0.15, by = 0.05)) +
-  ## scale_color_fermenter(palette = "RdBu", breaks = round(seq(-0.15, 0.15, by = 0.05), 2)) +
-  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
-  ## labs(x = "Date", y = "Growth rate", colour = "Growth rate") +
+  scale_color_binned(type = function(...) continuous_scale("colour", ..., palette = function(x) {
+    scales::pal_gradient_n(scales::pal_brewer(palette = "RdPu")(9))(x * 0.75 + 0.25)
+  })) +
   geom_hline(aes(yintercept = 0),
              data = tibble(name = "gr_cases"),
-             linetype = "dashed")
-
-
-
-
-edfg |>
-  select(-death_rate) |>
-  mutate(gr_cases_cat = cut(gr_cases, c(-Inf, seq(-0.10, 0.15, by = 0.05), Inf))) |>
-  pivot_longer(c(case_rate, gr_cases)) |>
-  ## ggplot(aes(x = time_value, y = value)) +
-  ggplot(aes(x = time_value, y = value)) +
-  facet_grid(name ~ geo_value, scales = "free_y") +
-  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
-  geom_rect(aes(xmin = time_value - 0.5, xmax = time_value + 0.5, ymin = -Inf, ymax = Inf,
-                fill = gr_cases_cat), alpha = 0.5) +
-  geom_hline(aes(yintercept = yintercept),
-             data = tibble(name = "gr_cases", yintercept = seq(-0.10, 0.15, by = 0.05)),
              linetype = "dashed") +
-  ## scale_fill_brewer(palette = "RdPu") +
-  ## geom_line(aes(color = gr_cases_cat, group = 1), linewidth = 1) +
-  geom_line(aes(), linewidth = 1,
-            function(data) data |> filter(name == "case_rate")) +
-  ggforce::geom_link2(aes(color = gr_cases_cat, group = 1), linewidth = 1,
-                      function(data) data |> filter(name == "gr_cases")) +
-  scale_color_viridis_d(option = "C", end = 0.85) +
-  scale_fill_viridis_d(option = "C", end = 0.85)
+  theme_bw()
 ```
 
 ## Features - Outlier detection
