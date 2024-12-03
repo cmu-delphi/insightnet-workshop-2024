@@ -1018,6 +1018,12 @@ time series CV + trailing 0.07373572 257.1147</code></pre>
 </div>
 </div>
 </section>
+<section id="warning" class="slide level2">
+<h2>Warning!</h2>
+<p>Random forests have really <span class="primary">poor coverage</span> here. Can <span class="primary">change engine</span> to get better coverage:</p>
+<p>specify <code>engine = "grf_quantiles"</code> in the <code>rand_forest</code> call</p>
+
+<img data-src="day2-afternoon_files/figure-revealjs/arx-with-grf-1.svg" class="quarto-figure quarto-figure-left r-stretch"></section>
 <section id="geo-pooling" class="slide level2">
 <h2>Geo-pooling</h2>
 <ul>
@@ -1053,7 +1059,13 @@ time series CV + trailing 0.07373572 257.1147</code></pre>
 <section id="predictions-geo-pooling-california" class="slide level2">
 <h2>Predictions (geo-pooling): California</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/arx-geo-pooling-plot-ca-1.svg" class="quarto-figure quarto-figure-left r-stretch"></section>
+<img data-src="day2-afternoon_files/figure-revealjs/arx-geo-pooling-plot-ca-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-arx-geo-pooling_c55e80f8c8e5b87ee4a9620ac57cfb6b">
+<div class="cell-output cell-output-stdout">
+<pre><code>        MAE     MASE
+ 0.05272457 92.85753</code></pre>
+</div>
+</div>
+</section>
 <section id="predictions-geo-pooling" class="slide level2">
 <h2>Predictions (geo-pooling)</h2>
 
@@ -1061,7 +1073,7 @@ time series CV + trailing 0.07373572 257.1147</code></pre>
 <section id="versioned-data" class="slide level2">
 <h2>Versioned data</h2>
 <div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-versioned-data_6fde5da22f3763f9e27b872023107ac0">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a></a>us_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a></a>us_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
 ℹ Min/max time values: 2020-04-01 / 2023-01-31
@@ -1086,26 +1098,26 @@ time series CV + trailing 0.07373572 257.1147</code></pre>
 <section id="version-aware-forecasting-with-geo-pooling" class="slide level2">
 <h2>Version-aware forecasting with geo-pooling</h2>
 <div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/predict-version-aware_52a48c948ef86b87863758744cef67da">
-<div class="sourceCode cell-code" id="cb86" data-code-line-numbers="|5-17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a></a>forecast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>)</span>
-<span id="cb86-2"><a></a>h <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">28</span>)</span>
-<span id="cb86-3"><a></a></span>
-<span id="cb86-4"><a></a>forecast_k_days_ahead <span class="ot">&lt;-</span> <span class="cf">function</span>(epi_archive, forecast_dates, <span class="at">ahead =</span> <span class="dv">7</span>) {</span>
-<span id="cb86-5"><a></a>  epi_archive <span class="sc">|&gt;</span></span>
-<span id="cb86-6"><a></a>    <span class="fu">epix_slide</span>(</span>
-<span id="cb86-7"><a></a>      <span class="sc">~</span> <span class="fu">arx_forecaster</span>(</span>
-<span id="cb86-8"><a></a>        .x, </span>
-<span id="cb86-9"><a></a>        <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
-<span id="cb86-10"><a></a>        <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
-<span id="cb86-11"><a></a>        <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
-<span id="cb86-12"><a></a>        <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> ahead,</span>
-<span id="cb86-13"><a></a>                                  <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>))</span>
-<span id="cb86-14"><a></a>      )<span class="sc">$</span>predictions <span class="sc">|&gt;</span> <span class="fu">pivot_quantiles_wider</span>(.pred_distn),</span>
-<span id="cb86-15"><a></a>      <span class="at">.before =</span> <span class="dv">120</span>,</span>
-<span id="cb86-16"><a></a>      <span class="at">.versions =</span> forecast_dates</span>
-<span id="cb86-17"><a></a>    )</span>
-<span id="cb86-18"><a></a>}</span>
-<span id="cb86-19"><a></a></span>
-<span id="cb86-20"><a></a>forecasts <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">map</span>(h, <span class="sc">~</span> <span class="fu">forecast_k_days_ahead</span>(us_data, forecast_dates, <span class="at">ahead =</span> .x)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87" data-code-line-numbers="|5-17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a></a>forecast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>)</span>
+<span id="cb87-2"><a></a>h <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">28</span>)</span>
+<span id="cb87-3"><a></a></span>
+<span id="cb87-4"><a></a>forecast_k_days_ahead <span class="ot">&lt;-</span> <span class="cf">function</span>(epi_archive, forecast_dates, <span class="at">ahead =</span> <span class="dv">7</span>) {</span>
+<span id="cb87-5"><a></a>  epi_archive <span class="sc">|&gt;</span></span>
+<span id="cb87-6"><a></a>    <span class="fu">epix_slide</span>(</span>
+<span id="cb87-7"><a></a>      <span class="sc">~</span> <span class="fu">arx_forecaster</span>(</span>
+<span id="cb87-8"><a></a>        .x, </span>
+<span id="cb87-9"><a></a>        <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
+<span id="cb87-10"><a></a>        <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
+<span id="cb87-11"><a></a>        <span class="at">trainer =</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>),</span>
+<span id="cb87-12"><a></a>        <span class="at">args_list =</span> <span class="fu">arx_args_list</span>(<span class="at">lags =</span> <span class="dv">0</span>, <span class="at">ahead =</span> ahead,</span>
+<span id="cb87-13"><a></a>                                  <span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>))</span>
+<span id="cb87-14"><a></a>      )<span class="sc">$</span>predictions <span class="sc">|&gt;</span> <span class="fu">pivot_quantiles_wider</span>(.pred_distn),</span>
+<span id="cb87-15"><a></a>      <span class="at">.before =</span> <span class="dv">120</span>,</span>
+<span id="cb87-16"><a></a>      <span class="at">.versions =</span> forecast_dates</span>
+<span id="cb87-17"><a></a>    )</span>
+<span id="cb87-18"><a></a>}</span>
+<span id="cb87-19"><a></a></span>
+<span id="cb87-20"><a></a>forecasts <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">map</span>(h, <span class="sc">~</span> <span class="fu">forecast_k_days_ahead</span>(us_data, forecast_dates, <span class="at">ahead =</span> .x)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="version-aware-forecasting-with-geo-pooling-1" class="slide level2">
@@ -1149,35 +1161,35 @@ time series CV + trailing 0.07373572 257.1147</code></pre>
 <section id="fit-a-forecaster-from-scratch-1" class="slide level2">
 <h2>Fit a forecaster from scratch</h2>
 <div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/forecaster-from-scratch_39bcb8591faa8aec266bdc61dd260e43">
-<div class="sourceCode cell-code" id="cb87" data-code-line-numbers="1-6|8-9|11-16|18-20|21-29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a></a><span class="co"># A preprocessing "recipe" that turns raw data into features / response</span></span>
-<span id="cb87-2"><a></a>r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(ca) <span class="sc">|&gt;</span></span>
-<span id="cb87-3"><a></a>  <span class="fu">step_epi_lag</span>(cases, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb87-4"><a></a>  <span class="fu">step_epi_lag</span>(deaths, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb87-5"><a></a>  <span class="fu">step_epi_ahead</span>(deaths, <span class="at">ahead =</span> <span class="dv">28</span>) <span class="sc">|&gt;</span></span>
-<span id="cb87-6"><a></a>  <span class="fu">step_epi_naomit</span>()</span>
-<span id="cb87-7"><a></a></span>
-<span id="cb87-8"><a></a><span class="co"># Training engine</span></span>
-<span id="cb87-9"><a></a>e <span class="ot">&lt;-</span> <span class="fu">quantile_reg</span>(<span class="at">quantile_levels =</span> <span class="fu">c</span>(.<span class="dv">1</span>, .<span class="dv">5</span>, .<span class="dv">9</span>))</span>
-<span id="cb87-10"><a></a></span>
-<span id="cb87-11"><a></a><span class="co"># A post-processing routine describing what to do to the predictions</span></span>
-<span id="cb87-12"><a></a>f <span class="ot">&lt;-</span> <span class="fu">frosting</span>() <span class="sc">|&gt;</span></span>
-<span id="cb87-13"><a></a>  <span class="fu">layer_predict</span>() <span class="sc">|&gt;</span></span>
-<span id="cb87-14"><a></a>  <span class="fu">layer_threshold</span>(.pred, <span class="at">lower =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="co"># predictions / intervals should be non-negative</span></span>
-<span id="cb87-15"><a></a>  <span class="fu">layer_add_target_date</span>() <span class="sc">|&gt;</span></span>
-<span id="cb87-16"><a></a>  <span class="fu">layer_add_forecast_date</span>()</span>
-<span id="cb87-17"><a></a></span>
-<span id="cb87-18"><a></a><span class="co"># Bundle up the preprocessor, training engine, and postprocessor</span></span>
-<span id="cb87-19"><a></a><span class="co"># We use quantile regression</span></span>
-<span id="cb87-20"><a></a>ewf <span class="ot">&lt;-</span> <span class="fu">epi_workflow</span>(r, e, f)</span>
-<span id="cb87-21"><a></a></span>
-<span id="cb87-22"><a></a><span class="co"># Fit it to data (we could fit this to ANY data that has the same format)</span></span>
-<span id="cb87-23"><a></a>trained_ewf <span class="ot">&lt;-</span> ewf <span class="sc">|&gt;</span> <span class="fu">fit</span>(ca)</span>
-<span id="cb87-24"><a></a></span>
-<span id="cb87-25"><a></a><span class="co"># examines the recipe to determine what we need to make the prediction</span></span>
-<span id="cb87-26"><a></a>latest <span class="ot">&lt;-</span> <span class="fu">get_test_data</span>(r, ca)</span>
-<span id="cb87-27"><a></a></span>
-<span id="cb87-28"><a></a><span class="co"># we could make predictions using the same model on ANY test data</span></span>
-<span id="cb87-29"><a></a>preds <span class="ot">&lt;-</span> trained_ewf <span class="sc">|&gt;</span> <span class="fu">predict</span>(<span class="at">new_data =</span> latest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb88" data-code-line-numbers="1-6|8-9|11-16|18-20|21-29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a><span class="co"># A preprocessing "recipe" that turns raw data into features / response</span></span>
+<span id="cb88-2"><a></a>r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(ca) <span class="sc">|&gt;</span></span>
+<span id="cb88-3"><a></a>  <span class="fu">step_epi_lag</span>(cases, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb88-4"><a></a>  <span class="fu">step_epi_lag</span>(deaths, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb88-5"><a></a>  <span class="fu">step_epi_ahead</span>(deaths, <span class="at">ahead =</span> <span class="dv">28</span>) <span class="sc">|&gt;</span></span>
+<span id="cb88-6"><a></a>  <span class="fu">step_epi_naomit</span>()</span>
+<span id="cb88-7"><a></a></span>
+<span id="cb88-8"><a></a><span class="co"># Training engine</span></span>
+<span id="cb88-9"><a></a>e <span class="ot">&lt;-</span> <span class="fu">quantile_reg</span>(<span class="at">quantile_levels =</span> <span class="fu">c</span>(.<span class="dv">1</span>, .<span class="dv">5</span>, .<span class="dv">9</span>))</span>
+<span id="cb88-10"><a></a></span>
+<span id="cb88-11"><a></a><span class="co"># A post-processing routine describing what to do to the predictions</span></span>
+<span id="cb88-12"><a></a>f <span class="ot">&lt;-</span> <span class="fu">frosting</span>() <span class="sc">|&gt;</span></span>
+<span id="cb88-13"><a></a>  <span class="fu">layer_predict</span>() <span class="sc">|&gt;</span></span>
+<span id="cb88-14"><a></a>  <span class="fu">layer_threshold</span>(.pred, <span class="at">lower =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="co"># predictions / intervals should be non-negative</span></span>
+<span id="cb88-15"><a></a>  <span class="fu">layer_add_target_date</span>() <span class="sc">|&gt;</span></span>
+<span id="cb88-16"><a></a>  <span class="fu">layer_add_forecast_date</span>()</span>
+<span id="cb88-17"><a></a></span>
+<span id="cb88-18"><a></a><span class="co"># Bundle up the preprocessor, training engine, and postprocessor</span></span>
+<span id="cb88-19"><a></a><span class="co"># We use quantile regression</span></span>
+<span id="cb88-20"><a></a>ewf <span class="ot">&lt;-</span> <span class="fu">epi_workflow</span>(r, e, f)</span>
+<span id="cb88-21"><a></a></span>
+<span id="cb88-22"><a></a><span class="co"># Fit it to data (we could fit this to ANY data that has the same format)</span></span>
+<span id="cb88-23"><a></a>trained_ewf <span class="ot">&lt;-</span> ewf <span class="sc">|&gt;</span> <span class="fu">fit</span>(ca)</span>
+<span id="cb88-24"><a></a></span>
+<span id="cb88-25"><a></a><span class="co"># examines the recipe to determine what we need to make the prediction</span></span>
+<span id="cb88-26"><a></a>latest <span class="ot">&lt;-</span> <span class="fu">get_test_data</span>(r, ca)</span>
+<span id="cb88-27"><a></a></span>
+<span id="cb88-28"><a></a><span class="co"># we could make predictions using the same model on ANY test data</span></span>
+<span id="cb88-29"><a></a>preds <span class="ot">&lt;-</span> trained_ewf <span class="sc">|&gt;</span> <span class="fu">predict</span>(<span class="at">new_data =</span> latest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1185,94 +1197,140 @@ time series CV + trailing 0.07373572 257.1147</code></pre>
 <h1><span class="header-section-number">4</span> A Flu Forecaster</h1>
 
 </section>
-<section id="get-the-data-1" class="slide level2">
-<h2>Get the data</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/get-flu-data_6f16c09c1917d012cad810c36f2a9eef">
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a>flu <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb88-2"><a></a>  <span class="at">source =</span> <span class="st">"hhs"</span>,</span>
-<span id="cb88-3"><a></a>  <span class="at">signals =</span> <span class="st">"confirmed_admissions_influenza_1d_prop"</span>,</span>
-<span id="cb88-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb88-5"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb88-6"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20200101</span>, <span class="dv">20241231</span>)</span>
-<span id="cb88-7"><a></a>  <span class="co">#issues = epirange(20200101, 20241231)</span></span>
-<span id="cb88-8"><a></a>) <span class="sc">|&gt;</span> </span>
-<span id="cb88-9"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">hosp =</span> value) <span class="sc">|&gt;</span></span>
-<span id="cb88-10"><a></a>  <span class="fu">as_epi_df</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="flu-data-archive" class="slide level2">
+<h2>Flu data archive</h2>
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/show-flu-data_25d504f5f45655d0a12a04c01943fa1c">
+<div class="cell-output cell-output-stdout">
+<pre><code>→ An `epi_archive` object, with metadata:
+ℹ Min/max time values: 2020-01-01 / 2024-03-20
+ℹ First/last version with update: 2023-10-04 / 2024-03-27
+ℹ Versions end: 2024-03-27
+ℹ A preview of the table (14420 rows x 4 columns):
+          version geo_value time_value hhs
+    1: 2023-10-04        ak 2020-07-15  67
+    2: 2023-10-04        ak 2020-07-22 120
+    3: 2023-10-04        ak 2020-07-29  99
+    4: 2023-10-04        ak 2020-08-05 108
+    5: 2023-10-04        ak 2020-08-12  76
+   ---                                    
+14416: 2024-03-20        wy 2024-03-06  51
+14417: 2024-03-27        wy 2024-03-06  47
+14418: 2024-03-20        wy 2024-03-13  58
+14419: 2024-03-27        wy 2024-03-13  43
+14420: 2024-03-27        wy 2024-03-20  39</code></pre>
+</div>
 </div>
 </section>
 <section id="build-forecaster" class="slide level2">
 <h2>Build forecaster</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/forecaster-flu_ae0479887af9cdcd0e96d1af2a8b51fe">
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a></a><span class="co"># A preprocessing "recipe" that turns raw data into features / response</span></span>
-<span id="cb89-2"><a></a>r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(flu) <span class="sc">|&gt;</span></span>
-<span id="cb89-3"><a></a>  <span class="co">#drop_non_seasons() |&gt;</span></span>
-<span id="cb89-4"><a></a>  <span class="fu">step_population_scaling</span>(</span>
-<span id="cb89-5"><a></a>    hosp,</span>
-<span id="cb89-6"><a></a>    <span class="at">df =</span> epidatasets<span class="sc">::</span>state_census,</span>
-<span id="cb89-7"><a></a>    <span class="at">df_pop_col =</span> <span class="st">"pop"</span>,</span>
-<span id="cb89-8"><a></a>    <span class="at">create_new =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb89-9"><a></a>    <span class="at">rate_rescaling =</span> <span class="fl">1e5</span>,</span>
-<span id="cb89-10"><a></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb89-11"><a></a>  <span class="fu">step_epi_lag</span>(hosp, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb89-12"><a></a>  <span class="fu">step_epi_ahead</span>(hosp, <span class="at">ahead =</span> <span class="dv">14</span>) <span class="sc">|&gt;</span></span>
-<span id="cb89-13"><a></a>  <span class="fu">step_epi_naomit</span>()</span>
-<span id="cb89-14"><a></a></span>
-<span id="cb89-15"><a></a><span class="co"># Training engine</span></span>
-<span id="cb89-16"><a></a>e <span class="ot">&lt;-</span> <span class="fu">quantile_reg</span>(<span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.025</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">19</span> <span class="sc">/</span> <span class="dv">20</span>, <span class="fl">0.975</span>, <span class="fl">0.99</span>)) <span class="co"># 23 ForecastHub quantiles</span></span>
-<span id="cb89-17"><a></a></span>
-<span id="cb89-18"><a></a><span class="co"># A post-processing routine describing what to do to the predictions</span></span>
-<span id="cb89-19"><a></a>f <span class="ot">&lt;-</span> <span class="fu">frosting</span>() <span class="sc">|&gt;</span></span>
-<span id="cb89-20"><a></a>  <span class="fu">layer_predict</span>() <span class="sc">|&gt;</span></span>
-<span id="cb89-21"><a></a>  <span class="fu">layer_threshold</span>(.pred, <span class="at">lower =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="co"># predictions / intervals should be non-negative</span></span>
-<span id="cb89-22"><a></a>  <span class="fu">layer_population_scaling</span>(</span>
-<span id="cb89-23"><a></a>    .pred, </span>
-<span id="cb89-24"><a></a>    <span class="at">df =</span> epidatasets<span class="sc">::</span>state_census,</span>
-<span id="cb89-25"><a></a>    <span class="at">df_pop_col =</span> <span class="st">"pop"</span>,</span>
-<span id="cb89-26"><a></a>    <span class="at">create_new =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb89-27"><a></a>    <span class="at">rate_rescaling =</span> <span class="fl">1e5</span>,</span>
-<span id="cb89-28"><a></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb89-29"><a></a>  <span class="fu">layer_add_target_date</span>() <span class="sc">|&gt;</span></span>
-<span id="cb89-30"><a></a>  <span class="fu">layer_add_forecast_date</span>()</span>
-<span id="cb89-31"><a></a></span>
-<span id="cb89-32"><a></a><span class="co"># Bundle up the preprocessor, training engine, and postprocessor</span></span>
-<span id="cb89-33"><a></a><span class="co"># We use quantile regression</span></span>
-<span id="cb89-34"><a></a>ewf <span class="ot">&lt;-</span> <span class="fu">epi_workflow</span>(r, e, f)</span>
-<span id="cb89-35"><a></a></span>
-<span id="cb89-36"><a></a><span class="co"># Fit it to data (we could fit this to ANY data that has the same format)</span></span>
-<span id="cb89-37"><a></a>trained_ewf <span class="ot">&lt;-</span> ewf <span class="sc">|&gt;</span> <span class="fu">fit</span>(flu)</span>
-<span id="cb89-38"><a></a></span>
-<span id="cb89-39"><a></a><span class="co"># examines the recipe to determine what we need to make the prediction</span></span>
-<span id="cb89-40"><a></a>latest <span class="ot">&lt;-</span> <span class="fu">get_test_data</span>(r, flu)</span>
-<span id="cb89-41"><a></a></span>
-<span id="cb89-42"><a></a><span class="co"># we could make predictions using the same model on ANY test data</span></span>
-<span id="cb89-43"><a></a>preds <span class="ot">&lt;-</span> trained_ewf <span class="sc">|&gt;</span> <span class="fu">predict</span>(<span class="at">new_data =</span> latest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/forecaster-flu_4065541317ea98de976f2b90d284b7b1">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a></a><span class="co"># A preprocessing "recipe" that turns raw data into features / response</span></span>
+<span id="cb90-2"><a></a>r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(flu) <span class="sc">|&gt;</span></span>
+<span id="cb90-3"><a></a>  <span class="co">#drop_non_seasons() |&gt;</span></span>
+<span id="cb90-4"><a></a>  <span class="fu">step_population_scaling</span>(</span>
+<span id="cb90-5"><a></a>    hhs,</span>
+<span id="cb90-6"><a></a>    <span class="at">df =</span> epidatasets<span class="sc">::</span>state_census,</span>
+<span id="cb90-7"><a></a>    <span class="at">df_pop_col =</span> <span class="st">"pop"</span>,</span>
+<span id="cb90-8"><a></a>    <span class="at">create_new =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb90-9"><a></a>    <span class="at">rate_rescaling =</span> <span class="fl">1e5</span>,</span>
+<span id="cb90-10"><a></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb90-11"><a></a>  <span class="fu">step_epi_lag</span>(hhs, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb90-12"><a></a>  <span class="fu">step_epi_ahead</span>(hhs, <span class="at">ahead =</span> <span class="dv">14</span>) <span class="sc">|&gt;</span></span>
+<span id="cb90-13"><a></a>  <span class="fu">step_epi_naomit</span>()</span>
+<span id="cb90-14"><a></a></span>
+<span id="cb90-15"><a></a><span class="co"># Training engine</span></span>
+<span id="cb90-16"><a></a>e <span class="ot">&lt;-</span> <span class="fu">quantile_reg</span>(<span class="at">quantile_levels =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.025</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">19</span> <span class="sc">/</span> <span class="dv">20</span>, <span class="fl">0.975</span>, <span class="fl">0.99</span>)) <span class="co"># 23 ForecastHub quantiles</span></span>
+<span id="cb90-17"><a></a></span>
+<span id="cb90-18"><a></a><span class="co"># A post-processing routine describing what to do to the predictions</span></span>
+<span id="cb90-19"><a></a>f <span class="ot">&lt;-</span> <span class="fu">frosting</span>() <span class="sc">|&gt;</span></span>
+<span id="cb90-20"><a></a>  <span class="fu">layer_predict</span>() <span class="sc">|&gt;</span></span>
+<span id="cb90-21"><a></a>  <span class="fu">layer_threshold</span>(.pred, <span class="at">lower =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="co"># predictions / intervals should be non-negative</span></span>
+<span id="cb90-22"><a></a>  <span class="fu">layer_population_scaling</span>(</span>
+<span id="cb90-23"><a></a>    .pred, </span>
+<span id="cb90-24"><a></a>    <span class="at">df =</span> epidatasets<span class="sc">::</span>state_census,</span>
+<span id="cb90-25"><a></a>    <span class="at">df_pop_col =</span> <span class="st">"pop"</span>,</span>
+<span id="cb90-26"><a></a>    <span class="at">create_new =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb90-27"><a></a>    <span class="at">rate_rescaling =</span> <span class="fl">1e5</span>,</span>
+<span id="cb90-28"><a></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb90-29"><a></a>  <span class="fu">layer_add_target_date</span>() <span class="sc">|&gt;</span></span>
+<span id="cb90-30"><a></a>  <span class="fu">layer_add_forecast_date</span>()</span>
+<span id="cb90-31"><a></a></span>
+<span id="cb90-32"><a></a><span class="co"># Bundle up the preprocessor, training engine, and postprocessor</span></span>
+<span id="cb90-33"><a></a><span class="co"># We use quantile regression</span></span>
+<span id="cb90-34"><a></a>ewf <span class="ot">&lt;-</span> <span class="fu">epi_workflow</span>(r, e, f)</span>
+<span id="cb90-35"><a></a></span>
+<span id="cb90-36"><a></a><span class="co"># Fit it to data (we could fit this to ANY data that has the same format)</span></span>
+<span id="cb90-37"><a></a>trained_ewf <span class="ot">&lt;-</span> ewf <span class="sc">|&gt;</span> <span class="fu">fit</span>(flu)</span>
+<span id="cb90-38"><a></a></span>
+<span id="cb90-39"><a></a><span class="co"># examines the recipe to determine what we need to make the prediction</span></span>
+<span id="cb90-40"><a></a>latest <span class="ot">&lt;-</span> <span class="fu">get_test_data</span>(r, flu)</span>
+<span id="cb90-41"><a></a></span>
+<span id="cb90-42"><a></a><span class="co"># we could make predictions using the same model on ANY test data</span></span>
+<span id="cb90-43"><a></a>preds <span class="ot">&lt;-</span> trained_ewf <span class="sc">|&gt;</span> <span class="fu">predict</span>(<span class="at">new_data =</span> latest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="predictions" class="slide level2">
-<h2>Predictions</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/unnamed-chunk-2_196806fe16618cdfdf554a2dcfb80087">
+<section id="predictions-at-one-forecast-date" class="slide level2">
+<h2>Predictions at one forecast date</h2>
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/pred-one-forecast-date_696193871c574c3fcc2c30d08384ae5b">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 54 × 27
+<pre><code># A tibble: 21 × 27
    geo_value time_value target_date forecast_date `0.01` `0.025` `0.05` `0.1`
    &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;date&gt;         &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
- 1 ak        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 2 al        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 3 ar        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 4 as        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 5 az        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 6 ca        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 7 co        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 8 ct        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
- 9 dc        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
-10 de        2024-04-26 2024-05-10  2024-04-26         0       0      0     0
-# ℹ 44 more rows
+ 1 al        2023-11-08 2023-11-22  2023-11-08      218.    218.   228.  242.
+ 2 az        2023-11-08 2023-11-22  2023-11-08      706.    706.   741.  837.
+ 3 ca        2023-11-08 2023-11-22  2023-11-08     1823.   1823.  1917. 2019.
+ 4 ga        2023-11-08 2023-11-22  2023-11-08      527.    527.   563.  596.
+ 5 hi        2023-11-08 2023-11-22  2023-11-08      138.    138.   152.  161.
+ 6 il        2023-11-08 2023-11-22  2023-11-08      939.    939.  1015. 1109.
+ 7 in        2023-11-08 2023-11-22  2023-11-08      298.    298.   316.  333.
+ 8 ks        2023-11-08 2023-11-22  2023-11-08      169.    169.   175.  192.
+ 9 ky        2023-11-08 2023-11-22  2023-11-08      281.    281.   304.  328.
+10 mi        2023-11-08 2023-11-22  2023-11-08      435.    435.   457.  481.
+# ℹ 11 more rows
 # ℹ 19 more variables: `0.15` &lt;dbl&gt;, `0.2` &lt;dbl&gt;, `0.25` &lt;dbl&gt;, `0.3` &lt;dbl&gt;,
 #   `0.35` &lt;dbl&gt;, `0.4` &lt;dbl&gt;, `0.45` &lt;dbl&gt;, `0.5` &lt;dbl&gt;, `0.55` &lt;dbl&gt;,
 #   `0.6` &lt;dbl&gt;, `0.65` &lt;dbl&gt;, `0.7` &lt;dbl&gt;, `0.75` &lt;dbl&gt;, `0.8` &lt;dbl&gt;,
 #   `0.85` &lt;dbl&gt;, `0.9` &lt;dbl&gt;, `0.95` &lt;dbl&gt;, `0.975` &lt;dbl&gt;, `0.99` &lt;dbl&gt;</code></pre>
 </div>
 </div>
-</section></section>
+</section>
+<section id="slide-forecaster" class="slide level2">
+<h2>Slide forecaster</h2>
+<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/slide-flu-forecaster_2c5c27911935326eec6c07eb9f5c7e92">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a>flu_forecast <span class="ot">&lt;-</span> <span class="cf">function</span>(epi_archive, forecast_date, <span class="at">ahead =</span> <span class="dv">14</span>) {</span>
+<span id="cb92-2"><a></a>  flu <span class="ot">&lt;-</span> epi_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> </span>
+<span id="cb92-3"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span> forecast_date) <span class="sc">|&gt;</span></span>
+<span id="cb92-4"><a></a>    <span class="fu">as_epi_df</span>()</span>
+<span id="cb92-5"><a></a></span>
+<span id="cb92-6"><a></a>  r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(flu) <span class="sc">|&gt;</span></span>
+<span id="cb92-7"><a></a>    <span class="co">#drop_non_seasons() |&gt;</span></span>
+<span id="cb92-8"><a></a>    <span class="fu">step_population_scaling</span>(</span>
+<span id="cb92-9"><a></a>      hhs,</span>
+<span id="cb92-10"><a></a>      <span class="at">df =</span> epidatasets<span class="sc">::</span>state_census,</span>
+<span id="cb92-11"><a></a>      <span class="at">df_pop_col =</span> <span class="st">"pop"</span>,</span>
+<span id="cb92-12"><a></a>      <span class="at">create_new =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb92-13"><a></a>      <span class="at">rate_rescaling =</span> <span class="fl">1e5</span>,</span>
+<span id="cb92-14"><a></a>      <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span> <span class="ot">=</span> <span class="st">"abbr"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb92-15"><a></a>    <span class="fu">step_epi_lag</span>(hhs, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb92-16"><a></a>    <span class="fu">step_epi_ahead</span>(hhs, <span class="at">ahead =</span> ahead) <span class="sc">|&gt;</span></span>
+<span id="cb92-17"><a></a>    <span class="fu">step_epi_naomit</span>()</span>
+<span id="cb92-18"><a></a>  </span>
+<span id="cb92-19"><a></a>  ewf <span class="ot">&lt;-</span> <span class="fu">epi_workflow</span>(r, e, f)</span>
+<span id="cb92-20"><a></a>  trained_ewf <span class="ot">&lt;-</span> ewf <span class="sc">|&gt;</span> <span class="fu">fit</span>(flu)</span>
+<span id="cb92-21"><a></a>  latest <span class="ot">&lt;-</span> <span class="fu">get_test_data</span>(r, flu)</span>
+<span id="cb92-22"><a></a>  preds <span class="ot">&lt;-</span> trained_ewf <span class="sc">|&gt;</span> <span class="fu">predict</span>(<span class="at">new_data =</span> latest)</span>
+<span id="cb92-23"><a></a>  <span class="fu">return</span>(preds)</span>
+<span id="cb92-24"><a></a>}</span>
+<span id="cb92-25"><a></a></span>
+<span id="cb92-26"><a></a>forecast_dates <span class="ot">&lt;-</span> <span class="fu">seq.Date</span>(<span class="fu">as.Date</span>(<span class="st">"2023-10-04"</span>), <span class="fu">as.Date</span>(<span class="st">"2024-03-27"</span>), <span class="at">by =</span> <span class="dv">7</span>L)</span>
+<span id="cb92-27"><a></a>forecasts <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">map</span>(forecast_dates, </span>
+<span id="cb92-28"><a></a>                           <span class="sc">~</span> <span class="fu">flu_forecast</span>(weekly_archive, <span class="at">forecast_date =</span> .x, <span class="at">ahead =</span> <span class="dv">14</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="version-aware-predictions" class="slide level2">
+<h2>Version-aware predictions</h2>
+
+<img data-src="day2-afternoon_files/figure-revealjs/plot-flu-predictions-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
 <section id="advanced-topics" class="title-slide slide level1 center" data-number="5">
 <h1><span class="header-section-number">5</span> Advanced Topics</h1>

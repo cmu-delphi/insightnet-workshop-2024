@@ -2471,6 +2471,13 @@
     "text": "Predictions (trained using random forest)\n\n\n\n       MAE     MASE\n 0.0608714 107.2056"
   },
   {
+    "objectID": "slides/day2-afternoon.html#warning",
+    "href": "slides/day2-afternoon.html#warning",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Warning!",
+    "text": "Warning!\nRandom forests have really poor coverage here. Can change engine to get better coverage:\nspecify engine = \"grf_quantiles\" in the rand_forest call"
+  },
+  {
     "objectID": "slides/day2-afternoon.html#geo-pooling",
     "href": "slides/day2-afternoon.html#geo-pooling",
     "title": "InsightNet EpiData Workshop 2024",
@@ -2489,7 +2496,7 @@
     "href": "slides/day2-afternoon.html#predictions-geo-pooling-california",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (geo-pooling): California",
-    "text": "Predictions (geo-pooling): California"
+    "text": "Predictions (geo-pooling): California\n\n\n\n        MAE     MASE\n 0.05272457 92.85753"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-geo-pooling",
@@ -2541,25 +2548,39 @@
     "text": "Fit a forecaster from scratch\n\n# A preprocessing \"recipe\" that turns raw data into features / response\nr &lt;- epi_recipe(ca) |&gt;\n  step_epi_lag(cases, lag = c(0, 7, 14)) |&gt;\n  step_epi_lag(deaths, lag = c(0, 7, 14)) |&gt;\n  step_epi_ahead(deaths, ahead = 28) |&gt;\n  step_epi_naomit()\n\n# Training engine\ne &lt;- quantile_reg(quantile_levels = c(.1, .5, .9))\n\n# A post-processing routine describing what to do to the predictions\nf &lt;- frosting() |&gt;\n  layer_predict() |&gt;\n  layer_threshold(.pred, lower = 0) |&gt; # predictions / intervals should be non-negative\n  layer_add_target_date() |&gt;\n  layer_add_forecast_date()\n\n# Bundle up the preprocessor, training engine, and postprocessor\n# We use quantile regression\newf &lt;- epi_workflow(r, e, f)\n\n# Fit it to data (we could fit this to ANY data that has the same format)\ntrained_ewf &lt;- ewf |&gt; fit(ca)\n\n# examines the recipe to determine what we need to make the prediction\nlatest &lt;- get_test_data(r, ca)\n\n# we could make predictions using the same model on ANY test data\npreds &lt;- trained_ewf |&gt; predict(new_data = latest)"
   },
   {
-    "objectID": "slides/day2-afternoon.html#get-the-data-1",
-    "href": "slides/day2-afternoon.html#get-the-data-1",
+    "objectID": "slides/day2-afternoon.html#flu-data-archive",
+    "href": "slides/day2-afternoon.html#flu-data-archive",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Get the data",
-    "text": "Get the data\n\nflu &lt;- pub_covidcast(\n  source = \"hhs\",\n  signals = \"confirmed_admissions_influenza_1d_prop\",\n  time_type = \"day\",\n  geo_type = \"state\",\n  time_values = epirange(20200101, 20241231)\n  #issues = epirange(20200101, 20241231)\n) |&gt; \n  select(geo_value, time_value, hosp = value) |&gt;\n  as_epi_df()"
+    "section": "Flu data archive",
+    "text": "Flu data archive\n\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-01-01 / 2024-03-20\nℹ First/last version with update: 2023-10-04 / 2024-03-27\nℹ Versions end: 2024-03-27\nℹ A preview of the table (14420 rows x 4 columns):\n          version geo_value time_value hhs\n    1: 2023-10-04        ak 2020-07-15  67\n    2: 2023-10-04        ak 2020-07-22 120\n    3: 2023-10-04        ak 2020-07-29  99\n    4: 2023-10-04        ak 2020-08-05 108\n    5: 2023-10-04        ak 2020-08-12  76\n   ---                                    \n14416: 2024-03-20        wy 2024-03-06  51\n14417: 2024-03-27        wy 2024-03-06  47\n14418: 2024-03-20        wy 2024-03-13  58\n14419: 2024-03-27        wy 2024-03-13  43\n14420: 2024-03-27        wy 2024-03-20  39"
   },
   {
     "objectID": "slides/day2-afternoon.html#build-forecaster",
     "href": "slides/day2-afternoon.html#build-forecaster",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Build forecaster",
-    "text": "Build forecaster\n\n# A preprocessing \"recipe\" that turns raw data into features / response\nr &lt;- epi_recipe(flu) |&gt;\n  #drop_non_seasons() |&gt;\n  step_population_scaling(\n    hosp,\n    df = epidatasets::state_census,\n    df_pop_col = \"pop\",\n    create_new = FALSE,\n    rate_rescaling = 1e5,\n    by = c(\"geo_value\" = \"abbr\")) |&gt;\n  step_epi_lag(hosp, lag = c(0, 7, 14)) |&gt;\n  step_epi_ahead(hosp, ahead = 14) |&gt;\n  step_epi_naomit()\n\n# Training engine\ne &lt;- quantile_reg(quantile_levels = c(0.01, 0.025, 1:19 / 20, 0.975, 0.99)) # 23 ForecastHub quantiles\n\n# A post-processing routine describing what to do to the predictions\nf &lt;- frosting() |&gt;\n  layer_predict() |&gt;\n  layer_threshold(.pred, lower = 0) |&gt; # predictions / intervals should be non-negative\n  layer_population_scaling(\n    .pred, \n    df = epidatasets::state_census,\n    df_pop_col = \"pop\",\n    create_new = FALSE,\n    rate_rescaling = 1e5,\n    by = c(\"geo_value\" = \"abbr\")) |&gt;\n  layer_add_target_date() |&gt;\n  layer_add_forecast_date()\n\n# Bundle up the preprocessor, training engine, and postprocessor\n# We use quantile regression\newf &lt;- epi_workflow(r, e, f)\n\n# Fit it to data (we could fit this to ANY data that has the same format)\ntrained_ewf &lt;- ewf |&gt; fit(flu)\n\n# examines the recipe to determine what we need to make the prediction\nlatest &lt;- get_test_data(r, flu)\n\n# we could make predictions using the same model on ANY test data\npreds &lt;- trained_ewf |&gt; predict(new_data = latest)"
+    "text": "Build forecaster\n\n# A preprocessing \"recipe\" that turns raw data into features / response\nr &lt;- epi_recipe(flu) |&gt;\n  #drop_non_seasons() |&gt;\n  step_population_scaling(\n    hhs,\n    df = epidatasets::state_census,\n    df_pop_col = \"pop\",\n    create_new = FALSE,\n    rate_rescaling = 1e5,\n    by = c(\"geo_value\" = \"abbr\")) |&gt;\n  step_epi_lag(hhs, lag = c(0, 7, 14)) |&gt;\n  step_epi_ahead(hhs, ahead = 14) |&gt;\n  step_epi_naomit()\n\n# Training engine\ne &lt;- quantile_reg(quantile_levels = c(0.01, 0.025, 1:19 / 20, 0.975, 0.99)) # 23 ForecastHub quantiles\n\n# A post-processing routine describing what to do to the predictions\nf &lt;- frosting() |&gt;\n  layer_predict() |&gt;\n  layer_threshold(.pred, lower = 0) |&gt; # predictions / intervals should be non-negative\n  layer_population_scaling(\n    .pred, \n    df = epidatasets::state_census,\n    df_pop_col = \"pop\",\n    create_new = FALSE,\n    rate_rescaling = 1e5,\n    by = c(\"geo_value\" = \"abbr\")) |&gt;\n  layer_add_target_date() |&gt;\n  layer_add_forecast_date()\n\n# Bundle up the preprocessor, training engine, and postprocessor\n# We use quantile regression\newf &lt;- epi_workflow(r, e, f)\n\n# Fit it to data (we could fit this to ANY data that has the same format)\ntrained_ewf &lt;- ewf |&gt; fit(flu)\n\n# examines the recipe to determine what we need to make the prediction\nlatest &lt;- get_test_data(r, flu)\n\n# we could make predictions using the same model on ANY test data\npreds &lt;- trained_ewf |&gt; predict(new_data = latest)"
   },
   {
-    "objectID": "slides/day2-afternoon.html#predictions",
-    "href": "slides/day2-afternoon.html#predictions",
+    "objectID": "slides/day2-afternoon.html#predictions-at-one-forecast-date",
+    "href": "slides/day2-afternoon.html#predictions-at-one-forecast-date",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions",
-    "text": "Predictions\n\n\n# A tibble: 54 × 27\n   geo_value time_value target_date forecast_date `0.01` `0.025` `0.05` `0.1`\n   &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;date&gt;         &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;\n 1 ak        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 2 al        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 3 ar        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 4 as        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 5 az        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 6 ca        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 7 co        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 8 ct        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n 9 dc        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n10 de        2024-04-26 2024-05-10  2024-04-26         0       0      0     0\n# ℹ 44 more rows\n# ℹ 19 more variables: `0.15` &lt;dbl&gt;, `0.2` &lt;dbl&gt;, `0.25` &lt;dbl&gt;, `0.3` &lt;dbl&gt;,\n#   `0.35` &lt;dbl&gt;, `0.4` &lt;dbl&gt;, `0.45` &lt;dbl&gt;, `0.5` &lt;dbl&gt;, `0.55` &lt;dbl&gt;,\n#   `0.6` &lt;dbl&gt;, `0.65` &lt;dbl&gt;, `0.7` &lt;dbl&gt;, `0.75` &lt;dbl&gt;, `0.8` &lt;dbl&gt;,\n#   `0.85` &lt;dbl&gt;, `0.9` &lt;dbl&gt;, `0.95` &lt;dbl&gt;, `0.975` &lt;dbl&gt;, `0.99` &lt;dbl&gt;"
+    "section": "Predictions at one forecast date",
+    "text": "Predictions at one forecast date\n\n\n# A tibble: 21 × 27\n   geo_value time_value target_date forecast_date `0.01` `0.025` `0.05` `0.1`\n   &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;date&gt;         &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;\n 1 al        2023-11-08 2023-11-22  2023-11-08      218.    218.   228.  242.\n 2 az        2023-11-08 2023-11-22  2023-11-08      706.    706.   741.  837.\n 3 ca        2023-11-08 2023-11-22  2023-11-08     1823.   1823.  1917. 2019.\n 4 ga        2023-11-08 2023-11-22  2023-11-08      527.    527.   563.  596.\n 5 hi        2023-11-08 2023-11-22  2023-11-08      138.    138.   152.  161.\n 6 il        2023-11-08 2023-11-22  2023-11-08      939.    939.  1015. 1109.\n 7 in        2023-11-08 2023-11-22  2023-11-08      298.    298.   316.  333.\n 8 ks        2023-11-08 2023-11-22  2023-11-08      169.    169.   175.  192.\n 9 ky        2023-11-08 2023-11-22  2023-11-08      281.    281.   304.  328.\n10 mi        2023-11-08 2023-11-22  2023-11-08      435.    435.   457.  481.\n# ℹ 11 more rows\n# ℹ 19 more variables: `0.15` &lt;dbl&gt;, `0.2` &lt;dbl&gt;, `0.25` &lt;dbl&gt;, `0.3` &lt;dbl&gt;,\n#   `0.35` &lt;dbl&gt;, `0.4` &lt;dbl&gt;, `0.45` &lt;dbl&gt;, `0.5` &lt;dbl&gt;, `0.55` &lt;dbl&gt;,\n#   `0.6` &lt;dbl&gt;, `0.65` &lt;dbl&gt;, `0.7` &lt;dbl&gt;, `0.75` &lt;dbl&gt;, `0.8` &lt;dbl&gt;,\n#   `0.85` &lt;dbl&gt;, `0.9` &lt;dbl&gt;, `0.95` &lt;dbl&gt;, `0.975` &lt;dbl&gt;, `0.99` &lt;dbl&gt;"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#slide-forecaster",
+    "href": "slides/day2-afternoon.html#slide-forecaster",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Slide forecaster",
+    "text": "Slide forecaster\n\nflu_forecast &lt;- function(epi_archive, forecast_date, ahead = 14) {\n  flu &lt;- epi_archive$DT |&gt; \n    filter(version == forecast_date) |&gt;\n    as_epi_df()\n\n  r &lt;- epi_recipe(flu) |&gt;\n    #drop_non_seasons() |&gt;\n    step_population_scaling(\n      hhs,\n      df = epidatasets::state_census,\n      df_pop_col = \"pop\",\n      create_new = FALSE,\n      rate_rescaling = 1e5,\n      by = c(\"geo_value\" = \"abbr\")) |&gt;\n    step_epi_lag(hhs, lag = c(0, 7, 14)) |&gt;\n    step_epi_ahead(hhs, ahead = ahead) |&gt;\n    step_epi_naomit()\n  \n  ewf &lt;- epi_workflow(r, e, f)\n  trained_ewf &lt;- ewf |&gt; fit(flu)\n  latest &lt;- get_test_data(r, flu)\n  preds &lt;- trained_ewf |&gt; predict(new_data = latest)\n  return(preds)\n}\n\nforecast_dates &lt;- seq.Date(as.Date(\"2023-10-04\"), as.Date(\"2024-03-27\"), by = 7L)\nforecasts &lt;- bind_rows(map(forecast_dates, \n                           ~ flu_forecast(weekly_archive, forecast_date = .x, ahead = 14)))"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#version-aware-predictions",
+    "href": "slides/day2-afternoon.html#version-aware-predictions",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Version-aware predictions",
+    "text": "Version-aware predictions"
   },
   {
     "objectID": "slides/day2-afternoon.html#ensembling",
