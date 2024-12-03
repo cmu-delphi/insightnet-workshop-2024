@@ -835,9 +835,8 @@ edfg |>
 ```{r outlier-ex}
 #| echo: true
 #| message: false
-## edfo <- filter(edf, geo_value %in% c("nc", "ak")) |>
 edfo <- filter(edf, geo_value %in% c("ut", "ca")) |>
-  dplyr::select(geo_value, time_value, case_rate) |>
+  select(geo_value, time_value, case_rate) |>
   as_epi_df() |>
   group_by(geo_value) |>
   mutate(outlier_info = detect_outlr_rm(
@@ -870,125 +869,6 @@ edfo |>
   scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
   labs(x = "Date", y = "COVID-19 case rates") +
   theme(legend.position = c(.120, .8), legend.background = element_rect(fill = NA), legend.key = element_rect(fill = NA))
-```
-
-## Bexar County
-
-```{r outlier-bexar}
-edfo_bexar <-
-  county_smoothed_cli_comparison |>
-  filter(geo_value == "48029") |>
-  select(geo_value, time_value, case) |>
-  as_epi_df() |>
-  group_by(geo_value) |>
-  mutate(outlier_info = detect_outlr_rm(
-    x = time_value, y = case
-  )) |>
-  ungroup()
-
-edfo_bexar |> 
-  unnest() |> 
-  mutate(case_corrected = replacement) |> 
-  select(geo_value, time_value, case, case_corrected) |> 
-  pivot_longer(starts_with("case")) |> 
-  mutate(
-    name = case_when(
-      name == "case_corrected" ~ "corrected",
-      TRUE ~ "original"
-    ),
-    name = as.factor(name),
-    name = fct_relevel(name, "original")
-  ) |> 
-  ggplot(aes(x = time_value)) +
-  geom_line(aes(y = value, color = name)) +
-  scale_color_brewer(palette = "Set1") +
-  geom_hline(yintercept = 0) +
-  facet_wrap(vars(geo_value), scales = "free_y", nrow = 1) +
-  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
-  labs(x = "Date", y = "COVID-19 cases") +
-  theme(legend.position = c(.075, .8), legend.background = element_rect(fill = NA), legend.key = element_rect(fill = NA))
-
-edfo_bexar2 <-
-  county_smoothed_cli_comparison |>
-  filter(geo_value == "48029") |>
-  select(geo_value, time_value, case) |>
-  as_epi_df() |>
-  group_by(geo_value) |>
-  mutate(outlier_info = detect_outlr_rm(
-    x = time_value, y = case, n = 60
-  )) |>
-  ungroup()
-
-edfo_bexar2 |> 
-  unnest() |> 
-  mutate(case_corrected = replacement) |> 
-  select(geo_value, time_value, case, case_corrected) |> 
-  pivot_longer(starts_with("case")) |> 
-  mutate(
-    name = case_when(
-      name == "case_corrected" ~ "corrected",
-      TRUE ~ "original"
-    ),
-    name = as.factor(name),
-    name = fct_relevel(name, "original")
-  ) |> 
-  ggplot(aes(x = time_value)) +
-  geom_line(aes(y = value, color = name)) +
-  scale_color_brewer(palette = "Set1") +
-  geom_hline(yintercept = 0) +
-  facet_wrap(vars(geo_value), scales = "free_y", nrow = 1) +
-  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
-  labs(x = "Date", y = "COVID-19 cases") +
-  theme(legend.position = c(.075, .8), legend.background = element_rect(fill = NA), legend.key = element_rect(fill = NA))
-
-
-sa_fips <- "48029"
-sa_start <- "2020-06-15"
-sa_end <- "2020-08-15"
-sa_anomaly_date <- as.Date("2020-07-16")
-sources <- c("jhu-csse", "fb-survey", "doctor-visits", "google-symptoms", "chng")
-signals <- c("confirmed_7dav_incidence_num", "smoothed_whh_cmnty_cli",
-             "smoothed_adj_cli", "sum_anosmia_ageusia_smoothed_search", 
-             "smoothed_adj_outpatient_cli")
-reinhart <- map2(sources, signals, 
-                 ~ pub_covidcast(.x, .y, time_type = "day", geo_type = "county",
-                                 time_values = epirange(sa_start, sa_end),
-                                 geo_values = sa_fips) |>
-                   select(source, time_value, value))
-sa_cross <- reinhart[[1]]$value[33]
-sa_scale <- sd(reinhart[[1]]$value, na.rm = TRUE)
-reinhart[-1] <- map(
-  reinhart[-1], 
-  ~ mutate(.x, value = (value - value[33]) / sd(value, na.rm = TRUE) *
-             sa_scale + sa_cross))
-reinhart <- list_rbind(reinhart)
-
-g1 <- ggplot(reinhart |> filter(source == "jhu-csse"), aes(x = time_value, y = value)) +
-  geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
-             alpha = 0.75) +
-  geom_line() +
-  labs(x = "", y = "Cases", title = "Cases") +
-  theme_bw()
-
-labels <- c(
-  `fb-survey` = "Survey-based CLI",
-  chng = "Outpatient CLI",
-  `google-symptoms` = "Google searches",
-  `doctor-visits` = "Insurance claims"
-)
-
-
-g2 <- reinhart |>
-  filter(source != "jhu-csse") |>
-  ggplot(aes(x = time_value, y = value, color = source)) +
-  geom_vline(xintercept = sa_anomaly_date, color = "gray", linetype = "dashed",
-             size = 0.75, alpha = 0.75) +
-  geom_line() +
-  scale_color_delphi(labels = labels, name = "") +
-  labs(x = "", y = "Signal value (rescaled)", title = "Auxiliary signals") +
-  theme_bw()
-
-cowplot::plot_grid(g1, g2, ncol = 2, rel_widths = c(.35, .65))
 ```
 
 ## `epi_archive`: Collection of `epi_df`s
