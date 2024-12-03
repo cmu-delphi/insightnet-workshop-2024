@@ -790,7 +790,6 @@ edfg |>
   ggplot(aes(x = time_value, y = value, color = gr_cases_dup)) +
   facet_grid(name ~ geo_value, scales = "free_y",
              switch = "y") +
-  guides(x = guide_axis(check.overlap = TRUE)) +
   geom_line(linewidth = 1) +
   scale_color_binned(type = function(...) continuous_scale("colour", ..., palette = function(x) {
     scales::pal_gradient_n(scales::pal_brewer(palette = "RdPu")(9))(x * 0.75 + 0.25)
