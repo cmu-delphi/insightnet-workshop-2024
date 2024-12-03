@@ -691,7 +691,11 @@ dataset, which is a snapshot [**as of**]{.primary} May 31, 2022 that contains da
   
 ```{r head-edf}
 #| echo: false
-edf <- covid_case_death_rates
+edf <- covid_case_death_rates |>
+  # Filter out locations with no deaths recorded:
+  group_by(geo_value) |>
+  filter(!all(death_rate == 0)) |>
+  ungroup()
 head(edf |> as_tibble())
 ```
 
@@ -745,29 +749,33 @@ attr(edf, "metadata")
 
 ## Features - Correlations at different lags
 
+Correlation coefficients:
+
+- "Strength" and "direction" of a "relationship" between two variables
+- Normalized measures of
+  - how well (aspects of) one variable might be estimated from another
+  - using particular models and metrics
+  - based on training errors^[More rigorous approaches are covered tomorrow.].
+
+## Features - Correlations at different lags
+
 ```{r corr-lags-ex}
 #| echo: true
-## cor0 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value)
-## cor14 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, dt1 = -14)
-cor0 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, method = "kendall")
-cor14 <- epi_cor(edf, case_rate, death_rate, cor_by = time_value, dt1 = -14, method = "kendall")
+epi_cor(edf, case_rate, death_rate, dt1 = -14, cor_by = geo_value, method = "pearson")
 ```
 
-```{r plot-corr-lags-ex}
-#| fig-align: center
-#| warning: false
-rbind(
-  cor0 |> mutate(lag = 0),
-  cor14 |> mutate(lag = 14)
-) |>
-  mutate(lag = as.factor(lag)) |>
-  ggplot(aes(x = time_value, y = cor)) +
-  geom_hline(yintercept = 0) +
-  geom_line(aes(color = lag)) +
-  scale_color_brewer(palette = "Set1") +
-  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
-  labs(x = "Date", y = "Correlation", col = "Lag")
-```
+- For each location (`cor_by = geo_value`),
+- how well might death rates be estimated by case rates from 14 days ago (`case_rate, death_rate, dt = -14`),
+- with a linear model and related error measure, and what was the sign of the cofficient (`method = "pearson"`),
+- on this training+evaluation set (`edf`)?
+
+## Features - Correlations at different lags
+
+TODO lag analysis: Pearson by geo, then mean
+
+## Features - Correlations at different lags
+
+TODO lag analysis: Kendall by time, then mean
 
 ## Features - Compute growth rates
 
