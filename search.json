@@ -2356,14 +2356,14 @@
     "href": "slides/day2-afternoon.html#predict-with-arx-when-re-fitting",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predict with ARX (when re-fitting)",
-    "text": "Predict with ARX (when re-fitting)\nIn practice, if we want to re-train the forecasters as new data arrive, we fit and predict combining arx_forecaster with epi_slide."
+    "text": "Predict with ARX (when re-fitting)\n\nIn practice, if we want to re-train the forecasters as new data arrive, we fit and predict combining arx_forecaster with epix_slide\nFrom now on, we will only used versioned data, and make predictions once a week"
   },
   {
     "objectID": "slides/day2-afternoon.html#predict-with-arx-re-fitting-on-trailing-window",
     "href": "slides/day2-afternoon.html#predict-with-arx-re-fitting-on-trailing-window",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predict with ARX (re-fitting on trailing window)",
-    "text": "Predict with ARX (re-fitting on trailing window)\n\nh &lt;- 28         #horizon\nw &lt;- 120 + h    #trailing window length\nn &lt;- nrow(ca)   #time-series length\n\n# Specify the forecast dates\nfc_time_values &lt;- seq(from = t0_date, to = ca$time_value[n]-h, by = \"1 week\")\n\n# Slide the arx_forecaster \npred_arx &lt;- ca |&gt;\n  epi_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"cases\", \"deaths\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(lags = 0, ahead = h,\n                                               quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .window_size = w, \n  .ref_time_values = fc_time_values\n)"
+    "text": "Predict with ARX (re-fitting on trailing window)\n\nh &lt;- 28         #horizon\nw &lt;- 120 + h    #trailing window length\n\n# Specify the forecast dates\nfc_time_values &lt;- seq(from = t0_date, to = as.Date(\"2023-02-09\"), by = \"1 week\")\n\n# Slide the arx_forecaster over the epi_archive\npred_arx &lt;- ca_archive |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"cases\", \"deaths\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(lags = 0, ahead = h,\n                                               quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predict-with-arx",
@@ -2405,42 +2405,42 @@
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster-2",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\nChange predictors: hospitalizations instead of cases\n\nhhs &lt;- pub_covidcast(\n  source = \"hhs\",\n  signals = \"confirmed_admissions_covid_1d_prop_7dav\",\n  time_type = \"day\",\n  geo_type = \"state\",\n  time_values = epirange(20200401, 20230401),\n  geo_values = \"*\") |&gt;\n  select(geo_value, time_value, hospitalizations = value)\n\n\ndf_extend &lt;- left_join(df, hhs, by = c(\"time_value\", \"geo_value\")) |&gt;\n  as_epi_df() \n\nca_extend &lt;- df_extend |&gt; filter(geo_value == \"ca\")"
+    "text": "Customizing arx_forecaster\nChange predictors: doctor visits instead of cases\n\ndv_archive &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  geo_type = \"state\",\n  time_values = epirange(20200401, 20230401),\n  geo_values = \"*\",\n  issues = epirange(20200401, 20230401)) %&gt;%\n  select(geo_value, time_value, version = issue, doctor_visits = value) %&gt;%\n  arrange(geo_value, time_value) %&gt;%\n  as_epi_archive(compactify = FALSE)"
   },
   {
     "objectID": "slides/day2-afternoon.html#customizing-arx_forecaster-3",
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster-3",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\nChange predictors: hospitalizations instead of cases\n\n# Specify the forecast dates\nn = nrow(ca_extend)\nfc_time_values &lt;- seq(from = t0_date, to = ca_extend$time_value[n]-h, by = \"1 week\")\n\n# Slide the arx_forecaster \npred_arx_hosp &lt;- ca_extend |&gt;\n  epi_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"hospitalizations\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(lags = 0, ahead = 28,\n                                               quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .window_size = w, \n  .ref_time_values = fc_time_values\n)"
+    "text": "Customizing arx_forecaster\nChange predictors: doctor visits instead of cases\n\npred_arx_hosp &lt;- ca_archive_dv |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"doctor_visits\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(lags = 0, ahead = 28,\n                                               quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
-    "objectID": "slides/day2-afternoon.html#predictions-hospitalizations-instead-of-cases-in-predictor-set",
-    "href": "slides/day2-afternoon.html#predictions-hospitalizations-instead-of-cases-in-predictor-set",
+    "objectID": "slides/day2-afternoon.html#predictions-doctor-visits-instead-of-cases-in-predictor-set",
+    "href": "slides/day2-afternoon.html#predictions-doctor-visits-instead-of-cases-in-predictor-set",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions (hospitalizations instead of cases in predictor set)",
-    "text": "Predictions (hospitalizations instead of cases in predictor set)\n\n\n\n        MAE    MASE\n 0.04540725 158.334"
+    "section": "Predictions (doctor visits instead of cases in predictor set)",
+    "text": "Predictions (doctor visits instead of cases in predictor set)\n\n\n\n        MAE     MASE\n 0.06880739 230.6948"
   },
   {
     "objectID": "slides/day2-afternoon.html#customizing-arx_forecaster-4",
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster-4",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\nAdd more lags\n\npred_arx_more_lags &lt;- ca_extend |&gt;\n  epi_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"hospitalizations\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(\n                       lags = c(0, 7, 14),\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .window_size = w, \n  .ref_time_values = fc_time_values\n)"
+    "text": "Customizing arx_forecaster\nAdd more lags\n\npred_arx_more_lags &lt;- ca_archive |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"cases\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(\n                       lags = c(0, 7, 14),\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-more-lags",
     "href": "slides/day2-afternoon.html#predictions-more-lags",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (more lags)",
-    "text": "Predictions (more lags)\n\n\n\n        MAE     MASE\n 0.06615884 230.6943"
+    "text": "Predictions (more lags)\n\n\n\n       MAE     MASE\n 0.1493382 500.6954"
   },
   {
     "objectID": "slides/day2-afternoon.html#customizing-arx_forecaster-5",
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster-5",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\nMultiple horizons\n\nfc_time_values &lt;- seq(from = t0_date, to = as.Date(\"2023-02-01\"), by = \"1 month\")\npred_h_days_ahead &lt;- function(epi_df, ahead = 7) {\n  epi_df |&gt;\n    epi_slide(\n      ~ arx_forecaster(epi_data = .x,\n                       outcome = \"deaths\", \n                       predictors = c(\"deaths\", \"hospitalizations\"), \n                       trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                       args_list = arx_args_list(\n                         lags = 0,  \n                         ahead = ahead,\n                         quantile_levels = c(0.1, 0.9))\n      )$predictions |&gt; \n        pivot_quantiles_wider(.pred_distn),\n  .window_size = w, \n  .ref_time_values = fc_time_values\n  )\n}\nh &lt;- c(7, 14, 21, 28)\nforecasts &lt;- bind_rows(map(h, ~ pred_h_days_ahead(ca_extend, ahead = .x)))"
+    "text": "Customizing arx_forecaster\nMultiple horizons\n\nforecast_times &lt;- seq(from = t0_date, to = as.Date(\"2023-02-23\"), by = \"1 month\")\npred_h_days_ahead &lt;- function(epi_archive, ahead = 7) {\n  epi_archive |&gt;\n    epix_slide(\n      ~ arx_forecaster(epi_data = .x,\n                       outcome = \"deaths\", \n                       predictors = c(\"deaths\", \"cases\"), \n                       trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                       args_list = arx_args_list(\n                         lags = 0,  \n                         ahead = ahead,\n                         quantile_levels = c(0.1, 0.9))\n      )$predictions |&gt; \n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = forecast_times\n  )\n}\nh &lt;- c(7, 14, 21, 28)\nforecasts &lt;- bind_rows(map(h, ~ pred_h_days_ahead(ca_archive, ahead = .x)))"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-multiple-horizons",
@@ -2461,14 +2461,14 @@
     "href": "slides/day2-afternoon.html#changing-trainer-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Changing trainer",
-    "text": "Changing trainer\n\npred_arx_rf &lt;- ca_extend |&gt;\n  epi_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"hospitalizations\"), \n                     trainer = parsnip::rand_forest(mode = \"regression\"), # defaults to ranger\n                     args_list = arx_args_list(\n                       lags = 0, \n                       #lags = c(0, 7, 14),  # worse predictions\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .window_size = w, \n  .ref_time_values = fc_time_values\n)"
+    "text": "Changing trainer\n\npred_arx_rf &lt;- ca_archive |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"cases\"), \n                     trainer = parsnip::rand_forest(mode = \"regression\"), # defaults to ranger\n                     args_list = arx_args_list(\n                       lags = 0,  \n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-trained-using-random-forest",
     "href": "slides/day2-afternoon.html#predictions-trained-using-random-forest",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (trained using random forest)",
-    "text": "Predictions (trained using random forest)\n\n\n\n       MAE     MASE\n 0.0608714 107.2056"
+    "text": "Predictions (trained using random forest)\n\n\n\n        MAE     MASE\n 0.07831415 262.5687"
   },
   {
     "objectID": "slides/day2-afternoon.html#warning",
@@ -2489,14 +2489,14 @@
     "href": "slides/day2-afternoon.html#geo-pooling-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Geo-pooling",
-    "text": "Geo-pooling\n\npred_arx_geo_pool &lt;- df_extend |&gt;\n  filter(time_value &gt; as.Date(\"2020-06-01\") & !geo_value %in% c(\"as\", \"gu\", \"mp\")) |&gt;\n  epi_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"hospitalizations\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(\n                       lags = 0,\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .window_size = w, \n  .ref_time_values = fc_time_values\n)"
+    "text": "Geo-pooling\n\npred_arx_geo_pool &lt;- usa_archive |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"cases\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(\n                       lags = 0,\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-geo-pooling-california",
     "href": "slides/day2-afternoon.html#predictions-geo-pooling-california",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (geo-pooling): California",
-    "text": "Predictions (geo-pooling): California\n\n\n\n        MAE     MASE\n 0.05272457 92.85753"
+    "text": "Predictions (geo-pooling): California\n\n\n\n       MAE     MASE\n 0.1217733 408.2768"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-geo-pooling",
@@ -2504,27 +2504,6 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predictions (geo-pooling)",
     "text": "Predictions (geo-pooling)"
-  },
-  {
-    "objectID": "slides/day2-afternoon.html#versioned-data",
-    "href": "slides/day2-afternoon.html#versioned-data",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Versioned data",
-    "text": "Versioned data\n\nus_data\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-04-01 / 2023-01-31\nℹ First/last version with update: 2021-04-01 / 2023-02-01\nℹ Versions end: 2023-02-01\nℹ A preview of the table (92197 rows x 5 columns):\n          version time_value geo_value     cases     deaths\n    1: 2021-04-01 2020-04-01        ak        NA         NA\n    2: 2021-04-01 2020-04-02        ak        NA         NA\n    3: 2021-04-01 2020-04-03        ak        NA         NA\n    4: 2021-04-01 2020-04-04        ak        NA         NA\n    5: 2021-04-01 2020-04-05        ak        NA         NA\n   ---                                                     \n92193: 2023-02-01 2023-01-27        wy   4.61203 0.17172453\n92194: 2023-02-01 2023-01-28        wy   4.61203 0.17172453\n92195: 2023-02-01 2023-01-29        wy   4.61203 0.17172453\n92196: 2023-02-01 2023-01-30        wy   4.61203 0.17172453\n92197: 2023-02-01 2023-01-31        wy -14.74378 0.04906416"
-  },
-  {
-    "objectID": "slides/day2-afternoon.html#version-aware-forecasting-with-geo-pooling",
-    "href": "slides/day2-afternoon.html#version-aware-forecasting-with-geo-pooling",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Version-aware forecasting with geo-pooling",
-    "text": "Version-aware forecasting with geo-pooling\n\nforecast_dates &lt;- seq(from = t0_date, to = as.Date(\"2023-02-01\"), by = \"1 month\")\nh &lt;- c(7, 14, 21, 28)\n\nforecast_k_days_ahead &lt;- function(epi_archive, forecast_dates, ahead = 7) {\n  epi_archive |&gt;\n    epix_slide(\n      ~ arx_forecaster(\n        .x, \n        outcome = \"deaths\", \n        predictors = c(\"cases\", \"deaths\"),\n        trainer = linear_reg() |&gt; set_engine(\"lm\"),\n        args_list = arx_args_list(lags = 0, ahead = ahead,\n                                  quantile_levels = c(0.1, 0.9))\n      )$predictions |&gt; pivot_quantiles_wider(.pred_distn),\n      .before = 120,\n      .versions = forecast_dates\n    )\n}\n\nforecasts &lt;- bind_rows(map(h, ~ forecast_k_days_ahead(us_data, forecast_dates, ahead = .x)))"
-  },
-  {
-    "objectID": "slides/day2-afternoon.html#version-aware-forecasting-with-geo-pooling-1",
-    "href": "slides/day2-afternoon.html#version-aware-forecasting-with-geo-pooling-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Version-aware forecasting with geo-pooling",
-    "text": "Version-aware forecasting with geo-pooling"
   },
   {
     "objectID": "slides/day2-afternoon.html#philosophy-of-forecasting",
