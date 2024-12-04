@@ -606,7 +606,7 @@
     "href": "slides/day1-morning.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\nDelphi\nPanel Data\nVersioned Data\nEpidata API\nEpidatr\nFind Data Sources and Signals\nVersioning in epidatr"
+    "text": "Outline\n\nDelphi\nOverview of this Workshop\nPanel Data\nVersioned Data\nEpidata API\nEpidatr\nFind Data Sources and Signals\nVersioning in epidatr"
   },
   {
     "objectID": "slides/day1-morning.html#about-delphi",
@@ -630,6 +630,20 @@
     "text": "What we provide"
   },
   {
+    "objectID": "slides/day1-morning.html#a-few-slides-here",
+    "href": "slides/day1-morning.html#a-few-slides-here",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "A few slides here",
+    "text": "A few slides here"
+  },
+  {
+    "objectID": "slides/day1-morning.html#a-few-slides-here-1",
+    "href": "slides/day1-morning.html#a-few-slides-here-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "A few slides here",
+    "text": "A few slides here"
+  },
+  {
     "objectID": "slides/day1-morning.html#panel-data-1",
     "href": "slides/day1-morning.html#panel-data-1",
     "title": "InsightNet EpiData Workshop 2024",
@@ -641,7 +655,7 @@
     "href": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Examples of panel data - COVID-19 cases",
-    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.\n\n\n\nWA switch to weekly reporting in 2022\nFL reports “whenever” (weekly, biweekly, three days in a row, then 4 zeros, etc.)"
+    "text": "Examples of panel data - COVID-19 cases\nJHU CSSE COVID cases per 100k  estimates the daily number of new confirmed COVID-19 cases per 100,000 population, averaged over the past 7 days.\n\n\n\nWA switch to weekly reporting in 2022\nFL reports “whenever” (weekly, biweekly, three days in a row, then 4 zeros, etc.)\nAPI calculates change from cumulative, so no-report becomes a 0."
   },
   {
     "objectID": "slides/day1-morning.html#examples-of-panel-data---hhs-admissions",
@@ -1003,13 +1017,6 @@
   {
     "objectID": "slides/day1-morning.html#last-but-not-least-the-do-nothing-approach",
     "href": "slides/day1-morning.html#last-but-not-least-the-do-nothing-approach",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Last but not least… The do nothing approach",
-    "text": "Last but not least… The do nothing approach"
-  },
-  {
-    "objectID": "slides/day1-morning.html#last-but-not-least-the-do-nothing-approach-1",
-    "href": "slides/day1-morning.html#last-but-not-least-the-do-nothing-approach-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Last but not least… The do nothing approach",
     "text": "Last but not least… The do nothing approach\nFinal question: What do you think happens when we adopt a “do nothing” approach to geo_values and issues (take both of them out) for this example?\n Hint: remember a couple slides ago, when we removed as_of, we got the most recent estimate for PA. \n\ndv_state_default &lt;- pub_covidcast(\n  source = \"doctor-visits\",\n  signals = \"smoothed_adj_cli\",\n  time_type = \"day\",\n  time_values = epirange(\"2020-05-01\", \"2020-05-07\"),\n  geo_type = \"state\"\n)"

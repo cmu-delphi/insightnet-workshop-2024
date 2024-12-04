@@ -215,6 +215,7 @@
 <h2>Outline</h2>
 <ol type="1">
 <li><p>Delphi</p></li>
+<li><p>Overview of this Workshop</p></li>
 <li><p>Panel Data</p></li>
 <li><p>Versioned Data</p></li>
 <li><p>Epidata API</p></li>
@@ -257,8 +258,19 @@
 
 <img data-src="gfx/web_of_parts.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
-<section id="panel-data" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> Panel Data</h1>
+<section id="workshop-overview" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> Workshop Overview</h1>
+
+</section>
+<section id="a-few-slides-here" class="slide level2">
+<h2>A few slides here</h2>
+</section>
+<section id="a-few-slides-here-1" class="slide level2">
+<h2>A few slides here</h2>
+</section></section>
+<section>
+<section id="panel-data" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> Panel Data</h1>
 
 </section>
 <section id="panel-data-1" class="slide level2">
@@ -296,6 +308,7 @@
 <ul>
 <li>WA switch to weekly reporting in 2022</li>
 <li>FL reports “whenever” (weekly, biweekly, three days in a row, then 4 zeros, etc.)</li>
+<li>API calculates change from cumulative, so no-report becomes a 0.</li>
 </ul>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -315,7 +328,6 @@
 [[**Change Healthcare COVID-like illness (CHNG-CLI)**]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html) reports the percentage of outpatient visits for COVID-related symptoms, based on deidentified Change Healthcare claims data.
 
 
-
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/examples-chng-cli-1.svg){fig-align='center'}
@@ -323,11 +335,9 @@
 :::
 
 
-
 ## Examples of panel data - CHNG-COVID
 
 [[**Change Healthcare COVID (CHNG-COVID)**]{.primary}](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/chng.html) reports the percentage of outpatient visits with confirmed COVID-19, based on Change Healthcare claims data.
-
 
 
 ::: {.cell layout-align="center"}
@@ -335,7 +345,6 @@
 ![](day1-morning_files/figure-revealjs/examples-chng-covid-1.svg){fig-align='center'}
 :::
 :::
-
 
 
 -->
@@ -350,18 +359,15 @@
 Example: gathering different signals + visualizing panel data
 
 
-
 ::: {.cell layout-align="center"}
 
 :::
-
 
 
 ## All together - Visualizing multiple panel data signals
 Example: gathering different signals + **scaling** + visualizing panel data
 
 
-
 ::: {.cell layout-align="center"}
 
 :::
@@ -369,7 +375,6 @@ Example: gathering different signals + **scaling** + visualizing panel data
 ::: {.cell layout-align="center"}
 
 :::
-
 
 <div style="text-align: center;">
 <small>[Figure 1 from Reinhart et al. (2021)](https://www.pnas.org/doi/10.1073/pnas.2111452118)</small>
@@ -387,8 +392,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 <img data-src="day1-morning_files/figure-revealjs/plot-ca-cases-deaths-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
-<section id="versioned-data" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> Versioned Data</h1>
+<section id="versioned-data" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> Versioned Data</h1>
 
 </section>
 <section id="intro-to-versioned-data" class="slide level2">
@@ -545,8 +550,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </ul>
 </section></section>
 <section>
-<section id="epidata-api" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> Epidata API</h1>
+<section id="epidata-api" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> Epidata API</h1>
 
 </section>
 <section id="goals-of-delphi-epidata-platform-and-repository" class="slide level2">
@@ -663,8 +668,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 <img data-src="gfx/severity-pyramid.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
-<section id="epidatr" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> Epidatr</h1>
+<section id="epidatr" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> Epidatr</h1>
 
 </section>
 <section id="installing-epidatr" class="slide level2">
@@ -750,8 +755,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </div>
 </section></section>
 <section>
-<section id="find-data-sources-signals" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> Find Data Sources &amp; Signals</h1>
+<section id="find-data-sources-signals" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> Find Data Sources &amp; Signals</h1>
 
 </section>
 <section id="finding-data-sources-and-signals-of-interest" class="slide level2">
@@ -1095,8 +1100,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </ul>
 </section></section>
 <section>
-<section id="versioning-in-epidatr" class="title-slide slide level1 center" data-number="7">
-<h1><span class="header-section-number">7</span> Versioning in <code>epidatr</code></h1>
+<section id="versioning-in-epidatr" class="title-slide slide level1 center" data-number="8">
+<h1><span class="header-section-number">8</span> Versioning in <code>epidatr</code></h1>
 
 </section>
 <section id="versioned-data-in-epidatr" class="slide level2">
@@ -1327,12 +1332,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 </div>
 </div>
 <p>So, now we obtain all available issues for all states (not just PA) for the specified date range. Neat!</p>
+<!--
+
+## Last but not least... The do nothing approach 
+
+![](gfx/do-nothing.jpg){height="550px"}
+
+-->
 </section>
 <section id="last-but-not-least-the-do-nothing-approach" class="slide level2">
-<h2>Last but not least… The do nothing approach</h2>
-<p><img data-src="gfx/do-nothing.jpg" height="550"></p>
-</section>
-<section id="last-but-not-least-the-do-nothing-approach-1" class="slide level2">
 <h2>Last but not least… The do nothing approach</h2>
 <p><strong>Final question:</strong> What do you think happens when we adopt a “do nothing” approach to <code>geo_values</code> and <code>issues</code> (take both of them out) for this example?</p>
 <p><small> <strong>Hint</strong>: remember a couple slides ago, when we removed <code>as_of</code>, we got the most recent estimate for PA. </small></p>
@@ -1380,7 +1388,6 @@ Example: gathering different signals + **scaling** + visualizing panel data
 * **Example**: Request  a lag of 7 days fetches only data issued exactly 7 days after the corresponding `time_value`:
 
 
-
 ::: {.cell layout-align="center"}
 
 :::
@@ -1388,7 +1395,6 @@ Example: gathering different signals + **scaling** + visualizing panel data
 ::: {.cell layout-align="center"}
 
 :::
-
 
 </div>
 
@@ -1399,7 +1405,6 @@ Example: gathering different signals + **scaling** + visualizing panel data
 * Results for those dates appear only if updates are issued on the corresponding lag day (e.g., May 10).
 
 
-
 ::: {.cell layout-align="center"}
 
 :::
@@ -1407,7 +1412,6 @@ Example: gathering different signals + **scaling** + visualizing panel data
 ::: {.cell layout-align="center"}
 
 :::
-
 
 </div>
 -->
