@@ -2014,7 +2014,7 @@ x <- pub_covidcast(
 ## Use `epix_merge()` to merge the two archives
 Now we'll use `epix_merge()` to combine the two `epi_archive`s that share the same `geo_value` & `time_value`.
 
-<!-- LOCF is used to ensure missing data is handled by filling forward. -->
+<!-- LOCF is used to ensure missing versions is handled by assuming no changes. -->
 ```{r merge-archives-one-pred}
 #| echo: true
 archive <- epix_merge(
