@@ -1944,7 +1944,7 @@ process_data_for_date_range <- function(start_date, end_date) {
   # Convert the combined data into an epi_archive object
   if (nrow(combined_data) > 0) {
     epi_archive_data <- combined_data |>
-      as_epi_archive(compactify = FALSE)
+      as_epi_archive(compactify = TRUE)
     
     return(epi_archive_data)
   } else {
@@ -2008,7 +2008,7 @@ x <- pub_covidcast(
          version = issue,
          percent_cli = value
   ) |>
-  as_epi_archive(compactify = FALSE)
+  as_epi_archive(compactify = TRUE)
 ```
 
 ## Use `epix_merge()` to merge the two archives
@@ -2020,7 +2020,7 @@ Now we'll use `epix_merge()` to combine the two `epi_archive`s that share the sa
 archive <- epix_merge(
   x, y,
   sync = "locf",
-  compactify = FALSE
+  compactify = TRUE
 )
 archive
 ```
