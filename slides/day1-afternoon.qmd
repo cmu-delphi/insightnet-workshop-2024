@@ -1907,7 +1907,7 @@ process_covid_data <- function(Date) {
 * [**Tibble Creation**]{.primary}: Constructs a tibble with `geo_value`, `time_value`, `version`, and `case_rate_7d_av` to later compile into an `epi_archive` (you can think of an `epi_archive` as being a comprised of many `epi_df`s).
 
 
-## Fetch Data - Process eange of dates
+## Fetch Data - Process range of dates
 * Note that `process_covid_data()` works on one date at a time.
 * So now, we need a function that iterates over a date range and applies `process_covid_data()` to each date & combines the resulting tibbles into an `epi_archive`.
 * We call this function `process_data_for_date_range()`...
