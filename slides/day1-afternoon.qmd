@@ -933,7 +933,7 @@ ggplot(snapshots |> filter(!latest),
 
 ## Backfill American edition
 
-* Again, we can see a similar systematic underestimation problem for COVID-19 morality rates in CA. <!-- 2023-2024 -->
+* Again, we can see a similar systematic underestimation problem for COVID-19 mortality rates in CA. <!-- 2023-2024 -->
 
 * This plot also illustrates the [**revision process**]{.primary} - how the reported mortality changes & increases across multiple updates until it stabilizes at the final value (black line).
 
