@@ -328,7 +328,8 @@ weekly_snapshots |>
 
 ```{r latency-wa-ex}
 #| echo: false
-x_dt_with_diff = dv_wa$DT |> mutate(version_time_diff = version - time_value) 
+x_dt_with_diff = dv_wa$DT |> mutate(version_time_diff = version - time_value) |>
+  select.list(geo_value, time_value, version, percent_cli, version_time_diff)
 head(x_dt_with_diff |> group_by(time_value) |> slice(1) |> ungroup()) 
 ```
 
