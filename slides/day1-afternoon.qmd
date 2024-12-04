@@ -1853,47 +1853,60 @@ library(httr)
 library(tibble)
 library(epiprocess)
 
+ma_covid_19_raw_cache_dir <- "ma_covid_19_raw_cache_dir"
+dir.create(ma_covid_19_raw_cache_dir)
+
 # Function to download and process each Excel file for a given date
-process_covid_data <- function(Date) {
+process_covid_data <- function(Date, cache_dir = ma_covid_19_raw_cache_dir) {
   # Generate the URL for the given date
-  url <- paste0("https://www.mass.gov/doc/covid-19-raw-data-", tolower(gsub("-0", "-", format(Date, "%B-%d-%Y"))), "/download") 
+  url <- paste0("https://www.mass.gov/doc/covid-19-raw-data-", tolower(gsub("-0", "-", format(Date, "%B-%d-%Y"))), "/download")
   # Applies gsub("-0", "-", ...) to replace any occurrence of -0 (such as in "April-01") with just - (resulting in "April-1").
-  
-  # Check if the URL exists (handle the 404 error by skipping that date)
-  response <- GET(url)
-  
-  if (status_code(response) != 200) {
-    return(NULL)  # Skip if URL doesn't exist (404)
+
+  # Define the destination file path for the response
+  response_file_path <- file.path(cache_dir, paste0("covid-19-raw-data-", Date, "-response.rds"))
+
+  if (file.exists(response_file_path)) {
+    response <- readRDS(response_file_path)
+  } else {
+    response <- GET(url)
+
+    # Stop on errors other than 403 ("forbidden"), 404 ("file not found"):
+    if (! status_code(response) %in% c(403, 404)) {
+      httr::stop_for_status(response)
+    }
+
+    # Cache the response:
+    saveRDS(response, response_file_path)
   }
-  
-  # Define the destination file path for the Excel file
-  file_path <- tempfile(fileext = ".xlsx")
-  
-  # Download the Excel file
-  GET(url, write_disk(file_path, overwrite = TRUE))
-  
-  # Read the relevant sheet from the Excel file
-  data <- read_excel(file_path, sheet = "CasesByDate (Test Date)")
-  
-  # Process the data: rename columns and convert Date
-  data <- data |>
-    rename(
-      Date = `Date`,
-      Positive_Total = `Positive Total`,
-      Positive_New = `Positive New`,
-      Case_Average_7day = `7-day confirmed case average`
-    ) |>
-    mutate(Date = as.Date(Date))  # Convert to Date class
-  
-  # Create a tibble with the required columns for the epi_archive
-  tib <- tibble(
-    geo_value = "ma",  # Massachusetts (geo_value)
-    time_value = data$Date,  # Date from the data
-    version = Date,  # The extracted version date
-    case_rate_7d_av = data$Case_Average_7day  # 7-day average case value
-  )
-  
-  return(tib)
+
+  if (status_code(response) %in% c(403, 404)) {
+    return(NULL)
+  } else {
+    # Read the relevant sheet from the Excel file
+    xlsx_file_path <- withr::local_tempfile(fileext = ".xlsx")
+    writeBin(content(response), xlsx_file_path)
+    data <- read_excel(xlsx_file_path, sheet = "CasesByDate (Test Date)")
+
+    # Process the data: rename columns and convert Date
+    data <- data |>
+      rename(
+        Date = `Date`,
+        Positive_Total = `Positive Total`,
+        Positive_New = `Positive New`,
+        Case_Average_7day = `7-day confirmed case average`
+      ) |>
+      mutate(Date = as.Date(Date))  # Convert to Date class
+
+    # Create a tibble with the required columns for the epi_archive
+    tib <- tibble(
+      geo_value = "ma",  # Massachusetts (geo_value)
+      time_value = data$Date,  # Date from the data
+      version = Date,  # The extracted version date
+      case_rate_7d_av = data$Case_Average_7day  # 7-day average case value
+    )
+
+    return(tib)
+  }
 }
 ```
 
