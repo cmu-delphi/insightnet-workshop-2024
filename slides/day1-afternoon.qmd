@@ -2085,7 +2085,18 @@ lm_mod_pred <- function(data) {
 #| echo: true
 
 library(data.table)
-get_as_of_lag <- function(archive, time_lag) {
+get_as_of_lag1 <- function(archive, time_lag) {
+  epikeytime_names <- setdiff(key(archive$DT), "version")
+  requests <- unique(archive$DT, by = epikeytime_names, cols = character())[
+  , version := time_value + ..time_lag
+  ]
+  setkeyv(requests, c(epikeytime_names, "version"))
+  result_dtbl <- archive$DT[
+    requests, roll = TRUE, nomatch = NULL, allow.cartesian = TRUE
+  ]
+  result_dtbl[]
+}
+get_as_of_lag2 <- function(archive, time_lag) {
   epikeytime_names <- setdiff(key(archive$DT), "version")
   requests <- unique(archive$DT, by = epikeytime_names, cols = character())[
   , version := time_value + ..time_lag
