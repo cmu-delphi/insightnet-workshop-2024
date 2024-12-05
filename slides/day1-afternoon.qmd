@@ -26,9 +26,8 @@ theme_set(theme_bw())
 
 1. Basic Nowcasting using `{epiprocess}`
 
-1. Nowcasting with Two Variables
+1. Nowcasting with exogenous features
 
-1. Case Study - Nowcasting Cases Using %CLI
 
 
   
@@ -461,7 +460,7 @@ A lot of values at UT is censored due to privacy constraints.
 
 If the above is not satisfactory, we can plot by values of the series, accessed k weeks after the reference date...
 
-```{r}
+```{r rev-alt-vis}
 ref_dates = unique(nchs_allver$time_value)
 offsets = seq(1, 7) * 7
 
@@ -722,7 +721,7 @@ ggplot(value_at_lags, aes(x = time_value, y = mortality)) +
 
 * As a demonstration, we first do this for a single nowcast date: 2022-01-02 (the first date in 2022).
 
-```{r}
+```{r ratio-one-day}
 #| echo: true
 
 nowcast_date = as.Date("2022-01-02"); window_length = 90
@@ -760,7 +759,7 @@ nowcast
 
 One nowcast is not enough! We need to slide that computation across all the nowcasts. 
 
-```{r}
+```{r nowcaster-to-slide}
 #| echo: true
 #| 
 nowcaster = function(x, g, t, wl=90, appx=49) {
@@ -801,7 +800,7 @@ nowcaster = function(x, g, t, wl=90, appx=49) {
 ## Ratio estimator: sliding the computation
 
 
-```{r}
+```{r nowcasts-slided}
 #| echo: true
 
 all_nowcast_dates = nchs_fullarchive$DT |>
@@ -1051,20 +1050,19 @@ $x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
 ## Nowcasting: Moving from one signal to two
 
 * Recall that in nowcasting the goal is to predict a finalized value from a provisional value.
-* Now, we'll move from one signal to two, creating a simple linear model to nowcast.
+* Now, we'll build a multiple regression model by including expgenous features. 
 * Exogenous features (predictors) could include relevant signals, such as Google symptom search trends.
-* We will use these signals to nowcast hospital admissions related to influenza.
+* We will use google search data and hospital admission incidence as exogenous features. 
 
 
 ## Data Sources: Google searches & hospital admissions
 
 * [**Google Search Trends**]{.primary}: Symptoms like cough, fever, and shortness of breath.
-  * [**s01**]{.primary}: Cough, Phlegm, Sputum, Upper respiratory tract infection  
-  * [**s02**]{.primary}: Nasal congestion, Post nasal drip, Sinusitis, Common cold
+  * [**s05**]{.primary}: Anosmia, Dysgeusia, Ageusia.  
 
-* [**Hospital Admissions**]{.primary}: Data from the Department of Health & Human Services on confirmed influenza admissions.
+* [**Hospital Admissions**]{.primary}: Data from the Department of Health & Human Services on confirmed covid admissions.
 
-* Using these, we will [**nowcast**]{.primary} hospital admissions by using Google symptom search trends for GA from April to June 2023.
+* Using these, we will [**nowcast**]{.primary} covid related mortality for CA from Jan 2022 to Oct 2024.
 
 * The first step is to fetch this data...
 
@@ -1075,41 +1073,48 @@ $x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
 # Fetch Google symptom data for s01 and s02
 x1 <- pub_covidcast(
   source = "google-symptoms",
-  signals = "s01_smoothed_search", 
+  signals = "s05_smoothed_search", 
   geo_type = "state",
   time_type = "day",
-  geo_values = "ga",
-  time_values = epirange(20230401, 20230701),
+  geo_values = "ca",
+  time_values = epirange(20210301, 20241001),
   issues = "*"
 ) |>
-  select(geo_value, time_value, version = issue, avg_search_vol_s01 = value) |>
-  as_epi_archive(compactify = FALSE)
+  select(geo_value, time_value, version = issue, avg_s06 = value) |>
+  # Not sure why Rachel specified not to compact originally
+  as_epi_archive(compactify = TRUE)
 
+# Somewhat annoying, HHS stopped releasing data after 2024 April... 
+# what to do here? 
 x2 <- pub_covidcast(
-  source = "google-symptoms",
-  signals = "s02_smoothed_search",
-  geo_type = "state",
-  time_type = "day",
-  geo_values = "ga",
-  time_values = epirange(20230401, 20230701),
-  issues = "*"
-) |>
-  select(geo_value, time_value, version = issue, avg_search_vol_s02 = value) |>
-  as_epi_archive(compactify = FALSE)
-
-# Fetch hospital admissions data
-y1 <- pub_covidcast(
   source = "hhs",
-  signals = "confirmed_admissions_influenza_1d",
+  signals = "confirmed_admissions_covid_1d_7dav",
   geo_type = "state",
   time_type = "day",
-  geo_values = "ga",
-  time_values = epirange(20230401, 20230701),
+  geo_values = "ca",
+  time_values = epirange(20210301, 20241001),
   issues = "*"
 ) |>
   select(geo_value, time_value, version = issue, admissions = value) |>
   as_epi_archive(compactify = FALSE)
+
+
+# Fetch hospital admissions data
+y1 <- pub_covidcast(
+  source = "nchs-mortality",
+  signals = "deaths_covid_incidence_num",
+  geo_type = "state",
+  time_type = "week",
+  geo_values = "ca",  # California (CA)
+  time_values = epirange(202108, 202440),  
+  issues = "*"
+) |> 
+  select(geo_value, time_value, version = issue, mortality = value) |> 
+  as_epi_archive(compactify = TRUE)
+
 ```
+
+I can understand Rachel's pickele here. Do we want to use two var, or just drop HHS altogether? 
 
 ## Merging the archives
 
