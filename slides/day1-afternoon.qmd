@@ -5,7 +5,7 @@ talk-subtitle: "InsightNet Forecasting Workshop 2024"
 talk-date: "11 December -- Afternoon"
 format: revealjs
 ---
-  
+
 {{< include _titleslide.qmd >}}
 
 ```{r theme-load-pkg}
@@ -19,7 +19,6 @@ theme_set(theme_bw())
 
 ## Outline
 
-1. Essentials of `{dplyr}` and `{tidyr}` 
 
 1. Epiverse Software ecosystem
 
@@ -27,65 +26,21 @@ theme_set(theme_bw())
 
 1. Basic Nowcasting using `{epiprocess}`
 
-1. Nowcasting with One Variable
-
 1. Nowcasting with Two Variables
 
 1. Case Study - Nowcasting Cases Using %CLI
 
 
-# Essentials of `{dplyr}` and `{tidyr}` 
+  
 
-## Down with spreadsheets for data manipulation
+## Epi. data processing with `epiprocess`
 
-* Spreadsheets make it difficult to rerun analyses consistently.
-* Using R (and `{dplyr}`) allows for:
-  * Reproducibility 
-  * Ease of modification
-* [**Recommendation**]{.primary}: Avoid manual edits; instead, use code for transformations.
-* Let's see what we mean by this...
-
-## Introduction to `dplyr`
-
-* `dplyr` is a powerful package in R for data manipulation.
-* It is part of the `tidyverse`, which includes a collection of packages designed to work together... Here's some of its greatest hits:
-
-<div style="text-align: center;">
-![](gfx/tidyverse_packages.png){style="width: 30%; display: block; margin-left: auto; margin-right: auto;"}
-<br>
-<small>[Source](https://laddem.github.io/courses/tidyverse/)</small>
-</div>
-
-## Introduction to `dplyr`
-
-To load `dplyr`, you may simply load the `tidyverse` package:
-
-```{r load-tidyverse}
-#| echo: true
-# install.packages("tidyverse")
-library(tidyverse)  
-```
-
-Our focus will be on basic operations like selecting and filtering data.
-
-![](gfx/dplyr_and_fun.png){style="width: 60%;"}
-<div style="text-align: center;">
-<small>[Source](https://towardsdatascience.com/data-manipulation-in-r-with-dplyr-3095e0867f75)</small>
-</div>
-
-
-## Downloading JHU CSSE COVID-19 case data
-
-* Let's start with something familiar... Here's a task for you:
-* Use `pub_covidcast()` to download [**JHU CSSE COVID-19 confirmed case data**]{.primary} (`confirmed_incidence_num`) for CA, NC, and NY from March 1, 2022 to March 31, 2022 as of January 1, 2024.
-* Try this for yourself. Then click the dropdown on the next slide to check your work...
-
-## Downloading JHU CSSE COVID-19 case data
 
 ```{r fetch-jhu-dplyr-demo-data}
-#| echo: true
-#| code-fold: true
+#| echo: false
 library(epidatr)
+library(epidatasets)
+
 
 cases_df_api <- pub_covidcast(
   source = "jhu-csse",
@@ -96,478 +51,31 @@ cases_df_api <- pub_covidcast(
   time_values = epirange(20220301, 20220331),
   as_of = as.Date("2024-01-01")
 )
-```
 
-Now we only really need a few columns here...
-```{r head-jhu-dplyr-demo-data}
-#| echo: true
 cases_df <- cases_df_api |>
   select(geo_value, time_value, raw_cases = value) # We'll talk more about this soon :)
-```
 
-## Ways to inspect the dataset
-
-Use `head()` to view the first six row of the data 
-```{r head}
-#| echo: true
-head(cases_df)  # First 6 rows
-```
-
-and tail to view the last six
-
-```{r tail}
-tail(cases_df)  # Last 6 rows
-```
-
-## Ways to inspect the dataset
-Now, for our first foray into the `tidyverse`...
-
-Use `glimpse()` to get a compact overview of the dataset.
-
-```{r glimpse}
-#| echo: true
-glimpse(cases_df)
-```
-
-<!-- ## Creating tibbles
-
-* [**Tibbles**]{.primary}: Modern data frames with enhanced features.
-* Rows represent [**observations**]{.primary} (or cases).
-* Columns represent [**variables**]{.primary} (or features).
-* You can create tibbles manually using the `tibble()` function.
-
-```{r create-tibble}
-#| echo: true
-tibble(x = letters, y = 1:26)
-```
--->
-
-## Selecting columns with `select()`
-
-The `select()` function is used to pick specific columns from your dataset.
-
-```{r select-columns}
-#| echo: true
-select(cases_df, geo_value, time_value)  # Select the 'geo_value' and 'time_value' columns
-```
-
-## Selecting columns with `select()`
-
-You can exclude columns by prefixing the column names with a minus sign `-`.
-
-```{r select-columns-exclude}
-#| echo: true
-select(cases_df, -raw_cases)  # Exclude the 'raw_cases' column from the dataset
-```
-
-<!-- ## Extracting columns with `pull()`
-
-* `pull()`: Extract a column as a vector.
-* Let's try this with the `cases` column...
-
-```{r pull-column-direct}
-#| echo: true
-pull(cases_df, raw_cases) 
-```
--->
-
-## Subsetting rows with `filter()`
-
-<div style="text-align: center;">
-![](gfx/dplyr_filter.png){style="width: 65%; display: block; margin-left: auto; margin-right: auto;"}
-<br>
-<small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
-</div>
-
-## Subsetting rows with `filter()`
-
-* The `filter()` function allows you to subset rows that meet specific conditions.
-* Conditions regard column values, such as filtering for only NC or cases higher than some threshold.
-* This enables you to narrow down your dataset to focus on relevant data.
-
-```{r filter-rows}
-#| echo: true
-filter(cases_df, geo_value == "nc", raw_cases > 500)  # Filter for NC with raw daily cases > 500
-```
-
-## Combining `select()` and `filter()` functions
-
-* You can further combine `select()` and `filter()` to further refine the dataset.
-* Use `select()` to choose columns and `filter()` to narrow down rows.
-* This helps in extracting the exact data needed for analysis.
-
-```{r select-filter-combine}
-#| echo: true
-select(filter(cases_df, geo_value == "nc", raw_cases > 1000), time_value, raw_cases) |> 
-  head()
-```
-
-## Using the pipe operator `|>`
-
-* The pipe operator (`|>`) makes code more readable by chaining multiple operations together.
-* The output of one function is automatically passed to the next function.
-* This allows you to perform multiple steps (e.g., `filter()` followed by `select()`) in a clear and concise manner.
-
-```{r pipe-operator}
-#| echo: true
-# This code reads more like poetry!
-cases_df |> 
-  filter(geo_value == "nc", raw_cases > 1000) |> 
-  select(time_value, raw_cases) |> 
-  head()
-```
-
-## Key practices in `dplyr`
-
-* Use [**tibbles**]{.primary} for easier data handling.
-* Use `head()`, `tail()`, and `glimpse()` for quick data inspection.
-* Use `select()` and `filter()` for data manipulation.
-* Chain functions with `|>` for cleaner code.
-
-<!-- * Use `pull()` to extract columns as vectors. --> 
-
-
-## Grouping data with `group_by()`
-
-* Use `group_by()` to group data by one or more columns.
-* Allows performing operations on specific groups of data.
-
-```{r group-by-ex}
-#| echo: true
-cases_df |>
-  group_by(geo_value) |>
-  filter(raw_cases == max(raw_cases, na.rm = TRUE))
-```
-
-## Creating new columns with `mutate()`
-
-<div style="text-align: center;">
-![](gfx/dplyr_mutate.jpg){style="width: 45%; display: block; margin-left: auto; margin-right: auto;"}
-<br>
-<small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
-</div>
-
-## Creating new columns with `mutate()`
-
-* `mutate()` is used to create new columns.
-* Perform calculations using existing columns and assign to new columns.
-
-```{r mutate-one-var-ex}
-#| echo: true
-ny_subset = cases_df |>
-  filter(geo_value == "ny")
-
-ny_subset |> 
-  mutate(cumulative_cases = cumsum(raw_cases)) |> 
-  head()
-```
-
-<!-- ## Creating new columns with `mutate()`
-
-* `mutate()` can create multiple new columns in one step.
-* Logical comparisons (e.g., `over_5000 = raw_cases > 5000`) can be used within `mutate()`.
-
-```{r mutate-two-var-ex}
-#| echo: true
-ny_subset |> 
-  mutate(over_5000 = raw_cases > 5000,
-         cumulative_cases = cumsum(raw_cases)) |> 
-  head()
-```
--->
-
-## Combining `group_by()` and `mutate()`
-
-* First, group data using `group_by()`.
-* Then, use `mutate` to perform the calculations for each group.
-* Finally, use `arrange` to display the output by `geo_value`.
-
-```{r group-by-mutate-combo}
-#| echo: true
-cases_df |>
-  group_by(geo_value) |>
-  mutate(cumulative_cases = cumsum(raw_cases)) |> 
-  arrange(geo_value) |> 
-  head()
-```
-
-<!-- ## Conditional calculations with `if_else()`
-* `if_else()` allows conditional logic within `mutate()`.
-* Perform different operations depending on conditions, like "high" or "low."
-
-```{r cond-calc-if-else}
-#| echo: true
-t <- 5000
-
-cases_df |>
-  mutate(high_low_cases = if_else(raw_cases > t, "high", "low")) |> 
-  head()
-```
--->
-
-## Summarizing data with `summarise()`
-* `summarise()` reduces data to summary statistics (e.g., mean, median).
-* Typically used after `group_by()` to summarize each group.
-
-```{r summarise-median-one-var}
-#| echo: true
-cases_df |>
-  group_by(geo_value) |>
-  summarise(median_cases = median(raw_cases))
-```
-
-## Using `count()` to aggregate data
-`count()` is a shortcut for grouping and summarizing the data.
-
-For example, if we want to get the total number of complete rows for each state, then
-```{r summarise-count}
-#| echo: true
 cases_count <- cases_df |>
   drop_na() |> # Removes rows where any value is missing (from tidyr)
   group_by(geo_value) |>
   summarize(count = n())
-```
-<br>
-is equivalent to 
 
-```{r count-fun}
-#| echo: true
 cases_count <- cases_df |>
   drop_na() |> 
   count(geo_value)
 
-cases_count # Let's see what the counts are.
-```
 
-## Key practices in `dplyr`: Round 2
-
-* Use `group_by()` to group data by one or more variables before applying functions.
-* Use `mutate` to create new columns or modify existing ones by applying functions to existing data.
-* Use `summarise` to reduce data to summary statistics (e.g., mean, median).
-* `count()` is a convenient shortcut for counting rows by group without needing `group_by()` and `summarise()`.
-
-## Tidy data and Tolstoy
-
-> "Happy families are all alike; every unhappy family is unhappy in its own way." — Leo Tolstoy  
-
-* [**Tidy datasets**]{.primary} are like happy families: consistent, standardized, and easy to work with.  
-* [**Messy datasets**]{.primary} are like unhappy families: each one messy in its own unique way.  
-In this section:
-* We'll define what makes data *tidy* and how to transform between the tidy and messy formats.
-
-## Tidy data and Tolstoy
-
-![](gfx/tidy_messy_data.jpg){style="width: 60%;"}
-
-<small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
-
-
-## What is tidy data?
-
-* Tidy data follows a consistent structure: [**each row represents one observation, and each column represents one variable.**]{.primary}
-* `cases_df` is one classic example of tidy data.
-
-```{r head-tidy-ex}
-head(cases_df)
-```
-
-* To convert between tidy and messy data, we can use the `tidyr` package in the tidyverse.
-
-## `pivot_wider()` and  `pivot_longer()`
-<div style="text-align: center;">
-![](gfx/pivot_wider_longer.jpg){style="width: 40%; display: block; margin-left: auto; margin-right: auto;"}
-<br>
-<small>[Artwork by @allison_horst](https://x.com/allison_horst)</small>
-</div>
-
-## Making data wider with `pivot_wider()`
-* To convert data from long format to wide/messy format use `pivot_wider()`.
-* For example, let's try creating a column for each time value in `cases_df`:
-
-<!-- Example. Spreadsheet from hell -->
-
-```{r pivot-wider-ex}
-#| echo: true
-messy_cases_df <- cases_df |>
-  pivot_wider(
-    names_from = time_value,   # Create new columns for each unique date
-    values_from = raw_cases    # Fill those columns with the raw_case values
-  )
-
-# View the result
-messy_cases_df
-```
-
-##  Tidying messy data with `pivot_longer()`
-* Use `pivot_longer()` to convert data from [**wide format**]{.primary} (multiple columns for the same variable) to [**long format**]{.primary} (one column per variable).
-* Let's try turning `messy_cases_df` back into the original tidy `cases_df`!
-
-```{r pivot-longer-ex}
-#| echo: true
-tidy_cases_df <- messy_cases_df |>
-  pivot_longer(
-    cols = -geo_value,          # Keep the 'geo_value' column as it is
-    names_to = "time_value",    # Create a new 'time_value' column from the column names
-    values_to = "raw_cases"     # Values from the wide columns should go into 'raw_cases'
-  )
-
-# View the result
-head(tidy_cases_df, n = 3) # Notice the class of time_value here
-```
-
-##  Tidying messy data with `pivot_longer()`
-
-* When we used `pivot_longer()`, the `time_value` column is converted to a character class because the column names are treated as strings.
-* So, to truly get the original `cases_df` we need to convert `time_value` back to the `Date` class.
-* Then, we can use `identical()` to check if the two data frames are exactly the same.
-```{r check-identical}
-#| echo: true
-tidy_cases_df = tidy_cases_df |> mutate(time_value = as.Date(time_value))
-
-identical(tidy_cases_df |> arrange(time_value), cases_df)
-```
-
-Great. That was a success!
-
-## Introduction to joins in `dplyr`
-* Joining datasets is a powerful tool for combining info. from multiple sources.
-* In R, `dplyr` provides several functions to perform different types of joins.
-* We'll demonstrate joining a subset of `cases_df` (our case counts dataset) with `state_census`.
-* [**Motivation**]{.primary}: We can scale the case counts by population to make them comparable across regions of different sizes.
-
-## Subset `cases_df`
-
-To simplify things, let's use `filter()` to only grab one date of `cases_df`:
-```{r cases-df-one-date}
-#| echo: true
-cases_df_sub <- cases_df |> filter(time_value == "2022-03-01")
-cases_df_sub
-```
-
-Though note that what we're going to do can be applied to the entirety of `cases_df`.
-
-## Load state census data
-
-The `state_census` dataset from `epidatasets` contains state populations from the 2019 census.
-```{r state-census}
-#| echo: true
-# State census dataset from epidatasets
-library(epidatasets)
 state_census = state_census |> select(abbr, pop) |> filter(abbr != "us")
 
-state_census |> head()
-```
-
-Notice that this includes many states that are not in `cases_df_sub`.
-
-## Left Join: Keep all rows from the first dataset
-
-* A [**left join**]{.primary} keeps all rows from the [**first dataset**]{.primary} (`cases_df_sub`), and adds matching data from the second dataset (`state_census`).
-* So [**all rows from the first dataset**]{.primary} (`cases_df_sub`) will be preserved.
-* The datasets are joined by matching the `geo_value` column, specified by the by argument.
-
-```{r left-join}
-#| echo: true
-# Left join: combining March 1, 2022 state case data with the census data
-cases_sub_left_join <- cases_df_sub |>
-  left_join(state_census, join_by(geo_value == abbr))
-
-cases_sub_left_join
-```
-
-## Right Join: Keep all rows from the second dataset
-* A [**right join**]{.primary} keeps all rows from the [**second dataset**]{.primary} (`state_census`), and adds matching data from the first dataset (`cases_df_sub`).
-* If a row in the second dataset doesn't have a match in the first, then the columns from the first will be filled with NA. 
-* For example, can see this for the `al` row from `state_census`...
-
-```{r right-join}
-#| echo: true
-# Right join: keep all rows from state_census
-cases_sub_right_join <- cases_df_sub |>
-  right_join(state_census, join_by(geo_value == abbr))
-
-head(cases_sub_right_join)
-```
-
-## Inner Join: Only keep matching rows
-* An [**inner join**]{.primary} will only keep rows where there is a match in both datasets.
-* So, if a state in `state_census` does not have a corresponding entry in `cases_df_sub`, then that row will be excluded.
-```{r inner-join}
-#| echo: true
-# Inner join: only matching rows are kept
-cases_sub_inner_join <- cases_df_sub |>
-  inner_join(state_census, join_by(geo_value == abbr))
-
-cases_sub_inner_join
-```
-
-## Full Join: Keep all rows from both datasets
-
-* A [**full join**]{.primary} will keep all rows from both datasets.
-* If a state in either dataset has no match in the other, the missing values will be filled with NA.
-```{r full-join}
-#| echo: true
-# Full join: keep all rows from both datasets
-cases_sub_full_join <- cases_df_sub |>
-  full_join(state_census, join_by(geo_value == abbr))
-
-head(cases_sub_full_join)
-```
-
-## Pictorial summary of the four join functions
-
-<!--* **Left join:** All rows from the left dataset and matching rows from the right dataset.
-* **Right join:** All rows from the right dataset and matching rows from the left dataset.
-* **Inner join:** Only matching rows from both datasets.
-* **Full join:** All rows from both datasets, with NA where no match exists.-->
-
-![](gfx/join_funs_cheatsheet.png){style="width: 40%; display: block; margin-left: auto; margin-right: auto;"}
-<div style="text-align: center;">
-<small>[Source](https://ohi-science.org/data-science-training/dplyr.html)</small>
-</div>
-
-<!-- ## Final thoughts on joins
-* Joins are an essential part of data wrangling in R.
-* The choice of join depends on the analysis you need to perform:
-    + Use [**left joins**]{.primary} when you want to keep all data from the first dataset.
-    + Use [**right joins**]{.primary} when you want to keep all data from the second dataset.
-    + Use [**inner joins**]{.primary} when you're only interested in matching rows.
-    + Use [**full joins**]{.primary} when you want to preserve all information from both datasets.
--->
-
-## Two review questions
-
-**Q1)**: What join function should you use if your goal is to scale the cases by population in `cases_df`?
-```{r question-2}
-#| echo: true
-#| code-fold: true
-#| results: hide
-# Either left_join
-cases_left_join <- cases_df |>
-  left_join(state_census, join_by(geo_value == abbr))
-
-cases_left_join
-
-# Or inner_join
 cases_inner_join <- cases_df |>
   inner_join(state_census, join_by(geo_value == abbr))
 
-cases_inner_join
-```
-
-**Q2)**: Lastly, please create a new column in `cases_df` where you scale the cases by population and multiply by `1e5` to get cases / 100k.
-```{r question-3}
-#| echo: true
-#| code-fold: true
-#| results: hide
 case_rates_df <- cases_inner_join |>
   mutate(scaled_cases = raw_cases / pop * 1e5) # cases / 100K
-head(case_rates_df)
+
+
 ```
 
-Congratulations for making it through this crash course! That's all for this `glimpse()` into the tidyverse.
-
-## Epi. data processing with `epiprocess`
 
 * `epiprocess` is a package that offers additional functionality to pre-process such epidemiological data.
 * You can work with an `epi_df` like you can with a tibble by using dplyr verbs.
@@ -870,6 +378,7 @@ edfo |>
 * acts like a bunch of `epi_df`s --- but stored [compactly]{.primary}
 * allows similar functionality as `epi_df` but using only [data that would have been available at the time]{.primary}
 
+
 ::: {.callout-note}
 ## Revisions
 
@@ -881,35 +390,130 @@ Epidemiology data gets revised frequently.
 
 ## `epi_archive`: Collection of `epi_df`s
 
-Subset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in `archive format:
+Full version history of national provisional death counts. 
 
-```{r archive-ex}
+```{r nchs-build-archive}
 #| echo: true
-archive_cases_dv_subset
-```
-  
-## Revision patterns
+#| fig-width: 7
 
+nchs_allver = pub_covidcast(
+  "nchs-mortality",
+  "deaths_covid_incidence_num",
+  "state",
+  "week",
+  # Recall you can specify these options to only pull
+  # a subset of data
+  geo_values = c("ca", "ut"),
+  # This data has weekly resolution, different form of 
+  # time specification
+  time_values = epirange(202101, 202210),
+  # Recall this pulls all available issues
+  issues = "*"
+) |>
+  select(geo_value, time_value, issue, value)
+
+nchs_archive = as_epi_archive(nchs_allver, compactify = TRUE)
+```
+
+How is this data getting revised? 
+
+
+## Revision pattern
+
+Some problem here -- NCHS's revision time is on the order of weeks, jumping by months hides a lot of the revisioning. 
+```{r get-snapshots}
+# Obtain data at mulitple versions
+edf_latest = epix_as_of(nchs_archive, version = nchs_archive$versions_end)
+max_version = max(nchs_archive$DT$version)
+edf_latest = epix_as_of(nchs_archive, version = max_version)
+versions = seq(as.Date("2021-03-01"), max_version - 1, by = "1 month")
+
+monthly_snapshots = map(versions, function(v) {
+  
+  epix_as_of(nchs_archive, v) |> mutate(version = v)
+  
+}) |>
+  bind_rows(
+    edf_latest |> mutate(version = max_version)
+  ) |>
+  mutate(latest = version == max_version)
+
+
+```
 
 ```{r plot-revision-patterns}
 #| fig-width: 7
-ggplot(snapshots |> filter(!latest),
-       aes(x = time_value, y = percent_cli)) +  
+ggplot(monthly_snapshots |> filter(!latest),
+       aes(x = time_value, y = value)) +  
   geom_line(aes(color = factor(version))) + 
   geom_vline(aes(color = factor(version), xintercept = version), lty = 3) +
-  facet_wrap(~ geo_value, scales = "free_y", nrow = 1) +
+  facet_wrap(~ geo_value, scales = "free_y", ncol = 1) +
   scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
-  labs(x = "", y = "% of doctor's visits with\n Covid-like illness") + 
-  scale_color_viridis_d(option = "B", end = .8) +
+  labs(x = "", y = "Weekly new COVID deaths") + 
+  scale_color_viridis_d(option="D", end=0.8) +
   theme(legend.position = "none") +
-  geom_line(data = snapshots |> filter(latest),
-            aes(x = time_value, y = percent_cli), 
+  geom_line(data = monthly_snapshots |> filter(latest),
+            aes(x = time_value, y = value), 
             inherit.aes = FALSE, color = "black")
 ```
 
+
+## Revision pattern -- alternative visualization
+
+If the above is not satisfactory, we can plot by values of the series, accessed k weeks after the reference date...
+
+```{r}
+ref_dates = unique(nchs_allver$time_value)
+offsets = seq(1, 7) * 7
+
+get_val_asof = function(time_val, archive, offsets) {
+  
+  as_of_dates = pmin(time_val + offsets, max_version)
+  
+  result = map(as_of_dates, function(x) {
+    
+    qd = archive |>
+      epix_as_of(x) |>
+      filter(time_value == time_val) |>
+      select(geo_value, time_value, value) |>
+      mutate(lag = x - time_val)
+  }) |>
+    list_rbind()
+  
+  return(result)
+
+  
+}
+
+value_at_lags = map(ref_dates, get_val_asof, 
+  archive=nchs_archive, offsets=offsets) |>
+  list_rbind()
+  
+values_final = epix_as_of(nchs_archive, max(nchs_archive$versions_end))
+
+
+#| fig-width: 7
+ggplot(value_at_lags,
+       aes(x = time_value, y = value)) +  
+  geom_line(aes(color = factor(lag))) + 
+  # geom_vline(aes(color = factor(version), xintercept = version), lty = 3) +
+  facet_wrap(~ geo_value, scales = "free_y", ncol = 1) +
+  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
+  labs(x = "", y = "Weekly new COVID deaths") + 
+  # scale_color_viridis_d(option="D", end=0.8) +
+  theme(legend.position = "none") +
+  geom_line(data = values_final,
+            aes(x = time_value, y = value), 
+            inherit.aes = FALSE, color = "black")
+
+
+
+```
+
+
 ## Finalized data
 
-  * Counts are revised as time proceeds
+* Counts are revised as time proceeds
 * Want to know the [final]{.primary} value 
 * Often not available until weeks/months later
 
@@ -926,93 +530,12 @@ ggplot(snapshots |> filter(!latest),
   Nowcasting
 : At time $t$, predict the final value for time $t$
 
-# Basic Nowcasting in the Epiverse
-
-<!-- predicting a finalized value from a provisional value and making predictions. -->
-## Backfill Canadian edition
-  
-* Every week the [BC CDC releases COVID-19 hospitalization data](http://www.bccdc.ca/health-info/diseases-conditions/covid-19/archived-b-c-covid-19-data).
-
-* Following week they revise the number upward (by ~25%) due to lagged reports.
-
-![](gfx/bc_hosp_admissions_ex.jpg){style="width: 45%; display: block; margin-left: auto; margin-right: auto;"}
-<!-- Newest iteration of "backfill”, Canada edition. Every week the BC CDC releases hospitalization data. The following week they revise the number upward (by about 25%) due to lagging reports. Every single week, the newspaper says “hospitalizations have declined”. This week the BC CDC’s own report said “hospitalizations have declined”. The takeaway in the news is that hospitalizations ALWAYS fall from the previous week, but once backfilled, they’re rarely down -->
-
-* [**Takeaway**]{.primary}: Once the data is backfilled, hospitalizations rarely show a decline, challenging the common media narrative.
-
-## Backfill American edition
-
-* Again, we can see a similar systematic underestimation problem for COVID-19 morality rates in CA. <!-- 2023-2024 -->
-
-* This plot also illustrates the [**revision process**]{.primary} - how the reported mortality changes & increases across multiple updates until it stabilizes at the final value (black line).
-
-![](gfx/am_mortality_revisions_ex.jpg){style="width: 45%; display: block; margin-left: auto; margin-right: auto;"}
-
-* These two examples show the problem and now we need a solution...
-
-## Nowcasting and its mathematical setup
-
-* **Nowcasting**: Predict a finalized value from a provisional value.
-
-* Suppose today is time $t$
-
-* Let $y_i$ denote a series of interest observed at times $i=1,\ldots, t$.
-
-::: {.callout-important icon="false"}
-## Our goal
-
-* Produce a [**point nowcast**]{.primary} for the finalized values of $y_t$.
-* Accompany with time-varying prediction intervals
-
-:::
-
-* We also have access to $p$ other time series 
-$x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
-
-* All may be subject to revisions.
-
-
-
-## Aside on nowcasting
-
-* To some Epis, "nowcasting" can be equated with "estimate the time-varying instantaneous reproduction number, $R_t$"
-
-* Ex. using the number of reported COVID-19 cases in British Columbia between Jan. 2020 and Apr. 15, 2023. 
-
-<!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. -->
-```{r rtestim}
-#| fig-width: 9
-#| fig-height: 3
-#| out-height: "400px"
-#| label: nowcasting
-library(rtestim)
-source(here::here("_code/bccovid.R"))
-
-p1 <- bccovid|>
-  ggplot(aes(date, cases)) + 
-  geom_line(colour = primary) +
-  geom_vline(xintercept = ymd("2023-04-15"), colour = secondary,
-             linewidth = 2) +
-  labs(y = "BC Covid-19 cases", x = "Date") +
-  scale_y_continuous(expand = expansion(c(0, NA)))
-bc_rt <- estimate_rt(bccovid$cases, x = bccovid$date, 
-                     lambda = c(1e6, 1e5))
-p2 <- plot(confband(bc_rt, lambda = 1e5)) + 
-  coord_cartesian(ylim = c(0.5, 2)) +
-  scale_y_continuous(expand = expansion(0))
-cowplot::plot_grid(p1, p2)
-```
-
-* Group built [`{rtestim}`](https://dajmcdon.github.io/rtestim) doing for this nonparametrically.
-
-* We may come back to this later...
-
-# Nowcasting with One Variable
+# Backfill projection in Epiverse
 
 ## Nowcasting simple ratio Ex: NCHS mortality 
 
 * In this example, we'll demonstrate the concept of nowcasting using [**NHCS mortality data**]{.primary}.
-(the number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population).
+(the number of weekly new deaths with confirmed or presumed COVID-19).
 * We will work with [**provisional**]{.primary} data (real-time reports) and compare them to **finalized** data (final reports).
 * The goal is to estimate or [**nowcast the mortality rate**]{.primary} for weeks when only provisional data is available.
   
@@ -1517,7 +1040,31 @@ ggplot(mae_data) +
 
 We can see that the absolute errors are almost always lower for nowcasting.
 
-# Nowcasting with Two Variables
+# Nowcasting with auxilliary variables 
+
+## Mathematical setup
+
+* **Nowcasting**: Predict a finalized value from a provisional value.
+
+* Suppose today is time $t$
+
+* Let $y_i$ denote a series of interest observed at times $i=1,\ldots, t$.
+
+::: {.callout-important icon="false"}
+## Our goal
+
+* Produce a [**point nowcast**]{.primary} for the finalized values of $y_t$.
+* Accompany with time-varying prediction intervals
+
+:::
+
+* We also have access to $p$ other time series 
+$x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p$
+
+* All may be subject to revisions.
+
+
+
 
 ## Nowcasting: Moving from one signal to two
 
@@ -1969,14 +1516,14 @@ Here's a summary of what `process_data_for_date_range()` does:
 ```{r run-fun-process-data-range}
 #| echo: true
 # Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021
-y <- process_data_for_date_range("2021-01-10", "2021-12-01")  # Raw .xlsx data is first released on Jan. 4, 2021
-y
+# y <- process_data_for_date_range("2021-01-10", "2021-12-01")  # Raw .xlsx data is first released on Jan. 4, 2021
+# y
 ```
 
 * Alternatively, you may run the following to load `y` that was previously saved as an RDS file: 
 ```{r load-ma-case-data}
 #| echo: true
-#| eval: FALSE
+#| eval: true
 #| results: hide
 y <- readRDS("_data/ma_case_archive.rds")
 ```
@@ -2190,4 +1737,41 @@ Main Steps:
 5. [**Evaluate**]{.primary}: Calculate error measures and numerically and visually assess the results.
 
 Overall, nowcasting, based on the linear model, provided a closer approximation of true cases compared to the real-time values.
+
+
+## Bonus
+
+
+## Aside on nowcasting
+
+* To some Epis, "nowcasting" can be equated with "estimate the time-varying instantaneous reproduction number, $R_t$"
+
+* Ex. using the number of reported COVID-19 cases in British Columbia between Jan. 2020 and Apr. 15, 2023. 
+
+<!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. -->
+```{r rtestim}
+#| fig-width: 9
+#| fig-height: 3
+#| out-height: "400px"
+#| label: nowcasting
+library(rtestim)
+source(here::here("_code/bccovid.R"))
+
+p1 <- bccovid|>
+  ggplot(aes(date, cases)) + 
+  geom_line(colour = primary) +
+  geom_vline(xintercept = ymd("2023-04-15"), colour = secondary,
+             linewidth = 2) +
+  labs(y = "BC Covid-19 cases", x = "Date") +
+  scale_y_continuous(expand = expansion(c(0, NA)))
+bc_rt <- estimate_rt(bccovid$cases, x = bccovid$date, 
+                     lambda = c(1e6, 1e5))
+p2 <- plot(confband(bc_rt, lambda = 1e5)) + 
+  coord_cartesian(ylim = c(0.5, 2)) +
+  scale_y_continuous(expand = expansion(0))
+cowplot::plot_grid(p1, p2)
+```
+
+* Group built [`{rtestim}`](https://dajmcdon.github.io/rtestim) doing for this nonparametrically.
+
 
