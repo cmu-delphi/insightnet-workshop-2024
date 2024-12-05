@@ -1870,9 +1870,14 @@ process_covid_data <- function(Date, cache_dir = ma_covid_19_raw_cache_dir) {
   } else {
     response <- GET(url)
 
-    # Stop on errors other than 403 ("forbidden"), 404 ("file not found"):
-    if (! status_code(response) %in% c(403, 404)) {
+    if (status_code(response) %in% c(403, 404)) {
+      # Wait a tiny bit to not monopolize server time:
+      Sys.sleep(0.1)
+    } else {
+      # Stop on errors other than 403 ("forbidden"), 404 ("file not found").
       httr::stop_for_status(response)
+      # If we actually received data, wait a more substantial time:
+      Sys.sleep(5)
     }
 
     # Cache the response:
@@ -1882,30 +1887,35 @@ process_covid_data <- function(Date, cache_dir = ma_covid_19_raw_cache_dir) {
   if (status_code(response) %in% c(403, 404)) {
     return(NULL)
   } else {
-    # Read the relevant sheet from the Excel file
-    xlsx_file_path <- withr::local_tempfile(fileext = ".xlsx")
-    writeBin(content(response), xlsx_file_path)
-    data <- read_excel(xlsx_file_path, sheet = "CasesByDate (Test Date)")
+    if ("content-disposition" %in% names(headers(response)) &&
+          grepl("zip", headers(response)$`content-disposition`)) {
+      return(NULL)
+    } else {
+      # Read the relevant sheet from the Excel file
+      xlsx_file_path <- withr::local_tempfile(fileext = ".xlsx")
+      writeBin(content(response), xlsx_file_path)
+      data <- read_excel(xlsx_file_path, sheet = "CasesByDate (Test Date)")
 
-    # Process the data: rename columns and convert Date
-    data <- data |>
-      rename(
-        Date = `Date`,
-        Positive_Total = `Positive Total`,
-        Positive_New = `Positive New`,
-        Case_Average_7day = `7-day confirmed case average`
-      ) |>
-      mutate(Date = as.Date(Date))  # Convert to Date class
+      # Process the data: rename columns and convert Date
+      data <- data |>
+        rename(
+          Date = `Date`,
+          Positive_Total = `Positive Total`,
+          Positive_New = `Positive New`,
+          Case_Average_7day = `7-day confirmed case average`
+        ) |>
+        mutate(Date = as.Date(Date))  # Convert to Date class
 
-    # Create a tibble with the required columns for the epi_archive
-    tib <- tibble(
-      geo_value = "ma",  # Massachusetts (geo_value)
-      time_value = data$Date,  # Date from the data
-      version = Date,  # The extracted version date
-      case_rate_7d_av = data$Case_Average_7day  # 7-day average case value
-    )
+      # Create a tibble with the required columns for the epi_archive
+      tib <- tibble(
+        geo_value = "ma",  # Massachusetts (geo_value)
+        time_value = data$Date,  # Date from the data
+        version = Date,  # The extracted version date
+        case_rate_7d_av = data$Case_Average_7day  # 7-day average case value
+      )
 
-    return(tib)
+      return(tib)
+    }
   }
 }
 ```
@@ -1973,7 +1983,11 @@ Here's a summary of what `process_data_for_date_range()` does:
 ```{r run-fun-process-data-range}
 #| echo: true
 # Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021
-y <- process_data_for_date_range("2021-01-10", "2021-12-01")  # Raw .xlsx data is first released on Jan. 4, 2021
+# FIXME TODO update discussion
+start_date <- as.Date("2021-01-04")
+end_date <- as.Date("2024-11-01")
+y <- process_data_for_date_range(start_date, end_date)  # Raw .xlsx data is first released on Jan. 4, 2021
+# TODO investigate earlier zip files?
 y
 ```
 
@@ -1983,6 +1997,7 @@ y
 #| eval: FALSE
 #| results: hide
 y <- readRDS("_data/ma_case_archive.rds")
+# FIXME TODO update
 ```
 
 
@@ -1996,18 +2011,27 @@ y <- readRDS("_data/ma_case_archive.rds")
 #| echo: true
 # Step 1: Fetch Versioned Data 
 x <- pub_covidcast(
-  source = "doctor-visits",
-  signals = "smoothed_adj_cli",
+  source = "google-symptoms",
+  signals = c(
+    # Some symptoms sets intersecting COVID-19 symptoms, ordered by timeline/severity:
+    "s03_smoothed_search", "s01_smoothed_search", "s05_smoothed_search", "s04_smoothed_search",
+    # To potentially subtract out influenza activity:
+    "s06_smoothed_search",
+    # To potentially normalize:
+    "scontrol_smoothed_search"
+    # TODO revise above or use
+    # FIXME TODO start and end date range.... earlier signals.....
+  ),
   geo_type = "state",
   time_type = "day",
   geo_values = "ma", # Just for MA to keep it simple (& to go with the case data by test date for that state)
-  time_values = epirange(20210301, 20211231),
-  issues = epirange(20210301, 20211231)
+  time_values = "*",
+  issues = epirange(19700101, end_date) # Use a date far in the past to ensure we include all issues up to `end_date`
+  # TODO check rendering of this comment
 ) |>
-  select(geo_value, time_value,
-         version = issue,
-         percent_cli = value
-  ) |>
+  select(geo_value, time_value, version = issue, signal, value) |>
+  pivot_wider(id_cols = c(geo_value, time_value, version),
+              names_from = signal, values_from = value) |>
   as_epi_archive(compactify = TRUE)
 ```
 
@@ -2019,8 +2043,7 @@ Now we'll use `epix_merge()` to combine the two `epi_archive`s that share the sa
 #| echo: true
 archive <- epix_merge(
   x, y,
-  sync = "locf",
-  compactify = TRUE
+  sync = "locf"
 )
 archive
 ```
@@ -2033,14 +2056,14 @@ archive
 
 ```{r simple-lr-mod-predict}
 #| echo: true
-lm_mod_pred <- function(data, ...) {
+lm_mod_pred <- function(data) {
   # Linear model
-  model <- lm(case_rate_7d_av ~ percent_cli, data = data)
+  model <- lm(case_rate_7d_av ~ s03_smoothed_search, data = data)
 
   # Make predictions
   predictions = predict(model,
                         newdata = data |>
-                          fill(percent_cli, .direction = "down") |> 
+                          fill(s03_smoothed_search, .direction = "down") |> 
                           filter(time_value == max(time_value)),
                         interval = "prediction", level = 0.9)
   
@@ -2060,21 +2083,101 @@ lm_mod_pred <- function(data, ...) {
 ## Nowcasting with `epix_slide()`
 ```{r nowcasting-epix-slide-cases}
 #| echo: true
+
+library(data.table)
+get_as_of_lag <- function(archive, time_lag) {
+  epikeytime_names <- setdiff(key(archive$DT), "version")
+  requests <- unique(archive$DT, by = epikeytime_names, cols = character())[
+  , version := time_value + ..time_lag
+  ]
+  setkeyv(requests, c(epikeytime_names, "version"))
+  result_dtbl <- archive$DT[
+    requests, roll = TRUE, nomatch = NULL, allow.cartesian = TRUE
+  ][
+  , time_value := NULL
+  ]
+  nms <- names(result_dtbl)
+  val_nms <- nms[! nms %in% key(archive$DT)]
+  new_val_nms <- paste0(val_nms, "_tlag", time_lag, recycle0 = FALSE)
+  nms[match(val_nms, nms)] <- new_val_nms
+  setnames(result_dtbl, nms)
+  result_dtbl[]
+}
+
+## google-symptoms also has comparable or greater lag than the original, and the
+## original initial values have an okayish 20% initial MAPE?
+
+## invisible(revision_summary(x))
+
+## TODO remove circa here
+
+get_as_of_lag(archive, 1L) |>
+  mutate(time_value = version - 1L, version = NULL) |>
+  full_join(archive %>% epix_as_of(.$versions_end), by = c("geo_value", "time_value")) |>
+  filter(time_value >= start_date) |>
+  with(mean(abs(case_rate_7d_av - case_rate_7d_av_tlag1) / case_rate_7d_av * 100, na.rm = TRUE))
+
+get_as_of_lag(archive, 1L) |>
+  mutate(time_value = version - 1L, version = NULL) |>
+  full_join(archive %>% epix_as_of(.$versions_end), by = c("geo_value", "time_value")) |>
+  filter(time_value >= start_date) |>
+  with(quantile(case_rate_7d_av/case_rate_7d_av_tlag1, na.rm = TRUE, probs = (0:10)/10))
+
+## invisible(revision_summary(y))
+## invisible(revision_summary(y, within_latest = 0.05))
+
+## y |> revision_summary() |> filter(time_value >= start_date) |> ggplot(aes(time_value, as.integer(min_lag))) + geom_line()
+
+y$DT[time_value >= start_date] |>
+  as_epi_archive() |>
+  revision_summary() |>
+  invisible()
+
+y$DT[time_value >= start_date] |>
+  as_epi_archive() |>
+  revision_summary(within_latest = 0.05) |>
+  invisible()
+
+x$DT[time_value >= start_date] |>
+  as_epi_archive() |>
+  revision_summary(within_latest = 0.05) |>
+  invisible()
+
+# TODO update section 4 math
+
+get_as_of_lag(archive, 1L) |>
+  mutate(time_value = version - 1L, version = NULL) |>
+  full_join(archive %>% epix_as_of(.$versions_end), by = c("geo_value", "time_value")) |>
+  ggplot() +
+  geom_line(aes(time_value, case_rate_7d_av), colour = "black") +
+  geom_line(aes(time_value, case_rate_7d_av_tlag1), colour = "blue")
+
+# TODO plot to see if looks like always-down
+
+archive |>
+  epix_slide(~ .x) |>
+  ggplot(aes(time_value, case_rate_7d_av, colour = version)) +
+  geom_line()
+
 # Define the reference time points (to give the training/test split)
-targeted_nowcast_dates <- seq(as.Date("2021-04-01"), as.Date("2021-11-01"), by = "1 month") 
-ref_time_values = targeted_nowcast_dates + 1 # + 1 because the case data is 1 day latent. 
+## targeted_nowcast_dates <- seq(as.Date("2021-04-01"), as.Date("2024-11-01"), by = "1 month") 
+## produce_nowcast_dates <- targeted_nowcast_dates + 1 # + 1 because the case data is 1 day latent. 
+## produce_nowcast_dates <- seq(start_date + 90, end_date, by = "1 month") 
+produce_nowcast_dates <- seq(as.Date("2022-04-10"), end_date, by = "1 month") 
+targeted_nowcast_dates <- produce_nowcast_dates - 1
 # Determine this from revision_summary(y)
 
 # Use epix_slide to perform the nowcasting with a training-test split
 nowcast_res <- archive |>
   group_by(geo_value) |>
   epix_slide(
-    .f = lm_mod_pred,  # Pass the function defined above
+    .f = ~ lm_mod_pred(.x),  # Pass the function defined above
     .before = 30,   # Training period of 30 days
-    .versions = ref_time_values, # Determines the day where training data goes up to (not inclusive)
+    .versions = produce_nowcast_dates, # Determines the day where training data goes up to (not inclusive)
     .new_col_name = "res"
   ) |>
   unnest() |>
+  # TODO simplify code
   mutate(targeted_nowcast_date = targeted_nowcast_dates,
          time_value = actual_nowcast_date)
 
