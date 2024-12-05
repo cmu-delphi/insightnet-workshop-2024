@@ -908,28 +908,119 @@ knitr::kable(mae_value)
 
 ## Evaluation using MAE
 
-Finally, we may visualize the distribution of errors across time:
+Finally, we may visualize the distribution of absolute residuals for a subset of nowcast dates:
 ```{r abs-error-plot}
 ggplot(mae_data) +
   # Nowcast Absolute Error 
   geom_point(aes(x = time_value, y = nc_abs_error), color = "blue", size = 2) +
   geom_line(aes(x = time_value, y = nc_abs_error), color = "blue") +
-  # Horizontal line for Nowcast Mean Absolute Error
-  geom_hline(aes(yintercept = mean(nc_abs_error), color = "Nowcast MAE"), linetype = "dashed") +
+# +
+#   # Horizontal line for Nowcast Mean Absolute Error
+#   geom_hline(aes(yintercept = mean(nc_abs_error), color = "Nowcast AE"), linetype = "dashed") +
   
   # Real-Time Absolute Error 
   geom_point(aes(x = time_value, y = rt_abs_error), color = "red", size = 2) +
   geom_line(aes(x = time_value, y = rt_abs_error), color = "red") +
-  # Horizontal line for Real-Time Mean Absolute Error
-  geom_hline(aes(yintercept = mean(rt_abs_error), color = "Real-Time MAE"), linetype = "dashed") +
-  
+  # 
+  # +
+  # # Horizontal line for Real-Time Mean Absolute Error
+  # geom_hline(aes(yintercept = mean(rt_abs_error), color = "Real-Time AE"), linetype = "dashed") +
+  # 
   # Customize the x and y axes labels, legend & add title
+  scale_x_date(limits = c(as.Date("2022-01-01"), as.Date("2023-01-01"))) +
   xlab("Time") + ylab("Absolute Error") +
-  scale_color_manual(values = c("Real-Time MAE" = "red", "Nowcast MAE" = "blue")) +
+  scale_color_manual(values = c("Real-Time MAE" = "red", "Nowcast AE" = "blue")) +
   labs(color = "Mean Absolute Error")
 ```
 
 We can see that the absolute errors are almost always lower for nowcasting.
+
+## Nowcasting: prediction intervals
+
+Finally, we briefly discuss how we can form prediction intervals. One idea is to use quantiles of ratios to serve as the limit of interval.
+
+```{r produce-prediction-interval}
+#| echo: true
+
+interval = function(x, g, t, wl=90, appx=49) {
+  
+  finalized_data = x$DT |>
+    group_by(geo_value, time_value) |>
+    filter(version ==  max(version)) |>
+    filter(time_value >= t - wl - appx & time_value <= t - appx) |>
+    rename(finalized_val = mortality) |>
+    select(geo_value, time_value, finalized_val)
+  
+  
+  initial_data = x$DT |>
+    group_by(geo_value, time_value) |>
+    filter(version ==  min(version)) |>
+    filter(time_value >= t - wl - appx & time_value <= t - appx) |>
+    rename(initial_val = mortality) |>
+    select(geo_value, time_value, initial_val)
+  
+  lower_ratio = finalized_data |>
+    inner_join(initial_data, by = c("geo_value", "time_value")) |>
+    mutate(ratio = finalized_val / initial_val) |>
+    pull(ratio) |>
+    quantile(0.05, na.rm=TRUE)
+
+  upper_ratio = finalized_data |>
+    inner_join(initial_data, by = c("geo_value", "time_value")) |>
+    mutate(ratio = finalized_val / initial_val) |>
+    pull(ratio) |>
+    quantile(0.95, na.rm=TRUE)
+  
+  last_avail = epix_as_of(x, t) |>
+    slice_max(time_value) |>
+    pull(mortality) 
+  
+  res = tibble(target_date = t, lower = lower_ratio * last_avail,
+               upper = upper_ratio * last_avail)
+  
+  return(res)
+  
+}
+```
+
+## Nowcasting: Prediction intervals
+
+```{r slide-ratio-pred-interval}
+#| echo: true
+pred_interval = nchs_fullarchive |>
+  epix_slide(
+    interval,
+    .before=Inf,
+    .versions = all_nowcast_dates, 
+    .all_versions = TRUE
+) |>
+  mutate(geo_value = "ca")
+```
+
+
+
+## Nowcasting: visualizing prediction intervals 
+
+```{r nowcast-plot-intervals}
+#| echo: false
+ggplot() + 
+  geom_line(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast")) +
+  geom_line(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized")) +
+  geom_point(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized"), shape = 16) +
+  geom_ribbon(data = pred_interval, 
+              aes(x = target_date, ymin = lower, ymax = upper), 
+              alpha = 0.2, fill = "blue") +
+  ylab("Mortality") +
+  xlab("Date") +
+  theme(legend.position = "bottom") +
+  scale_color_manual(values = c("Nowcast" = "blue", "Finalized" = "black"))
+```
+
+
+
+## Filler for backcasts 
+
+BLAH
 
 # Nowcasting with auxilliary variables 
 
