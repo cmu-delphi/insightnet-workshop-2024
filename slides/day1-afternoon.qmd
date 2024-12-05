@@ -762,7 +762,7 @@ One nowcast is not enough! We need to slide that computation across all the nowc
 ```{r nowcaster-to-slide}
 #| echo: true
 #| 
-nowcaster = function(x, g, t, wl=90, appx=49) {
+nowcaster = function(x, g, t, wl=180, appx=49) {
   
   finalized_data = x$DT |>
     group_by(geo_value, time_value) |>
@@ -783,7 +783,7 @@ nowcaster = function(x, g, t, wl=90, appx=49) {
     inner_join(initial_data, by = c("geo_value", "time_value")) |>
     mutate(ratio = finalized_val / initial_val) |>
     pull(ratio) |>
-    mean(na.rm=TRUE)
+    median(na.rm=TRUE)
 
   last_avail = epix_as_of(x, t) |>
     slice_max(time_value) |>
@@ -848,12 +848,12 @@ finalized_val = nchs_fullarchive$DT |>
 ```{r nowcast-fun-plot-results}
 #| echo: false
 ggplot() + 
-  geom_line(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast")) +
-  geom_point(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast"), shape = 16) +
-  geom_line(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue")) +
-  geom_point(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue"), shape = 16) +
   geom_line(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized")) +
   geom_point(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized"), shape = 16) +
+  geom_line(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue")) +
+  geom_point(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue"), shape = 16) +
+  geom_line(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast")) +
+  geom_point(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast"), shape = 16) +
   # geom_ribbon(data = nowcast_results_df, 
   #             aes(x = time_value, ymin = lower_PI, ymax = upper_PI), 
   #             alpha = 0.2, fill = "blue") +
