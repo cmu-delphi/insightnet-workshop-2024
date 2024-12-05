@@ -809,240 +809,59 @@ all_nowcast_dates = nchs_fullarchive$DT |>
   distinct(time_value) |>
   pull(time_value)
 
-nowcasts = epix_slide(
-  nchs_fullarchive,
-  nowcaster,
-  .before=Inf,
-  .versions = all_nowcast_dates,
-  .all_versions = TRUE
-)
+nowcasts = nchs_fullarchive |>
+  epix_slide(
+    nowcaster,
+    .before=Inf,
+    .versions = all_nowcast_dates,
+    .all_versions = TRUE
+) |>
+  mutate(geo_value = "ca")
 
-
-tmp = epix_as_of(nchs_fullarchive, as.Date("2022-04-10")) |>
-  slice_max(time_value)
 
 ```
 
+## Potential filler for recapping 
 
-## Calculating the ratio using multiple dates
-Now, let's plot the real-time vs the finalized mortality rates:
-```{r real-time-vs-finalized}
-ggplot() +
-  geom_line(data = mortality_latest |> filter(time_value <= (as_of_date - 7)), 
-            aes(x = time_value, y = mortality, color = "Finalized")) +
-  geom_line(data = mortality_real_time_df, 
-            aes(x = time_value, y = mortality, color = "Real-Time")) +
-  ylab("Mortality") +
-  xlab("Date") + 
-  scale_color_manual(values = c("Finalized" = "black", "Real-Time" = "red")) + 
-  labs(color = "Mortality Type")  # Adds the legend title
-
-```
-* [**Takeaways**]{.primary}: The real-time counts are biased [**well below**]{.primary} the finalized counts.
-* Systematic underreporting tends to lessen over time (the gap between the lines decreases).
-
-## Realistic limitation of nowcasting - Finalized data
-* Recall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Jan. 7 is finalized 294 days later).
-* To nowcast accurately, we must rely on the [**best available approximation of finalized data**]{.primary} at the time of estimation (Feb. 25).
-
-```{r finalized-data-as-of-feb25}
-#| echo: true
-mortality_as_of_feb25 <- epix_as_of(mortality_archive, as_of_date)
-head(mortality_as_of_feb25)
-```
-
-## Ratio calculation & summary
-
-We then use these "finalized" and real-time values to compute the mean ratio:
-```{r ratio-calc-summary}
-#| echo: true
-# exclude date we're nowcasting for
-mortality_real_time_df = mortality_real_time_df |> filter(time_value != "2024-02-18") 
-mortality_as_of_feb25 = mortality_as_of_feb25 |> filter(time_value != "2024-02-18")
-ratio_real_time_to_feb25 <- mortality_real_time_df$mortality / mortality_as_of_feb25$mortality
-summary(ratio_real_time_to_feb25)
-```
-On average, the real-time rates are ~25.7% of the finalized.
-
-```{r boxplot-ratio}
-#| echo: false
-ratio_df <- data.frame(ratio_real_time_to_feb25, mean_ratio = mean(ratio_real_time_to_feb25))
-
-# Create the boxplot with mean marked as a bold cross
-ggplot(ratio_df, aes(y = ratio_real_time_to_feb25)) +
-  geom_boxplot(fill = "lightblue", color = "black") +
-  geom_point(
-    aes(x = 0, y = mean_ratio),  # Place point at the mean
-    shape = 4,                  # Cross shape
-    size = 7,                   # Size of the cross
-    color = "darkblue",         # Color of the cross
-    stroke = 2                  # Boldness of the cross
-  ) +
-  labs(
-    title = "Distribution of Real-Time to Finalized Mortality Ratios",
-    y = "Real-Time to Finalized Ratio"
-  ) +
-  theme_minimal() +  # Minimal theme for clean look
-  theme(
-    plot.title = element_text(hjust = 0.5),  # Center the title
-    axis.text.x = element_blank()
-  ) +
-  coord_cartesian(ylim = c(0.2, 0.3))  # Limit y-axis between 0 and 0.5 to zoom in
-```
-Tells us the distribution is right-skewed (mean > median) and so we should opt for the median.
+BLAH 
 
 
-## Nowcasting on Feb. 25
-
-* Since the [**median ratio**]{.primary} between real-time and finalized values is [**0.250**]{.primary} (i.e., real-time values are typically 25% of the finalized), then the nowcast is
-```{r nowcast-feb25-point}
-#| echo: true
-# Now we can nowcast properly:
-nowcast <- provisional *
-  1 / median(ratio_real_time_to_feb25)
-nowcast
-```
-
-* To get the accompanying 95% prediction interval, calculate the 2.5th and 97.5th percentiles:
-
-```{r nowcast-feb25-lower}
-#| echo: true
-percentile_97.5 <- quantile(ratio_real_time_to_feb25, 0.975) |> unname()
-
-(lower_PI <- provisional * 1 / percentile_97.5)
-```
-
-```{r nowcast-feb25-upper}
-#| echo: true
-percentile_2.5 <- quantile(ratio_real_time_to_feb25, 0.025) |> unname()
-(upper_PI <- provisional * 1 / percentile_2.5)
-```
-
-* So, the [**nowcast is 92**]{.primary} with 95% PI: [61, 140], which is much closer to the [**finalized value of 104**]{.primary} than the [**provisional value of 23**]{.primary}.
-
-## Summary of three main steps 
-So the main steps for this type of fixed lag nowcasting are...
-
-1. Obtain the [**provisional value**]{.primary} for the target.
-
-2. Estimate the ratio using the [**real-time**]{.primary} and [**"finalized"**]{.primary} data (for all previous dates that follow a consistent pattern in reporting). 
-
-3. Profit.
-
-```{r ratio-summary-steps}
-#| echo: true
-#| eval: false
-#| code-fold: true
-#| code-summary: "Expand for the accompanying code"
-# Today
-as_of_date = as.Date("2024-02-25")
-
-# 1. Obtain the provisional value
-provisional <- epix_as_of(mortality_archive, as_of_date) |>
-  filter(time_value == as_of_date - 7) |>
-  pull(mortality)
-provisional
-
-# 2. Estimate the ratio 
-mortality_real_time_df <- map_dfr(dates, mortality_real_time) |> filter(time_value != "2024-02-18") # Real-time
-mortality_as_of_feb25 <- epix_as_of(mortality_archive, as_of_date) |> filter(time_value != "2024-02-18")  # "Finalized"
-
-ratio_real_time_to_feb25 <- mortality_real_time_df$mortality / mortality_as_of_feb25$mortality
-
-# 3. Profit.
-(nowcast <- provisional * 1 / median(ratio_real_time_to_feb25))
-
-(upper_PI <- provisional * 1 / quantile(ratio_real_time_to_feb25, 0.025))
-(lower_PI <- provisional * 1 / quantile(ratio_real_time_to_feb25, 0.975))
-
-```
-
-## Nowcasting mortality for multiple dates
-
-* [**Define Nowcast Function**]{.primary}:
-  * [**Input**]{.primary}: Takes in the dates to nowcast and the fixed lag
-  * [**Output**]{.primary}: The nowcasted mortality rates based on the ratio of real-time to finalized data.
-```{r nowcasting-multipl-dates-fun}
-#| echo: true
-#| code-fold: true
-nowcast_function <- function(nowcast_date, fixed_lag) {
-  as_of_date = nowcast_date + fixed_lag
-  
-  # 1. Obtain the provisional value for the target.
-  provisional <- epix_as_of(mortality_archive, as_of_date) |>
-    filter(time_value == as_of_date - fixed_lag) |>
-    pull(mortality)
-  
-  #2. Estimate the ratio multiplier using
-  # real-time
-  dates_seq <- seq(start_time, (nowcast_date - fixed_lag), by = "week")
-  mortality_real_time <- map_dfr(dates_seq, mortality_real_time)
-  
-  # and "finalized" data
-  finalized <- epix_as_of(mortality_archive, as_of_date) |> filter(time_value >= start_time & time_value <= (nowcast_date - fixed_lag)) 
-  
-  ratios <- mortality_real_time$mortality / finalized$mortality
-  
-  # Remove infinite or NaN ratios (i.e., keep only finite values)
-  median_ratio <- median(ratios[is.finite(ratios)])
-  
-  #3. Profit.
-  nowcast <- provisional * (1 / median_ratio)
-  upper_PI <- provisional * (1 / quantile(ratios[is.finite(ratios)], 0.025))
-  lower_PI <- provisional * (1 / quantile(ratios[is.finite(ratios)], 0.975))
-  
-  # Return a dataframe with the nowcast and date
-  tibble(
-    time_value = nowcast_date,
-    nowcast = nowcast,
-    lower_PI = lower_PI,
-    upper_PI = upper_PI 
-  )
-}
-```
-
-## Map nowcast over multiple dates
-* We can use `map2()` to apply the function to a series of weeks (e.g., Jan. 28 to Mar. 24).
-* Returns a [**dataframe**]{.primary} with nowcasted results.
-
-```{r map-nowcast-fun-multiple-dates}
-#| echo: true
-# Apply Nowcast Function Over Multiple Dates
-nowcast_dates <- seq(as.Date("2024-01-28"), as.Date("2024-03-24"), by = "week")
-fixed_lag <- 7
-nowcast_results_df <- map2(nowcast_dates, fixed_lag, nowcast_function) |> list_rbind()
-```
-
-Let's smooth with a rolling trailing mean (window size 4) & see the results:
-
-```{r smooth-print-res}
-# Smooth results: Apply rolling median to nowcast and bounds with a window size of 4
-library(zoo)
-nowcast_results_df <- nowcast_results_df |> 
-  mutate(across(.cols = -time_value,  
-                .fns = ~ zoo::rollapply(.x, width = 4, FUN = mean, partial = TRUE, align = "right"),
-                .names = "{.col}"))
-nowcast_results_df
-```
 
 ## Visualize nowcast, real-time, and finalized values
-Finally, we can compare these nowcast results to the real-time and finalized values:
+
+
+We are now finally able to compare nowcasts against first available reports:
+
+```{r nowcast-subsetting}
+first_avail = nchs_fullarchive$DT |>
+  filter(time_value >= as.Date("2022-01-01")) |>
+  group_by(geo_value, time_value) |>
+  filter(version == min(version))
+
+finalized_val = nchs_fullarchive$DT |>
+  filter(time_value >= as.Date("2022-01-01")) |>
+  group_by(geo_value, time_value) |>
+  filter(version == max(version))
+
+```
+
+
 ```{r nowcast-fun-plot-results}
 #| echo: false
 ggplot() + 
-  geom_line(data = nowcast_results_df, aes(x = time_value, y = nowcast, color = "Nowcast")) +
-  geom_point(data = nowcast_results_df, aes(x = time_value, y = nowcast, color = "Nowcast"), shape = 16) +
-  geom_line(data = map_dfr(nowcast_dates, mortality_real_time), aes(x = time_value, y = mortality, color = "Real-Time")) +
-  geom_point(data = map_dfr(nowcast_dates, mortality_real_time), aes(x = time_value, y = mortality, color = "Real-Time"), shape = 16) +
-  geom_line(data = mortality_latest |> filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality, color = "Finalized")) +
-  geom_point(data = mortality_latest |> filter(time_value %in% nowcast_dates), aes(x = time_value, y = mortality, color = "Finalized"), shape = 16) +
-  geom_ribbon(data = nowcast_results_df, 
-              aes(x = time_value, ymin = lower_PI, ymax = upper_PI), 
-              alpha = 0.2, fill = "blue") +
+  geom_line(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast")) +
+  geom_point(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast"), shape = 16) +
+  geom_line(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue")) +
+  geom_point(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue"), shape = 16) +
+  geom_line(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized")) +
+  geom_point(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized"), shape = 16) +
+  # geom_ribbon(data = nowcast_results_df, 
+  #             aes(x = time_value, ymin = lower_PI, ymax = upper_PI), 
+  #             alpha = 0.2, fill = "blue") +
   ylab("Mortality") +
   xlab("Date") +
-  scale_color_manual(values = c("Nowcast" = "blue", "Real-Time" = "red", "Finalized" = "black")) + 
-  labs(color = "Mortality Type")  # Adds the legend title
+  scale_color_manual(values = c("Nowcast" = "blue", "First available issue" = "red", "Finalized" = "black")) + 
+  theme(legend.position = "bottom")
 ```
 The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).
 
@@ -1068,11 +887,11 @@ Let's numerically evaluate our point nowcasts for the provisional values of a ti
 
 ```{r mae-code}
 #| echo: true
+
 # Step 1: Join the mortality data with nowcast data
-mae_data <- mortality_latest |> 
-  filter(time_value %in% nowcast_dates) |>   
-  left_join(nowcast_results_df, by = "time_value") |> 
-  left_join(map_dfr(nowcast_dates, mortality_real_time) |> rename(real_time = mortality), by = c("geo_value", "time_value"))
+mae_data = finalized_val |> 
+  left_join(nowcasts |> select(-version), by = join_by(time_value == target_date, geo_value)) |> 
+  left_join(first_avail |> rename(real_time = mortality), by = c("geo_value", "time_value"))
 
 # Step 2: Calculate the absolute error between actual and nowcasted values
 mae_data <- mae_data |> 
@@ -1081,8 +900,9 @@ mae_data <- mae_data |>
 
 # Step 3: Compute the MAE (mean of absolute errors)
 mae_value <- mae_data |> 
-  summarise(nc_MAE = mean(nc_abs_error),
-            rt_MAE = mean(rt_abs_error))
+  group_by(geo_value) |>
+  summarise(nc_MAE = mean(nc_abs_error, na.rm=TRUE),
+            rt_MAE = mean(rt_abs_error, na.rm=TRUE))
 knitr::kable(mae_value)
 ```
 
