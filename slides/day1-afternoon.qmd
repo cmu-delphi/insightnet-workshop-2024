@@ -406,7 +406,7 @@ nchs_allver = pub_covidcast(
   geo_values = c("ca", "ut"),
   # This data has weekly resolution, different form of 
   # time specification
-  time_values = epirange(202101, 202210),
+  time_values = epirange(202001, 202440),
   # Recall this pulls all available issues
   issues = "*"
 ) |>
@@ -426,7 +426,7 @@ Some problem here -- NCHS's revision time is on the order of weeks, jumping by m
 edf_latest = epix_as_of(nchs_archive, version = nchs_archive$versions_end)
 max_version = max(nchs_archive$DT$version)
 edf_latest = epix_as_of(nchs_archive, version = max_version)
-versions = seq(as.Date("2021-03-01"), max_version - 1, by = "1 month")
+versions = seq(as.Date("2020-01-01"), max_version - 1, by = "1 month")
 
 monthly_snapshots = map(versions, function(v) {
   
@@ -442,7 +442,6 @@ monthly_snapshots = map(versions, function(v) {
 ```
 
 ```{r plot-revision-patterns}
-#| fig-width: 7
 ggplot(monthly_snapshots |> filter(!latest),
        aes(x = time_value, y = value)) +  
   geom_line(aes(color = factor(version))) + 
@@ -456,7 +455,7 @@ ggplot(monthly_snapshots |> filter(!latest),
             aes(x = time_value, y = value), 
             inherit.aes = FALSE, color = "black")
 ```
-
+A lot of values at UT is censored due to privacy constraints. 
 
 ## Revision pattern -- alternative visualization
 
@@ -492,7 +491,6 @@ value_at_lags = map(ref_dates, get_val_asof,
 values_final = epix_as_of(nchs_archive, max(nchs_archive$versions_end))
 
 
-#| fig-width: 7
 ggplot(value_at_lags,
        aes(x = time_value, y = value)) +  
   geom_line(aes(color = factor(lag))) + 
@@ -510,12 +508,13 @@ ggplot(value_at_lags,
 
 ```
 
+# Backfill projection in Epiverse
 
-## Finalized data
 
-* Counts are revised as time proceeds
-* Want to know the [final]{.primary} value 
-* Often not available until weeks/months later
+## Types of predictions
+
+* Finalized value often not available until weeks/months later
+* Want to 'project' the [**final**]{.primary} value given the provisional [**real-time**]{.primary} value.
 
   Forecasting
 : At time $t$, predict the final value for time $t+h$, $h > 0$
@@ -530,59 +529,82 @@ ggplot(value_at_lags,
   Nowcasting
 : At time $t$, predict the final value for time $t$
 
-# Backfill projection in Epiverse
 
-## Nowcasting simple ratio Ex: NCHS mortality 
+## Nowcasting via simple ratio: NCHS mortality 
 
-* In this example, we'll demonstrate the concept of nowcasting using [**NHCS mortality data**]{.primary}.
-(the number of weekly new deaths with confirmed or presumed COVID-19).
-* We will work with [**provisional**]{.primary} data (real-time reports) and compare them to **finalized** data (final reports).
-* The goal is to estimate or [**nowcast the mortality rate**]{.primary} for weeks when only provisional data is available.
+* [**NHCS mortality data**]{.primary} contains a versioned history of number of weekly new deaths with confirmed or presumed COVID-19.
+
+<br>
+
+
+* We use this data to demonstrate the nowcasting and backcasting.
+
+<br>
+
+
+* The goal is to project [**nowcast the mortality rate**]{.primary} based on provisional/real-time data. 
+  
+## Nowcasting via simple ratio: NCHS mortality
+
+* Specifically, we will make nowcasts from 2022-01 to 2024-01. 
+* We will take the remainder of data as training set and for exploratory analysis. 
+  
   
 ## Fetch versioned data
 
-Let's fetch versioned mortality data from the API (`pub_covidcast`) for CA (`geo_values = "ca"`) and the signal of interest (`deaths_covid_incidence_num`) over early 2024.
+Let's fetch versioned mortality data from the API (`pub_covidcast`) for CA (`geo_values = "ca"`) and the signal of interest (`deaths_covid_incidence_num`) for all the dates where versioned data is recorded.
 ```{r mortality-archive-construct}
 #| echo: true
-# Fetch the versioned NCHS mortality data (weekly)
-mortality_archive <- pub_covidcast(
+
+# Fetch the training archive 
+nchs_train_archive = pub_covidcast(
+  source = "nchs-mortality",
+  signal = "deaths_covid_incidence_num",
+  geo_type = "state",
+  time_type = "week",
+  geo_values = "ca",
+  time_values = epirange(202108, 202152),
+  issues = "*"
+) |>
+  select(geo_value, time_value, version = issue, mortality = value) |>
+  as_epi_archive(compactify=TRUE)
+
+
+# Fetch the entire versioned history (train + test set)
+nchs_fullarchive <- pub_covidcast(
   source = "nchs-mortality",
   signals = "deaths_covid_incidence_num",
   geo_type = "state",
   time_type = "week",
   geo_values = "ca",  # California (CA)
-  time_values = epirange(202401, 202413),  
+  time_values = epirange(202108, 202440),  
   issues = "*"
 ) |> 
   select(geo_value, time_value, version = issue, mortality = value) |> 
   as_epi_archive(compactify = TRUE)
 
-# Set the start and end days for the analysis 
-# corresponding to the weeks entered in time_values
-start_time = as.Date("2023-12-31")
-end_time = as.Date("2024-03-24")
 ```
 
-## Latency in reporting - Minimum lag
 
-* A quick inspection reveals that mortality rates are systematically 7 days latent ([**fixed lag**]{.primary}).
+
+## Exploratory analysis: latency in reporting 
+
+* We inspect the latency (how long it takes to have any reported value) on our training set.
+* Why only looking at training set? Because at time of nowcast, only have information before the nowcast date.
+* Otherwise we will be using information that would not have been available. 
 
 ```{r inspect-latency-dplyr-way}
 #| echo: true
-mortality_revision_inspect = mortality_archive$DT |> mutate(version_time_diff = version - time_value)
-
-# Look at the first revision for each week
-mortality_revision_inspect |> group_by(time_value) |> slice(1) |> head()
+nchs_train_archive$DT |> group_by(geo_value, time_value) |>
+  filter(version == min(version)) |>
+  mutate(lag = version - time_value) |>
+  slice_head() |>
+  head()
 ```
 
-* Use `revision_summary()` from `epiprocess` to generate basic statistics about the revision behavior for the dataset.
 
-```{r revision-summary-ex}
-#| eval: false
-revision_summary(mortality_archive, print_inform = TRUE)
-```
 
-## Latency in reporting - Finalized value attainment
+## Exploratory analysis - Finalized value attainment
 
 * [**Question:**]{.primary} When is the [**finalized value**]{.primary} first attained for each date? Would we have access to any in real-time?
 * How fast are the final values attained & what's the pattern for these times, if any?
@@ -616,35 +638,54 @@ check_when_finalized <- function(epi_archive, start_date = NULL, end_date = NULL
 
 ```{r check-when-finalized-run}
 #| echo: false
-res <- check_when_finalized(mortality_archive, start_date = start_time, end_date = end_time)
+res <- check_when_finalized(nchs_train_archive, start_date = start_time, end_date = end_time)
 head(res)
 ```
-And here's a numerical summary:
+We can also look at some quantiles: 
 ```{r summary-diff}
 #| echo: false
 summary(as.numeric(res$diff))
 ```
 
-* [**Conclusion**]{.primary}: Tends to take a long time & varies. Even for this relatively small time period... Goes as low as 84 days or as high as 294 days. Yikes.
-* So if we were doing this in real-time, then we wouldn't have access to the finalized data.
+<br>
+
+It generally takes long to attain finalized value. 
+
 
 ## Comparison of final vs. multiple revisions
-This shows the finalized rates in comparison to [**multiple revisions**]{.primary} to see how the data changes over time:
+
+The following plots gives a more direct message on how the values are revised. 
 
 ```{r mortality-by-revision-date}
 #| echo: false
 
-# Visualize the mortality values for different revisions
-revision_dates <- seq(min(mortality_archive$DT$version), end_time, by = "1 week")
+ref_dates = unique(nchs_train_archive$DT$time_value)
+offsets = seq(1, 7) * 7
 
-# Create a data frame for each version and label them by revision date
-mortality_revisions <- map_dfr(revision_dates, function(date) {
-  epix_as_of(mortality_archive, date) |>
-    mutate(revision_date = date)  # Add a column for the revision date
-})
+get_val_asof = function(time_val, archive, offsets) {
+  
+  as_of_dates = pmin(time_val + offsets, max_version)
+  
+  result = map(as_of_dates, function(x) {
+    
+    qd = archive |>
+      epix_as_of(x) |>
+      filter(time_value == time_val) |>
+      select(geo_value, time_value, mortality) |>
+      mutate(lag = x - time_val)
+  }) |>
+    list_rbind()
+  
+  return(result)
 
-# Extract the latest/finalized version
-mortality_latest <- epix_as_of(mortality_archive, max(mortality_archive$DT$version))
+  
+}
+
+value_at_lags = map(ref_dates, get_val_asof, 
+  archive=nchs_train_archive, offsets=offsets) |>
+  list_rbind()
+  
+values_final = epix_as_of(nchs_train_archive, max(nchs_train_archive$versions_end))
 
 ```
 
@@ -653,105 +694,135 @@ mortality_latest <- epix_as_of(mortality_archive, max(mortality_archive$DT$versi
 #| fig-width: 9
 #| fig-height: 4
 #| out-height: "500px"
-ggplot() +
-  geom_line(data = mortality_latest, aes(x = time_value, y = mortality), color = "black", size = 1) +
-  geom_line(data = mortality_revisions, aes(x = time_value, y = mortality, color = as.factor(revision_date))) +
-  geom_point(data = mortality_revisions, aes(x = time_value, y = mortality, color = as.factor(revision_date)), size = 2) +
-  theme_gray() + 
-  labs(color = "Revision Date", y = "Mortality", x = "Date") + 
-  ggtitle("COVID-19 Mortality in CA: Finalized (black) vs Various Revisions")
+ggplot(value_at_lags, aes(x = time_value, y = mortality)) +  
+  geom_line(aes(color = factor(lag))) + 
+  facet_wrap(~ geo_value, scales = "free_y", ncol = 1) +
+  scale_x_date(minor_breaks = "month", date_labels = "%b %Y") +
+  labs(x = "", y = "Weekly new COVID deaths") + 
+  # scale_color_viridis_d(option="D", end=0.8) +
+  theme(legend.position = "none") +
+  geom_line(data = values_final, aes(x = time_value, y = mortality), 
+            inherit.aes = FALSE, color = "black")
+
 
 ```
 
-## Comparison of final vs. one revision
+## Ratio estimator: jumping from provisional to finalized data
 
-The below figure compares the finalized rates (in black) to [**one revision**]{.primary} (in yellow) from March 3, 2024.
+* A simple nowcaster is the ratio between finalized value and provisional value. 
 
-```{r one-revision-final-plot}
-#| out-height: "400px"
-as_of_date = as.Date("2024-03-03")
+* Don't know value of any given week is finalized. Need a working approximation. 
 
-ggplot() +
-  geom_line(data = mortality_latest, 
-            aes(x = time_value, y = mortality, color = "Finalized"), 
-            size = 1) +
-  geom_line(data = mortality_revisions |> filter(revision_date == as_of_date), 
-            aes(x = time_value, y = mortality, color = "Revision"), 
-            size = 1) +
-  ylab("Mortality") + 
-  xlab("Date") + 
-  scale_color_manual(values = c("Finalized" = "black", "Revision" = "#FFB300")) + 
-  labs(color = "Mortality Type")
+* From previous plot, we also see data published 49 days later is pretty close to the finalized value. 
 
-```
-The real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions.
+* We want to use the most recent data available, since that is likely to be most informative.
 
 
-## Calculate one ratio: Provisional vs. finalized data
-<!-- * Let's start simple with computing one ratio. -->
+## Ratio estimator: jumping from provisional to finalized data
 
-Suppose that the day is March 10, 2024. Then, because the data is 7 days latent, we can compute the ratio between provisional and finalized data for [**March 3, 2024**]{.primary}.
+* As a demonstration, we first do this for a single nowcast date: 2022-01-02 (the first date in 2022).
 
-```{r one-ratio-calc}
+```{r}
 #| echo: true
-as_of_date = as.Date("2024-03-10"); fixed_lag = 7
 
-# Load the finalized mortality data for CA
-ca_finalized <- mortality_latest |>
-  filter(time_value == (as_of_date - fixed_lag)) |>
-  dplyr::select(mortality)
+nowcast_date = as.Date("2022-01-02"); window_length = 90
 
-# Load the provisional mortality data for the same week
-mortality_old = epix_as_of(mortality_archive, as_of_date)
+# First step: estimate the ratio based on some past data
+finalized_data = epix_as_of(nchs_fullarchive, nowcast_date) |>
+  filter(time_value >= nowcast_date - 49 - window_length & time_value <= nowcast_date - 49) |>
+  rename(finalized_val = mortality) |>
+  select(geo_value, time_value, finalized_val)
 
-ca_provisional <- mortality_old |>
-  filter(time_value == (as_of_date - fixed_lag)) |>
-  dplyr::select(mortality)
+initial_data = nchs_fullarchive$DT |>
+  filter(time_value %in% finalized_data$time_value) |>
+  group_by(geo_value, time_value) |>
+  filter(version == min(version)) |>
+  rename(initial_val = mortality) |>
+  select(geo_value, time_value, initial_val)
 
-# Calculate ratio between provisional and finalized cases for the week of interest
-ratio <- ca_provisional$mortality / ca_finalized$mortality
-ratio
+ratio = finalized_data |>
+  inner_join(initial_data, by = c("geo_value", "time_value")) |>
+  mutate(ratio = finalized_val / initial_val) |>
+  pull(ratio) |>
+  mean()
+
+# Recall latency! Can only project based on latest reported data
+# Given the ratio, we can multiply that with the last available reported value
+last_avail = epix_as_of(nchs_fullarchive, nowcast_date) |>
+  slice_max(time_value) |>
+  pull(mortality) 
+
+nowcast = last_avail * ratio
+nowcast
 ```
 
-[**Conclusion**]{.primary}: The real-time rate is well below the finalized for this time (26 vs 72 here).
+## Ratio estimator: sliding the computation
 
-[**Question**]{.primary}: Can we generalize this over many days? 
+One nowcast is not enough! We need to slide that computation across all the nowcasts. 
 
-## Calculating the ratio using multiple dates
-Let's move from calculating the ratio by using one day to multiple days with the goal to use it to nowcast for Feb. 18, which has a [**provisional value**]{.primary} of 23
-```{r provisional-val-feb18}
+```{r}
 #| echo: true
-as_of_date = as.Date("2024-02-25")
+#| 
+nowcaster = function(x, g, t, wl=90, appx=49) {
+  
+  finalized_data = x$DT |>
+    group_by(geo_value, time_value) |>
+    filter(version ==  max(version)) |>
+    filter(time_value >= t - wl - appx & time_value <= t - appx) |>
+    rename(finalized_val = mortality) |>
+    select(geo_value, time_value, finalized_val)
+  
+  
+  initial_data = x$DT |>
+    group_by(geo_value, time_value) |>
+    filter(version ==  min(version)) |>
+    filter(time_value >= t - wl - appx & time_value <= t - appx) |>
+    rename(initial_val = mortality) |>
+    select(geo_value, time_value, initial_val)
+  
+  ratio = finalized_data |>
+    inner_join(initial_data, by = c("geo_value", "time_value")) |>
+    mutate(ratio = finalized_val / initial_val) |>
+    pull(ratio) |>
+    mean(na.rm=TRUE)
 
-provisional <- epix_as_of(mortality_archive, as_of_date) |>
-  filter(time_value == as_of_date - 7) |>
-  pull(mortality)
-provisional
-```
-<br>
-and a [**finalized value**]{.primary} of 104
-
-```{r finalized-val-feb18}
-#| echo: true
-finalized <- mortality_latest |>
-  filter(time_value == as_of_date - 7) |>
-  pull(mortality)
-finalized
-```
-
-## Calculating the ratio using multiple dates
-First, let's download the real-time rates for CA, and compare them to their finalized version.
-
-```{r real-time-mortality}
-#| echo: true
-dates <- seq(start_time, (as_of_date - 7), by = "day")
-mortality_real_time <- function(date) {
-  epix_as_of(mortality_archive, date + 7) |>
-    filter(time_value == date)
+  last_avail = epix_as_of(x, t) |>
+    slice_max(time_value) |>
+    pull(mortality) 
+  
+  res = tibble(target_date = t, nowcast = last_avail * ratio)
+  
+  return(res)
+  
 }
-mortality_real_time_df <- map_dfr(dates, mortality_real_time)
-head(mortality_real_time_df)
 ```
+
+
+## Ratio estimator: sliding the computation
+
+
+```{r}
+#| echo: true
+
+all_nowcast_dates = nchs_fullarchive$DT |>
+  filter(time_value > as.Date("2021-12-31")) |>
+  distinct(time_value) |>
+  pull(time_value)
+
+nowcasts = epix_slide(
+  nchs_fullarchive,
+  nowcaster,
+  .before=Inf,
+  .versions = all_nowcast_dates,
+  .all_versions = TRUE
+)
+
+
+tmp = epix_as_of(nchs_fullarchive, as.Date("2022-04-10")) |>
+  slice_max(time_value)
+
+```
+
 
 ## Calculating the ratio using multiple dates
 Now, let's plot the real-time vs the finalized mortality rates:
