@@ -94,7 +94,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-7bf4db6801b72647a597b9d51ade79fb.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-09d4a5b6094fc3e7d9a2f1c4dd5542e0.css">
   <link rel="stylesheet" href="tachyons-minimal.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -214,19 +214,19 @@
 <section id="outline" class="slide level2">
 <h2>Outline</h2>
 <ol type="1">
-<li><p>Delphi</p></li>
+<li><p>The Delphi Research Group</p></li>
 <li><p>Overview of this Workshop</p></li>
 <li><p>Panel Data</p></li>
 <li><p>Versioned Data</p></li>
 <li><p>Epidata API</p></li>
-<li><p>Epidatr</p></li>
 <li><p>Find Data Sources and Signals</p></li>
-<li><p>Versioning in epidatr</p></li>
+<li><p><code>{epidatr}</code></p></li>
+<li><p>Versioning in <code>{epidatr}</code></p></li>
 </ol>
 </section>
 <section>
-<section id="delphi" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> Delphi</h1>
+<section id="the-delphi-research-group" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> The Delphi Research Group</h1>
 
 </section>
 <section id="about-delphi" class="slide level2">
@@ -740,34 +740,31 @@ revision tracking, anomaly detection, trend detection, smoothing, imputation, ge
 </section>
 <section id="some-of-our-data-sources" class="slide level2">
 <h2>Some of our data sources</h2>
-<ul>
-<li>ATTN: what do the pairs in { } vs ( ) mean? Standardize.</li>
-</ul>
 <h3 id="ongoing-sources">Ongoing Sources:</h3>
 <dl>
 <dt>Insurance claims</dt>
 <dd>
-%Covid {inpatient, outpatient}, by {county x day}
+%Covid <code>{inpatient, outpatient}</code>, by <code>county x day</code>
 </dd>
 <dt>Google Symptom searches</dt>
 <dd>
-7 symptoms groups, by {county x day}
+7 symptoms groups, by <code>county x day</code>
 </dd>
 <dt>Quidel/Ortho antigen tests</dt>
 <dd>
-%Covid by age group, by {county x day}
+%Covid by <code>age group x county x day</code>
 </dd>
 <dt>NCHS Deaths</dt>
 <dd>
-all-cause, pneumonia, flu, Covid, by {state x week}
+all-cause, pneumonia, flu, Covid, by <code>state x week</code>
 </dd>
 <dt>NSSP ED visits</dt>
 <dd>
-%Covid, %flu, %RSV, by {county x week} (new!)
+%Covid, %flu, %RSV, by <code>county x week</code> (new!)
 </dd>
 <dt>NWSS Covid</dt>
 <dd>
-wastewater by {sampling-site x day} (in progress)
+wastewater by <code>sampling-site x day</code> (in progress)
 </dd>
 </dl>
 </section>
@@ -777,19 +774,19 @@ wastewater by {sampling-site x day} (in progress)
 <dl>
 <dt>HHS Hosp/ICU beds</dt>
 <dd>
-Covid, flu, by age-group, by {state x day}, {facility x week}
+Covid, flu, by <code>{age-group x {state x day, facility x week}}</code>
 </dd>
 <dt>CTIS (“Delphi Facebook Survey”)</dt>
 <dd>
-many dozens of questions, by (county x day)
+many dozens of questions, by <code>county x day</code>
 </dd>
 <dt>STLT-reported</dt>
 <dd>
-{cases, deaths} via {JHU, USAFacts}, by (country x day)
+<code>{cases, deaths}</code> via <code>{JHU, USAFacts}</code>, by <code>country x day</code>
 </dd>
 <dt>Safegraph mobility</dt>
 <dd>
-misc measures by {county x day}, {county x week}
+misc measures by <code>{county x day, county x week}</code>
 </dd>
 </dl>
 <!--
@@ -826,101 +823,8 @@ misc measures by {county x day}, {county x week}
 
 <img data-src="gfx/severity-pyramid.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
 <section>
-<section id="epidatr" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> Epidatr</h1>
-
-</section>
-<section id="installing-epidatr" class="slide level2">
-<h2>Installing <code>epidatr</code></h2>
-<p>(you already did this, but just for posterity…)</p>
-<p>Install the CRAN version</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="co"># Install the CRAN version</span></span>
-<span id="cb5-2"><a></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"epidatr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><br></p>
-<p>or the development version</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="co"># Install the development version from the GitHub dev branch</span></span>
-<span id="cb6-2"><a></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"cmu-delphi/epidatr@dev"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The CRAN listing is <a href="https://cran.r-project.org/package=epidatr/index.html">here</a>.</p>
-</section>
-<section id="python" class="slide level2">
-<h2>Python</h2>
-<p>In Python, install <a href="https://pypi.org/project/delphi-epidata/"><code>delphi-epidata</code> from PyPI</a> with</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a></a><span class="ex">pip</span> install delphi-epidata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><br></p>
-<p><code>delphi-epidata</code> is soon to be replaced with <code>epidatpy</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a></a><span class="co"># Latest dev version</span></span>
-<span id="cb8-2"><a></a><span class="ex">pip</span> install <span class="at">-e</span> <span class="st">"git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"</span></span>
-<span id="cb8-3"><a></a></span>
-<span id="cb8-4"><a></a><span class="co"># PyPI version (not yet available)</span></span>
-<span id="cb8-5"><a></a><span class="ex">pip</span> install epidatpy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="using-epidatr-and-epidatpy" class="slide level2">
-<h2>Using <code>epidatr</code> and <code>epidatpy</code></h2>
-<p>The following shows how to import the library and fetch all confirmed influenza hospital admissions occurring each day for North Carolina:</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">library</span>(epidatr)</span>
-<span id="cb9-2"><a></a>hhs_flu_nc <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb9-3"><a></a>  <span class="at">source =</span> <span class="st">'hhs'</span>, </span>
-<span id="cb9-4"><a></a>  <span class="at">signals =</span> <span class="st">'confirmed_admissions_influenza_1d'</span>, </span>
-<span id="cb9-5"><a></a>  <span class="at">geo_type =</span> <span class="st">'state'</span>, </span>
-<span id="cb9-6"><a></a>  <span class="at">time_type =</span> <span class="st">'day'</span>, </span>
-<span id="cb9-7"><a></a>  <span class="at">geo_values =</span> <span class="st">'nc'</span>,</span>
-<span id="cb9-8"><a></a>  <span class="at">time_values =</span> <span class="fu">c</span>(<span class="dv">20240401</span>, <span class="dv">20240405</span><span class="sc">:</span><span class="dv">20240414</span>)</span>
-<span id="cb9-9"><a></a>)</span>
-<span id="cb9-10"><a></a><span class="fu">head</span>(hhs_flu_nc, <span class="at">n =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 15
-  geo_value signal     source geo_type time_type time_value direction issue     
-  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;  &lt;fct&gt;    &lt;fct&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;date&gt;    
-1 nc        confirmed… hhs    state    day       2024-04-01        NA 2024-04-22
-2 nc        confirmed… hhs    state    day       2024-04-05        NA 2024-04-22
-3 nc        confirmed… hhs    state    day       2024-04-06        NA 2024-04-22
-# ℹ 7 more variables: lag &lt;dbl&gt;, missing_value &lt;dbl&gt;, missing_stderr &lt;dbl&gt;,
-#   missing_sample_size &lt;dbl&gt;, value &lt;dbl&gt;, stderr &lt;dbl&gt;, sample_size &lt;dbl&gt;</code></pre>
-</div>
-</div>
-<p><br></p>
-<p>Python equivalent:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a>res <span class="op">=</span> Epidata.covidcast(<span class="st">'hhs'</span>, <span class="st">'confirmed_admissions_influenza_1d'</span>, <span class="st">'day'</span>, <span class="st">'state'</span>, [<span class="dv">20240401</span>, Epidata.<span class="bu">range</span>(<span class="dv">20240405</span>, <span class="dv">20240414</span>)], <span class="st">'nc'</span>)</span>
-<span id="cb11-2"><a></a><span class="bu">print</span>(res[<span class="st">'result'</span>], res[<span class="st">'message'</span>], <span class="bu">len</span>(res[<span class="st">'epidata'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="api-keys" class="slide level2">
-<h2>API keys</h2>
-<ul>
-<li><p>Anyone may access the Epidata API anonymously without providing any personal data!!</p></li>
-<li><p>Anonymous API access is subject to some restrictions: <small>public datasets only; 60 requests per hour; only two parameters may have multiple selections</small></p></li>
-<li><p>API key grants privledged access; can be obtained by <a href="https://api.delphi.cmu.edu/epidata/admin/registration_form">registering with us</a></p></li>
-<li><p>Privileges of registration: no rate limit; no limit on multiple selections</p></li>
-<li><p>We just want to know which signals people care about and ensure we’re providing benefit</p></li>
-</ul>
-<!-- rate limited to 60 requests per hour;  -->
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Tip</strong></p>
-</div>
-<div class="callout-content">
-<ul>
-<li>The <code>epidatr</code> client automatically searches for the key in the <code>DELPHI_EPIDATA_KEY</code> environment variable.</li>
-<li>We recommend storing it in your <code>.Renviron</code> file, which R reads by default.</li>
-<li>More on setting your API key <a href="https://rdrr.io/cran/epidatr/man/get_api_key.html">here</a>.</li>
-</ul>
-</div>
-</div>
-</div>
-</section></section>
-<section>
-<section id="find-data-sources-signals" class="title-slide slide level1 center" data-number="7">
-<h1><span class="header-section-number">7</span> Find Data Sources &amp; Signals</h1>
+<section id="find-data-sources-signals" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> Find Data Sources &amp; Signals</h1>
 
 </section>
 <section id="finding-data-sources-and-signals-of-interest" class="slide level2">
@@ -980,11 +884,103 @@ misc measures by {county x day}, {county x week}
 <h2>Example - NCHS weekly flu mortality data in states</h2>
 <p><a href="https://delphi.cmu.edu/signals/"> <img src="gfx/signal_discover_screenshot_ex.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;"> </a></p>
 <!-- To reproduce: Pathogen/Syndrom = flu, Severity pyramid = Dead (top of pyramid), Geo-level = ADM1 (e.g. U.S. states) -->
+</section></section>
+<section>
+<section id="epidatr" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> <code>{epidatr}</code></h1>
+
+</section>
+<section id="installing-epidatr" class="slide level2">
+<h2>Installing <code>{epidatr}</code></h2>
+<p>(you already did this, but just for posterity…)</p>
+<p>Install the CRAN version</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="co"># Install the CRAN version</span></span>
+<span id="cb5-2"><a></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"epidatr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><br></p>
+<p>or the development version</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="co"># Install the development version from the GitHub dev branch</span></span>
+<span id="cb6-2"><a></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"cmu-delphi/epidatr@dev"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The CRAN listing is <a href="https://cran.r-project.org/package=epidatr/index.html">here</a>.</p>
+</section>
+<section id="python" class="slide level2">
+<h2>Python</h2>
+<p>In Python, install <a href="https://pypi.org/project/delphi-epidata/"><code>delphi-epidata</code> from PyPI</a> with</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a></a><span class="ex">pip</span> install delphi-epidata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><br></p>
+<p><code>delphi-epidata</code> is soon to be replaced with <code>epidatpy</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a></a><span class="co"># Latest dev version</span></span>
+<span id="cb8-2"><a></a><span class="ex">pip</span> install <span class="at">-e</span> <span class="st">"git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"</span></span>
+<span id="cb8-3"><a></a></span>
+<span id="cb8-4"><a></a><span class="co"># PyPI version (not yet available)</span></span>
+<span id="cb8-5"><a></a><span class="ex">pip</span> install epidatpy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="using-epidatr-and-epidatpy" class="slide level2">
+<h2>Using <code>{epidatr}</code> and <code>{epidatpy}</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">library</span>(epidatr)</span>
+<span id="cb9-2"><a></a>hhs_flu_nc <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb9-3"><a></a>  <span class="at">source =</span> <span class="st">'hhs'</span>, </span>
+<span id="cb9-4"><a></a>  <span class="at">signals =</span> <span class="st">'confirmed_admissions_influenza_1d'</span>, </span>
+<span id="cb9-5"><a></a>  <span class="at">geo_type =</span> <span class="st">'state'</span>, </span>
+<span id="cb9-6"><a></a>  <span class="at">time_type =</span> <span class="st">'day'</span>, </span>
+<span id="cb9-7"><a></a>  <span class="at">geo_values =</span> <span class="st">'nc'</span>,</span>
+<span id="cb9-8"><a></a>  <span class="at">time_values =</span> <span class="fu">c</span>(<span class="dv">20240401</span>, <span class="dv">20240405</span><span class="sc">:</span><span class="dv">20240414</span>)</span>
+<span id="cb9-9"><a></a>)</span>
+<span id="cb9-10"><a></a><span class="fu">head</span>(hhs_flu_nc, <span class="at">n =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 15
+  geo_value signal     source geo_type time_type time_value direction issue     
+  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;  &lt;fct&gt;    &lt;fct&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;date&gt;    
+1 nc        confirmed… hhs    state    day       2024-04-01        NA 2024-04-22
+2 nc        confirmed… hhs    state    day       2024-04-05        NA 2024-04-22
+3 nc        confirmed… hhs    state    day       2024-04-06        NA 2024-04-22
+# ℹ 7 more variables: lag &lt;dbl&gt;, missing_value &lt;dbl&gt;, missing_stderr &lt;dbl&gt;,
+#   missing_sample_size &lt;dbl&gt;, value &lt;dbl&gt;, stderr &lt;dbl&gt;, sample_size &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p><br></p>
+<p>Python equivalent:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a>res <span class="op">=</span> Epidata.covidcast(<span class="st">'hhs'</span>, <span class="st">'confirmed_admissions_influenza_1d'</span>, <span class="st">'day'</span>, <span class="st">'state'</span>, [<span class="dv">20240401</span>, Epidata.<span class="bu">range</span>(<span class="dv">20240405</span>, <span class="dv">20240414</span>)], <span class="st">'nc'</span>)</span>
+<span id="cb11-2"><a></a><span class="bu">print</span>(res[<span class="st">'result'</span>], res[<span class="st">'message'</span>], <span class="bu">len</span>(res[<span class="st">'epidata'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="api-keys" class="slide level2">
+<h2>API keys</h2>
+<ul>
+<li><p>Anyone may access the Epidata API anonymously without providing any personal data!!</p></li>
+<li><p>Anonymous API access is subject to some restrictions: <small>public datasets only; 60 requests per hour; only two parameters may have multiple selections</small></p></li>
+<li><p>API key grants privledged access; can be obtained by <a href="https://api.delphi.cmu.edu/epidata/admin/registration_form">registering with us</a></p></li>
+<li><p>Privileges of registration: no rate limit; no limit on multiple selections</p></li>
+<li><p>We just want to know which signals people care about and ensure we’re providing benefit</p></li>
+</ul>
+<!-- rate limited to 60 requests per hour;  -->
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Tip</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>The <code>{epidatr}</code> client automatically searches for the key in the <code>DELPHI_EPIDATA_KEY</code> environment variable.</li>
+<li>We recommend storing it in your <code>.Renviron</code> file, which R reads by default.</li>
+<li>More on setting your API key <a href="https://rdrr.io/cran/epidatr/man/get_api_key.html">here</a>.</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
 <section id="interactive-tooling-in-r" class="slide level2">
 <h2>Interactive tooling in R</h2>
 <p><span class="primary"><strong>Find sources and signals in R?</strong></span></p>
-<p>Functions to enhance data discovery in <code>epidatr</code>:</p>
+<p>Functions to enhance data discovery in <code>{epidatr}</code>:</p>
 <dl>
 <dt><code>avail_endpoints()</code></dt>
 <dd>
@@ -1163,8 +1159,7 @@ Signals are prefixed with their source for easier navigation
 </section>
 <section id="covidcast-main-endpoint---example-query" class="slide level2">
 <h2>COVIDcast main endpoint - Example query</h2>
-<p>County <code>geo_values</code> are <a href="https://en.wikipedia.org/wiki/List_of_United_States_FIPS_codes_by_county">FIPS codes</a></p>
-<p>The example below is for Orange County, California.</p>
+<p>County <code>geo_values</code> are <a href="https://en.wikipedia.org/wiki/List_of_United_States_FIPS_codes_by_county">FIPS codes</a>: Orange County, California.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>jhu_county_cases <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
 <span id="cb20-2"><a></a>  <span class="at">source =</span> <span class="st">"jhu-csse"</span>,</span>
@@ -1188,14 +1183,11 @@ Signals are prefixed with their source for easier navigation
 6 06059     confirmed_7dav_in… jhu-c… county   2021-01-06 2023-03-03   786  104.</code></pre>
 </div>
 </div>
-<div class="callout callout-important no-icon callout-titled callout-style-default">
+<div class="callout callout-important no-icon callout-style-simple">
 <div class="callout-body">
-<div class="callout-title">
-<p><strong>Getting everything</strong></p>
-</div>
 <div class="callout-content">
 <p>The <code>covidcast</code> endpoint supports <code>*</code> in its time and geo fields.</p>
-<p>To obtain the signal values for all available counties, replace <code>geo_values = "06059"</code> with <code>geo_values = "*"</code>.</p>
+<p>Signal values for all available counties: replace <code>geo_values = "06059"</code> with <code>geo_values = "*"</code>.</p>
 </div>
 </div>
 </div>
@@ -1215,7 +1207,6 @@ Signals are prefixed with their source for easier navigation
 # ℹ 2 more variables: fips_code &lt;chr&gt;, is_metro_micro &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p><br></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">pub_covid_hosp_facility_lookup</span>(<span class="at">state =</span> <span class="st">"WY"</span>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1262,10 +1253,26 @@ Signals are prefixed with their source for easier navigation
 #   all_adult_hospital_inpatient_bed_occupied_7_day_sum &lt;dbl&gt;, …</code></pre>
 </div>
 </div>
+</section>
+<section id="example-queries---other-endpoints-hospitalizations-2" class="slide level2">
+<h2>Example queries - Other endpoints: Hospitalizations</h2>
 <p><span class="primary"><strong>COVID-19 Hospitalization by State</strong></span></p>
 <p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/covid_hosp.html</a> </small></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">pub_covid_hosp_state_timeseries</span>(<span class="at">states =</span> <span class="st">"MA"</span>, <span class="at">dates =</span> <span class="st">"20200510"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 118
+  state geocoded_state issue      date       critical_staffing_shortage_today_…¹
+  &lt;chr&gt; &lt;lgl&gt;          &lt;date&gt;     &lt;date&gt;     &lt;lgl&gt;                              
+1 MA    NA             2024-05-03 2020-05-10 FALSE                              
+# ℹ abbreviated name: ¹​critical_staffing_shortage_today_yes
+# ℹ 113 more variables: critical_staffing_shortage_today_no &lt;lgl&gt;,
+#   critical_staffing_shortage_today_not_reported &lt;lgl&gt;,
+#   critical_staffing_shortage_anticipated_within_week_yes &lt;lgl&gt;,
+#   critical_staffing_shortage_anticipated_within_week_no &lt;lgl&gt;,
+#   critical_staffing_shortage_anticipated_within_week_not_reported &lt;lgl&gt;,
+#   hospital_onset_covid &lt;dbl&gt;, hospital_onset_covid_coverage &lt;dbl&gt;, …</code></pre>
+</div>
 </div>
 </section>
 <section id="example-queries---other-endpoints-flu-endpoints" class="slide level2">
@@ -1273,12 +1280,12 @@ Signals are prefixed with their source for easier navigation
 <p><span class="primary"><strong>FluSurv hospitalization data</strong></span> – Data ends around 2020</p>
 <p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/flusurv.html</a> </small></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="fu">pub_flusurv</span>(<span class="at">locations =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="dv">202001</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">pub_flusurv</span>(<span class="at">locations =</span> <span class="st">"ca"</span>, <span class="at">epiweeks =</span> <span class="dv">202001</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><span class="primary"><strong>Fluview data</strong></span> – Remains active</p>
 <p><small> API docs: <a href="https://cmu-delphi.github.io/delphi-epidata/api/fluview.html" class="uri">https://cmu-delphi.github.io/delphi-epidata/api/fluview.html</a> </small></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">pub_fluview</span>(<span class="at">regions =</span> <span class="st">"nat"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201201</span>, <span class="dv">202001</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="fu">pub_fluview</span>(<span class="at">regions =</span> <span class="st">"nat"</span>, <span class="at">epiweeks =</span> <span class="fu">epirange</span>(<span class="dv">201201</span>, <span class="dv">202001</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
@@ -1316,11 +1323,11 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 </section></section>
 <section>
 <section id="versioning-in-epidatr" class="title-slide slide level1 center" data-number="8">
-<h1><span class="header-section-number">8</span> Versioning in <code>epidatr</code></h1>
+<h1><span class="header-section-number">8</span> Versioning in <code>{epidatr}</code></h1>
 
 </section>
 <section id="versioned-data-in-epidatr" class="slide level2">
-<h2>Versioned data in <code>epidatr</code></h2>
+<h2>Versioned data in <code>{epidatr}</code></h2>
 <p>Epidata API contains each signal’s estimate, location, date, and update timeline</p>
 <p>Requesting Specific Data Versions:</p>
 <ul>
@@ -1339,15 +1346,15 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 <li>Pennsylvania on May 1, 2020:</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>dv_pa_as_of <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb32-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb32-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb32-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb32-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
-<span id="cb32-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb32-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb32-8"><a></a>  <span class="at">as_of =</span> <span class="st">"2020-05-07"</span></span>
-<span id="cb32-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>dv_pa_as_of <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb33-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb33-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb33-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb33-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
+<span id="cb33-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb33-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb33-8"><a></a>  <span class="at">as_of =</span> <span class="st">"2020-05-07"</span></span>
+<span id="cb33-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1366,14 +1373,14 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 <h2>Obtaining data “as of” a specific date</h2>
 <p><span class="primary">Default behaviour:</span> unspecified <code>as_of</code>, get the most recent data</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>dv_pa_final <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb34-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb34-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb34-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb34-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
-<span id="cb34-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb34-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span></span>
-<span id="cb34-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a>dv_pa_final <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb35-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb35-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb35-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb35-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
+<span id="cb35-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb35-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span></span>
+<span id="cb35-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1387,10 +1394,19 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 <ul>
 <li>Increased to ~6% from &lt;3%</li>
 </ul>
-<p><span class="primary"><strong>Versioning is important for forecasting</strong></span>:</p>
+</section>
+<section id="versioning-is-important-for-forecasting" class="slide level2">
+<h2>Versioning is important for forecasting</h2>
+<p><br></p>
 <ul>
 <li>Backtesting requires using data that would have been available at the time</li>
+</ul>
+<p><br></p>
+<ul>
 <li>Not later updates</li>
+</ul>
+<p><br></p>
+<ul>
 <li>Overly optimistic</li>
 </ul>
 </section>
@@ -1398,15 +1414,15 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 <h2>Obtaining multiple specific issues for one state</h2>
 <p>Request all issues in a certain time period</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb36" data-code-line-numbers="1,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>dv_pa_issues <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb36-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb36-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb36-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb36-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
-<span id="cb36-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb36-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb36-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-15"</span>)</span>
-<span id="cb36-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37" data-code-line-numbers="1,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a>dv_pa_issues <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb37-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb37-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb37-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb37-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
+<span id="cb37-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb37-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb37-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-15"</span>)</span>
+<span id="cb37-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1426,15 +1442,15 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 <h2>Obtaining multiple issues for one state</h2>
 <p>To get all issues up to a specific date, set an extreme lower bound</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb38" data-code-line-numbers="1,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>dv_pa_issues_sub <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb38-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb38-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb38-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb38-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
-<span id="cb38-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb38-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb38-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2020-05-15"</span>)</span>
-<span id="cb38-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39" data-code-line-numbers="1,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>dv_pa_issues_sub <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb39-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb39-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb39-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb39-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
+<span id="cb39-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb39-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb39-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2020-05-15"</span>)</span>
+<span id="cb39-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1449,29 +1465,22 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 6 pa        smoothed_adj_cli doctor-vi… 2020-05-01 2020-05-14    13  3.66     NA</code></pre>
 </div>
 </div>
-<ul>
-<li><p>No change here</p></li>
-<li><p>Can matter if the latency or reporting lag is unknown</p></li>
-<li><p><a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">API docs</a> show the earliest date available.</p></li>
-</ul>
+<p>No change here • Can matter if the latency or reporting lag is unknown</p>
+<p><a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">API docs</a> show the earliest date available.</p>
 </section>
 <section id="obtaining-multiple-issues-for-one-state-1" class="slide level2">
 <h2>Obtaining multiple issues for one state</h2>
-<ul>
-<li>At some point, nothing changes</li>
-<li>It is <span class="primary">finalized</span></li>
-<li>That will be the “last” issue</li>
-</ul>
+<p>At some point, nothing changes • It is <span class="primary">finalized</span> • That will be the “last” issue</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb40" data-code-line-numbers="1,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>dv_pa_issues_all <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb40-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb40-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb40-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb40-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
-<span id="cb40-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb40-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb40-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2024-12-11"</span>) <span class="co"># From the 1900s to today</span></span>
-<span id="cb40-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41" data-code-line-numbers="1,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>dv_pa_issues_all <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb41-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb41-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb41-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb41-5"><a></a>  <span class="at">time_values =</span> <span class="st">"2020-05-01"</span>,</span>
+<span id="cb41-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb41-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb41-8"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="st">"1900-01-01"</span>, <span class="st">"2024-12-11"</span>) <span class="co"># From the 1900s to today</span></span>
+<span id="cb41-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1495,15 +1504,15 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 <section id="obtaining-all-issues-for-one-state" class="slide level2">
 <h2>Obtaining all issues for one state</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb42" data-code-line-numbers="1,5,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>dv_pa_issues_star <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb42-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb42-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb42-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb42-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
-<span id="cb42-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb42-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
-<span id="cb42-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb42-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43" data-code-line-numbers="1,5,8,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a>dv_pa_issues_star <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb43-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb43-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb43-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb43-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb43-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb43-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"pa"</span>,</span>
+<span id="cb43-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
+<span id="cb43-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1525,15 +1534,15 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 <h2>Obtaining all issues for all states</h2>
 <p>Using <code>*</code> gives all available</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb44" data-code-line-numbers="1,7-9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a>dv_state_issues_star <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb44-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb44-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb44-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb44-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
-<span id="cb44-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb44-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"*"</span>,</span>
-<span id="cb44-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb44-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45" data-code-line-numbers="1,7-9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>dv_state_issues_star <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb45-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb45-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb45-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb45-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb45-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb45-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"*"</span>,</span>
+<span id="cb45-8"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
+<span id="cb45-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1590,13 +1599,13 @@ dv_state_default <- pub_covidcast(
 -->
 <p>Defaults are intended to be “what you would expect”</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>dv_state_default <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb46-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb46-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb46-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb46-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
-<span id="cb46-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span></span>
-<span id="cb46-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a>dv_state_default <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb47-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb47-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb47-4"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb47-5"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="st">"2020-05-01"</span>, <span class="st">"2020-05-07"</span>),</span>
+<span id="cb47-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span></span>
+<span id="cb47-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1670,7 +1679,7 @@ dv_state_default <- pub_covidcast(
 </ul>
 <!-- Open-access API delivering up-to-date, granular epidemiological data + makes all historical versions available. -->
 <ul>
-<li><span class="primary"><strong>Epidatr:</strong></span> Client package for R</li>
+<li><code>{epidatr}</code>:{.primary} Client package for R</li>
 </ul>
 <!-- and interactive tools for discovering and analyzing health signals. -->
 <ul>
