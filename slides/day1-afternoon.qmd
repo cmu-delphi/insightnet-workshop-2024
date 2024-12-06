@@ -724,7 +724,7 @@ ggplot(value_at_lags, aes(x = time_value, y = mortality)) +
 ```{r ratio-one-day}
 #| echo: true
 
-nowcast_date = as.Date("2022-01-02"); window_length = 90
+nowcast_date = as.Date("2022-01-02"); window_length = 120
 
 # First step: estimate the ratio based on some past data
 finalized_data = epix_as_of(nchs_fullarchive, nowcast_date) |>
@@ -732,12 +732,18 @@ finalized_data = epix_as_of(nchs_fullarchive, nowcast_date) |>
   rename(finalized_val = mortality) |>
   select(geo_value, time_value, finalized_val)
 
-initial_data = nchs_fullarchive$DT |>
-  filter(time_value %in% finalized_data$time_value) |>
-  group_by(geo_value, time_value) |>
-  filter(version == min(version)) |>
-  rename(initial_val = mortality) |>
-  select(geo_value, time_value, initial_val)
+# Need to align train feat with test feat; do some LOCF 
+target_dates = finalized_data |>
+  distinct(time_value) |>
+  pull(time_value)
+
+initial_data = map(target_dates, \(tgt_d) epix_as_of(nchs_fullarchive, tgt_d) |> mutate(version = tgt_d)) |>
+  list_rbind() |>
+  # For each version, take the most recent provisional value as feat 
+  group_by(geo_value, version) |>
+  slice_max(time_value) |>
+  select(-time_value, time_value=version, initial_val=mortality)
+  
 
 ratio = finalized_data |>
   inner_join(initial_data, by = c("geo_value", "time_value")) |>
@@ -762,28 +768,32 @@ One nowcast is not enough! We need to slide that computation across all the nowc
 ```{r nowcaster-to-slide}
 #| echo: true
 #| 
-nowcaster = function(x, g, t, wl=180, appx=49) {
+nowcaster = function(x, g, t, wl=120, appx=49) {
   
-  finalized_data = x$DT |>
-    group_by(geo_value, time_value) |>
-    filter(version ==  max(version)) |>
+
+  finalized_data = epix_as_of(x, t) |>
     filter(time_value >= t - wl - appx & time_value <= t - appx) |>
     rename(finalized_val = mortality) |>
     select(geo_value, time_value, finalized_val)
   
+  target_dates = finalized_data |>
+    distinct(time_value) |>
+    pull(time_value)
   
-  initial_data = x$DT |>
-    group_by(geo_value, time_value) |>
-    filter(version ==  min(version)) |>
-    filter(time_value >= t - wl - appx & time_value <= t - appx) |>
-    rename(initial_val = mortality) |>
-    select(geo_value, time_value, initial_val)
-  
+
+  initial_data = map(target_dates, \(tgt_d) epix_as_of(x, tgt_d) |> mutate(version = tgt_d)) |>
+    list_rbind() |>
+    # For each version, take the most recent provisional value as feat 
+    group_by(geo_value, version) |>
+    slice_max(time_value) |>
+    select(-time_value, time_value=version, initial_val=mortality)
+
   ratio = finalized_data |>
     inner_join(initial_data, by = c("geo_value", "time_value")) |>
     mutate(ratio = finalized_val / initial_val) |>
     pull(ratio) |>
     median(na.rm=TRUE)
+
 
   last_avail = epix_as_of(x, t) |>
     slice_max(time_value) |>
@@ -848,15 +858,17 @@ finalized_val = nchs_fullarchive$DT |>
 ```{r nowcast-fun-plot-results}
 #| echo: false
 ggplot() + 
-  geom_line(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized")) +
-  geom_point(data = finalized_val, aes(x = time_value, y = mortality, color = "Finalized"), shape = 16) +
-  geom_line(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue")) +
-  geom_point(data = first_avail, aes(x = time_value, y = mortality, color = "First available issue"), shape = 16) +
+  geom_line(data = finalized_val, aes(x = time_value, 
+    y = mortality, color = "Finalized")) +
+  geom_point(data = finalized_val, aes(x = time_value, 
+    y = mortality, color = "Finalized"), shape = 16, size = 1) +
+  geom_line(data = first_avail, aes(x = time_value, 
+    y = mortality, color = "First available issue")) +
+  geom_point(data = first_avail, aes(x = time_value, 
+    y = mortality, color = "First available issue"), shape = 16, size=1) +
   geom_line(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast")) +
-  geom_point(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast"), shape = 16) +
-  # geom_ribbon(data = nowcast_results_df, 
-  #             aes(x = time_value, ymin = lower_PI, ymax = upper_PI), 
-  #             alpha = 0.2, fill = "blue") +
+  geom_point(data = nowcasts, aes(x = target_date, y = nowcast, color = "Nowcast"), 
+    shape = 16, size=1) +
   ylab("Mortality") +
   xlab("Date") +
   scale_color_manual(values = c("Nowcast" = "blue", "First available issue" = "red", "Finalized" = "black")) + 
@@ -885,7 +897,7 @@ Let's numerically evaluate our point nowcasts for the provisional values of a ti
 <!-- Accuracy of nowcast is assessed by how close provisional estimates are to the finalized values to gauge the model's performance. -->
 
 ```{r mae-code}
-#| echo: true
+#| echo: TRUE
 
 # Step 1: Join the mortality data with nowcast data
 mae_data = finalized_val |> 
@@ -900,10 +912,60 @@ mae_data <- mae_data |>
 # Step 3: Compute the MAE (mean of absolute errors)
 mae_value <- mae_data |> 
   group_by(geo_value) |>
-  summarise(nc_MAE = mean(nc_abs_error, na.rm=TRUE),
-            rt_MAE = mean(rt_abs_error, na.rm=TRUE))
+  summarise(`Nowcast MAE` = mean(nc_abs_error, na.rm=TRUE),
+            `Realtime MAE` = mean(rt_abs_error, na.rm=TRUE))
 knitr::kable(mae_value)
+
+print(mae_value)
+
 ```
+
+
+## Sliding average as a smoother
+
+```{r avg-smooth-nowcast}
+nowcasts = nowcasts |>
+  select(-version) |>
+  rename(time_value = target_date) |>
+  as_epi_df()
+
+# `window.size` is speicfic to `time_type` of `epi_df`
+attr(nowcasts, "metadata")$time_type
+
+nowcasts = epi_slide_mean(.x = nowcasts, .col_names = nowcast, na.rm=TRUE,
+  .window_size = as.difftime(tim=4, units="weeks")) |>
+  rename(avged_nowcast = slide_value_nowcast)
+
+```
+
+
+## Sliding average as a smoother 
+
+```{r plot-smoothed-nowcast}
+ggplot() + 
+  geom_line(data = finalized_val, aes(x = time_value, 
+    y = mortality, color = "Finalized")) +
+  geom_point(data = finalized_val, aes(x = time_value, 
+    y = mortality, color = "Finalized"), shape = 16, size = 1) +
+  geom_line(data = first_avail, aes(x = time_value, 
+    y = mortality, color = "First available issue")) +
+  geom_point(data = first_avail, aes(x = time_value, 
+    y = mortality, color = "First available issue"), shape = 16, size=1) +
+  geom_line(data = nowcasts, aes(x = time_value, y = avged_nowcast, color = "Smoothed nowcast")) +
+  geom_point(data = nowcasts, aes(x = time_value, y = avged_nowcast, color = "Smoothed nowcast"), 
+    shape = 16, size=1) +
+  ylab("Mortality") +
+  xlab("Date") +
+  scale_color_manual(values = c("Smoothed nowcast" = "blue", "First available issue" = "red", "Finalized" = "black")) + 
+  theme(legend.position = "bottom")
+```
+
+```{r}
+mae_smoothed = nowcasts |>
+  inner_join(finalized_val, by = c("geo_value", "time_value")) |>
+  summarise(`Smoothed MAE` =  mean(abs(avged_nowcast - mortality), na.rm=TRUE))
+```
+
 
 ## Evaluation using MAE
 
@@ -911,14 +973,14 @@ Finally, we may visualize the distribution of absolute residuals for a subset of
 ```{r abs-error-plot}
 ggplot(mae_data) +
   # Nowcast Absolute Error 
-  geom_point(aes(x = time_value, y = nc_abs_error), color = "blue", size = 2) +
+  geom_point(aes(x = time_value, y = nc_abs_error), color = "blue", size = 1) +
   geom_line(aes(x = time_value, y = nc_abs_error), color = "blue") +
 # +
 #   # Horizontal line for Nowcast Mean Absolute Error
 #   geom_hline(aes(yintercept = mean(nc_abs_error), color = "Nowcast AE"), linetype = "dashed") +
   
   # Real-Time Absolute Error 
-  geom_point(aes(x = time_value, y = rt_abs_error), color = "red", size = 2) +
+  geom_point(aes(x = time_value, y = rt_abs_error), color = "red", size = 1) +
   geom_line(aes(x = time_value, y = rt_abs_error), color = "red") +
   # 
   # +
