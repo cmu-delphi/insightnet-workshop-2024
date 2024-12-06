@@ -1289,162 +1289,22 @@ lm.trailing 0.08932857 832.2278</code></pre>
 </div>
 </div>
 </section>
-<section id="quantile-regression" class="slide level2">
-<h2>Quantile regression</h2>
+<section id="expected-vs-actual-coverage" class="slide level2">
+<h2>Expected vs actual coverage</h2>
 <ul>
-<li><p>So far we only considered different ways to apply linear regression.</p></li>
-<li><p>Quantile regression is a different estimation method, and it directly targets conditional quantiles of the outcome over time.</p></li>
+<li><p>We would <span class="primary">expect</span> the ARX model to <span class="primary">cover</span> the truth about <span class="primary">80%</span> of the times. Is this actually true in practice?</p></li>
+<li><p>The actual coverage of the predictive intervals is <span class="primary">lower</span>:</p></li>
 </ul>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Definition</strong></p>
-</div>
-<div class="callout-content">
-<p>Conditional quantile = value below which a given percentage (e.g.&nbsp;25%, 50%, 75%) of observations fall, given specific values of the predictor variables.</p>
-</div>
-</div>
-</div>
-<ul>
-<li><span class="primary">Advantage</span>: it provides a more complete picture of the outcome distribution.</li>
-</ul>
-</section>
-<section id="arx-model-for-covid-deaths-via-quantile-regression" class="slide level2">
-<h2>ARX model for COVID deaths via quantile regression</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/q-reg_bf9930f12b71e289835430a77f8a16c9">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="co">#install.packages("quantreg")</span></span>
-<span id="cb32-2"><a></a><span class="fu">library</span>(quantreg)  <span class="co">#library to perform quantile regression</span></span>
-<span id="cb32-3"><a></a></span>
-<span id="cb32-4"><a></a><span class="co"># Set quantiles of interest: we will focus on 10%, 50% (i.e. median), and 90% quantiles</span></span>
-<span id="cb32-5"><a></a>quantiles <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>)  </span>
-<span id="cb32-6"><a></a></span>
-<span id="cb32-7"><a></a><span class="co"># Fit quantile regression to training set</span></span>
-<span id="cb32-8"><a></a>q_reg <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">data =</span> train, <span class="at">tau =</span> quantiles)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="predictions-via-quantile-regression-cv-trailing" class="slide level2">
-<h2>Predictions via quantile regression (CV, trailing)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/q-reg-time-series-cv_cf655b492c7616b9d62fc4141c08773f">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="co"># Initialize matrix to store predictions </span></span>
-<span id="cb33-2"><a></a><span class="co"># 3 columns: lower limit, median, and upper limit</span></span>
-<span id="cb33-3"><a></a>pred_interval_rq <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> n, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
-<span id="cb33-4"><a></a><span class="fu">colnames</span>(pred_interval_rq) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'lower'</span>, <span class="st">'median'</span>, <span class="st">'upper'</span>)</span>
-<span id="cb33-5"><a></a></span>
-<span id="cb33-6"><a></a><span class="cf">for</span> (t <span class="cf">in</span> t0<span class="sc">:</span>(n<span class="sc">-</span>h)) {</span>
-<span id="cb33-7"><a></a>  <span class="co"># Fit quantile regression</span></span>
-<span id="cb33-8"><a></a>  rq_trailing <span class="ot">=</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles,</span>
-<span id="cb33-9"><a></a>                   <span class="at">data =</span> ca, <span class="at">subset =</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&lt;=</span> t <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>n) <span class="sc">&gt;</span> (t<span class="sc">-</span>w)) </span>
-<span id="cb33-10"><a></a>  </span>
-<span id="cb33-11"><a></a>  <span class="co"># Sort estimated coefficients </span></span>
-<span id="cb33-12"><a></a>  <span class="co">#coefs_sorted &lt;- t(apply(coef(rq_trailing), 1, sort))</span></span>
-<span id="cb33-13"><a></a>  <span class="co">#rq_trailing$coefficients &lt;- coefs_sorted</span></span>
-<span id="cb33-14"><a></a>  </span>
-<span id="cb33-15"><a></a>  <span class="co"># Predict</span></span>
-<span id="cb33-16"><a></a>  <span class="co">#pred_interval_rq[t+h, ] = pmax(0, predict(rq_trailing, newdata = data.frame(ca[t+h, ])))</span></span>
-<span id="cb33-17"><a></a>  pred_interval_rq[t<span class="sc">+</span>h, ] <span class="ot">=</span> <span class="fu">sort</span>(<span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> <span class="fu">data.frame</span>(ca[t<span class="sc">+</span>h, ]))))</span>
-<span id="cb33-18"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="predictions-via-quantile-regression-cv-trailing-1" class="slide level2">
-<h2>Predictions via quantile regression (CV, trailing)</h2>
-
-<img data-src="day2-morning_files/figure-revealjs/q-reg-plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/qr-errors-arx_03e0ccfc833bbecb06e67f7bd4ca6047">
+<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lm-coverage-all-past_9efdbba30a786c4290a01b38c0b15799">
 <div class="cell-output cell-output-stdout">
-<pre><code>                   MAE     MASE
-rq.trailing 0.08379408 780.6659</code></pre>
-</div>
-</div>
-</section>
-<section id="actual-coverage" class="slide level2">
-<h2>Actual Coverage</h2>
-<ul>
-<li><p>We would <span class="primary">expect</span> the ARX model fitted via <code>lm</code> and via <code>rq</code> to <span class="primary">cover</span> the truth about <span class="primary">80%</span> of the times. Is this actually true in practice?</p></li>
-<li><p>The actual coverage of each predictive interval is <span class="primary">lower</span>:</p></li>
-</ul>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/lm-coverage-all-past_fc73464e0d70890ff9f6a0f0d2dc8f27">
-<div class="cell-output cell-output-stdout">
-<pre><code>         lm.trailing rq.trailing
-Coverage   0.6029412   0.4367647</code></pre>
+<pre><code>         Actual Expected
+Coverage    0.6      0.8</code></pre>
 </div>
 </div>
 <ul>
 <li>We can use <span class="primary">calibration</span> to handle under-covering (more on this in the afternoon)</li>
 </ul>
-</section>
-<section id="evaluation-1" class="slide level2 smaller">
-<h2>Evaluation</h2>
-<ul>
-<li><p>Prediction intervals are “good” if they</p>
-<ul>
-<li><p>cover the truth most of the time</p></li>
-<li><p>are not too wide</p></li>
-</ul></li>
-<li><p>Error metric that captures both desiderata: <span class="primary">Weighted Interval Score (WIS)</span></p></li>
-<li><p><span class="math inline">\(F\)</span> = forecast composed of predicted quantiles <span class="math inline">\(q_{\tau}\)</span> for the set of quantile levels <span class="math inline">\(\tau\)</span>. The WIS for target variable <span class="math inline">\(Y\)</span> is represented as:</p></li>
-</ul>
-<p><span class="math display">\[WIS(F, Y) = 2\sum_{\tau} \phi_{\tau} (Y - q_{\tau})\]</span></p>
-<p>where <span class="math inline">\(\phi_{\tau}(x) = \tau |x|\)</span> for <span class="math inline">\(x \geq 0\)</span> and <span class="math inline">\(\phi_{\tau}(x) = (1-\tau) |x|\)</span> for <span class="math inline">\(x &lt; 0\)</span>.</p>
-<ul>
-<li>If <span class="primary">quantile levels</span> are <span class="primar">symmetric</span>, alternative expression:</li>
-</ul>
-<p><span class="math display">\[WIS(F, Y) = \sum_{\alpha} \{(u_\alpha - l_\alpha) + 2 \cdot \text{dist}(Y, [l_\alpha, u_\alpha])\}\]</span> where <span class="math inline">\([l_\alpha, u_\alpha]\)</span> are central prediction intervals parametrized by the exclusion probability <span class="math inline">\(\alpha\)</span>, and <span class="math inline">\(\text{dist}(a, S)\)</span> = smallest distance between point <span class="math inline">\(a\)</span> and an element of set <span class="math inline">\(S\)</span>.</p>
-</section>
-<section id="computing-the-wis" class="slide level2">
-<h2>Computing the WIS</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/wis-function_f9777239a2900a70030d179a61d6796e">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>WIS <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, estimates, quantiles) {</span>
-<span id="cb36-2"><a></a>  <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pmax</span>(</span>
-<span id="cb36-3"><a></a>    quantiles <span class="sc">*</span> (truth <span class="sc">-</span> estimates),</span>
-<span id="cb36-4"><a></a>    (<span class="dv">1</span> <span class="sc">-</span> quantiles) <span class="sc">*</span> (estimates <span class="sc">-</span> truth),</span>
-<span id="cb36-5"><a></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
-<span id="cb36-6"><a></a>  ))</span>
-<span id="cb36-7"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="callout callout-important no-icon callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>WIS tends to <span class="primary">prioritize sharpness</span> (how wide the interval is) relative to coverage (if the interval contains the truth).</p>
-</div>
-</div>
-</div>
-</section>
-<section id="wis-for-arx-fitted-via-lm-and-rq" class="slide level2">
-<h2>WIS for ARX fitted via <code>lm</code> and <code>rq</code></h2>
-<p>The lowest mean WIS is attained by quantile regression.</p>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/wis-lm_e1967262d61a14968734dd3959a7fb90">
-<div class="cell-output cell-output-stdout">
-<pre><code>  Mean WIS lm Mean WIS rq
-1   0.1670436   0.1628808</code></pre>
-</div>
-</div>
-</section>
-<section id="multiple-quantiles" class="slide level2">
-<h2>Multiple quantiles</h2>
-<ul>
-<li><p>In practice, one might want to include more quantiles (Forecast Hub asks for 23 quantiles)</p></li>
-<li><p>To reliably estimate more quantiles, we <span class="primary">need more data</span>. This can be achieved by:</p>
-<ul>
-<li><p>using a <span class="primary">longer trailing window</span> (but <span class="primary">trade-off</span> with ability to adapt to changes in predictors-outcome relation)</p></li>
-<li><p>using <span class="primary">multiple time series</span> (e.g.&nbsp;data from multiple states, more on this in the afternoon)</p></li>
-</ul></li>
-</ul>
-</section>
-<section id="quantile-regression-with-forecast-hub-quantiles" class="slide level2">
-<h2>Quantile regression with Forecast Hub quantiles</h2>
-<h3 id="no-sorting">No sorting</h3>
-
-<img data-src="day2-morning_files/figure-revealjs/q-reg-plot-more-quantiles-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
-<section id="quantile-regression-with-forecast-hub-quantiles-1" class="slide level2">
-<h2>Quantile regression with Forecast Hub quantiles</h2>
-<h3 id="sorted-predictions">Sorted predictions</h3>
-
-<img data-src="day2-morning_files/figure-revealjs/q-reg-more-quantiles-sort-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
+</section></section>
 <section>
 <section id="forecasting-with-versioned-data" class="title-slide slide level1 center" data-number="6">
 <h1><span class="header-section-number">6</span> Forecasting with Versioned Data</h1>
@@ -1464,7 +1324,7 @@ Coverage   0.6029412   0.4367647</code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/versioned-data_b2c330ffc99a05aeb303ef403c610610">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>ca_archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>ca_archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
 ℹ Min/max time values: 2020-04-01 / 2023-03-09
@@ -1487,45 +1347,42 @@ Coverage   0.6029412   0.4367647</code></pre>
 </div>
 </section>
 <section id="version-aware-forecasting" class="slide level2">
-<h2>Version aware-forecasting</h2>
+<h2>Version-aware forecasting</h2>
 <p><span class="primary">Important</span>: when fitting and predicting, only use data in the latest version available at the forecast date!</p>
 </section>
 <section id="version-aware-forecasting-1" class="slide level2">
 <h2>Version-aware forecasting</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/versioned-quantile-reg_ed726980cff0e74cfc4e78b16de09462">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
-<span id="cb40-2"><a></a><span class="co"># 5 columns: forecast date, target date, 10%, 50%, and 90% quantiles</span></span>
-<span id="cb40-3"><a></a>pred_aware <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">5</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
-<span id="cb40-4"><a></a></span>
-<span id="cb40-5"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
-<span id="cb40-6"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
-<span id="cb40-7"><a></a></span>
-<span id="cb40-8"><a></a><span class="co"># dates when predictions are made </span></span>
-<span id="cb40-9"><a></a>fc_time_values <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-01"</span>), <span class="at">by =</span> <span class="st">"1 day"</span>)</span>
-<span id="cb40-10"><a></a></span>
-<span id="cb40-11"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
-<span id="cb40-12"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
-<span id="cb40-13"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(ca_archive, <span class="at">max_version =</span> <span class="fu">as.Date</span>(fc_date))</span>
-<span id="cb40-14"><a></a>  <span class="co"># create lagged predictors</span></span>
-<span id="cb40-15"><a></a>  data<span class="sc">$</span>lagged_deaths <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>deaths, h) </span>
-<span id="cb40-16"><a></a>  data<span class="sc">$</span>lagged_cases <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>cases, h)</span>
-<span id="cb40-17"><a></a>  <span class="co"># perform quantile regression</span></span>
-<span id="cb40-18"><a></a>  rq_trailing <span class="ot">&lt;-</span> <span class="fu">rq</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, <span class="at">tau =</span> quantiles, </span>
-<span id="cb40-19"><a></a>                    <span class="co"># only consider window of data</span></span>
-<span id="cb40-20"><a></a>                    <span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;</span> (<span class="fu">max</span>(time_value) <span class="sc">-</span> w))) </span>
-<span id="cb40-21"><a></a>  <span class="co"># sort estimated coefficients </span></span>
-<span id="cb40-22"><a></a>  <span class="co">#coefs_sorted &lt;- t(apply(coef(rq_trailing), 1, sort))</span></span>
-<span id="cb40-23"><a></a>  <span class="co">#colnames(coefs_sorted) &lt;- c('tau..0.1', 'tau..0.5', 'tau..0.9')</span></span>
-<span id="cb40-24"><a></a>  <span class="co">#rq_trailing$coefficients &lt;- coefs_sorted</span></span>
-<span id="cb40-25"><a></a>  <span class="co"># construct data.frame with the right predictors for the target date</span></span>
-<span id="cb40-26"><a></a>  predictors <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lagged_deaths =</span> <span class="fu">tail</span>(data<span class="sc">$</span>deaths, <span class="dv">1</span>), </span>
-<span id="cb40-27"><a></a>                           <span class="at">lagged_cases =</span> <span class="fu">tail</span>(data<span class="sc">$</span>cases, <span class="dv">1</span>))</span>
-<span id="cb40-28"><a></a>  <span class="co"># make predictions for target date and add them to matrix of predictions</span></span>
-<span id="cb40-29"><a></a>  pred_aware <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_aware, </span>
-<span id="cb40-30"><a></a>                      <span class="fu">data.frame</span>(<span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
-<span id="cb40-31"><a></a>                                 <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
-<span id="cb40-32"><a></a>                                 <span class="fu">t</span>(<span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">sort</span>(<span class="fu">predict</span>(rq_trailing, <span class="at">newdata =</span> predictors))))))</span>
-<span id="cb40-33"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/versioned-reg_f90520262a90e7967bc654b09140a269">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="co"># initialize dataframe for predictions</span></span>
+<span id="cb35-2"><a></a><span class="co"># 5 columns: forecast date, target date, 10%, 50%, and 90% quantiles</span></span>
+<span id="cb35-3"><a></a>pred_aware <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">5</span>, <span class="at">nrow =</span> <span class="dv">0</span>))</span>
+<span id="cb35-4"><a></a></span>
+<span id="cb35-5"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span>         <span class="co">#trailing window size</span></span>
+<span id="cb35-6"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>          <span class="co">#number of days ahead</span></span>
+<span id="cb35-7"><a></a></span>
+<span id="cb35-8"><a></a><span class="co"># forecast once a week</span></span>
+<span id="cb35-9"><a></a>fc_time_values <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-09"</span>), <span class="at">by =</span> <span class="st">"1 week"</span>)</span>
+<span id="cb35-10"><a></a></span>
+<span id="cb35-11"><a></a><span class="cf">for</span> (fc_date <span class="cf">in</span> fc_time_values) {</span>
+<span id="cb35-12"><a></a>  <span class="co"># get data version as_of forecast date</span></span>
+<span id="cb35-13"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(ca_archive, <span class="at">version =</span> <span class="fu">as.Date</span>(fc_date))</span>
+<span id="cb35-14"><a></a>  <span class="co"># create lagged predictors</span></span>
+<span id="cb35-15"><a></a>  data<span class="sc">$</span>lagged_deaths <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>deaths, h) </span>
+<span id="cb35-16"><a></a>  data<span class="sc">$</span>lagged_cases <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(data<span class="sc">$</span>cases, h)</span>
+<span id="cb35-17"><a></a>  <span class="co"># perform regression</span></span>
+<span id="cb35-18"><a></a>  lm_weekly <span class="ot">&lt;-</span> <span class="fu">lm</span>(deaths <span class="sc">~</span> lagged_deaths <span class="sc">+</span> lagged_cases, </span>
+<span id="cb35-19"><a></a>                  <span class="co"># only consider window of data</span></span>
+<span id="cb35-20"><a></a>                  <span class="at">data =</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;</span> (<span class="fu">max</span>(time_value) <span class="sc">-</span> w))) </span>
+<span id="cb35-21"><a></a>  <span class="co"># construct data.frame with the right predictors for the target date</span></span>
+<span id="cb35-22"><a></a>  predictors <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lagged_deaths =</span> <span class="fu">tail</span>(data<span class="sc">$</span>deaths, <span class="dv">1</span>), </span>
+<span id="cb35-23"><a></a>                           <span class="at">lagged_cases =</span> <span class="fu">tail</span>(data<span class="sc">$</span>cases, <span class="dv">1</span>))</span>
+<span id="cb35-24"><a></a>  <span class="co"># make predictions for target date and add them to dataframe of predictions</span></span>
+<span id="cb35-25"><a></a>  pred_aware <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred_aware, </span>
+<span id="cb35-26"><a></a>                      <span class="fu">data.frame</span>(<span class="st">'forecast_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value),</span>
+<span id="cb35-27"><a></a>                                 <span class="st">'target_date'</span> <span class="ot">=</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value) <span class="sc">+</span> h, </span>
+<span id="cb35-28"><a></a>                                 <span class="fu">t</span>(<span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">predict</span>(lm_weekly, <span class="at">newdata =</span> predictors,</span>
+<span id="cb35-29"><a></a>                                                   <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.8</span>)))))</span>
+<span id="cb35-30"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="version-aware-predictions-cv-trailing" class="slide level2">
@@ -1541,10 +1398,10 @@ version-aware 0.07130073 672.6971</code></pre>
 <section id="version-unaware-predictions-cv-trailing" class="slide level2">
 <h2>Version-unaware predictions (CV, trailing)</h2>
 
-<img data-src="day2-morning_files/figure-revealjs/plot-version-unaware-cv-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/qr-errors-unaware_a725e8e5511f5c95886e999003a875d3">
+<img data-src="day2-morning_files/figure-revealjs/plot-version-unaware-cv-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-morning_cache/revealjs/qr-errors-unaware_a413efdcdf1082c499d80dceae293d15">
 <div class="cell-output cell-output-stdout">
-<pre><code>                      MAE     MASE
-version-unaware 0.0694222 646.7705</code></pre>
+<pre><code>                       MAE     MASE
+version-unaware 0.07934554 200.4657</code></pre>
 </div>
 </div>
 </section></section>
