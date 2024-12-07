@@ -218,7 +218,7 @@
 <li><p>Overview of this Workshop</p></li>
 <li><p>Panel Data</p></li>
 <li><p>Versioned Data</p></li>
-<li><p>Epidata API</p></li>
+<li><p>Epidata Repository and API</p></li>
 <li><p>Find Data Sources and Signals</p></li>
 <li><p><code>{epidatr}</code></p></li>
 <li><p>Versioning in <code>{epidatr}</code></p></li>
@@ -334,11 +334,13 @@
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/examples-chng-cli-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -348,11 +350,13 @@
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/examples-chng-covid-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -369,9 +373,11 @@ Example: gathering different signals + visualizing panel data
 
 
 
+
 ::: {.cell layout-align="center"}
 
 :::
+
 
 
 
@@ -380,13 +386,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 <div style="text-align: center;">
@@ -402,11 +410,13 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/plot-ca-cases-deaths-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -420,7 +430,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <section id="intro-to-versioned-data" class="slide level2">
 <h2>Intro to versioned data</h2>
 <ul>
-<li><p>Many epidemic aggregates are subject to <span class="primary">reporting delays</span></p></li>
+<li><p>Many epidemic aggregates are subject to <span class="primary">reporting delays and revisions</span></p></li>
 <li><p>This is because individual-level data has delayed availability:</p></li>
 </ul>
 <p><span class="fourth-colour">Person comes to ER → Has some tests → Admitted → Tests come back → Entered into the system → …</span></p>
@@ -435,8 +445,8 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <section id="versioned-data-1" class="slide level2">
 <h2>Versioned data</h2>
 <ul>
-<li><p>The event time is indicated by <code>time_value</code></p></li>
-<li><p>Now, we add a second time index to indicate the data <code>version</code></p></li>
+<li><p>The event time is indicated by <code>time_value</code> (aka <code>reference_date</code>)</p></li>
+<li><p>Now, we add a second time index to indicate the data <code>version</code> (aka <code>reporting_date</code>)</p></li>
 <li><p><code>version</code> = the time at which we saw a particular <code>value</code> associated to a <code>time_value</code></p></li>
 </ul>
 <div class="cell" data-layout-align="center">
@@ -642,54 +652,16 @@ Changes in case definitions are implemented
 </ul>
 </section></section>
 <section>
-<section id="epidata-api" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> Epidata API</h1>
+<section id="epidata-repository-and-api" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> Epidata Repository and API</h1>
 
-</section>
-<section id="goals-of-delphi-epidata-platform-and-repository" class="slide level2">
-<h2>Goals of Delphi Epidata platform and repository</h2>
-<ol type="1">
-<li><strong>Provide many aggregated epi-surveillance time-series (“epi-signals”)</strong>
-<ul>
-<li>Mirror signals from other sources, especially if revisions are not tracked <!-- E.g. CDC's own NSSP, NWSS --></li>
-<li>Be the national historical repository of record &amp; preserve the raw data</li>
-</ul></li>
-</ol>
-<!-- Hence: include also signals available elsewhere, especially if they don't keep data revisions - E.g. CDC's own NSSP, NWSS -->
-<ol start="2" type="1">
-<li><p><strong>Be the go-to place for epi-signal discovery, including those held elsewhere</strong></p></li>
-<li><p><strong>Add value to existing signals and synthesize new ones</strong></p>
-<ul>
-<li>Via signal fusion, nowcasting, smoothing</li>
-</ul></li>
-<li><p><strong>Provide access to otherwise private data where possible</strong></p>
-<ul>
-<li>With privacy protocols in place</li>
-<li>Better positioned than government or industry</li>
-</ul></li>
-</ol>
-<div class="callout callout-important callout-style-simple">
-<div class="callout-body">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-content">
-<p>Make epi-surveillance more nimble, complete, standardized, robust, and real-time</p>
-</div>
-</div>
-</div>
-<p>Epidata is not the solution; but we hope it is a blueprint towards such a solution.</p>
 </section>
 <section id="what-is-the-epidata-repository" class="slide level2">
 <h2>What is the Epidata repository</h2>
 <p><span class="primary"><strong>Epidata:</strong></span> repository of aggregated epi-surveillance time series</p>
-<p>Free and open-source</p>
-<!-- To the full extent we can, we make everything [free and open-source]{.primary}. -->
+<p>Code is open-source. Signals can be either public or restricted.</p>
 <ul>
-<li>To date, it has accumulated over 5 billion records.</li>
-</ul>
-<!-- (each record is the value of a signal, at a particular date, and a particular location). -->
-<ul>
+<li><p>To date, it has accumulated over 5 billion records.</p></li>
 <li><p>At the peak of the pandemic, handled millions of API queries per day.</p></li>
 <li><p>Many aren’t available elsewhere</p></li>
 </ul>
@@ -707,6 +679,34 @@ revision tracking, anomaly detection, trend detection, smoothing, imputation, ge
 </dd>
 </dl>
 </section>
+<section id="goals-of-delphi-epidata-platform-and-repository" class="slide level2">
+<h2>Goals of Delphi Epidata platform and repository</h2>
+<ol type="1">
+<li><strong>Provide many aggregated epi-surveillance time-series (“epi-signals”)</strong>
+<ul>
+<li>Mirror signals from other sources, especially if revisions are not tracked <!-- E.g. CDC's own NSSP, NWSS --></li>
+<li>Be the national historical repository of record &amp; preserve the raw data</li>
+</ul></li>
+</ol>
+<!-- Hence: include also signals available elsewhere, especially if they don't keep data revisions - E.g. CDC's own NSSP, NWSS -->
+<ol start="2" type="1">
+<li><p><strong>Be the go-to place for epi-signal discovery, including those held elsewhere</strong></p></li>
+<li><p><strong>Add value to existing signals and synthesize new ones</strong></p>
+<ul>
+<li>Via signal fusion, nowcasting, smoothing</li>
+</ul></li>
+</ol>
+<div class="callout callout-important callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Make epi-surveillance more nimble, complete, standardized, robust, and real-time</p>
+</div>
+</div>
+</div>
+</section>
 <section id="features-of-delphi-epidata" class="slide level2">
 <h2>Features of Delphi Epidata</h2>
 <ul>
@@ -723,20 +723,15 @@ revision tracking, anomaly detection, trend detection, smoothing, imputation, ge
 <li><p>Code is Open Source.</p></li>
 <li><p>Signals are as accessible (w/ API, SDK) as allowed by DUAs</p></li>
 </ul>
-<!-- MSA, HRR, state, HHS region, nation -->
-<!-- 1st point: Concepts of "reporting date" and "as of". -->
-<!--     + Backfill projection and alerting to changes in backfill dynamics -->
 </section>
-<section id="epidata-api-1" class="slide level2">
-<h2>Epidata API</h2>
-<ul>
-<li><p><a href="https://cmu-delphi.github.io/delphi-epidata/">Delphi’s Epidata API</a> real-time access to epidemiological surveillance data</p></li>
-<li><p>The <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html">main endpoint</a> (covidcast) daily updates about COVID-19 and influenza in the U.S.</p></li>
-<li><p>A <a href="https://cmu-delphi.github.io/delphi-epidata/api/README.html">variety of other endpoints</a> international historical data for COVID-19, influenza, dengue, norovirus</p></li>
-<li><p>A <a href="https://cmu-delphi.github.io/delphi-epidata/api/client_libraries.html">full-featured R client</a> for quick access to all data</p></li>
-<li><p>A <a href="https://cmu-delphi.github.io/delphi-epidata/api/client_libraries.html#python">legacy Python client</a>, full-featured Python client in development</p></li>
-</ul>
-<!-- The main endpoint (covidcast) providing daily updates about current COVID-19 and influenza activity across the United States. -->
+<section id="epidata-documentation" class="slide level2">
+<h2>Epidata Documentation</h2>
+<p><br></p>
+<p><a href="https://cmu-delphi.github.io/delphi-epidata/">Delphi’s Epidata API</a> real-time access to epidemiological surveillance data</p>
+<p><br></p>
+<p>The <a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html">main endpoint</a> (covidcast) daily updates about COVID-19 and influenza in the U.S.</p>
+<p><br></p>
+<p>A <a href="https://cmu-delphi.github.io/delphi-epidata/api/README.html">variety of other endpoints</a> international historical data for COVID-19, influenza, dengue, norovirus</p>
 </section>
 <section id="some-of-our-data-sources" class="slide level2">
 <h2>Some of our data sources</h2>
@@ -789,34 +784,6 @@ many dozens of questions, by <code>county x day</code>
 misc measures by <code>{county x day, county x week}</code>
 </dd>
 </dl>
-<!--
-
-## Some of our pre-pandemic data sources
-* FluView ILINet, by {state x week}
-
-* FluView Clinical (% positive flu, PH and clinical labs)
-
-* Google Health Trends (GHT), precursor to Google Symptoms
-
-* Google Flu Trends (GFT), precursor to to GHT
-
-* Twitter flu
-
-* Access counts for flu-related CDC pages, by {city x week}
-
-* Access counts for flu-related Wikipedia entries by {day x hour}
-
-* Flu-surv (flu hosp rates, now expanded to RESP-NET)
-
-* Misc signals for dengue, norovirus
-
-* Misc signals for PAHO countries, ECDC, KCDC, Taiwan,...
-
-* Delphi ILI nowcasts, by {state x week}, visualized in "ILI Nearby" website
-
-* Delphi ILI forecasts, by {state x week}
-
--->
 </section>
 <section id="severity-pyramid" class="slide level2">
 <h2>Severity pyramid</h2>
@@ -850,40 +817,6 @@ misc measures by <code>{county x day, county x week}</code>
 <p><br> “classic” <a href="https://delphi.cmu.edu/covidcast/classic/">map-based version</a> visualize a core set of COVID-19 and flu indicators</p>
 <p><br> <a href="https://delphi.cmu.edu/covidcast/export/">Covidcast signal export app</a></p>
 <p><br> <a href="https://delphi.cmu.edu/covidcast/dashboard/">Dashboard builder</a></p>
-</section>
-<section id="signal-dashboard---for-covid-19-flu-data" class="slide level2">
-<h2>Signal dashboard - For COVID-19 &amp; flu data</h2>
-<div class="flex">
-<div class="w-40">
-<p><br></p>
-<ul>
-<li><p>Displays <a href="https://delphi.cmu.edu/covidcast/">a selection</a> of signals for COVID-19 &amp; flu</p></li>
-<li><p>Browse by location or indicator</p></li>
-<li><p>Choose signals to export</p></li>
-</ul>
-<p><br></p>
-<ul>
-<li><strong>Example</strong>: Google symptom search trends in NC.</li>
-</ul>
-<!-- 
-* Includes "Data Export" to pull a selected signal & download as a CSV. -->
-</div>
-<div class="w-60">
-<iframe width="800" height="800" src="https://delphi.cmu.edu/covidcast/indicator/?date=20240426&amp;region=NC">
-</iframe>
-</div>
-</div>
-</section>
-<section id="signal-discovery-app---browse-for-more-data" class="slide level2">
-<h2>Signal discovery app - Browse for more data</h2>
-<p>Easily find data sources and signals, no programming required</p>
-<p><a href="https://delphi.cmu.edu/signals/">https://delphi.cmu.edu/signals/</a></p>
-<p><a href="https://delphi.cmu.edu/signals/"> <img src="gfx/signal_discover_screenshot.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;"> </a></p>
-</section>
-<section id="example---nchs-weekly-flu-mortality-data-in-states" class="slide level2">
-<h2>Example - NCHS weekly flu mortality data in states</h2>
-<p><a href="https://delphi.cmu.edu/signals/"> <img src="gfx/signal_discover_screenshot_ex.jpg" alt="Signal Discover Screenshot" style="height: auto; width: auto;"> </a></p>
-<!-- To reproduce: Pathogen/Syndrom = flu, Severity pyramid = Dead (top of pyramid), Geo-level = ADM1 (e.g. U.S. states) -->
 </section></section>
 <section>
 <section id="epidatr" class="title-slide slide level1 center" data-number="7">
@@ -1573,6 +1506,7 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 
 
 
+
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -1585,6 +1519,7 @@ dv_state_default <- pub_covidcast(
 )
 ```
 :::
+
 
 
 
@@ -1633,13 +1568,15 @@ dv_state_default <- pub_covidcast(
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 </div>
@@ -1652,13 +1589,15 @@ dv_state_default <- pub_covidcast(
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 </div>

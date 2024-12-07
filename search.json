@@ -536,7 +536,7 @@
     "href": "slides/day1-morning.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\nThe Delphi Research Group\nOverview of this Workshop\nPanel Data\nVersioned Data\nEpidata API\nFind Data Sources and Signals\n{epidatr}\nVersioning in {epidatr}"
+    "text": "Outline\n\nThe Delphi Research Group\nOverview of this Workshop\nPanel Data\nVersioned Data\nEpidata Repository and API\nFind Data Sources and Signals\n{epidatr}\nVersioning in {epidatr}"
   },
   {
     "objectID": "slides/day1-morning.html#about-delphi",
@@ -599,14 +599,14 @@
     "href": "slides/day1-morning.html#intro-to-versioned-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Intro to versioned data",
-    "text": "Intro to versioned data\n\nMany epidemic aggregates are subject to reporting delays\nThis is because individual-level data has delayed availability:\n\nPerson comes to ER → Has some tests → Admitted → Tests come back → Entered into the system → …\n\nSo, a “Hospital admission” may not attributable to a particular condition until a few days have passed (the patient may even have been released)\nAggregated data have a longer pipeline from the incident to the report.\nSo we have to track both: when the event occurred and when it was reported\nAdditionally, various mistakes lead to revisions\nThis means there can be many different values for the same date"
+    "text": "Intro to versioned data\n\nMany epidemic aggregates are subject to reporting delays and revisions\nThis is because individual-level data has delayed availability:\n\nPerson comes to ER → Has some tests → Admitted → Tests come back → Entered into the system → …\n\nSo, a “Hospital admission” may not attributable to a particular condition until a few days have passed (the patient may even have been released)\nAggregated data have a longer pipeline from the incident to the report.\nSo we have to track both: when the event occurred and when it was reported\nAdditionally, various mistakes lead to revisions\nThis means there can be many different values for the same date"
   },
   {
     "objectID": "slides/day1-morning.html#versioned-data-1",
     "href": "slides/day1-morning.html#versioned-data-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioned data",
-    "text": "Versioned data\n\nThe event time is indicated by time_value\nNow, we add a second time index to indicate the data version\nversion = the time at which we saw a particular value associated to a time_value\n\n\n\n# A tibble: 6 × 4\n  time_value geo_value percent_cli version   \n  &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;date&gt;    \n1 2020-06-01 ca               2.14 2020-06-06\n2 2020-06-01 ca               2.14 2020-06-08\n3 2020-06-01 ca               2.11 2020-06-09\n4 2020-06-01 ca               2.13 2020-06-10\n5 2020-06-01 ca               2.20 2020-06-11\n6 2020-06-01 ca               2.23 2020-06-12\n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
+    "text": "Versioned data\n\nThe event time is indicated by time_value (aka reference_date)\nNow, we add a second time index to indicate the data version (aka reporting_date)\nversion = the time at which we saw a particular value associated to a time_value\n\n\n\n# A tibble: 6 × 4\n  time_value geo_value percent_cli version   \n  &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;date&gt;    \n1 2020-06-01 ca               2.14 2020-06-06\n2 2020-06-01 ca               2.14 2020-06-08\n3 2020-06-01 ca               2.11 2020-06-09\n4 2020-06-01 ca               2.13 2020-06-10\n5 2020-06-01 ca               2.20 2020-06-11\n6 2020-06-01 ca               2.23 2020-06-12\n\n\n\nNote that this feature can be indicated in different ways (ex. version, issue, release, as_of)."
   },
   {
     "objectID": "slides/day1-morning.html#versioned-panel-data",
@@ -679,18 +679,18 @@
     "text": "Reporting backlogs - Key takeaways\n\n\nReporting issues common across U.S. jurisdictions\n\n\n\nAudits regularly discovered misclassified or unreported cases and deaths\n\n\n\nCross-checking data with external sources from different reporting systems"
   },
   {
-    "objectID": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
-    "href": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Goals of Delphi Epidata platform and repository",
-    "text": "Goals of Delphi Epidata platform and repository\n\nProvide many aggregated epi-surveillance time-series (“epi-signals”)\n\nMirror signals from other sources, especially if revisions are not tracked \nBe the national historical repository of record & preserve the raw data\n\n\n\n\nBe the go-to place for epi-signal discovery, including those held elsewhere\nAdd value to existing signals and synthesize new ones\n\nVia signal fusion, nowcasting, smoothing\n\nProvide access to otherwise private data where possible\n\nWith privacy protocols in place\nBetter positioned than government or industry\n\n\n\n\n\n\n\n\nMake epi-surveillance more nimble, complete, standardized, robust, and real-time\n\n\n\nEpidata is not the solution; but we hope it is a blueprint towards such a solution."
-  },
-  {
     "objectID": "slides/day1-morning.html#what-is-the-epidata-repository",
     "href": "slides/day1-morning.html#what-is-the-epidata-repository",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "What is the Epidata repository",
-    "text": "What is the Epidata repository\nEpidata: repository of aggregated epi-surveillance time series\nFree and open-source\n\n\nTo date, it has accumulated over 5 billion records.\n\n\n\nAt the peak of the pandemic, handled millions of API queries per day.\nMany aren’t available elsewhere\n\n\nData from\n\npublic health reporting, medical insurance claims, medical device data, Google search queries, wastewater, app-based mobility patterns.\n\n\n\n\nAdded value\n\nrevision tracking, anomaly detection, trend detection, smoothing, imputation, geo-temporal-demographic disaggregation."
+    "text": "What is the Epidata repository\nEpidata: repository of aggregated epi-surveillance time series\nCode is open-source. Signals can be either public or restricted.\n\nTo date, it has accumulated over 5 billion records.\nAt the peak of the pandemic, handled millions of API queries per day.\nMany aren’t available elsewhere\n\n\nData from\n\npublic health reporting, medical insurance claims, medical device data, Google search queries, wastewater, app-based mobility patterns.\n\n\n\n\nAdded value\n\nrevision tracking, anomaly detection, trend detection, smoothing, imputation, geo-temporal-demographic disaggregation."
+  },
+  {
+    "objectID": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
+    "href": "slides/day1-morning.html#goals-of-delphi-epidata-platform-and-repository",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Goals of Delphi Epidata platform and repository",
+    "text": "Goals of Delphi Epidata platform and repository\n\nProvide many aggregated epi-surveillance time-series (“epi-signals”)\n\nMirror signals from other sources, especially if revisions are not tracked \nBe the national historical repository of record & preserve the raw data\n\n\n\n\nBe the go-to place for epi-signal discovery, including those held elsewhere\nAdd value to existing signals and synthesize new ones\n\nVia signal fusion, nowcasting, smoothing\n\n\n\n\n\n\n\n\nMake epi-surveillance more nimble, complete, standardized, robust, and real-time"
   },
   {
     "objectID": "slides/day1-morning.html#features-of-delphi-epidata",
@@ -700,11 +700,11 @@
     "text": "Features of Delphi Epidata\n\nBuilt-in support for:\n\nData revisions (“backfill”), including reporting dates and changes\nGeo levels w/ auto-aggregation (e.g. county, state, and nation) and specialized levels (e.g., DMA, sewer sheds)\nDemographic breakdown\nRepresentation for missingness and censoring\nPopulation sizes and fine-grained population density\n\nPre-computed smoothing and normalization (customization planned)\nAccess control\nCode is Open Source.\nSignals are as accessible (w/ API, SDK) as allowed by DUAs"
   },
   {
-    "objectID": "slides/day1-morning.html#epidata-api-1",
-    "href": "slides/day1-morning.html#epidata-api-1",
+    "objectID": "slides/day1-morning.html#epidata-documentation",
+    "href": "slides/day1-morning.html#epidata-documentation",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Epidata API",
-    "text": "Epidata API\n\nDelphi’s Epidata API real-time access to epidemiological surveillance data\nThe main endpoint (covidcast) daily updates about COVID-19 and influenza in the U.S.\nA variety of other endpoints international historical data for COVID-19, influenza, dengue, norovirus\nA full-featured R client for quick access to all data\nA legacy Python client, full-featured Python client in development"
+    "section": "Epidata Documentation",
+    "text": "Epidata Documentation\n\nDelphi’s Epidata API real-time access to epidemiological surveillance data\n\nThe main endpoint (covidcast) daily updates about COVID-19 and influenza in the U.S.\n\nA variety of other endpoints international historical data for COVID-19, influenza, dengue, norovirus"
   },
   {
     "objectID": "slides/day1-morning.html#some-of-our-data-sources",
@@ -740,27 +740,6 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Some tools to explore more easily",
     "text": "Some tools to explore more easily\nSignal discovery app, find available epi-signals in Delphi Epidata and elsewhere in the community\n\nSignal visualization tool\n Signal dashboard\n “classic” map-based version visualize a core set of COVID-19 and flu indicators\n Covidcast signal export app\n Dashboard builder"
-  },
-  {
-    "objectID": "slides/day1-morning.html#signal-dashboard---for-covid-19-flu-data",
-    "href": "slides/day1-morning.html#signal-dashboard---for-covid-19-flu-data",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Signal dashboard - For COVID-19 & flu data",
-    "text": "Signal dashboard - For COVID-19 & flu data\n\n\n\n\nDisplays a selection of signals for COVID-19 & flu\nBrowse by location or indicator\nChoose signals to export\n\n\n\nExample: Google symptom search trends in NC."
-  },
-  {
-    "objectID": "slides/day1-morning.html#signal-discovery-app---browse-for-more-data",
-    "href": "slides/day1-morning.html#signal-discovery-app---browse-for-more-data",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Signal discovery app - Browse for more data",
-    "text": "Signal discovery app - Browse for more data\nEasily find data sources and signals, no programming required\nhttps://delphi.cmu.edu/signals/"
-  },
-  {
-    "objectID": "slides/day1-morning.html#example---nchs-weekly-flu-mortality-data-in-states",
-    "href": "slides/day1-morning.html#example---nchs-weekly-flu-mortality-data-in-states",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Example - NCHS weekly flu mortality data in states",
-    "text": "Example - NCHS weekly flu mortality data in states"
   },
   {
     "objectID": "slides/day1-morning.html#installing-epidatr",
