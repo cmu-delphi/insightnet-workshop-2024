@@ -536,7 +536,7 @@
     "href": "slides/day1-morning.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\nThe Delphi Research Group\nOverview of this Workshop\nPanel Data\nVersioned Data\nEpidata Repository and API\nFind Data Sources and Signals\n{epidatr}\nVersioning in {epidatr}"
+    "text": "Outline\n\nThe Delphi Research Group\nWorkshop Overview and System Setup\nPanel Data\nVersioned Data\nEpidata Repository and API\nFind Data Sources and Signals\n{epidatr}\nVersioning in {epidatr}"
   },
   {
     "objectID": "slides/day1-morning.html#about-delphi",
@@ -572,6 +572,34 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "A few slides here",
     "text": "A few slides here"
+  },
+  {
+    "objectID": "slides/day1-morning.html#system-setup-passive-viewing",
+    "href": "slides/day1-morning.html#system-setup-passive-viewing",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "System setup – Passive viewing",
+    "text": "System setup – Passive viewing\n\nAll of the slides are at\n\nhttps://cmu-delphi.github.io/insightnet-workshop-2024\n\nThe source code is in the Repo\n\nhttps://github.com/cmu-delphi/insightnet-workshop-2024\n\nThis is enough, but we hope you’ll want to work through the code as we go along.\n\nDetailed versions of the next few slides are shown at the Repo Link above."
+  },
+  {
+    "objectID": "slides/day1-morning.html#system-setup-required-software",
+    "href": "slides/day1-morning.html#system-setup-required-software",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "System setup – Required software",
+    "text": "System setup – Required software\n\nWe assume you already have\n\n\nR\n\n\n\nAn IDE. We’ll use RStudio, but you can use VSCode or Emacs or Whatnot"
+  },
+  {
+    "objectID": "slides/day1-morning.html#system-setup-downloading-the-materials",
+    "href": "slides/day1-morning.html#system-setup-downloading-the-materials",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "System setup – Downloading the materials",
+    "text": "System setup – Downloading the materials\nEasy way:\n\nClick the Big Green Button that says &lt; &gt; Code ▾\nChoose Download Zip\nOpen the Zip directory and then Open insightnet-workshop-2024.Rproj\n\nMore expert (local git user):\n\nClick the Big Green Button that says &lt; &gt; Code ▾\nCopy the URL.\nOpen RStudio, select File &gt; New Project &gt; Version Control. Paste there and proceed.\n\nEven more expert (wants github remote):\n\nClick the Grey Button that says ⑂ Fork ▾\nProceed along the same lines as above."
+  },
+  {
+    "objectID": "slides/day1-morning.html#system-setup-installing-required-packages",
+    "href": "slides/day1-morning.html#system-setup-installing-required-packages",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "System setup – Installing required packages",
+    "text": "System setup – Installing required packages\nWe will use a lot of packages.\nWe’ve tried to make it so you can get them all at once (with the right versions)\n🤞 We hope this works… 🤞 Note that you can “Copy to Clipboard”\n\nIn RStudio:\ninstall.packages(\"pak\") # good for installing from non-CRAN sources\npak::pkg_install(\"cmu-delphi/InsightNetFcast24\", dependencies = TRUE)\nInsightNetFcast24::verify_setup()\n\nHopefully, you see:\n\n\n✔ You should be good to go!\n\n\nAsk for help if you see something like:\n\n\nError in `verify_setup()`:\n! The following packages do not have the correct version:\nℹ Installed: epipredict 0.2.0.\nℹ Required: epipredict == 0.1.0."
   },
   {
     "objectID": "slides/day1-morning.html#panel-data-1",
