@@ -942,7 +942,7 @@ ggplot(snapshots |> filter(!latest),
 
 ## Backfill American edition
 
-* Again, we can see a similar systematic underestimation problem for COVID-19 morality rates in CA. <!-- 2023-2024 -->
+* Again, we can see a similar systematic underestimation problem for COVID-19 mortality rates in CA. <!-- 2023-2024 -->
 
 * This plot also illustrates the [**revision process**]{.primary} - how the reported mortality changes & increases across multiple updates until it stabilizes at the final value (black line).
 
@@ -1916,7 +1916,7 @@ process_covid_data <- function(Date) {
 * [**Tibble Creation**]{.primary}: Constructs a tibble with `geo_value`, `time_value`, `version`, and `case_rate_7d_av` to later compile into an `epi_archive` (you can think of an `epi_archive` as being a comprised of many `epi_df`s).
 
 
-## Fetch Data - Process eange of dates
+## Fetch Data - Process range of dates
 * Note that `process_covid_data()` works on one date at a time.
 * So now, we need a function that iterates over a date range and applies `process_covid_data()` to each date & combines the resulting tibbles into an `epi_archive`.
 * We call this function `process_data_for_date_range()`...
@@ -1965,7 +1965,7 @@ Here's a summary of what `process_data_for_date_range()` does:
 * Now, let's run the function & inspect the resulting `epi_archive` of 7-day avg. COVID-19 case counts:
 * Expect building the archive to some time (enough for a cup of coffee or to meditate on life).
 
-<!-- To wonder why you chose Expect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to wonder why you chose coding in the first place). -->
+<!-- Expect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to wonder why you chose coding in the first place). -->
 ```{r run-fun-process-data-range}
 #| echo: true
 # Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021
