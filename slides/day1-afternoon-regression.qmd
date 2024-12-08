@@ -1,0 +1,304 @@
+
+
+```{r copy-paste-dependency-material}
+library(tidyverse)
+library(epidatr)
+library(epipredict)
+library(epidatasets)
+theme_set(theme_bw())
+
+nchs_fullarchive <- pub_covidcast(
+  source = "nchs-mortality",
+  signals = "deaths_covid_incidence_num",
+  geo_type = "state",
+  time_type = "week",
+  geo_values = "ca",  # California (CA)
+  time_values = epirange(202108, 202440),
+  issues = "*"
+) |>
+  select(geo_value, time_value, version = issue, mortality = value) |>
+  as_epi_archive(compactify = TRUE)
+
+nowcaster = function(x, g, t, wl=180, appx=49) {
+
+  finalized_data = x$DT |>
+    group_by(geo_value, time_value) |>
+    filter(version ==  max(version)) |>
+    filter(time_value >= t - wl - appx & time_value <= t - appx) |>
+    rename(finalized_val = mortality) |>
+    select(geo_value, time_value, finalized_val)
+
+
+  initial_data = x$DT |>
+    group_by(geo_value, time_value) |>
+    filter(version ==  min(version)) |>
+    filter(time_value >= t - wl - appx & time_value <= t - appx) |>
+    rename(initial_val = mortality) |>
+    select(geo_value, time_value, initial_val)
+
+  ratio = finalized_data |>
+    inner_join(initial_data, by = c("geo_value", "time_value")) |>
+    mutate(ratio = finalized_val / initial_val) |>
+    pull(ratio) |>
+    median(na.rm=TRUE)
+
+  last_avail = epix_as_of(x, t) |>
+    slice_max(time_value) |>
+    pull(mortality)
+
+  res = tibble(target_date = t, nowcast = last_avail * ratio)
+
+  return(res)
+
+}
+
+all_nowcast_dates = nchs_fullarchive$DT |>
+  filter(time_value > as.Date("2021-12-31")) |>
+  distinct(time_value) |>
+  pull(time_value)
+
+nowcasts = nchs_fullarchive |>
+  epix_slide(
+    nowcaster,
+    .before=Inf,
+    .versions = all_nowcast_dates,
+    .all_versions = TRUE
+) |>
+  mutate(geo_value = "ca")
+```
+
+
+
+# Regression estimator
+
+## One date
+
+```{r}
+
+# trial_nowcast_date <- all_nowcast_dates[[1]]
+# trial_nowcast_date <- all_nowcast_dates[[10]]
+trial_nowcast_date <- all_nowcast_dates[[length(all_nowcast_dates)]]
+
+nchs_past_archive <- nchs_fullarchive |>
+  epix_as_of(trial_nowcast_date, all_versions = TRUE)
+
+nchs_past_latest <- nchs_past_archive |>
+  epix_as_of(trial_nowcast_date)
+
+target_time_value <- trial_nowcast_date
+
+library(data.table)
+get_predictor_training_data <- function(archive, varname, lag_days, predictor_name) {
+  epikeytime_names <- setdiff(key(archive$DT), "version")
+  requests <- unique(archive$DT, by = epikeytime_names, cols = character())[
+  , version := time_value + ..lag_days
+  ]
+  setkeyv(requests, c(epikeytime_names, "version"))
+  result <- archive$DT[
+    requests, c(key(archive$DT), varname), roll = TRUE, nomatch = NULL, allow.cartesian = TRUE, with = FALSE
+  ][
+    # , time_value := version
+  , time_value := NULL
+  ]
+  nms <- names(result)
+  nms[[match(varname, nms)]] <- predictor_name
+  nms[[match("version", nms)]] <- "nowcast_date"
+  setnames(result, nms)
+  setDF(result)
+  as_tibble(result)
+}
+
+get_predictor_training_data(nchs_past_archive, "mortality", 7, "mortality_lag7")
+
+predictor_descriptions <- nchs_past_latest |>
+  # filter(abs(as.integer(time_value - target_time_value)) <= 14) |>
+  filter(abs(as.integer(time_value - target_time_value)) <= 28) |>
+  mutate(lag_days = as.integer(trial_nowcast_date - time_value)) |>
+  select(-c(geo_value, time_value)) |>
+  pivot_longer(-lag_days, names_to = "varname") |>
+  mutate(predictor_name = paste0(varname, "_lag", lag_days)) |>
+  drop_na() |>
+  select(varname, lag_days, predictor_name)
+
+predictors <- predictor_descriptions |>
+  pmap(function(varname, lag_days, predictor_name) {
+    get_predictor_training_data(nchs_past_archive, varname, lag_days, predictor_name)
+  }) |>
+  reduce(full_join, by = c("geo_value", "nowcast_date"))
+
+revision_summary(nchs_fullarchive, mortality, within_latest = 0.05)
+
+target <- nchs_past_latest |>
+  filter(time_value <= max(time_value) - 90) |>
+  rename(nowcast_date = time_value,
+         mortality_stable = mortality)
+
+training_test <- full_join(predictors, target, by = c("geo_value", "nowcast_date"))
+
+training <- training_test |> drop_na()
+test <- training_test |> filter(nowcast_date == trial_nowcast_date)
+
+# TODO "lag" -> "realtime_lag"?
+
+quantreg::rq(mortality_stable ~ mortality_lag7 + 0, tau = 0.5, training)
+
+quantreg::rq(mortality_stable ~ mortality_lag14 + 0, tau = 0.5, training)
+
+quantreg::rq(mortality_stable ~ mortality_lag21 + 0, tau = 0.5, training)
+
+quantreg::rq(mortality_stable ~ mortality_lag28 + 0, tau = 0.5, training)
+
+quantreg::rq(mortality_stable ~ mortality_lag7 + mortality_lag14 + 0, tau = 0.5, training)
+
+quantreg::rq(mortality_stable ~ mortality_lag7 + mortality_lag14 + mortality_lag21 + mortality_lag28 + 0, tau = 0.5, training)
+
+fit <- training |>
+  select(all_of(predictor_descriptions$predictor_name), mortality_stable) |>
+  quantreg::rq(formula = mortality_stable ~ ., tau = 0.5)
+
+pred <- tibble(
+  nowcast_date = trial_nowcast_date,
+  target_date = target_time_value,
+  prediction = unname(predict(fit, test))
+)
+
+# TODO ratio nowcast archive...
+
+locf_nowcaster <- function(archive) {
+  nowcast_date <- archive$versions_end
+  target_time_value <- nowcast_date
+  latest_edf <- archive |> epix_as_of(nowcast_date)
+
+  latest_edf |>
+    complete(geo_value, time_value = target_time_value) |>
+    arrange(geo_value, time_value) |>
+    group_by(geo_value) |>
+    fill(mortality) |>
+    ungroup() |>
+    filter(time_value == target_time_value) |>
+    transmute(
+      geo_value,
+      nowcast_date = nowcast_date,
+      target_date = time_value,
+      prediction = mortality
+    )
+}
+
+regression_nowcaster <- function(archive) {
+  nowcast_date <- archive$versions_end
+  target_time_value <- nowcast_date
+  latest_edf <- archive |> epix_as_of(nowcast_date)
+  print(nowcast_date)
+
+  predictor_descriptions <- latest_edf |>
+    # filter(abs(as.integer(time_value - target_time_value)) <= 14) |>
+    # filter(abs(as.integer(time_value - target_time_value)) <= 28) |>
+    filter(abs(as.integer(time_value - target_time_value)) <= 35) |>
+    mutate(lag_days = as.integer(nowcast_date - time_value)) |>
+    select(-c(geo_value, time_value)) |>
+    pivot_longer(-lag_days, names_to = "varname") |>
+    mutate(predictor_name = paste0(varname, "_lag", lag_days)) |>
+    drop_na() |>
+    select(varname, lag_days, predictor_name) |>
+    # FIXME port above & separate
+    slice_min(lag_days, n = 3L)
+
+  predictors <- predictor_descriptions |>
+    pmap(function(varname, lag_days, predictor_name) {
+      get_predictor_training_data(archive, varname, lag_days, predictor_name)
+    }) |>
+    reduce(full_join, by = c("geo_value", "nowcast_date"))
+
+  if (nrow(predictors) == 0) {
+    stop("Couldn't find acceptable predictors in the latest data.")
+  }
+
+  target <- latest_edf |>
+    # filter(time_value <= max(time_value) - 90) |>
+    # filter(time_value <= max(time_value) - 45) |>
+    # filter(time_value <= max(time_value) - 30) |>
+    filter(time_value <= max(time_value) - 0) |>
+    rename(nowcast_date = time_value,
+           mortality_stable = mortality)
+
+  training_test <- full_join(predictors, target, by = c("geo_value", "nowcast_date"))
+
+  training <- training_test |>
+    drop_na() |>
+    # FIXME port above & separate
+    slice_max(nowcast_date, n = 90) |>
+    identity()
+  test <- training_test |> filter(nowcast_date == .env$nowcast_date)
+
+  # TODO "lag" -> "realtime_lag"?
+
+  fit <- training |>
+    select(all_of(predictor_descriptions$predictor_name), mortality_stable) |>
+    quantreg::rq(formula = mortality_stable ~ ., tau = 0.5)
+
+  pred <- tibble(
+    geo_value = "ca",
+    nowcast_date = nowcast_date,
+    target_date = target_time_value,
+    prediction = unname(predict(fit, test))
+  )
+
+  return(pred)
+}
+
+nchs_past_archive |>
+  regression_nowcaster()
+
+locf_nowcasts <- nchs_fullarchive |>
+  epix_slide(~ locf_nowcaster(.x), .versions = all_nowcast_dates, .all_versions = TRUE)
+
+regression_nowcasts <- nchs_fullarchive |>
+  epix_slide(~ regression_nowcaster(.x), .versions = all_nowcast_dates, .all_versions = TRUE)
+
+regression_nowcasts |>
+  full_join(locf_nowcasts,
+            by = c("geo_value", "target_date"),
+            suffix = c("_regression", "_locf")) |>
+  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+            by = c("geo_value", "target_date" = "time_value")) |>
+  # summarize(mean(abs(mortality - prediction)/mortality * 100, na.rm = TRUE))
+  # summarize(across(c(prediction_locf, prediction_regression),
+  #                  ~ mean(abs(mortality - .x)/mortality * 100, na.rm = TRUE)))
+  # summarize(across(c(prediction_locf, prediction_regression),
+  #                  ~ mean(abs(mortality - .x), na.rm = TRUE)))
+  ggplot() +
+  geom_line(aes(target_date, mortality)) +
+  geom_line(aes(target_date, prediction_locf), colour = "red") +
+  geom_line(aes(target_date, prediction_regression), colour = "blue") +
+  geom_line(aes(nowcast_date, mort14),
+            get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mort14"),
+            colour = "orange")
+
+
+full_join(
+  get_predictor_training_data(nchs_fullarchive, "mortality", 7L, "mortality_lag7"),
+  nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  by = c("geo_value", "nowcast_date" = "time_value")
+) |>
+  mutate(ratio =  mortality / mortality_lag7) |>
+  ggplot(aes(nowcast_date, ratio)) +
+  geom_point() +
+  geom_line()
+
+full_join(
+  get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mortality_lag14"),
+  nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  by = c("geo_value", "nowcast_date" = "time_value")
+) |>
+  mutate(ratio =  mortality / mortality_lag14) |>
+  ggplot(aes(nowcast_date, ratio)) +
+  geom_point() +
+  geom_line()
+
+training |>
+  pivot_longer(starts_with("mortality_lag")) |>
+  ggplot(aes(nowcast_date, mortality_stable/value, color = name)) +
+  geom_point() +
+  geom_line()
+
+```
