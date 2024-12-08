@@ -111,7 +111,7 @@ Ask for help if you see something like:
     Error in `verify_setup()`:
     ! The following packages do not have the correct version:
     ℹ Installed: epipredict 0.2.0.
-    ℹ Required: epipredict == 0.1.0.
+    ℹ Required: epipredict == 0.1.5.
 
 ## ✋ Getting help from our volunteers
 

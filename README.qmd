@@ -107,7 +107,7 @@ verify_setup <- function() {
   cli::cli_abort(c(
     "The following packages do not have the correct version:",
     "i" = "Installed: {.pkg epipredict 0.2.0}.",
-    "i" = "Required: {.pkg epipredict == 0.1.0}."
+    "i" = "Required: {.pkg epipredict == 0.1.5}."
   ))
 }
 verify_setup()
