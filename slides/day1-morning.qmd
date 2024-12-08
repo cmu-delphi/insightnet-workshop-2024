@@ -205,7 +205,7 @@ cli::cli_alert_success("You should be good to go!")
 
 Ask for help if you see something like:
 ```{r}
-#| error: TRUE
+#| error: true
 verify_setup <- function() {
   cli::cli_abort(c(
     "The following packages do not have the correct version:",
@@ -503,7 +503,7 @@ weekly_snapshots |>
 
 * Recall the first example of panel & versioned data we've seen... 
 
-* This signal is 4 days [**latent**]{.primary}: `min(version - time_value)`
+* On June 1, this signal is 5 days [**latent**]{.primary}: `min(version - time_value)`
 
 ```{r latency-ca-ex}
 #| echo: false
@@ -511,7 +511,7 @@ x_dt_with_diff <- dv_ca |> mutate(version_time_diff = version - time_value)
 head(x_dt_with_diff |> group_by(time_value) |> slice(1) |> ungroup()) 
 ```
 
-* And subject to [**revision**]{.primary} <!--over time (ex. consider Dec. 1's `percent_cli` across `version`):-->
+and subject to [**revision**]{.primary} <!--over time (ex. consider Dec. 1's `percent_cli` across `version`):-->
 
 ```{r revision-ca-ex}
 #| echo: false
@@ -1019,7 +1019,7 @@ print(res['result'], res['message'], len(res['epidata']))
 * Anonymous API access is subject to some restrictions:
   <small>public datasets only; 60 requests per hour; only two parameters may have multiple selections</small>
 
-* API key grants privledged access; can be obtained by [registering with us](https://api.delphi.cmu.edu/epidata/admin/registration_form) 
+* API key grants privileged access; can be obtained by [registering with us](https://api.delphi.cmu.edu/epidata/admin/registration_form) 
 
 * Privileges of registration: no rate limit; no limit on multiple selections
 
@@ -1654,7 +1654,7 @@ head(epidata) |> select(geo_value, signal, source, time_value, issue, lag, value
 
 <!-- Open-access API delivering up-to-date, granular epidemiological data + makes all historical versions available. -->
 
-* `{epidatr}`:{.primary} Client package for R
+* `{epidatr}`: Client package for R
 
 <!-- and interactive tools for discovering and analyzing health signals. -->
 

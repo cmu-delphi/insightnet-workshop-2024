@@ -83,6 +83,15 @@ pak::pkg_install("cmu-delphi/InsightNetFcast24", dependencies = TRUE)
 InsightNetFcast24::verify_setup()
 ```
 
+Back-up approach:
+
+```{r}
+#| eval: false
+install.packages("remotes")
+remotes::install_github("cmu-delphi/InsightNetFcast24", dependencies = TRUE)
+InsightNetFcast24::verify_setup()
+```
+
 Hopefully, you see:
 ```{r}
 #| message: true
@@ -92,7 +101,7 @@ cli::cli_alert_success("You should be good to go!")
 
 Ask for help if you see something like:
 ```{r}
-#| error: TRUE
+#| error: true
 #| echo: false
 verify_setup <- function() {
   cli::cli_abort(c(

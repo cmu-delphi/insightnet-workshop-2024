@@ -1,5 +1,5 @@
-# Setup Instructions for Insight Net Workshop 2024
-
+Setup Instructions for Insight Net Workshop 2024
+================
 
 Welcome to the Insight Net Workshop 2024 Github Repository. We’ve made
 it easy for you to get started with this project, and we’re happy to
@@ -91,6 +91,14 @@ In RStudio:
 ``` r
 install.packages("pak") # good for installing from non-CRAN sources
 pak::pkg_install("cmu-delphi/InsightNetFcast24", dependencies = TRUE)
+InsightNetFcast24::verify_setup()
+```
+
+Back-up approach:
+
+``` r
+install.packages("remotes")
+remotes::install_github("cmu-delphi/InsightNetFcast24", dependencies = TRUE)
 InsightNetFcast24::verify_setup()
 ```
 

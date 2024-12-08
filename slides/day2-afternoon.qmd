@@ -224,7 +224,11 @@ deaths_outlr <- df |>
                                      )) |>
   ungroup() |>
   unnest(outlier_info)
+```
 
+```{r outliers-fig}
+#| fig-width: 10
+#| fig-height: 5
 deaths_outlr |>
   filter(geo_value %in% c("ca", "ma", "ny", "tx")) |> 
   ggplot(aes(x = time_value)) +
@@ -250,7 +254,6 @@ cases_outlr <- df |>
 df$deaths <- deaths_outlr$combined_replacement
 df$cases <- cases_outlr$combined_replacement
 ```
-
 
 ## Fit `arx_forecaster` on training set
 

@@ -1,5 +1,5 @@
 ---
-talk-title: "Data Cleaning, Versioning, Nowcasting With `{epiprocess}"
+talk-title: "Data Cleaning, Versioning, Nowcasting With `{epiprocess}`"
 talk-short-title: "Nowcasting"
 talk-subtitle: "InsightNet Forecasting Workshop 2024"
 talk-date: "11 December -- Afternoon"
@@ -881,7 +881,7 @@ Epidemiology data gets revised frequently.
 
 ## `epi_archive`: Collection of `epi_df`s
 
-Subset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in `archive format:
+Subset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in `archive` format:
 
 ```{r archive-ex}
 #| echo: true
