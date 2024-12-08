@@ -1,5 +1,5 @@
-Setup Instructions for Insight Net Workshop 2024
-================
+# Setup Instructions for Insight Net Workshop 2024
+
 
 Welcome to the Insight Net Workshop 2024 Github Repository. We’ve made
 it easy for you to get started with this project, and we’re happy to
