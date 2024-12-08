@@ -4,14 +4,14 @@
     "href": "slides/day2-morning.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Quick Tour of Time Series Forecasting",
-    "text": "Quick Tour of Time Series Forecasting\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber\n12 December – Morning"
+    "text": "Quick Tour of Time Series Forecasting\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Logan Brooks, Xueda Shen, and also to Nat DeFries, Dmitry Shemetov, and David Weber\n12 December – Morning"
   },
   {
     "objectID": "slides/day2-morning.html#outline",
     "href": "slides/day2-morning.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\nSome Words About Forecasting\nLinear Regression for Time Series Data\nEvaluation Methods\nARX Models\nOverfitting and Regularization\nPrediction Intervals\nForecasting with Versioned Data\nOther Approaches to Time Series Data"
+    "text": "Outline\n\nSome Words About Forecasting\nLinear Regression for Time Series\nEvaluation Methods\nARX Models\nOverfitting and Regularization\nPrediction Intervals\nForecasting with Versioned Data\nTraditional Approaches to Time Series"
   },
   {
     "objectID": "slides/day2-morning.html#forecasting-is-not-magic",
@@ -178,22 +178,22 @@
     "objectID": "slides/day2-morning.html#time-series-cross-validation-cv",
     "href": "slides/day2-morning.html#time-series-cross-validation-cv",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Time-series cross-validation (CV)",
-    "text": "Time-series cross-validation (CV)\n\\(h\\)-step ahead predictions\n\nIf we refit in the future once new data are available, a more appropriate way to estimate the prediction error is time-series cross-validation.\nTo get \\(h\\)-step ahead predictions, for each time \\(t = t_0, t_0+1, \\dots\\),\n\nFit the model using data up to time \\(t\\)\nMake a prediction for \\(t+h\\)\nRecord the prediction error\n\nThe cross-validation MSE is then\n\n\\[CVMSE = \\frac{1}{n-h-t_0} \\sum_{t = t_0}^{n-h} (\\hat y_{t+h|t} - y_{t+h})^2\\]\nwhere \\(\\hat y_{t+h|t}\\) indicates a prediction for \\(y\\) at time \\(t+h\\) that was made with data available up to time \\(t\\)."
+    "section": "Time series cross-validation (CV)",
+    "text": "Time series cross-validation (CV)\n\\(h\\)-step ahead predictions\n\nIf we refit in the future once new data are available, a more appropriate way to estimate the prediction error is time series cross-validation.\nTo get \\(h\\)-step ahead predictions, for each time \\(t = t_0, t_0+1, \\dots\\),\n\nFit the model using data up to time \\(t\\)\nMake a prediction for \\(t+h\\)\nRecord the prediction error\n\nThe cross-validation MSE is then\n\n\\[CVMSE = \\frac{1}{n-h-t_0} \\sum_{t = t_0}^{n-h} (\\hat y_{t+h|t} - y_{t+h})^2\\]\nwhere \\(\\hat y_{t+h|t}\\) indicates a prediction for \\(y\\) at time \\(t+h\\) that was made with data available up to time \\(t\\)."
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cross-validation-cv-1",
     "href": "slides/day2-morning.html#time-series-cross-validation-cv-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Time-series cross-validation (CV)",
-    "text": "Time-series cross-validation (CV)\nLinear regression of COVID deaths on lagged cases\n\nn &lt;- nrow(ca)                               #length of time series\nh &lt;- k                                      #number of days ahead for which prediction is wanted\npred_all_past &lt;- rep(NA, length = n)        #initialize vector of predictions\n\nfor (t in t0:(n-h)) {\n  # fit to all past data and make h-step ahead prediction\n  reg_all_past = lm(deaths ~ lagged_cases, data = ca, subset = (1:n) &lt;= t) \n  pred_all_past[t+h] = predict(reg_all_past, newdata = data.frame(ca[t+h, ]))\n}\n\n\n\n\nNote\n\n\nWith the current model, we can only predict \\(k\\) days ahead (where \\(k\\) = number of days by which predictor is lagged)!"
+    "section": "Time series cross-validation (CV)",
+    "text": "Time series cross-validation (CV)\nLinear regression of COVID deaths on lagged cases\n\nn &lt;- nrow(ca)                               #length of time series\nh &lt;- k                                      #number of days ahead for which prediction is wanted\npred_all_past &lt;- rep(NA, length = n)        #initialize vector of predictions\n\nfor (t in t0:(n-h)) {\n  # fit to all past data and make h-step ahead prediction\n  reg_all_past = lm(deaths ~ lagged_cases, data = ca, subset = (1:n) &lt;= t) \n  pred_all_past[t+h] = predict(reg_all_past, newdata = data.frame(ca[t+h, ]))\n}\n\n\n\n\nNote\n\n\nWith the current model, we can only predict \\(k\\) days ahead (where \\(k\\) = number of days by which predictor is lagged)!"
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cross-validation-cv-2",
     "href": "slides/day2-morning.html#time-series-cross-validation-cv-2",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Time-series cross-validation (CV)",
-    "text": "Time-series cross-validation (CV)\nLinear regression of COVID deaths on lagged cases\n\n\n\n                     MAE      MASE\ntraining       0.0740177  380.9996\nsplit-sample   0.3116854 2914.4575\ntime series CV 0.2374931 2212.5992\n\n\n\nSome improvement wrt split-sample, but still overestimating peak."
+    "section": "Time series cross-validation (CV)",
+    "text": "Time series cross-validation (CV)\nLinear regression of COVID deaths on lagged cases\n\n\n\n                     MAE      MASE\ntraining       0.0740177  380.9996\nsplit-sample   0.3116854 2914.4575\ntime series CV 0.2374931 2212.5992\n\n\n\nSome improvement wrt split-sample, but still overestimating peak."
   },
   {
     "objectID": "slides/day2-morning.html#warning-1",
@@ -220,8 +220,8 @@
     "objectID": "slides/day2-morning.html#time-series-cv-all-past-vs-trailing-window",
     "href": "slides/day2-morning.html#time-series-cv-all-past-vs-trailing-window",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Time-series CV: all past vs trailing window",
-    "text": "Time-series CV: all past vs trailing window\nLinear regression of COVID deaths on lagged cases\n\n\n\n                                 MAE      MASE\ntraining                  0.07401770  380.9996\nsplit-sample              0.31168536 2914.4575\ntime series CV            0.23749306 2212.5992\ntime series CV + trailing 0.09932651  925.3734\n\n\n\nA lot of improvement: trailing window allows to adapt to the change in relationship between cases and deaths over time."
+    "section": "Time series CV: all past vs trailing window",
+    "text": "Time series CV: all past vs trailing window\nLinear regression of COVID deaths on lagged cases\n\n\n\n                                 MAE      MASE\ntraining                  0.07401770  380.9996\nsplit-sample              0.31168536 2914.4575\ntime series CV            0.23749306 2212.5992\ntime series CV + trailing 0.09932651  925.3734\n\n\n\nA lot of improvement: trailing window allows to adapt to the change in relationship between cases and deaths over time."
   },
   {
     "objectID": "slides/day2-morning.html#autoregressive-exogenous-input-arx-model",
@@ -235,14 +235,14 @@
     "href": "slides/day2-morning.html#arx-model-for-covid-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "ARX model for COVID deaths",
-    "text": "ARX model for COVID deaths\n\nLet’s add lagged deaths as a predictor to our previous forecaster:\n\n\\[\\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\]\n\nWe will refer to this model as ARX(1), as it only includes one lag for each predictor.\n\n\n# Prepare data: add column with deaths lagged by 28\nca$lagged_deaths &lt;- dplyr::lag(ca$deaths, n = k)\n\n\nHow does it compare to the previous model in terms of time-series CV?\n\n\n\n\nNote\n\n\nFrom now on, we will only consider regression on a trailing window, since regression on all past data leads to overshooting during Omicron."
+    "text": "ARX model for COVID deaths\n\nLet’s add lagged deaths as a predictor to our previous forecaster:\n\n\\[\\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\]\n\nWe will refer to this model as ARX(1), as it only includes one lag for each predictor.\n\n\n# Prepare data: add column with deaths lagged by 28\nca$lagged_deaths &lt;- dplyr::lag(ca$deaths, n = k)\n\n\nHow does it compare to the previous model in terms of time series CV?\n\n\n\n\nNote\n\n\nFrom now on, we will only consider regression on a trailing window, since regression on all past data leads to overshooting during Omicron."
   },
   {
     "objectID": "slides/day2-morning.html#time-series-cv-trailing-arx1-vs-lm-on-lagged-cases",
     "href": "slides/day2-morning.html#time-series-cv-trailing-arx1-vs-lm-on-lagged-cases",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Time-Series CV (trailing): ARX(1) vs lm on lagged cases",
-    "text": "Time-Series CV (trailing): ARX(1) vs lm on lagged cases\n\n\n\n                          MAE     MASE\nARX(1)             0.07852942 731.6178\nlm on lagged cases 0.09932651 925.3734\n\n\n\nErrors under both metrics are smaller than with previous model."
+    "section": "Time series CV (trailing): ARX(1) vs lm on lagged cases",
+    "text": "Time series CV (trailing): ARX(1) vs lm on lagged cases\n\n\n\n                          MAE     MASE\nARX(1)             0.07852942 731.6178\nlm on lagged cases 0.09932651 925.3734\n\n\n\nErrors under both metrics are smaller than with previous model."
   },
   {
     "objectID": "slides/day2-morning.html#warning-2",
@@ -318,8 +318,8 @@
     "objectID": "slides/day2-morning.html#time-series-cv-trailing-arx1-arx2-and-arx3",
     "href": "slides/day2-morning.html#time-series-cv-trailing-arx1-arx2-and-arx3",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Time-Series CV (trailing): ARX(1), ARX(2), and ARX(3)",
-    "text": "Time-Series CV (trailing): ARX(1), ARX(2), and ARX(3)\n\n\n\n              MAE      MASE\nARX(1) 0.07852942  731.6178\nARX(2) 0.08716160  812.0393\nARX(3) 0.12487694 1163.4135"
+    "section": "Time series CV (trailing): ARX(1), ARX(2), and ARX(3)",
+    "text": "Time series CV (trailing): ARX(1), ARX(2), and ARX(3)\n\n\n\n              MAE      MASE\nARX(1) 0.07852942  731.6178\nARX(2) 0.08716160  812.0393\nARX(3) 0.12487694 1163.4135"
   },
   {
     "objectID": "slides/day2-morning.html#warning-4",
@@ -374,29 +374,29 @@
     "objectID": "slides/day2-morning.html#time-series-cv-trailing-for-arx3-ridgelasso",
     "href": "slides/day2-morning.html#time-series-cv-trailing-for-arx3-ridgelasso",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Time-series CV (trailing) for ARX(3) + ridge/lasso",
-    "text": "Time-series CV (trailing) for ARX(3) + ridge/lasso\n\nh &lt;- 28  # number of days ahead \nw &lt;- 120 # window length\n\n# Initialize matrices for predictions (one column per lambda value)\nyhat_ridge_mat &lt;- matrix(NA, nrow = n, ncol = length(lambda_ridge))\nyhat_lasso_mat &lt;- matrix(NA, nrow = n, ncol = length(lambda_lasso)) \nyhat_ridge = yhat_lasso &lt;- rep(NA, length = n)\n\n# Select index of best lambda value on training set\nridge_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 0, lambda = lambda_ridge)$index[1]\nlasso_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 1, lambda = lambda_lasso)$index[1]\n\nfor (t in t0:(n-h)) {\n  # Indices of data within window\n  inds = t-w &lt; 1:n & 1:n &lt;= t\n  # Fit ARX + ridge/lasso for each lambda value\n  ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = lambda_ridge)\n  lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = lambda_lasso)\n  # Predict for each lambda value\n  yhat_ridge_mat[t+h, ] = predict(ridge_trail, newx = as.matrix(X[(t+h), ]))\n  yhat_lasso_mat[t+h, ] = predict(lasso_trail, newx = as.matrix(X[(t+h), ]))\n  # Save prediction corresponding to best lambda so far\n  yhat_ridge[t+h] = max(0, yhat_ridge_mat[t+h, ridge_index])\n  yhat_lasso[t+h] = max(0, yhat_lasso_mat[t+h, lasso_index])\n  if (t &gt;= t0+h) {\n    # Prediction error\n    mae_ridge = colMeans(abs(yhat_ridge_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)\n    mae_lasso = colMeans(abs(yhat_lasso_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)\n    # Select index of lambda vector which gives lowest MAE so far\n    ridge_index &lt;- which.min(mae_ridge)\n    lasso_index &lt;- which.min(mae_lasso)\n  }\n}"
+    "section": "Time series CV (trailing) for ARX(3) + ridge/lasso",
+    "text": "Time series CV (trailing) for ARX(3) + ridge/lasso\n\nh &lt;- 28  # number of days ahead \nw &lt;- 120 # window length\n\n# Initialize matrices for predictions (one column per lambda value)\nyhat_ridge_mat &lt;- matrix(NA, nrow = n, ncol = length(lambda_ridge))\nyhat_lasso_mat &lt;- matrix(NA, nrow = n, ncol = length(lambda_lasso)) \nyhat_ridge = yhat_lasso &lt;- rep(NA, length = n)\n\n# Select index of best lambda value on training set\nridge_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 0, lambda = lambda_ridge)$index[1]\nlasso_index = cv.glmnet(as.matrix(X_train), y_train, alpha = 1, lambda = lambda_lasso)$index[1]\n\nfor (t in t0:(n-h)) {\n  # Indices of data within window\n  inds = t-w &lt; 1:n & 1:n &lt;= t\n  # Fit ARX + ridge/lasso for each lambda value\n  ridge_trail = glmnet(X[inds, ], y[inds], alpha = 0, lambda = lambda_ridge)\n  lasso_trail = glmnet(X[inds, ], y[inds], alpha = 1, lambda = lambda_lasso)\n  # Predict for each lambda value\n  yhat_ridge_mat[t+h, ] = predict(ridge_trail, newx = as.matrix(X[(t+h), ]))\n  yhat_lasso_mat[t+h, ] = predict(lasso_trail, newx = as.matrix(X[(t+h), ]))\n  # Save prediction corresponding to best lambda so far\n  yhat_ridge[t+h] = max(0, yhat_ridge_mat[t+h, ridge_index])\n  yhat_lasso[t+h] = max(0, yhat_lasso_mat[t+h, lasso_index])\n  if (t &gt;= t0+h) {\n    # Prediction error\n    mae_ridge = colMeans(abs(yhat_ridge_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)\n    mae_lasso = colMeans(abs(yhat_lasso_mat[1:(t+1), ] - y[1:(t+1)]), na.rm = T)\n    # Select index of lambda vector which gives lowest MAE so far\n    ridge_index &lt;- which.min(mae_ridge)\n    lasso_index &lt;- which.min(mae_lasso)\n  }\n}"
   },
   {
     "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx1-ridgelasso",
     "href": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx1-ridgelasso",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso",
-    "text": "Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso\n\n\n\n                      MAE     MASE\nARX(1)         0.07852942 731.6178\nARX(1) + ridge 0.07004585 652.5808\nARX(1) + lasso 0.07887651 734.8514"
+    "section": "Predictions: time series CV (trailing) for ARX(1) + ridge/lasso",
+    "text": "Predictions: time series CV (trailing) for ARX(1) + ridge/lasso\n\n\n\n                      MAE     MASE\nARX(1)         0.07852942 731.6178\nARX(1) + ridge 0.07004585 652.5808\nARX(1) + lasso 0.07887651 734.8514"
   },
   {
     "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx2-ridgelasso",
     "href": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx2-ridgelasso",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions: time-series CV (trailing) for ARX(2) + ridge/lasso",
-    "text": "Predictions: time-series CV (trailing) for ARX(2) + ridge/lasso\n\n\n\n                      MAE     MASE\nARX(2)         0.08716160 812.0393\nARX(2) + ridge 0.08143228 758.6622\nARX(2) + lasso 0.07807801 727.4122"
+    "section": "Predictions: time series CV (trailing) for ARX(2) + ridge/lasso",
+    "text": "Predictions: time series CV (trailing) for ARX(2) + ridge/lasso\n\n\n\n                      MAE     MASE\nARX(2)         0.08716160 812.0393\nARX(2) + ridge 0.08143228 758.6622\nARX(2) + lasso 0.07807801 727.4122"
   },
   {
     "objectID": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx3-ridgelasso",
     "href": "slides/day2-morning.html#predictions-time-series-cv-trailing-for-arx3-ridgelasso",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso",
-    "text": "Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso\n\n\n\n                      MAE      MASE\nARX(3)         0.12487694 1163.4135\nARX(3) + ridge 0.08555066  797.0310\nARX(3) + lasso 0.07633053  711.1318"
+    "section": "Predictions: time series CV (trailing) for ARX(3) + ridge/lasso",
+    "text": "Predictions: time series CV (trailing) for ARX(3) + ridge/lasso\n\n\n\n                      MAE      MASE\nARX(3)         0.12487694 1163.4135\nARX(3) + ridge 0.08555066  797.0310\nARX(3) + lasso 0.07633053  711.1318"
   },
   {
     "objectID": "slides/day2-morning.html#comparison-of-regularized-arx1-arx2-and-arx3",
@@ -476,67 +476,46 @@
     "text": "Version-unaware predictions (CV, trailing)\n\n\n\n                       MAE     MASE\nversion-unaware 0.07934554 200.4657"
   },
   {
-    "objectID": "slides/day2-morning.html#traditional-time-series-forecasting",
-    "href": "slides/day2-morning.html#traditional-time-series-forecasting",
+    "objectID": "slides/day2-morning.html#popular-forecasting-frameworks",
+    "href": "slides/day2-morning.html#popular-forecasting-frameworks",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Traditional Time Series Forecasting",
-    "text": "Traditional Time Series Forecasting\nTwo popular frameworks:\n\nExponential Smoothing with Trend and Seasonality (ETS)\nAutoregressive Integrated Moving Average (ARIMA)"
+    "section": "Popular forecasting frameworks",
+    "text": "Popular forecasting frameworks\n\nAutoregressive integrated model average (ARIMA) models\nExponential smoothing with trend and seasonality (ETS)\nProphet forecaster\nDeepAR (neural network)\n\nFirst two here are classic and standard, second two are more recent. None are particularly well-suited for epi forecasting out-of-the-box, ask us about them if you’re curious. We’ll discuss ARIMA as it’s closest to what we’ve seen."
   },
   {
-    "objectID": "slides/day2-morning.html#ets",
-    "href": "slides/day2-morning.html#ets",
+    "objectID": "slides/day2-morning.html#dissecting-arima",
+    "href": "slides/day2-morning.html#dissecting-arima",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "ETS",
-    "text": "ETS\nSimple Exponential Smoothing (SES)\n\nThe \\(h\\)-step ahead prediction is a weighted average of the current observation \\(y_t\\) and the forecast \\(\\hat y_{t|t-1}\\):\n\n\\[\\hat y_{t+h|t} = \\alpha y_t + (1- \\alpha) \\hat y_{t|t-1}\\]\nwhere \\(\\alpha \\in [0,1]\\)\n\nForecasts are flat, i.e. do not depend on \\(h\\)\nIf \\(\\alpha = 1\\), we retrieve the naive flatline forecaster\n\n\\[ y_{t+h|t} = y_t\\]"
+    "section": "Dissecting ARIMA",
+    "text": "Dissecting ARIMA\n\nAR = autoregressive, include lags of response itself as features\nMA = moving average, include lags of noise terms (correlated noise model)\nI = integrated, we model and forecast differences between observations"
   },
   {
-    "objectID": "slides/day2-morning.html#ets-1",
-    "href": "slides/day2-morning.html#ets-1",
+    "objectID": "slides/day2-morning.html#discussion",
+    "href": "slides/day2-morning.html#discussion",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "ETS",
-    "text": "ETS\nSimple Exponential Smoothing (SES)\n\nThe SES forecast can be re-expressed as\n\n\\[\\hat y_{t+h|t} = \\alpha y_t + \\alpha (1- \\alpha) y_{t-1}  + \\alpha (1- \\alpha)^2 y_{t-2} + \\dots\\]\ni.e. observations \\(y_{t-k}\\) that are \\(k\\) steps into the past are exponentially down-weighted, with weight \\((1- \\alpha)^2\\). Hence the name exponential smoothing.\n\nComponent form of the SES forecast\n\n\\[\\begin{align*}\n\\hat y_{t+h | t} & = l_t \\\\\nl_t & = \\alpha y_t + (1- \\alpha) l_{t-1}\n\\end{align*}\\]"
+    "section": "Discussion",
+    "text": "Discussion\nWorth comparing and discussing ARIMA versus the kind of autoregressive models you’ve just seen:\n\nThe way lags are handled:\n\nIn what you’ve seen, we can include arbitrary lags (and regularize)\nTraditional AR models require lags to be contiguous (e.g., all of 0-17, instead of 0, 7, 14)\n\nThe way multi-step forecasts are made:\n\nIn what you’ve seen, we model h-step ahead directly\nTraditional AR models only do 1-step ahead prediction, and iterate this to get forecasts at longer horizons"
   },
   {
-    "objectID": "slides/day2-morning.html#ets-2",
-    "href": "slides/day2-morning.html#ets-2",
+    "objectID": "slides/day2-morning.html#discussion-1",
+    "href": "slides/day2-morning.html#discussion-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "ETS",
-    "text": "ETS\nHolt’s linear trend method\n\nExpands SES component form by introducing a trend \\(b_t\\)\n\n\\[\\begin{align*}\n\\hat y_{t+h | t} &= l_t + b_t h\\\\\nl_t &= \\alpha y_t + (1- \\alpha) (l_{t-1} + b_{t-1}) \\\\\nb_t & = \\beta (l_{t} - l_{t-1}) + (1-\\beta) b_{t-1}\n\\end{align*}\\]\nwhere \\(\\alpha, \\beta \\in [0,1]\\).\n\nForecasts are linear in \\(h\\), with slope \\(b_t\\).\n\n\n\n\nNote\n\n\nLinear trend forecasts can be erratic for large \\(h\\)!"
+    "section": "Discussion",
+    "text": "Discussion\n\nThe way nonstationarity is handled:\n\nIn what you’ve seen, we address nonstationarity via trailing training windows (or observation weights more generally)\nTraditional ARIMA models use the I component for this: remove linear or quadratic trends by differences, add them back in at prediction time\n\nThe way exogenous features are included:\n\nIn what you’ve seen, they appear directly as an exogenous predictor\nTraditional ARIMA models (software, such as fable()) includes them in a different manner; they are effectively subject to the same lags as the AR and MA terms"
   },
   {
-    "objectID": "slides/day2-morning.html#ets-3",
-    "href": "slides/day2-morning.html#ets-3",
+    "objectID": "slides/day2-morning.html#supplementary-resources",
+    "href": "slides/day2-morning.html#supplementary-resources",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "ETS",
-    "text": "ETS\nDamped Holt’s method\n\nIntroduces a parameter \\(\\phi\\) to dampen the forecast trajectory\n\n\\[\\begin{align*}\n\\hat y_{t+h | t} &= l_t + b_t (\\phi +\\phi^2 + \\dots + \\phi^h)\\\\\nl_t &= \\alpha y_t + (1- \\alpha) (l_{t-1} + b_{t-1}\\phi) \\\\\nb_t & = \\beta (l_{t} - l_{t-1}) + (1-\\beta) b_{t-1}\\phi\n\\end{align*}\\]\nwhere \\(\\alpha, \\beta, \\phi \\in [0,1]\\)\n\nContribution of slope \\(b_t\\) to a forecast diminishes at each step into the future, by a multiplicative factor \\(\\phi\\)\nAs \\(h\\to \\infty\\), forecasts approach a constant level\n\n\\[ y_{t+h | t} \\to l_t + b_t \\sum_{j=1}^\\infty \\phi^j = l_t + b_t \\frac{\\phi}{1-\\phi}\\]"
-  },
-  {
-    "objectID": "slides/day2-morning.html#arima",
-    "href": "slides/day2-morning.html#arima",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "ARIMA",
-    "text": "ARIMA\nAR(p)\nAuto-regressive model of order \\(p\\)\n\\[y_t = \\sum_{j=1}^p \\phi_j y_{t-j} + w_t\\]\nMA(q)\nMoving average model of order \\(q\\)\n\\[y_t = w_t + \\sum_{j=1}^q \\theta_j w_{t-j} \\]\nwhere \\(w_t\\) is a white noise sequence, i.e.  \\(\\mathbb{E}(w_t)=0\\) and \\(\\text{Var}(w_t)=\\sigma^2\\) for all \\(t\\), and \\(\\text{Cov}(w_s, w_t)=0\\) for all \\(s \\neq t\\)"
-  },
-  {
-    "objectID": "slides/day2-morning.html#arima-1",
-    "href": "slides/day2-morning.html#arima-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "ARIMA",
-    "text": "ARIMA\nARMA(p, q)\n\\[y_t = \\sum_{j=1}^p \\phi_j y_{t-j} + \\sum_{j=0}^q \\theta_j w_{t-j} \\]\nwith \\(\\theta_0 = 1\\)\nARIMA(p, d, q)\nAssumes an \\(ARMA(p, q)\\) model on the \\(d^{th}\\)-order differences of \\(y_t\\)"
-  },
-  {
-    "objectID": "slides/day2-morning.html#mechanistic-models",
-    "href": "slides/day2-morning.html#mechanistic-models",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Mechanistic Models",
-    "text": "Mechanistic Models"
+    "section": "Supplementary resources",
+    "text": "Supplementary resources\n\nHyndman and Athanasopoulos, Forecasting: Principles and Practice\nRyan’s course notes, Introduction to Time Series"
   },
   {
     "objectID": "slides/day1-morning.html#section",
     "href": "slides/day1-morning.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Introduction to Panel Data in Epidemiology",
-    "text": "Introduction to Panel Data in Epidemiology\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber\n11 December – Morning"
+    "text": "Introduction to Panel Data in Epidemiology\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Logan Brooks, Xueda Shen, and also to Nat DeFries, Dmitry Shemetov, and David Weber\n11 December – Morning"
   },
   {
     "objectID": "slides/day1-morning.html#outline",
@@ -627,7 +606,7 @@
     "href": "slides/day1-morning.html#system-setup-installing-required-packages",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "System setup – Installing required packages",
-    "text": "System setup – Installing required packages\nWe will use a lot of packages.\nWe’ve tried to make it so you can get them all at once (with the right versions)\n🤞 We hope this works… 🤞 Note that you can “Copy to Clipboard”\n\nIn RStudio:\ninstall.packages(\"pak\") # good for installing from non-CRAN sources\npak::pkg_install(\"cmu-delphi/InsightNetFcast24\", dependencies = TRUE)\nInsightNetFcast24::verify_setup()\n\nHopefully, you see:\n\n\n✔ You should be good to go!\n\n\nAsk for help if you see something like:\n\n\nError in `verify_setup()`:\n! The following packages do not have the correct version:\nℹ Installed: epipredict 0.2.0.\nℹ Required: epipredict == 0.1.0."
+    "text": "System setup – Installing required packages\nWe will use a lot of packages.\nWe’ve tried to make it so you can get them all at once (with the right versions)\n🤞 We hope this works… 🤞 Note that you can “Copy to Clipboard”\n\nIn RStudio:\ninstall.packages(\"pak\") # good for installing from non-CRAN sources\npak::pkg_install(\"cmu-delphi/InsightNetFcast24\", dependencies = TRUE)\nInsightNetFcast24::verify_setup()\n\nHopefully, you see:\n\n\n✔ You should be good to go!\n\n\nAsk for help if you see something like:\n\n\nError in `verify_setup()`:\n! The following packages do not have the correct version:\nℹ Installed: epipredict 0.2.0.\nℹ Required: epipredict == 0.1.5."
   },
   {
     "objectID": "slides/day1-morning.html#panel-data-1",
@@ -683,7 +662,7 @@
     "href": "slides/day1-morning.html#latency-and-revision-in-signals---example",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Latency and revision in signals - Example",
-    "text": "Latency and revision in signals - Example\n\nRecall the first example of panel & versioned data we’ve seen…\nThis signal is 4 days latent: min(version - time_value)\n\n\n\n# A tibble: 6 × 5\n  time_value geo_value percent_cli version    version_time_diff\n  &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;date&gt;     &lt;drtn&gt;           \n1 2020-06-01 ca               2.14 2020-06-06 5 days           \n2 2020-06-02 ca               1.96 2020-06-06 4 days           \n3 2020-06-03 ca               1.77 2020-06-06 3 days           \n4 2020-06-04 ca               1.65 2020-06-08 4 days           \n5 2020-06-05 ca               1.60 2020-06-09 4 days           \n6 2020-06-06 ca               1.34 2020-06-10 4 days           \n\n\n\nAnd subject to revision \n\n\n\n# A tibble: 6 × 5\n  time_value geo_value percent_cli version    version_time_diff\n  &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;date&gt;     &lt;drtn&gt;           \n1 2020-06-01 ca               2.14 2020-06-06  5 days          \n2 2020-06-01 ca               2.14 2020-06-08  7 days          \n3 2020-06-01 ca               2.11 2020-06-09  8 days          \n4 2020-06-01 ca               2.13 2020-06-10  9 days          \n5 2020-06-01 ca               2.20 2020-06-11 10 days          \n6 2020-06-01 ca               2.23 2020-06-12 11 days"
+    "text": "Latency and revision in signals - Example\n\nRecall the first example of panel & versioned data we’ve seen…\n\n\nOn June 1, this signal is 5 days latent: min(version - time_value)\n\n\n\n# A tibble: 6 × 5\n  time_value geo_value percent_cli version    version_time_diff\n  &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;date&gt;     &lt;drtn&gt;           \n1 2020-06-01 ca               2.14 2020-06-06 5 days           \n2 2020-06-02 ca               1.96 2020-06-06 4 days           \n3 2020-06-03 ca               1.77 2020-06-06 3 days           \n4 2020-06-04 ca               1.65 2020-06-08 4 days           \n5 2020-06-05 ca               1.60 2020-06-09 4 days           \n6 2020-06-06 ca               1.34 2020-06-10 4 days           \n\n\nand subject to revision \n\n\n# A tibble: 6 × 5\n  time_value geo_value percent_cli version    version_time_diff\n  &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;date&gt;     &lt;drtn&gt;           \n1 2020-06-01 ca               2.14 2020-06-06  5 days          \n2 2020-06-01 ca               2.14 2020-06-08  7 days          \n3 2020-06-01 ca               2.11 2020-06-09  8 days          \n4 2020-06-01 ca               2.13 2020-06-10  9 days          \n5 2020-06-01 ca               2.20 2020-06-11 10 days          \n6 2020-06-01 ca               2.23 2020-06-12 11 days"
   },
   {
     "objectID": "slides/day1-morning.html#revision-triangle-outpatient-visits-in-wa-2022",
@@ -823,7 +802,7 @@
     "href": "slides/day1-morning.html#api-keys",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "API keys",
-    "text": "API keys\n\nAnyone may access the Epidata API anonymously without providing any personal data!!\nAnonymous API access is subject to some restrictions: public datasets only; 60 requests per hour; only two parameters may have multiple selections\nAPI key grants privledged access; can be obtained by registering with us\nPrivileges of registration: no rate limit; no limit on multiple selections\nWe just want to know which signals people care about and ensure we’re providing benefit\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe {epidatr} client automatically searches for the key in the DELPHI_EPIDATA_KEY environment variable.\nWe recommend storing it in your .Renviron file, which R reads by default.\nMore on setting your API key here."
+    "text": "API keys\n\nAnyone may access the Epidata API anonymously without providing any personal data!!\nAnonymous API access is subject to some restrictions: public datasets only; 60 requests per hour; only two parameters may have multiple selections\nAPI key grants priviledged access; can be obtained by registering with us\nPrivileges of registration: no rate limit; no limit on multiple selections\nWe just want to know which signals people care about and ensure we’re providing benefit\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe {epidatr} client automatically searches for the key in the DELPHI_EPIDATA_KEY environment variable.\nWe recommend storing it in your .Renviron file, which R reads by default.\nMore on setting your API key here."
   },
   {
     "objectID": "slides/day1-morning.html#interactive-tooling-in-r",
@@ -991,7 +970,7 @@
     "href": "slides/day1-morning.html#main-takeaways",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Main takeaways",
-    "text": "Main takeaways\n\nDelphi Epidata: platform for real-time epidemic data\n\nprovides (aggregated) signals for tracking and forecasting\nsources like health records, mobility patterns, and more.\n\n\n\n\nEpidata API: delivers up-to-date, granular epidemiological data + historical versions.\n\n\n\n{epidatr}:{.primary} Client package for R\n\n\n\nVersioned Data and Latency:\n\nas_of: One version; the specific date when the data was last updated\nissues: Multiple versions; with different as_of dates\n\n\nManages the record of revisions for transparency and accuracy in data analysis."
+    "text": "Main takeaways\n\nDelphi Epidata: platform for real-time epidemic data\n\nprovides (aggregated) signals for tracking and forecasting\nsources like health records, mobility patterns, and more.\n\n\n\n\nEpidata API: delivers up-to-date, granular epidemiological data + historical versions.\n\n\n\n{epidatr}: Client package for R\n\n\n\nVersioned Data and Latency:\n\nas_of: One version; the specific date when the data was last updated\nissues: Multiple versions; with different as_of dates\n\n\nManages the record of revisions for transparency and accuracy in data analysis."
   },
   {
     "objectID": "slides/appendix-tidyverse.html#section",
@@ -1354,8 +1333,8 @@
     "objectID": "slides/day1-afternoon.html#section",
     "href": "slides/day1-afternoon.html#section",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Data Cleaning, Versioning, Nowcasting With `{epiprocess}",
-    "text": "Data Cleaning, Versioning, Nowcasting With `{epiprocess}\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber\n11 December – Afternoon"
+    "section": "Data Cleaning, Versioning, Nowcasting With {epiprocess}",
+    "text": "Data Cleaning, Versioning, Nowcasting With {epiprocess}\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Logan Brooks, Xueda Shen, and also to Nat DeFries, Dmitry Shemetov, and David Weber\n11 December – Afternoon"
   },
   {
     "objectID": "slides/day1-afternoon.html#outline",
@@ -1726,7 +1705,7 @@
     "href": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "epi_archive: Collection of epi_dfs",
-    "text": "epi_archive: Collection of epi_dfs\nSubset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in `archive format:\n\narchive_cases_dv_subset\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-06-01 / 2021-11-30\nℹ First/last version with update: 2020-06-02 / 2021-12-01\nℹ Versions end: 2021-12-01\nℹ A preview of the table (129638 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version percent_cli case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n     1:        ca 2020-06-01 2020-06-02          NA        6.628329\n     2:        ca 2020-06-01 2020-06-06    2.140116        6.628329\n     3:        ca 2020-06-01 2020-06-07    2.140116        6.628329\n     4:        ca 2020-06-01 2020-06-08    2.140379        6.628329\n     5:        ca 2020-06-01 2020-06-09    2.114430        6.628329\n    ---                                                            \n129634:        tx 2021-11-26 2021-11-29    1.858596        7.957657\n129635:        tx 2021-11-27 2021-11-28          NA        7.174299\n129636:        tx 2021-11-28 2021-11-29          NA        6.834681\n129637:        tx 2021-11-29 2021-11-30          NA        8.841247\n129638:        tx 2021-11-30 2021-12-01          NA        9.566218"
+    "text": "epi_archive: Collection of epi_dfs\nSubset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in archive format:\n\narchive_cases_dv_subset\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-06-01 / 2021-11-30\nℹ First/last version with update: 2020-06-02 / 2021-12-01\nℹ Versions end: 2021-12-01\nℹ A preview of the table (129638 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version percent_cli case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n     1:        ca 2020-06-01 2020-06-02          NA        6.628329\n     2:        ca 2020-06-01 2020-06-06    2.140116        6.628329\n     3:        ca 2020-06-01 2020-06-07    2.140116        6.628329\n     4:        ca 2020-06-01 2020-06-08    2.140379        6.628329\n     5:        ca 2020-06-01 2020-06-09    2.114430        6.628329\n    ---                                                            \n129634:        tx 2021-11-26 2021-11-29    1.858596        7.957657\n129635:        tx 2021-11-27 2021-11-28          NA        7.174299\n129636:        tx 2021-11-28 2021-11-29          NA        6.834681\n129637:        tx 2021-11-29 2021-11-30          NA        8.841247\n129638:        tx 2021-11-30 2021-12-01          NA        9.566218"
   },
   {
     "objectID": "slides/day1-afternoon.html#revision-patterns",
@@ -2174,7 +2153,7 @@
     "href": "slides/day2-afternoon.html#section",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Forecasting With {epipredict} and Other Advanced Topics",
-    "text": "Forecasting With {epipredict} and Other Advanced Topics\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber\n12 December – Afternoon"
+    "text": "Forecasting With {epipredict} and Other Advanced Topics\nInsightNet Forecasting Workshop 2024\n\nAlice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani\nwith huge thanks to Logan Brooks, Xueda Shen, and also to Nat DeFries, Dmitry Shemetov, and David Weber\n12 December – Afternoon"
   },
   {
     "objectID": "slides/day2-afternoon.html#outline",
@@ -2258,7 +2237,7 @@
     "href": "slides/day2-afternoon.html#pre-processing-fix-outliers-and-negative-values",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Pre-processing: fix outliers and negative values",
-    "text": "Pre-processing: fix outliers and negative values\n\n\nCode\ndetection_methods &lt;- dplyr::bind_rows(\n  dplyr::tibble(method = \"rm\", args = list(list(detect_negatives = TRUE)), abbr = \"rm\")#,\n  #dplyr::tibble(method = \"stl\", args = list(list(detect_negatives = TRUE, seasonal_period = 7)),\n  #              abbr = \"stl_seasonal\")\n  )\n\ndeaths_outlr &lt;- df |&gt; \n  group_by(geo_value) |&gt;\n  mutate(outlier_info = detect_outlr(x = time_value, \n                                     y = deaths, \n                                     methods = detection_methods, \n                                     combiner = \"median\"\n                                     )) |&gt;\n  ungroup() |&gt;\n  unnest(outlier_info)\n\ndeaths_outlr |&gt;\n  filter(geo_value %in% c(\"ca\", \"ma\", \"ny\", \"tx\")) |&gt; \n  ggplot(aes(x = time_value)) +\n  geom_line(aes(y = deaths), linetype = 2) +\n  geom_line(aes(y = combined_replacement, col = geo_value)) +\n  geom_hline(yintercept = 0, linetype = 3) +\n  facet_wrap(vars(geo_value), scales = \"free_y\") +\n  scale_color_viridis_d() +\n  labs(x = \"\", y = \"Covid-19 deaths per 100k people\")"
+    "text": "Pre-processing: fix outliers and negative values\n\n\nCode\ndetection_methods &lt;- dplyr::bind_rows(\n  dplyr::tibble(method = \"rm\", args = list(list(detect_negatives = TRUE)), abbr = \"rm\")#,\n  #dplyr::tibble(method = \"stl\", args = list(list(detect_negatives = TRUE, seasonal_period = 7)),\n  #              abbr = \"stl_seasonal\")\n  )\n\ndeaths_outlr &lt;- df |&gt; \n  group_by(geo_value) |&gt;\n  mutate(outlier_info = detect_outlr(x = time_value, \n                                     y = deaths, \n                                     methods = detection_methods, \n                                     combiner = \"median\"\n                                     )) |&gt;\n  ungroup() |&gt;\n  unnest(outlier_info)"
   },
   {
     "objectID": "slides/day2-afternoon.html#fit-arx_forecaster-on-training-set",
@@ -2492,11 +2471,11 @@
     "text": "Predictions (geo-pooling + quantile regression)\n\n\n\n         MAE     MASE  Coverage\nMA 0.1256939 259.1563 0.6947368\nNY 0.1422547 290.4818 0.7578947\nTX 0.1611587 320.7796 0.7789474"
   },
   {
-    "objectID": "slides/day2-afternoon.html#philosophy-of-forecasting",
-    "href": "slides/day2-afternoon.html#philosophy-of-forecasting",
+    "objectID": "slides/day2-afternoon.html#anatomy-of-a-forecaster",
+    "href": "slides/day2-afternoon.html#anatomy-of-a-forecaster",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Philosophy of forecasting",
-    "text": "Philosophy of forecasting\n\nWe should build up modular components\nBe able to add/remove layers of complexity sequentially\n\n\n\nPreprocessor: do things to the data before model training\nTrainer: train a model on data, resulting in a fitted model object\nPredictor: make predictions, using a fitted model object\nPostprocessor: do things to the predictions before returning"
+    "section": "Anatomy of a forecaster",
+    "text": "Anatomy of a forecaster\n\nWe should build up modular components\nBe able to add/remove layers of complexity sequentially\n\n\n\nPreprocessor: do things to the data before model training\nTrainer: train a model on data, resulting in a fitted model object\nPredictor: make predictions, using a fitted model object\nPostprocessor: do things to the predictions before returning"
   },
   {
     "objectID": "slides/day2-afternoon.html#fit-a-forecaster-from-scratch",
@@ -2552,21 +2531,14 @@
     "href": "slides/day2-afternoon.html#ensembling",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ensembling",
-    "text": "Ensembling\n\nInstead of choosing one model, combine the predictions from multiple constituent models\nEnsemble types\n\nuntrained: combines multiple constituent models without considering their past performance\ntrained: weights different constituent models based on their accuracy\n\nGoals\n\ncompete-with-best: ensemble should have accuracy competitive with best individual constituent model\nrobustness-over-all: ensemble should have greater robustness than any individual constituent model\n\nTypically: untrained ensembles are robust but less accurate, and trained ensembles are accurate but less robust."
+    "text": "Ensembling\nInstead of choosing one model, we can combine the predictions from multiple base models. Ensemble types:\n\nuntrained: combine base models, agnostic to past performance\ntrained: weight base models, accounting for past performance\n\nSimplest untrained method: simple average of base model forecasts\n\\[\n\\hat{y}^{\\text{avg}}_{t+h|t} = \\frac{1}{p} \\sum_{j=1}^p \\hat{y}^j_{t+h|t}\n\\]\nA more robust option: simple median of base model forecasts\n\\[\n\\hat{y}^{\\text{med}}_{t+h|t} = \\mathrm{median}\\Big\\{ \\hat{y}^j_{t+h|t} : j = 1,\\dots,p \\Big\\}\n\\] ### Example from the Covid-19 Forecast Hub\n\nTwo key goals of ensembling\n1 Compete-with-best: ensemble should have accuracy competitive with best individual constituent model\n\nRobustness-over-all: ensemble should have greater robustness than any individual constituent model\n\nTypically these are hard to accomplish simultaneously, and untrained methods excel at point 2, whereas trained methods can achieve point 1\nLinear stacking\nOne of the simplest trained ensemble methods is to directly fit a weighted combination of base forecasts to optimize accuracy (MSE, MAE, etc.), often called linear stacking: e.g., to form the forecast at time \\(t\\), we solve\n\\[\\begin{alignat*}{2}\n&\\min_{w \\in \\R^p} && \\hspace{-6pt} \\sum_{s=t_0+1}^t \\bigg( y_s - \\sum_{j=1}^p\nw_j \\cdot \\hat{y}^j_{s|s-h} \\bigg)^2 \\\\   \n&\\st \\quad && \\sum_{j=1}^p w_j = 1, \\;\\;\\text{and} \\;\\; w_j \\geq 0, \\;\nj=1,\\dots,p   \n\\end{alignat*}\\]\nthen use\n\\[\n\\hat{y}^{\\text{stack}}_{t+h|t} = \\sum_{j=1}^p \\hat{w}^t_j \\cdot\n\\hat{y}^j_{t+h|t}\n\\]\nNote that the stacking optimization problem uses forward-looking predictions (as in time series cross-validation)"
   },
   {
-    "objectID": "slides/day2-afternoon.html#calibration",
-    "href": "slides/day2-afternoon.html#calibration",
+    "objectID": "slides/day2-afternoon.html#recalibration",
+    "href": "slides/day2-afternoon.html#recalibration",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Calibration",
-    "text": "Calibration\n\nWe have seen that prediction intervals often have nominal coverage &lt;&lt; actual empirical coverage, e.g. 80% predictive intervals that in practice cover the truth \\(\\approx\\) 60% of the times\nCalibration aims at adjusting the intervals so that nominal coverage \\(\\approx\\) empirical coverage"
-  },
-  {
-    "objectID": "slides/day2-afternoon.html#calibration-1",
-    "href": "slides/day2-afternoon.html#calibration-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Calibration",
-    "text": "Calibration\nQuantile tracking\n\nLet \\(\\hat q_{t}^{1-\\alpha}\\) = predicted level \\(1-\\alpha\\) quantile of the distribution of \\(e_t\\), the absolute forecast error at time \\(t\\):\n\n\\[e_t = |y_t - \\hat y_{t|t-1}|.\\]\n\nGiven a learning rate \\(\\eta&gt;0\\), update the quantiles as\n\n\\[\\hat q_{t+1}^{1-\\alpha} = \\begin{cases}\n\\hat q_{t}^{1-\\alpha} + \\eta(1-\\alpha) \\quad \\text{if } x_t\\notin I_{t|t-1}^{1-\\alpha} \\\\\n\\hat q_{t}^{1-\\alpha} - \\eta\\alpha \\quad \\quad \\quad \\,\\,\\, \\text{if } x_t\\in I_{t|t-1}^{1-\\alpha}\n\\end{cases}\\]\nwhere \\(I_{t|t-1}^{1-\\alpha}\\) is the \\(1-\\alpha\\) prediction interval made by a forecaster at time \\(t\\) for time \\(t+1\\).\n\nQuantile tracking in words: if the latest interval does not cover, increase the quantile by \\(\\eta(1-\\alpha)\\) (make the next interval wider), otherwise decrease the quantile by \\(\\eta\\alpha\\) (make the next interval narrower)."
+    "section": "Recalibration",
+    "text": "Recalibration\n\nWe have seen that prediction intervals often have empirical coverage &lt;&lt; nominal coverage, e.g., our 80% predictive intervals in practice cover \\(\\approx\\) 60% of the time\nRecalibration methods aim at adjusting the intervals so that nominal coverage \\(\\approx\\) empirical coverage\n\nQuantile tracking\nQuantile tracking is a method for producing calibrated prediction intervals from base forecasts and scores. In the simplest case, we can take the score to be absolute error of point forecasts:\n\\[e_t = |y_t - \\hat y_{t|t-1}|\\]\n\nLet \\(\\hat q_{t}^{1-\\alpha}\\) be a predicted level \\(1-\\alpha\\) quantile of the distribution of \\(e_t\\)\nDefine \\(I_{t|t-1}^{1-\\alpha} = [\\hat{y}_{t|t-1} - \\hat{q}_t^{1-\\alpha}, \\;     \\hat{y}_{t|t-1} + \\hat{q}_t^{1-\\alpha}]\\). Note that\n\\[\n  e_t \\leq \\hat{q}_t^{1-\\alpha} \\iff y_t \\in I_{t|t-1}^{1-\\alpha}\n  \\]\nTherefore we the reduced the problem of producing prediction intervals \\(I_{t|t-1}^{1-\\alpha}\\) to one of tracking a quantile of \\(e_t\\)\n\nQuantile updates\nWe begin with some estimate \\(\\hat{q}_{t_0+1}^{1-\\alpha}\\) based on a burn-in set. Then repeat the following updates as \\(t\\) increases, for a step size \\(\\eta &gt; 0\\):\n\\[\\hat q_{t+1}^{1-\\alpha} = \\begin{cases}\n\\hat q_{t}^{1-\\alpha} + \\eta(1-\\alpha) \\quad \\text{if } y_t\\notin I_{t|t-1}^{1-\\alpha} \\\\\n\\hat q_{t}^{1-\\alpha} - \\eta\\alpha \\quad \\quad \\quad \\,\\,\\, \\text{if } y_t\\in I_{t|t-1}^{1-\\alpha}\n\\end{cases}\\]\nIn words:\n\nif the latest interval does not cover, then we increase the quantile (make the next interval wider),\notherwise we decrease the quantile by (make the next interval narrower).\n\nThis method has the following guarantee:\n\\[\n\\Bigg| \\frac{1}{T} \\sum_{t=t_0+1}^{t_0+T} 1 \\big\\{ y_t \\in I_{t|t-1}^{1-\\alpha} \\big\\} - (1-\\alpha) \\Bigg| \\leq \\frac{b/\\eta + 1}{T}\n\\]\nwhere \\(b\\) is a bound on the errors (largest error possible/observable)."
   },
   {
     "objectID": "slides/day2-afternoon.html#multi-horizon-smoothing",

@@ -206,7 +206,7 @@
 <h3 id="section-1">InsightNet Forecasting Workshop 2024</h3>
 <p><br></p>
 <h4 id="section-2">Alice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani</h4>
-<p><span class="fstyle">with huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber</span></p>
+<p><span class="fstyle">with huge thanks to Logan Brooks, Xueda Shen, and also to Nat DeFries, Dmitry Shemetov, and David Weber</span></p>
 <p>12 December – Morning</p>
 </section>
 </div>
@@ -215,13 +215,13 @@
 <h2>Outline</h2>
 <ol type="1">
 <li><p>Some Words About Forecasting</p></li>
-<li><p>Linear Regression for Time Series Data</p></li>
+<li><p>Linear Regression for Time Series</p></li>
 <li><p>Evaluation Methods</p></li>
 <li><p>ARX Models</p></li>
 <li><p>Overfitting and Regularization</p></li>
 <li><p>Prediction Intervals</p></li>
 <li><p>Forecasting with Versioned Data</p></li>
-<li><p>Other Approaches to Time Series Data</p></li>
+<li><p>Traditional Approaches to Time Series</p></li>
 </ol>
 </section>
 <section>
@@ -240,8 +240,8 @@
 </ul>
 </section></section>
 <section>
-<section id="linear-regression-for-time-series-data" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> Linear Regression for Time Series Data</h1>
+<section id="linear-regression-for-time-series" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> Linear Regression for Time Series</h1>
 
 </section>
 <section id="basics-of-linear-regression" class="slide level2">
@@ -665,10 +665,10 @@ split-sample 0.3116854 2914.4575</code></pre>
 
 <img data-src="day2-morning_files/figure-revealjs/plot-ca-cases-deaths-again-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="time-series-cross-validation-cv" class="slide level2">
-<h2>Time-series cross-validation (CV)</h2>
+<h2>Time series cross-validation (CV)</h2>
 <h4 id="h-step-ahead-predictions"><span class="math inline">\(h\)</span>-step ahead predictions</h4>
 <ul>
-<li><p>If we <span class="primary">refit</span> in the future once new data are available, a more appropriate way to estimate the prediction error is time-series cross-validation.</p></li>
+<li><p>If we <span class="primary">refit</span> in the future once new data are available, a more appropriate way to estimate the prediction error is time series cross-validation.</p></li>
 <li><p>To get <span class="math inline">\(h\)</span>-step ahead predictions, for each time <span class="math inline">\(t = t_0, t_0+1, \dots\)</span>,</p>
 <ul>
 <li><p><span class="primary">Fit</span> the model using data <span class="primary">up to time <span class="math inline">\(t\)</span></span></p></li>
@@ -681,7 +681,7 @@ split-sample 0.3116854 2914.4575</code></pre>
 <p>where <span class="math inline">\(\hat y_{t+h|t}\)</span> indicates a prediction for <span class="math inline">\(y\)</span> at time <span class="math inline">\(t+h\)</span> that was made with data available up to time <span class="math inline">\(t\)</span>.</p>
 </section>
 <section id="time-series-cross-validation-cv-1" class="slide level2">
-<h2>Time-series cross-validation (CV)</h2>
+<h2>Time series cross-validation (CV)</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-2">Linear regression of COVID deaths on lagged cases</h4>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ca)                               <span class="co">#length of time series</span></span>
@@ -706,7 +706,7 @@ split-sample 0.3116854 2914.4575</code></pre>
 </div>
 </section>
 <section id="time-series-cross-validation-cv-2" class="slide level2">
-<h2>Time-series cross-validation (CV)</h2>
+<h2>Time series cross-validation (CV)</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-3">Linear regression of COVID deaths on lagged cases</h4>
 
 <img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
@@ -782,7 +782,7 @@ time series CV 0.2374931 2212.5992</code></pre>
 </div>
 </section>
 <section id="time-series-cv-all-past-vs-trailing-window" class="slide level2">
-<h2>Time-series CV: all past vs trailing window</h2>
+<h2>Time series CV: all past vs trailing window</h2>
 <h4 id="linear-regression-of-covid-deaths-on-lagged-cases-5">Linear regression of COVID deaths on lagged cases</h4>
 
 <img data-src="day2-morning_files/figure-revealjs/plot-cv-predictions-trailing-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
@@ -840,7 +840,7 @@ time series CV + trailing 0.09932651  925.3734</code></pre>
 <span id="cb15-2"><a></a>ca<span class="sc">$</span>lagged_deaths <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(ca<span class="sc">$</span>deaths, <span class="at">n =</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
-<li>How does it compare to the previous model in terms of time-series CV?</li>
+<li>How does it compare to the previous model in terms of time series CV?</li>
 </ul>
 <div class="callout callout-important no-icon callout-titled callout-style-default">
 <div class="callout-body">
@@ -854,7 +854,7 @@ time series CV + trailing 0.09932651  925.3734</code></pre>
 </div>
 </section>
 <section id="time-series-cv-trailing-arx1-vs-lm-on-lagged-cases" class="slide level2">
-<h2>Time-Series CV (trailing): ARX(1) vs <code>lm</code> on lagged cases</h2>
+<h2>Time series CV (trailing): ARX(1) vs <code>lm</code> on lagged cases</h2>
 
 <img data-src="day2-morning_files/figure-revealjs/arx-lm-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1038,7 +1038,7 @@ ARX(1) 0.04463132 129.2531</code></pre>
 </div>
 </section>
 <section id="time-series-cv-trailing-arx1-arx2-and-arx3" class="slide level2">
-<h2>Time-Series CV (trailing): ARX(1), ARX(2), and ARX(3)</h2>
+<h2>Time series CV (trailing): ARX(1), ARX(2), and ARX(3)</h2>
 
 <img data-src="day2-morning_files/figure-revealjs/arx-2-and-3-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1157,7 +1157,7 @@ split-sample 0.3978198 3706.28</code></pre>
 </div>
 </section>
 <section id="time-series-cv-trailing-for-arx3-ridgelasso" class="slide level2">
-<h2>Time-series CV (trailing) for ARX(3) + ridge/lasso</h2>
+<h2>Time series CV (trailing) for ARX(3) + ridge/lasso</h2>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>  <span class="co"># number of days ahead </span></span>
 <span id="cb26-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span> <span class="co"># window length</span></span>
@@ -1195,7 +1195,7 @@ split-sample 0.3978198 3706.28</code></pre>
 </div>
 </section>
 <section id="predictions-time-series-cv-trailing-for-arx1-ridgelasso" class="slide level2">
-<h2>Predictions: time-series CV (trailing) for ARX(1) + ridge/lasso</h2>
+<h2>Predictions: time series CV (trailing) for ARX(1) + ridge/lasso</h2>
 
 <img data-src="day2-morning_files/figure-revealjs/regularize-arx-1-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1207,7 +1207,7 @@ ARX(1) + lasso 0.07887651 734.8514</code></pre>
 </div>
 </section>
 <section id="predictions-time-series-cv-trailing-for-arx2-ridgelasso" class="slide level2">
-<h2>Predictions: time-series CV (trailing) for ARX(2) + ridge/lasso</h2>
+<h2>Predictions: time series CV (trailing) for ARX(2) + ridge/lasso</h2>
 
 <img data-src="day2-morning_files/figure-revealjs/regularize-arx-2-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1219,7 +1219,7 @@ ARX(2) + lasso 0.07807801 727.4122</code></pre>
 </div>
 </section>
 <section id="predictions-time-series-cv-trailing-for-arx3-ridgelasso" class="slide level2">
-<h2>Predictions: time-series CV (trailing) for ARX(3) + ridge/lasso</h2>
+<h2>Predictions: time series CV (trailing) for ARX(3) + ridge/lasso</h2>
 
 <img data-src="day2-morning_files/figure-revealjs/plot-arx3-regularization-cv-1.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1424,112 +1424,178 @@ version-unaware 0.07934554 200.4657</code></pre>
 </div>
 </section></section>
 <section>
-<section id="other-approaches-to-time-series-data" class="title-slide slide level1 center" data-number="8">
-<h1><span class="header-section-number">8</span> Other Approaches to Time Series Data</h1>
+<section id="traditional-approaches-to-time-series" class="title-slide slide level1 center" data-number="8">
+<h1><span class="header-section-number">8</span> Traditional Approaches to Time Series</h1>
 
 </section>
-<section id="traditional-time-series-forecasting" class="slide level2">
-<h2>Traditional Time Series Forecasting</h2>
-<p>Two popular frameworks:</p>
+<section id="popular-forecasting-frameworks" class="slide level2">
+<h2>Popular forecasting frameworks</h2>
 <ul>
-<li><p>Exponential Smoothing with Trend and Seasonality (<span class="primary">ETS</span>)</p></li>
-<li><p>Autoregressive Integrated Moving Average (<span class="primary">ARIMA</span>)</p></li>
+<li>Autoregressive integrated model average (ARIMA) models</li>
+<li>Exponential smoothing with trend and seasonality (ETS)</li>
+<li>Prophet forecaster</li>
+<li>DeepAR (neural network)</li>
+</ul>
+<p>First two here are classic and standard, second two are more recent. None are particularly well-suited for epi forecasting out-of-the-box, ask us about them if you’re curious. We’ll discuss ARIMA as it’s closest to what we’ve seen.</p>
+</section>
+<section id="dissecting-arima" class="slide level2">
+<h2>Dissecting ARIMA</h2>
+<ul>
+<li>AR = autoregressive, include lags of response itself as features</li>
+<li>MA = moving average, include lags of noise terms (correlated noise model)</li>
+<li>I = integrated, we model and forecast differences between observations</li>
 </ul>
 </section>
-<section id="ets" class="slide level2">
-<h2>ETS</h2>
-<h3 id="simple-exponential-smoothing-ses">Simple Exponential Smoothing (SES)</h3>
+<section id="discussion" class="slide level2">
+<h2>Discussion</h2>
+<p>Worth comparing and discussing ARIMA versus the kind of autoregressive models you’ve just seen:</p>
 <ul>
-<li>The <span class="math inline">\(h\)</span>-step ahead prediction is a weighted average of the current observation <span class="math inline">\(y_t\)</span> and the forecast <span class="math inline">\(\hat y_{t|t-1}\)</span>:</li>
-</ul>
-<p><span class="math display">\[\hat y_{t+h|t} = \alpha y_t + (1- \alpha) \hat y_{t|t-1}\]</span></p>
-<p>where <span class="math inline">\(\alpha \in [0,1]\)</span></p>
+<li>The way lags are handled:
 <ul>
-<li><p><span class="primary">Forecasts are flat</span>, i.e.&nbsp;do not depend on <span class="math inline">\(h\)</span></p></li>
-<li><p>If <span class="math inline">\(\alpha = 1\)</span>, we retrieve the <span class="primary">naive flatline</span> forecaster</p></li>
+<li>In what you’ve seen, we can include arbitrary lags (and regularize)</li>
+<li>Traditional AR models require lags to be contiguous (e.g., all of 0-17, instead of 0, 7, 14)</li>
+</ul></li>
+<li>The way multi-step forecasts are made:
+<ul>
+<li>In what you’ve seen, we model h-step ahead directly</li>
+<li>Traditional AR models only do 1-step ahead prediction, and iterate this to get forecasts at longer horizons</li>
+</ul></li>
 </ul>
-<p><span class="math display">\[ y_{t+h|t} = y_t\]</span></p>
 </section>
-<section id="ets-1" class="slide level2">
-<h2>ETS</h2>
-<h3 id="simple-exponential-smoothing-ses-1">Simple Exponential Smoothing (SES)</h3>
+<section id="discussion-1" class="slide level2">
+<h2>Discussion</h2>
 <ul>
-<li>The SES forecast can be re-expressed as</li>
-</ul>
-<p><span class="math display">\[\hat y_{t+h|t} = \alpha y_t + \alpha (1- \alpha) y_{t-1}  + \alpha (1- \alpha)^2 y_{t-2} + \dots\]</span></p>
-<p>i.e.&nbsp;observations <span class="primary"><span class="math inline">\(y_{t-k}\)</span></span> that are <span class="math inline">\(k\)</span> steps into the past are <span class="primary">exponentially down-weighted</span>, with weight <span class="math inline">\((1- \alpha)^2\)</span>. Hence the name exponential smoothing.</p>
+<li>The way nonstationarity is handled:
 <ul>
-<li><span class="primary">Component form</span> of the SES forecast</li>
+<li>In what you’ve seen, we address nonstationarity via trailing training windows (or observation weights more generally)</li>
+<li>Traditional ARIMA models use the I component for this: remove linear or quadratic trends by differences, add them back in at prediction time</li>
+</ul></li>
+<li>The way exogenous features are included:
+<ul>
+<li>In what you’ve seen, they appear directly as an exogenous predictor</li>
+<li>Traditional ARIMA models (software, such as <code>fable()</code>) includes them in a different manner; they are effectively subject to the same lags as the AR and MA terms</li>
+</ul></li>
 </ul>
-<p><span class="math display">\[\begin{align*}
-\hat y_{t+h | t} &amp; = l_t \\
-l_t &amp; = \alpha y_t + (1- \alpha) l_{t-1}
-\end{align*}\]</span></p>
 </section>
-<section id="ets-2" class="slide level2">
-<h2>ETS</h2>
-<h3 id="holts-linear-trend-method">Holt’s linear trend method</h3>
+<section id="supplementary-resources" class="slide level2">
+<h2>Supplementary resources</h2>
 <ul>
-<li>Expands SES component form by introducing a <span class="primary">trend</span> <span class="math inline">\(b_t\)</span></li>
+<li>Hyndman and Athanasopoulos, <a href="https://otexts.com/fpp3/">Forecasting: Principles and Practice</a></li>
+<li>Ryan’s course notes, <a href="https://stat153.berkeley.edu/fall-2024/">Introduction to Time Series</a></li>
 </ul>
-<p><span class="math display">\[\begin{align*}
-\hat y_{t+h | t} &amp;= l_t + b_t h\\
-l_t &amp;= \alpha y_t + (1- \alpha) (l_{t-1} + b_{t-1}) \\
-b_t &amp; = \beta (l_{t} - l_{t-1}) + (1-\beta) b_{t-1}
-\end{align*}\]</span></p>
-<p>where <span class="math inline">\(\alpha, \beta \in [0,1]\)</span>.</p>
-<ul>
-<li><span class="primary">Forecasts are linear</span> in <span class="math inline">\(h\)</span>, with slope <span class="math inline">\(b_t\)</span>.</li>
-</ul>
-<div class="callout callout-important no-icon callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>Linear trend forecasts can be erratic for large <span class="math inline">\(h\)</span>!</p>
-</div>
-</div>
-</div>
-</section>
-<section id="ets-3" class="slide level2">
-<h2>ETS</h2>
-<h3 id="damped-holts-method">Damped Holt’s method</h3>
-<ul>
-<li>Introduces a parameter <span class="math inline">\(\phi\)</span> to <span class="primary">dampen the forecast trajectory</span></li>
-</ul>
-<p><span class="math display">\[\begin{align*}
-\hat y_{t+h | t} &amp;= l_t + b_t (\phi +\phi^2 + \dots + \phi^h)\\
-l_t &amp;= \alpha y_t + (1- \alpha) (l_{t-1} + b_{t-1}\phi) \\
-b_t &amp; = \beta (l_{t} - l_{t-1}) + (1-\beta) b_{t-1}\phi
-\end{align*}\]</span></p>
-<p>where <span class="math inline">\(\alpha, \beta, \phi \in [0,1]\)</span></p>
-<ul>
-<li><p>Contribution of slope <span class="math inline">\(b_t\)</span> to a forecast diminishes at each step into the future, by a multiplicative factor <span class="math inline">\(\phi\)</span></p></li>
-<li><p>As <span class="math inline">\(h\to \infty\)</span>, forecasts approach a constant level</p></li>
-</ul>
-<p><span class="math display">\[ y_{t+h | t} \to l_t + b_t \sum_{j=1}^\infty \phi^j = l_t + b_t \frac{\phi}{1-\phi}\]</span></p>
-</section>
-<section id="arima" class="slide level2">
-<h2>ARIMA</h2>
-<h3 id="arp">AR(p)</h3>
-<p>Auto-regressive model of order <span class="math inline">\(p\)</span></p>
-<p><span class="math display">\[y_t = \sum_{j=1}^p \phi_j y_{t-j} + w_t\]</span></p>
-<h3 id="maq">MA(q)</h3>
-<p>Moving average model of order <span class="math inline">\(q\)</span></p>
-<p><span class="math display">\[y_t = w_t + \sum_{j=1}^q \theta_j w_{t-j} \]</span></p>
-<p>where <span class="math inline">\(w_t\)</span> is a white noise sequence, i.e.&nbsp; <span class="math inline">\(\mathbb{E}(w_t)=0\)</span> and <span class="math inline">\(\text{Var}(w_t)=\sigma^2\)</span> for all <span class="math inline">\(t\)</span>, and <span class="math inline">\(\text{Cov}(w_s, w_t)=0\)</span> for all <span class="math inline">\(s \neq t\)</span></p>
-</section>
-<section id="arima-1" class="slide level2">
-<h2>ARIMA</h2>
-<h3 id="armap-q">ARMA(p, q)</h3>
-<p><span class="math display">\[y_t = \sum_{j=1}^p \phi_j y_{t-j} + \sum_{j=0}^q \theta_j w_{t-j} \]</span></p>
-<p>with <span class="math inline">\(\theta_0 = 1\)</span></p>
-<h3 id="arimap-d-q">ARIMA(p, d, q)</h3>
-<p>Assumes an <span class="math inline">\(ARMA(p, q)\)</span> model on the <span class="math inline">\(d^{th}\)</span>-order differences of <span class="math inline">\(y_t\)</span></p>
-</section>
-<section id="mechanistic-models" class="slide level2">
-<h2>Mechanistic Models</h2>
+<!--
+## ETS
+
+### Simple Exponential Smoothing (SES)
+
+* The $h$-step ahead prediction is a weighted average of the current 
+observation $y_t$ and the forecast $\hat y_{t|t-1}$:
+
+$$\hat y_{t+h|t} = \alpha y_t + (1- \alpha) \hat y_{t|t-1}$$
+
+where $\alpha \in [0,1]$
+
+* [Forecasts are flat]{.primary}, i.e. do not depend on $h$
+
+* If $\alpha = 1$, we retrieve the [naive flatline]{.primary} forecaster
+
+$$ y_{t+h|t} = y_t$$
+
+
+## ETS
+
+### Simple Exponential Smoothing (SES)
+
+* The SES forecast can be re-expressed as
+
+$$\hat y_{t+h|t} = \alpha y_t + \alpha (1- \alpha) y_{t-1}  + \alpha (1- \alpha)^2 y_{t-2} + \dots$$
+
+i.e. observations [$y_{t-k}$]{.primary}  that are $k$ steps into the past are [exponentially 
+down-weighted]{.primary}, with weight $(1- \alpha)^2$. Hence the name exponential smoothing.
+
+* [Component form]{.primary} of the SES forecast
+
+\begin{align*}
+\hat y_{t+h | t} & = l_t \\
+l_t & = \alpha y_t + (1- \alpha) l_{t-1}
+\end{align*}
+
+## ETS
+
+### Holt's linear trend method
+
+* Expands SES component form by introducing a [trend]{.primary} $b_t$
+
+\begin{align*}
+\hat y_{t+h | t} &= l_t + b_t h\\
+l_t &= \alpha y_t + (1- \alpha) (l_{t-1} + b_{t-1}) \\
+b_t & = \beta (l_{t} - l_{t-1}) + (1-\beta) b_{t-1}
+\end{align*}
+
+where $\alpha, \beta \in [0,1]$.
+
+* [Forecasts are linear]{.primary} in $h$, with slope $b_t$.
+
+::: {.callout-important icon="false"}
+## Note
+
+Linear trend forecasts can be erratic for large $h$!
+:::
+
+
+## ETS
+
+### Damped Holt's method
+
+* Introduces a parameter $\phi$ to [dampen the forecast trajectory]{.primary} 
+
+\begin{align*}
+\hat y_{t+h | t} &= l_t + b_t (\phi +\phi^2 + \dots + \phi^h)\\
+l_t &= \alpha y_t + (1- \alpha) (l_{t-1} + b_{t-1}\phi) \\
+b_t & = \beta (l_{t} - l_{t-1}) + (1-\beta) b_{t-1}\phi
+\end{align*}
+
+where $\alpha, \beta, \phi \in [0,1]$
+
+* Contribution of slope $b_t$ to a forecast diminishes at each step into the 
+future, by a multiplicative factor $\phi$
+
+* As $h\to \infty$, forecasts approach a constant level
+
+$$ y_{t+h | t} \to l_t + b_t \sum_{j=1}^\infty \phi^j = l_t + b_t \frac{\phi}{1-\phi}$$
+
+## ARIMA
+
+### AR(p)
+
+Auto-regressive model of order $p$
+
+$$y_t = \sum_{j=1}^p \phi_j y_{t-j} + w_t$$
+
+### MA(q)
+
+Moving average model of order $q$
+
+$$y_t = w_t + \sum_{j=1}^q \theta_j w_{t-j} $$
+
+where $w_t$ is a white noise sequence, i.e. 
+$\mathbb{E}(w_t)=0$ and $\text{Var}(w_t)=\sigma^2$ for all $t$, and 
+$\text{Cov}(w_s, w_t)=0$ for all $s \neq t$
+
+
+## ARIMA
+
+### ARMA(p, q)
+
+$$y_t = \sum_{j=1}^p \phi_j y_{t-j} + \sum_{j=0}^q \theta_j w_{t-j} $$
+
+with $\theta_0 = 1$
+
+### ARIMA(p, d, q)
+
+Assumes an $ARMA(p, q)$ model on the 
+$d^{th}$-order differences of $y_t$
+-->
 
 
 </section></section>

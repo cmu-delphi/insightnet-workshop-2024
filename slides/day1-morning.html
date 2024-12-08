@@ -206,7 +206,7 @@
 <h3 id="section-1">InsightNet Forecasting Workshop 2024</h3>
 <p><br></p>
 <h4 id="section-2">Alice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani</h4>
-<p><span class="fstyle">with huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber</span></p>
+<p><span class="fstyle">with huge thanks to Logan Brooks, Xueda Shen, and also to Nat DeFries, Dmitry Shemetov, and David Weber</span></p>
 <p>11 December – Morning</p>
 </section>
 </div>
@@ -376,7 +376,7 @@
 <pre><code>Error in `verify_setup()`:
 ! The following packages do not have the correct version:
 ℹ Installed: epipredict 0.2.0.
-ℹ Required: epipredict == 0.1.0.</code></pre>
+ℹ Required: epipredict == 0.1.5.</code></pre>
 </div>
 </div>
 </section></section>
@@ -600,8 +600,10 @@ with updates and revisions to past data as new issue dates are released:
 <section id="latency-and-revision-in-signals---example" class="slide level2">
 <h2>Latency and revision in signals - Example</h2>
 <ul>
-<li><p>Recall the first example of panel &amp; versioned data we’ve seen…</p></li>
-<li><p>This signal is 4 days <span class="primary"><strong>latent</strong></span>: <code>min(version - time_value)</code></p></li>
+<li>Recall the first example of panel &amp; versioned data we’ve seen…</li>
+</ul>
+<ul>
+<li>On June 1, this signal is 5 days <span class="primary"><strong>latent</strong></span>: <code>min(version - time_value)</code></li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -616,9 +618,7 @@ with updates and revisions to past data as new issue dates are released:
 6 2020-06-06 ca               1.34 2020-06-10 4 days           </code></pre>
 </div>
 </div>
-<ul>
-<li>And subject to <span class="primary"><strong>revision</strong></span> <!--over time (ex. consider Dec. 1's `percent_cli` across `version`):--></li>
-</ul>
+<p>and subject to <span class="primary"><strong>revision</strong></span> <!--over time (ex. consider Dec. 1's `percent_cli` across `version`):--></p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 5
@@ -999,7 +999,7 @@ misc measures by <code>{county x day, county x week}</code>
 <ul>
 <li><p>Anyone may access the Epidata API anonymously without providing any personal data!!</p></li>
 <li><p>Anonymous API access is subject to some restrictions: <small>public datasets only; 60 requests per hour; only two parameters may have multiple selections</small></p></li>
-<li><p>API key grants privledged access; can be obtained by <a href="https://api.delphi.cmu.edu/epidata/admin/registration_form">registering with us</a></p></li>
+<li><p>API key grants priviledged access; can be obtained by <a href="https://api.delphi.cmu.edu/epidata/admin/registration_form">registering with us</a></p></li>
 <li><p>Privileges of registration: no rate limit; no limit on multiple selections</p></li>
 <li><p>We just want to know which signals people care about and ensure we’re providing benefit</p></li>
 </ul>
@@ -1730,7 +1730,7 @@ dv_state_default <- pub_covidcast(
 </ul>
 <!-- Open-access API delivering up-to-date, granular epidemiological data + makes all historical versions available. -->
 <ul>
-<li><code>{epidatr}</code>:{.primary} Client package for R</li>
+<li><code>{epidatr}</code>: Client package for R</li>
 </ul>
 <!-- and interactive tools for discovering and analyzing health signals. -->
 <ul>

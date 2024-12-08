@@ -206,7 +206,7 @@
 <h3 id="section-1">InsightNet Forecasting Workshop 2024</h3>
 <p><br></p>
 <h4 id="section-2">Alice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani</h4>
-<p><span class="fstyle">with huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber</span></p>
+<p><span class="fstyle">with huge thanks to Logan Brooks, Xueda Shen, and also to Nat DeFries, Dmitry Shemetov, and David Weber</span></p>
 <p>12 December – Afternoon</p>
 </section>
 </div>
@@ -411,21 +411,11 @@
 <span id="cb9-12"><a></a>                                     <span class="at">combiner =</span> <span class="st">"median"</span></span>
 <span id="cb9-13"><a></a>                                     )) <span class="sc">|&gt;</span></span>
 <span id="cb9-14"><a></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb9-15"><a></a>  <span class="fu">unnest</span>(outlier_info)</span>
-<span id="cb9-16"><a></a></span>
-<span id="cb9-17"><a></a>deaths_outlr <span class="sc">|&gt;</span></span>
-<span id="cb9-18"><a></a>  <span class="fu">filter</span>(geo_value <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ca"</span>, <span class="st">"ma"</span>, <span class="st">"ny"</span>, <span class="st">"tx"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb9-19"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time_value)) <span class="sc">+</span></span>
-<span id="cb9-20"><a></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> deaths), <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb9-21"><a></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> combined_replacement, <span class="at">col =</span> geo_value)) <span class="sc">+</span></span>
-<span id="cb9-22"><a></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb9-23"><a></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(geo_value), <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb9-24"><a></a>  <span class="fu">scale_color_viridis_d</span>() <span class="sc">+</span></span>
-<span id="cb9-25"><a></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Covid-19 deaths per 100k people"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-15"><a></a>  <span class="fu">unnest</span>(outlier_info)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-
 </div>
-<img data-src="day2-afternoon_files/figure-revealjs/outliers-deaths-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+
+<img data-src="day2-afternoon_files/figure-revealjs/outliers-fig-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="fit-arx_forecaster-on-training-set" class="slide level2">
 <h2>Fit <code>arx_forecaster</code> on training set</h2>
 <ul>
@@ -1123,8 +1113,8 @@ TX 0.1611587 320.7796 0.7789474</code></pre>
 <h1><span class="header-section-number">3</span> Building a forecaster</h1>
 
 </section>
-<section id="philosophy-of-forecasting" class="slide level2">
-<h2>Philosophy of forecasting</h2>
+<section id="anatomy-of-a-forecaster" class="slide level2">
+<h2>Anatomy of a forecaster</h2>
 <div class="fragment fade-in-then-semi-out">
 <p>We should build up modular components</p>
 <p>Be able to add/remove layers of complexity sequentially</p>
@@ -1334,46 +1324,74 @@ Key: &lt;geo_value, time_value, version&gt;
 </section>
 <section id="ensembling" class="slide level2">
 <h2>Ensembling</h2>
+<p>Instead of choosing one model, we can <span class="primary">combine</span> the predictions from multiple base models. Ensemble types:</p>
 <ul>
-<li><p>Instead of choosing one model, <span class="primary">combine</span> the predictions from multiple constituent models</p></li>
-<li><p>Ensemble types</p>
-<ul>
-<li><p><span class="primary">untrained</span>: combines multiple constituent models without considering their past performance</p></li>
-<li><p><span class="primary">trained</span>: weights different constituent models based on their accuracy</p></li>
-</ul></li>
-<li><p>Goals</p>
-<ul>
-<li><p><span class="primary">compete-with-best</span>: ensemble should have accuracy competitive with best individual constituent model</p></li>
-<li><p><span class="primary">robustness-over-all</span>: ensemble should have greater robustness than any individual constituent model</p></li>
-</ul></li>
-<li><p>Typically: untrained ensembles are robust but less accurate, and trained ensembles are accurate but less robust.</p></li>
+<li><p><span class="primary">untrained</span>: combine base models, agnostic to past performance</p></li>
+<li><p><span class="primary">trained</span>: weight base models, accounting for past performance</p></li>
 </ul>
+<p>Simplest untrained method: simple average of base model forecasts</p>
+<p><span class="math display">\[
+\hat{y}^{\text{avg}}_{t+h|t} = \frac{1}{p} \sum_{j=1}^p \hat{y}^j_{t+h|t}
+\]</span></p>
+<p>A more robust option: simple median of base model forecasts</p>
+<p><span class="math display">\[
+\hat{y}^{\text{med}}_{t+h|t} = \mathrm{median}\Big\{ \hat{y}^j_{t+h|t} : j = 1,\dots,p \Big\}
+\]</span> ### Example from the Covid-19 Forecast Hub</p>
+
+<img data-src="gfx/cramer.png" class="r-stretch"><h3 id="two-key-goals-of-ensembling">Two key goals of ensembling</h3>
+<p>1 <span class="primary">Compete-with-best</span>: ensemble should have accuracy competitive with best individual constituent model</p>
+<ol start="2" type="1">
+<li><span class="primary">Robustness-over-all</span>: ensemble should have greater robustness than any individual constituent model</li>
+</ol>
+<p>Typically these are hard to accomplish simultaneously, and untrained methods excel at point 2, whereas trained methods can achieve point 1</p>
+<h3 id="linear-stacking">Linear stacking</h3>
+<p>One of the simplest trained ensemble methods is to directly fit a weighted combination of base forecasts to optimize accuracy (MSE, MAE, etc.), often called linear stacking: e.g., to form the forecast at time <span class="math inline">\(t\)</span>, we solve</p>
+<p><span class="math display">\[\begin{alignat*}{2}
+&amp;\min_{w \in \R^p} &amp;&amp; \hspace{-6pt} \sum_{s=t_0+1}^t \bigg( y_s - \sum_{j=1}^p
+w_j \cdot \hat{y}^j_{s|s-h} \bigg)^2 \\   
+&amp;\st \quad &amp;&amp; \sum_{j=1}^p w_j = 1, \;\;\text{and} \;\; w_j \geq 0, \;
+j=1,\dots,p   
+\end{alignat*}\]</span></p>
+<p>then use</p>
+<p><span class="math display">\[
+\hat{y}^{\text{stack}}_{t+h|t} = \sum_{j=1}^p \hat{w}^t_j \cdot
+\hat{y}^j_{t+h|t}
+\]</span></p>
+<p>Note that the stacking optimization problem uses forward-looking predictions (as in time series cross-validation)</p>
 </section>
-<section id="calibration" class="slide level2">
-<h2>Calibration</h2>
+<section id="recalibration" class="slide level2">
+<h2>Recalibration</h2>
 <ul>
-<li><p>We have seen that prediction intervals often have <span class="primary">nominal coverage &lt;&lt; actual empirical coverage</span>, e.g.&nbsp;80% predictive intervals that in practice cover the truth <span class="math inline">\(\approx\)</span> 60% of the times</p></li>
-<li><p>Calibration aims at adjusting the intervals so that nominal coverage <span class="math inline">\(\approx\)</span> empirical coverage</p></li>
+<li><p>We have seen that prediction intervals often have <span class="primary">empirical coverage &lt;&lt; nominal coverage</span>, e.g., our 80% predictive intervals in practice cover <span class="math inline">\(\approx\)</span> 60% of the time</p></li>
+<li><p>Recalibration methods aim at adjusting the intervals so that nominal coverage <span class="math inline">\(\approx\)</span> empirical coverage</p></li>
 </ul>
-</section>
-<section id="calibration-1" class="slide level2">
-<h2>Calibration</h2>
 <h3 id="quantile-tracking">Quantile tracking</h3>
+<p>Quantile tracking is a method for producing calibrated prediction intervals from base forecasts and scores. In the simplest case, we can take the score to be absolute error of point forecasts:</p>
+<p><span class="math display">\[e_t = |y_t - \hat y_{t|t-1}|\]</span></p>
 <ul>
-<li>Let <span class="math inline">\(\hat q_{t}^{1-\alpha}\)</span> = predicted level <span class="math inline">\(1-\alpha\)</span> quantile of the distribution of <span class="math inline">\(e_t\)</span>, the absolute forecast error at time <span class="math inline">\(t\)</span>:</li>
+<li><p>Let <span class="math inline">\(\hat q_{t}^{1-\alpha}\)</span> be a predicted level <span class="math inline">\(1-\alpha\)</span> quantile of the distribution of <span class="math inline">\(e_t\)</span></p></li>
+<li><p>Define <span class="math inline">\(I_{t|t-1}^{1-\alpha} = [\hat{y}_{t|t-1} - \hat{q}_t^{1-\alpha}, \;     \hat{y}_{t|t-1} + \hat{q}_t^{1-\alpha}]\)</span>. Note that</p>
+<p><span class="math display">\[
+  e_t \leq \hat{q}_t^{1-\alpha} \iff y_t \in I_{t|t-1}^{1-\alpha}
+  \]</span></p></li>
+<li><p>Therefore we the reduced the problem of producing prediction intervals <span class="math inline">\(I_{t|t-1}^{1-\alpha}\)</span> to one of tracking a quantile of <span class="math inline">\(e_t\)</span></p></li>
 </ul>
-<p><span class="math display">\[e_t = |y_t - \hat y_{t|t-1}|.\]</span></p>
-<ul>
-<li>Given a learning rate <span class="math inline">\(\eta&gt;0\)</span>, update the quantiles as</li>
-</ul>
+<h3 id="quantile-updates">Quantile updates</h3>
+<p>We begin with some estimate <span class="math inline">\(\hat{q}_{t_0+1}^{1-\alpha}\)</span> based on a burn-in set. Then repeat the following updates as <span class="math inline">\(t\)</span> increases, for a step size <span class="math inline">\(\eta &gt; 0\)</span>:</p>
 <p><span class="math display">\[\hat q_{t+1}^{1-\alpha} = \begin{cases}
-\hat q_{t}^{1-\alpha} + \eta(1-\alpha) \quad \text{if } x_t\notin I_{t|t-1}^{1-\alpha} \\
-\hat q_{t}^{1-\alpha} - \eta\alpha \quad \quad \quad \,\,\, \text{if } x_t\in I_{t|t-1}^{1-\alpha}
+\hat q_{t}^{1-\alpha} + \eta(1-\alpha) \quad \text{if } y_t\notin I_{t|t-1}^{1-\alpha} \\
+\hat q_{t}^{1-\alpha} - \eta\alpha \quad \quad \quad \,\,\, \text{if } y_t\in I_{t|t-1}^{1-\alpha}
 \end{cases}\]</span></p>
-<p>where <span class="math inline">\(I_{t|t-1}^{1-\alpha}\)</span> is the <span class="math inline">\(1-\alpha\)</span> prediction interval made by a forecaster at time <span class="math inline">\(t\)</span> for time <span class="math inline">\(t+1\)</span>.</p>
+<p>In words:</p>
 <ul>
-<li>Quantile tracking in words: if the latest interval does not cover, increase the quantile by <span class="math inline">\(\eta(1-\alpha)\)</span> (make the next interval wider), otherwise decrease the quantile by <span class="math inline">\(\eta\alpha\)</span> (make the next interval narrower).</li>
+<li>if the latest interval does not cover, then we increase the quantile (make the next interval wider),</li>
+<li>otherwise we decrease the quantile by (make the next interval narrower).</li>
 </ul>
+<p>This method has the following guarantee:</p>
+<p><span class="math display">\[
+\Bigg| \frac{1}{T} \sum_{t=t_0+1}^{t_0+T} 1 \big\{ y_t \in I_{t|t-1}^{1-\alpha} \big\} - (1-\alpha) \Bigg| \leq \frac{b/\eta + 1}{T}
+\]</span></p>
+<p>where <span class="math inline">\(b\)</span> is a bound on the errors (largest error possible/observable).</p>
 </section>
 <section id="multi-horizon-smoothing" class="slide level2">
 <h2>Multi-horizon smoothing</h2>
