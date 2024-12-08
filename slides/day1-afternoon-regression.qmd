@@ -137,7 +137,7 @@ target <- nchs_past_latest |>
 training_test <- full_join(predictors, target, by = c("geo_value", "time_value"))
 
 training <- training_test |> drop_na()
-test <- training_test |> filter(nowcast_date == trial_nowcast_date)
+test <- training_test |> filter(time_value == trial_nowcast_date)
 
 quantreg::rq(mortality_stable ~ mortality_lag7_realtime + 0, tau = 0.5, training)
 
