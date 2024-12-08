@@ -19,6 +19,20 @@ nchs_fullarchive <- pub_covidcast(
   select(geo_value, time_value, version = issue, mortality = value) |>
   as_epi_archive(compactify = TRUE)
 
+
+nchs_fullarchive2 <- pub_covidcast(
+  source = "nchs-mortality",
+  signals = "deaths_covid_incidence_num",
+  geo_type = "state",
+  time_type = "week",
+  geo_values = "ca",  # California (CA)
+  # time_values = epirange(202108, 202440),
+  time_values = "*",
+  issues = "*"
+) |>
+  select(geo_value, time_value, version = issue, mortality = value) |>
+  as_epi_archive(compactify = TRUE)
+
 nowcaster = function(x, g, t, wl=180, appx=49) {
 
   finalized_data = x$DT |>
@@ -297,5 +311,13 @@ training |>
   ggplot(aes(time_value, mortality_stable/value, color = name)) +
   geom_point() +
   geom_line()
+
+# nchs_fullarchive %>%
+nchs_fullarchive2 %>%
+  epix_slide(latency_days = as.integer(.version - max(time_value))) %>%
+  ggplot(aes(version, latency_days)) %>%
+  `+`(geom_line()) %>%
+  `+`(expand_limits(y = 0)) %>%
+  plotly::ggplotly()
 
 ```
