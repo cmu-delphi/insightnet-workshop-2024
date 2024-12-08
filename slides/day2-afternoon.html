@@ -202,11 +202,11 @@
 
 </div>
 <section id="section" class="slide level2 w-80" data-background-image="gfx/cover-art-1.svg" data-background-position="bottom">
-<h2>Forecasting with <code>{epipredict}</code></h2>
+<h2>Forecasting With <code>{epipredict}</code> and Other Advanced Topics</h2>
 <h3 id="section-1">InsightNet Forecasting Workshop 2024</h3>
 <p><br></p>
 <h4 id="section-2">Alice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani</h4>
-<p><span class="fstyle">with thanks to Delphi Tooling &amp; Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber</span></p>
+<p><span class="fstyle">with huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber</span></p>
 <p>12 December – Afternoon</p>
 </section>
 </div>
@@ -231,7 +231,7 @@
 <h2><code>{epipredict}</code></h2>
 <p><a href="https://cmu-delphi.github.io/epipredict" class="uri">https://cmu-delphi.github.io/epipredict</a></p>
 <h4 id="installation">Installation</h4>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/install_4d1dd80ae86a1588c064a1c9170f70e4">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="co"># Stable version</span></span>
 <span id="cb1-2"><a></a><span class="co"># pak::pkg_install("cmu-delphi/epipredict@main")</span></span>
 <span id="cb1-3"><a></a><span class="co"># Development version</span></span>
@@ -286,7 +286,7 @@
 </section>
 <section id="get-the-data" class="slide level2">
 <h2>Get the data</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/get-data_2ee8b154a762e13e21ec1e50ec025e1d">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(epidatr)</span>
 <span id="cb2-2"><a></a><span class="fu">library</span>(epiprocess)</span>
 <span id="cb2-3"><a></a><span class="fu">library</span>(epipredict)</span>
@@ -312,7 +312,7 @@
 </section>
 <section id="create-an-epi_df" class="slide level2">
 <h2>Create an <code>epi_df</code></h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epi-df_5e213ae066ab58eec5875ac95003a85f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>df <span class="ot">&lt;-</span> <span class="fu">left_join</span>(cases, deaths, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"time_value"</span>, <span class="st">"geo_value"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb3-2"><a></a>  <span class="fu">as_epi_df</span>()</span>
 <span id="cb3-3"><a></a></span>
@@ -321,7 +321,7 @@
 <pre><code>An `epi_df` object, 60,036 x 4 with metadata:
 * geo_type  = state
 * time_type = day
-* as_of     = 2024-12-02 13:03:04.888576
+* as_of     = 2024-12-07 16:23:18.293021
 
 # A tibble: 60,036 × 4
    geo_value time_value cases deaths
@@ -343,7 +343,7 @@
 <section id="pre-processing-data-scaling" class="slide level2">
 <h2>Pre-processing: data scaling</h2>
 <p>Scale cases and deaths by population and multiply by 100K</p>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/scale-data_5544beaef4bd8641f7a2b78ee05c6629">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>df <span class="ot">&lt;-</span> <span class="fu">left_join</span>(</span>
 <span id="cb5-2"><a></a>  <span class="at">x =</span> df,</span>
 <span id="cb5-3"><a></a>  <span class="at">y =</span> state_census <span class="sc">|&gt;</span> <span class="fu">select</span>(pop, abbr),   <span class="co"># state_census is available in epipredict</span></span>
@@ -355,7 +355,7 @@
 </section>
 <section id="scaled-covid-cases-and-deaths" class="slide level2">
 <h2>Scaled COVID cases and deaths</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/autoplot-deaths_790a8eb4e9b4b6b099f3d314fbccfe05">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a>df <span class="sc">|&gt;</span> </span>
@@ -368,7 +368,7 @@
 <section id="pre-processing-smoothing" class="slide level2">
 <h2>Pre-processing: smoothing</h2>
 <p>Smooth the data by computing 7-day averages of cases and deaths for each state</p>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/7dav-data_9ee54b56ba60bd3923db9ac09f5d02bd">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
 <span id="cb7-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb7-3"><a></a>  <span class="fu">epi_slide</span>(<span class="at">cases_7dav =</span> <span class="fu">mean</span>(cases, <span class="at">na.rm =</span> T),</span>
@@ -382,7 +382,7 @@
 </section>
 <section id="scaled-and-smoothed-covid-cases-deaths" class="slide level2">
 <h2>Scaled and smoothed COVID cases deaths</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/autoplot-7dav-deaths_3dff9be8ecafdb9380f414c51a951bcc">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>df <span class="sc">|&gt;</span> </span>
@@ -394,7 +394,7 @@
 <img data-src="day2-afternoon_files/figure-revealjs/autoplot-7dav-deaths-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="pre-processing-fix-outliers-and-negative-values" class="slide level2">
 <h2>Pre-processing: fix outliers and negative values</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/outliers-deaths_aad922b0dd02aaaf0fc205f7c1f9122c">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>detection_methods <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
@@ -433,7 +433,7 @@
 <li><p>Only focus on California (for now)</p></li>
 <li><p>Using <code>{epipredict}</code></p></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epipredict-arx_a929a68cc68b97bb4d4c438527bc004e">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb10" data-code-line-numbers="|7-13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="co"># split into train and test </span></span>
 <span id="cb10-2"><a></a>ca <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">filter</span>(geo_value <span class="sc">==</span> <span class="st">"ca"</span>)</span>
 <span id="cb10-3"><a></a>t0_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">'2021-04-01'</span>)</span>
@@ -458,7 +458,7 @@
 </section>
 <section id="arx_forecaster-output-1" class="slide level2">
 <h2><code>arx_forecaster</code> output</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/output-arx_b311982f813644d002e71ff04d223acb">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>epi_arx </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>══ A basic forecaster of type ARX Forecaster ═══════════════════════════════════</code></pre>
@@ -467,7 +467,7 @@
 <pre><code></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>This forecaster was fit on 2024-12-02 13:03:43.</code></pre>
+<pre><code>This forecaster was fit on 2024-12-07 16:24:26.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code></code></pre>
@@ -479,13 +479,13 @@
 <pre><code>• Geography: state,</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
+<pre><code>• Other keys: ,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
 <pre><code>• Time type: day,</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>• Using data up-to-date as of: 2024-12-02 13:03:04.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>• With the last data available on 2021-04-01</code></pre>
+<pre><code>• Using data up-to-date as of: 2024-12-07 16:23:18.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code></code></pre>
@@ -506,7 +506,7 @@
 <pre><code>• At forecast date: 2021-04-01,</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>• For target date: 2021-04-29,</code></pre>
+<pre><code>• For target date: 2021-04-29.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code></code></pre>
@@ -516,7 +516,7 @@
 <section id="extract-fitted-object" class="slide level2">
 <h2>Extract fitted object</h2>
 <div class="scrollable-output">
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epi-workflow-arx_e507248819bdd7c55d84f0df28fe9e86">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>epi_arx<span class="sc">$</span>epi_workflow</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code></code></pre>
@@ -576,7 +576,7 @@ stats::lm(formula = ..y ~ ., data = data)
 
 Coefficients:
  (Intercept)   lag_0_cases  lag_0_deaths  
-    0.075387      0.009953      0.201329  </code></pre>
+    0.037694      0.009953      0.201329  </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code></code></pre>
@@ -622,13 +622,13 @@ Coefficients:
 </section>
 <section id="extract-predictions" class="slide level2">
 <h2>Extract predictions</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epi-pred-arx_43331ea99d1bd2a1364e1cb26a52cc55">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a></a>epi_arx<span class="sc">$</span>predictions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 5
   geo_value .pred        .pred_distn forecast_date target_date
   &lt;chr&gt;     &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     
-1 ca        0.218 quantiles(0.22)[2] 2021-04-01    2021-04-29 </code></pre>
+1 ca        0.109 quantiles(0.11)[2] 2021-04-01    2021-04-29 </code></pre>
 </div>
 </div>
 <div class="callout callout-important no-icon callout-titled callout-style-default">
@@ -648,26 +648,26 @@ Coefficients:
 <section id="extract-predictions-1" class="slide level2">
 <h2>Extract predictions</h2>
 <p>We can extract the distribution into a “long” <code>epi_df</code></p>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epi-pred-quantile-longer_f628bb30fc3b57251f01761b529f328c">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a></a>epi_arx<span class="sc">$</span>predictions <span class="sc">|&gt;</span></span>
 <span id="cb60-2"><a></a>  <span class="fu">pivot_quantiles_longer</span>(.pred_distn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
   geo_value .pred values quantile_levels forecast_date target_date
   &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;     
-1 ca        0.218  0.137             0.1 2021-04-01    2021-04-29 
-2 ca        0.218  0.300             0.9 2021-04-01    2021-04-29 </code></pre>
+1 ca        0.109 0.0684             0.1 2021-04-01    2021-04-29 
+2 ca        0.109 0.150              0.9 2021-04-01    2021-04-29 </code></pre>
 </div>
 </div>
 <p>or into a “wide” <code>epi_df</code></p>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epi-pred-quantile-wider_cda477ca0d0b1a4c6bd20fa7be18e2e2">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a></a>epi_arx<span class="sc">$</span>predictions <span class="sc">|&gt;</span></span>
 <span id="cb62-2"><a></a>  <span class="fu">pivot_quantiles_wider</span>(.pred_distn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 6
-  geo_value .pred forecast_date target_date `0.1` `0.9`
-  &lt;chr&gt;     &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;      &lt;dbl&gt; &lt;dbl&gt;
-1 ca        0.218 2021-04-01    2021-04-29  0.137 0.300</code></pre>
+  geo_value .pred forecast_date target_date  `0.1` `0.9`
+  &lt;chr&gt;     &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;       &lt;dbl&gt; &lt;dbl&gt;
+1 ca        0.109 2021-04-01    2021-04-29  0.0684 0.150</code></pre>
 </div>
 </div>
 </section>
@@ -677,28 +677,27 @@ Coefficients:
 <li><p><code>arx_forecaster</code> fits a model to the training set, and outputs only one prediction (for time <span class="math inline">\(t_0+h\)</span>).</p></li>
 <li><p>To get <span class="primary">predictions</span> for the <span class="primary">test</span> set:</p></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx-test-predict_72ce8500b03398a5db44ed3744123776">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a><span class="fu">predict</span>(epi_arx<span class="sc">$</span>epi_workflow, test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `epi_df` object, 707 x 6 with metadata:
 * geo_type  = state
 * time_type = day
-* other_keys = geo_value, time_value
-* as_of     = 2024-12-02 13:03:04.888576
+* as_of     = 2024-12-07 16:23:18.293021
 
 # A tibble: 707 × 6
-   geo_value time_value .pred        .pred_distn forecast_date target_date
- * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     
- 1 ca        2021-04-02 0.213 quantiles(0.21)[2] 2021-04-01    2021-04-29 
- 2 ca        2021-04-03 0.202  quantiles(0.2)[2] 2021-04-01    2021-04-29 
- 3 ca        2021-04-04 0.197  quantiles(0.2)[2] 2021-04-01    2021-04-29 
- 4 ca        2021-04-05 0.201  quantiles(0.2)[2] 2021-04-01    2021-04-29 
- 5 ca        2021-04-06 0.199  quantiles(0.2)[2] 2021-04-01    2021-04-29 
- 6 ca        2021-04-07 0.195  quantiles(0.2)[2] 2021-04-01    2021-04-29 
- 7 ca        2021-04-08 0.195  quantiles(0.2)[2] 2021-04-01    2021-04-29 
- 8 ca        2021-04-09 0.196  quantiles(0.2)[2] 2021-04-01    2021-04-29 
- 9 ca        2021-04-10 0.208 quantiles(0.21)[2] 2021-04-01    2021-04-29 
-10 ca        2021-04-11 0.213 quantiles(0.21)[2] 2021-04-01    2021-04-29 
+   geo_value time_value  .pred        .pred_distn forecast_date target_date
+ * &lt;chr&gt;     &lt;date&gt;      &lt;dbl&gt;             &lt;dist&gt; &lt;date&gt;        &lt;date&gt;     
+ 1 ca        2021-04-02 0.106  quantiles(0.11)[2] 2021-04-01    2021-04-29 
+ 2 ca        2021-04-03 0.101   quantiles(0.1)[2] 2021-04-01    2021-04-29 
+ 3 ca        2021-04-04 0.0984  quantiles(0.1)[2] 2021-04-01    2021-04-29 
+ 4 ca        2021-04-05 0.100   quantiles(0.1)[2] 2021-04-01    2021-04-29 
+ 5 ca        2021-04-06 0.0993  quantiles(0.1)[2] 2021-04-01    2021-04-29 
+ 6 ca        2021-04-07 0.0976  quantiles(0.1)[2] 2021-04-01    2021-04-29 
+ 7 ca        2021-04-08 0.0975  quantiles(0.1)[2] 2021-04-01    2021-04-29 
+ 8 ca        2021-04-09 0.0979  quantiles(0.1)[2] 2021-04-01    2021-04-29 
+ 9 ca        2021-04-10 0.104   quantiles(0.1)[2] 2021-04-01    2021-04-29 
+10 ca        2021-04-11 0.106  quantiles(0.11)[2] 2021-04-01    2021-04-29 
 # ℹ 697 more rows</code></pre>
 </div>
 </div>
@@ -712,7 +711,7 @@ Coefficients:
 </section>
 <section id="predict-with-arx-re-fitting-on-trailing-window" class="slide level2">
 <h2>Predict with ARX (re-fitting on trailing window)</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epipredict-cv-trailing_faa082cd6f348e2c834394770cdc6cad">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a></a>h <span class="ot">&lt;-</span> <span class="dv">28</span>         <span class="co">#horizon</span></span>
 <span id="cb66-2"><a></a>w <span class="ot">&lt;-</span> <span class="dv">120</span> <span class="sc">+</span> h    <span class="co">#trailing window length</span></span>
 <span id="cb66-3"><a></a></span>
@@ -762,30 +761,23 @@ Coefficients:
 <section id="predict-with-arx-re-fitting-on-trailing-window-1" class="slide level2">
 <h2>Predict with ARX (re-fitting on trailing window)</h2>
 <div class="large-output">
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/epipredict-cv-trailing-head_5553304af7577800a52da081d0f99900">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a>pred_arx </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>An `epi_df` object, 98 x 9 with metadata:
-* geo_type  = state
-* time_type = day
-* as_of     = 2024-12-02 13:03:04.888576
-
-# A tibble: 98 × 9
-# Groups:   geo_value [1]
-   geo_value time_value cases deaths  .pred forecast_date target_date  `0.1`
- * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;       &lt;dbl&gt;
- 1 ca        2021-04-01  6.77 0.375  0.332  2021-04-01    2021-04-29  0.219 
- 2 ca        2021-04-08  6.97 0.250  0.317  2021-04-08    2021-05-06  0.190 
- 3 ca        2021-04-15  8.33 0.230  0.313  2021-04-15    2021-05-13  0.191 
- 4 ca        2021-04-22  6.07 0.181  0.245  2021-04-22    2021-05-20  0.123 
- 5 ca        2021-04-29  4.98 0.138  0.174  2021-04-29    2021-05-27  0.0325
- 6 ca        2021-05-06  4.68 0.183  0.144  2021-05-06    2021-06-03  0.0122
- 7 ca        2021-05-13  4.25 0.0994 0.0838 2021-05-13    2021-06-10  0     
- 8 ca        2021-05-20  3.51 0.0828 0.0600 2021-05-20    2021-06-17  0     
- 9 ca        2021-05-27  4.58 0.128  0.0686 2021-05-27    2021-06-24  0     
-10 ca        2021-06-03  2.36 0.0676 0.0139 2021-06-03    2021-07-01  0     
-# ℹ 88 more rows
-# ℹ 1 more variable: `0.9` &lt;dbl&gt;</code></pre>
+<pre><code># A tibble: 98 × 7
+   version    geo_value  .pred forecast_date target_date  `0.1` `0.9`
+ * &lt;date&gt;     &lt;chr&gt;      &lt;dbl&gt; &lt;date&gt;        &lt;date&gt;       &lt;dbl&gt; &lt;dbl&gt;
+ 1 2021-04-01 ca        0.396  2021-03-31    2021-04-28  0.192  0.599
+ 2 2021-04-08 ca        0.395  2021-04-07    2021-05-05  0.197  0.594
+ 3 2021-04-15 ca        0.403  2021-04-14    2021-05-12  0.211  0.595
+ 4 2021-04-22 ca        0.312  2021-04-21    2021-05-19  0.142  0.482
+ 5 2021-04-29 ca        0.261  2021-04-28    2021-05-26  0.0879 0.433
+ 6 2021-05-06 ca        0.209  2021-05-05    2021-06-02  0.0238 0.394
+ 7 2021-05-13 ca        0.158  2021-05-12    2021-06-09  0      0.345
+ 8 2021-05-20 ca        0.118  2021-05-19    2021-06-16  0      0.296
+ 9 2021-05-27 ca        0.0775 2021-05-26    2021-06-23  0      0.239
+10 2021-06-03 ca        0.0552 2021-06-02    2021-06-30  0      0.137
+# ℹ 88 more rows</code></pre>
 </div>
 </div>
 </div>
@@ -793,16 +785,16 @@ Coefficients:
 <section id="predict-with-arx-re-fitting-on-trailing-window-2" class="slide level2">
 <h2>Predict with ARX (re-fitting on trailing window)</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/arx-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-arx_afa530cfefcd4a91414d5d15d0ab4e38">
+<img data-src="day2-afternoon_files/figure-revealjs/arx-plot-cv-predictions-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>         MAE     MASE  Coverage
-1 0.07889637 264.5207 0.4285714</code></pre>
+<pre><code>       MAE     MASE  Coverage
+ 0.1077706 722.6583 0.3367347</code></pre>
 </div>
 </div>
 </section>
 <section id="customizing-arx_forecaster" class="slide level2">
 <h2>Customizing <code>arx_forecaster</code></h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-1_abeb57edd69194abedf82273b69f00c9">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb70" data-code-line-numbers="|3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a></a><span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> train <span class="sc">|&gt;</span> <span class="fu">as_epi_df</span>(), </span>
 <span id="cb70-2"><a></a>               <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
 <span id="cb70-3"><a></a>               <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
@@ -822,7 +814,7 @@ Coefficients:
 </section>
 <section id="customizing-arx_forecaster-1" class="slide level2">
 <h2>Customizing <code>arx_forecaster</code></h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-3_ff7ab81b8e82e06ec8a52e817af5b02f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb71" data-code-line-numbers="5-6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a><span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> train <span class="sc">|&gt;</span> <span class="fu">as_epi_df</span>(), </span>
 <span id="cb71-2"><a></a>               <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
 <span id="cb71-3"><a></a>               <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
@@ -834,7 +826,7 @@ Coefficients:
 <li>Modify <code>arx_args_list</code> to change lags, horizon, quantile levels, …</li>
 </ul>
 <div class="fragment fade-in">
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx_args_list_3b91e8e47c679d5b3956ee03bf5eaadc">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a></a><span class="fu">arx_args_list</span>(</span>
 <span id="cb72-2"><a></a>  <span class="at">lags =</span> <span class="fu">c</span>(<span class="dv">0</span>L, <span class="dv">7</span>L, <span class="dv">14</span>L),</span>
 <span id="cb72-3"><a></a>  <span class="at">ahead =</span> <span class="dv">7</span>L,</span>
@@ -857,7 +849,7 @@ Coefficients:
 <section id="customizing-arx_forecaster-2" class="slide level2">
 <h2>Customizing <code>arx_forecaster</code></h2>
 <h3 id="change-predictors-doctor-visits-instead-of-cases">Change predictors: doctor visits instead of cases</h3>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/get-doctor-visits-data_9ac6bfa96b0aafa4da07d05de2c3b5f9">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a>dv_archive <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
 <span id="cb73-2"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
 <span id="cb73-3"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
@@ -874,7 +866,7 @@ Coefficients:
 <section id="customizing-arx_forecaster-3" class="slide level2">
 <h2>Customizing <code>arx_forecaster</code></h2>
 <h3 id="change-predictors-doctor-visits-instead-of-cases-1">Change predictors: doctor visits instead of cases</h3>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx-with-dv_95990f7a7f2f735f97972a23ff4d7adb">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb74" data-code-line-numbers="5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a>pred_arx_hosp <span class="ot">&lt;-</span> ca_archive_dv <span class="sc">|&gt;</span></span>
 <span id="cb74-2"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb74-3"><a></a>    <span class="sc">~</span> <span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> .x,</span>
@@ -893,17 +885,17 @@ Coefficients:
 <section id="predictions-doctor-visits-instead-of-cases-in-predictor-set" class="slide level2">
 <h2>Predictions (doctor visits instead of cases in predictor set)</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/arx-with-dv-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-arx-with-dv_efeef137e7b6f00a20f51e2565d3fe7b">
+<img data-src="day2-afternoon_files/figure-revealjs/arx-with-dv-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>         MAE     MASE  Coverage
-1 0.06880739 230.6948 0.4795918</code></pre>
+<pre><code>        MAE     MASE  Coverage
+ 0.08215756 550.9094 0.4285714</code></pre>
 </div>
 </div>
 </section>
 <section id="customizing-arx_forecaster-4" class="slide level2">
 <h2>Customizing <code>arx_forecaster</code></h2>
 <h3 id="add-more-lags">Add more lags</h3>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx-with-more-lags_d1cb647041397eb7afdd8c46eee40c6b">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb76" data-code-line-numbers="8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a></a>pred_arx_more_lags <span class="ot">&lt;-</span> ca_archive_dv <span class="sc">|&gt;</span></span>
 <span id="cb76-2"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb76-3"><a></a>    <span class="sc">~</span> <span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> .x,</span>
@@ -924,17 +916,17 @@ Coefficients:
 <section id="predictions-more-lags" class="slide level2">
 <h2>Predictions (more lags)</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/arx-with-more-lags-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-arx-more-lags_e6c3b8ba0041f1730b5f8f53d55cda8b">
+<img data-src="day2-afternoon_files/figure-revealjs/arx-with-more-lags-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>         MAE     MASE  Coverage
-1 0.07753913 259.9702 0.3877551</code></pre>
+<pre><code>        MAE    MASE  Coverage
+ 0.09623067 645.277 0.2857143</code></pre>
 </div>
 </div>
 </section>
 <section id="customizing-arx_forecaster-5" class="slide level2">
 <h2>Customizing <code>arx_forecaster</code></h2>
 <h3 id="multiple-horizons">Multiple horizons</h3>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx-multiple-h_1ebf59bebbe80ecb968294e677f53a27">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb78" data-code-line-numbers="1-2,11,18|19-20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a></a>forecast_times <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> t0_date, <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">"2023-02-23"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>)</span>
 <span id="cb78-2"><a></a>pred_h_days_ahead <span class="ot">&lt;-</span> <span class="cf">function</span>(epi_archive, <span class="at">ahead =</span> <span class="dv">7</span>) {</span>
 <span id="cb78-3"><a></a>  epi_archive <span class="sc">|&gt;</span></span>
@@ -968,7 +960,7 @@ Coefficients:
 </section>
 <section id="changing-trainer" class="slide level2">
 <h2>Changing trainer</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/print-model-2_d0e361880216e3c778de51f90a1e86a4">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb79" data-code-line-numbers="4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a><span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> train <span class="sc">|&gt;</span> <span class="fu">as_epi_df</span>(), </span>
 <span id="cb79-2"><a></a>               <span class="at">outcome =</span> <span class="st">"deaths"</span>, </span>
 <span id="cb79-3"><a></a>               <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>),</span>
@@ -986,7 +978,7 @@ Coefficients:
 </section>
 <section id="changing-trainer-1" class="slide level2">
 <h2>Changing trainer</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx-with-random-forests_66979b79fb75952d427c447bc193c37e">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb80" data-code-line-numbers="6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a></a>pred_arx_rf <span class="ot">&lt;-</span> ca_archive_dv <span class="sc">|&gt;</span></span>
 <span id="cb80-2"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb80-3"><a></a>    <span class="sc">~</span> <span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> .x,</span>
@@ -1007,10 +999,10 @@ Coefficients:
 <section id="predictions-trained-using-random-forest" class="slide level2">
 <h2>Predictions (trained using random forest)</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/arx-with-random-forests-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-arx-random-forests_cb52b493821fbf1602d91786d5a3f5b8">
+<img data-src="day2-afternoon_files/figure-revealjs/arx-with-random-forests-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>         MAE     MASE  Coverage
-1 0.07878542 264.1487 0.1734694</code></pre>
+<pre><code>        MAE     MASE  Coverage
+ 0.09287021 622.7434 0.1122449</code></pre>
 </div>
 </div>
 </section>
@@ -1033,7 +1025,7 @@ Coefficients:
 </section>
 <section id="geo-pooling-1" class="slide level2">
 <h2>Geo-pooling</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/arx-geo-pooling_1a33d4838323f4fc4eafaaff356de0e8">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb82"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a></a>pred_arx_geo_pool <span class="ot">&lt;-</span> usa_archive_dv <span class="sc">|&gt;</span></span>
 <span id="cb82-2"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb82-3"><a></a>    <span class="sc">~</span> <span class="fu">arx_forecaster</span>(<span class="at">epi_data =</span> .x,</span>
@@ -1055,22 +1047,22 @@ Coefficients:
 <h2>Predictions (geo-pooling): California</h2>
 <p><span class="primary">Error is worse</span> than without geo-pooling, but much <span class="primary">better coverage</span> (close to nominal 80%)</p>
 
-<img data-src="day2-afternoon_files/figure-revealjs/arx-geo-pooling-plot-ca-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-arx-geo-pooling_57e3355c8abc451c92988c0671fa779d">
+<img data-src="day2-afternoon_files/figure-revealjs/arx-geo-pooling-plot-ca-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>         MAE     MASE  Coverage
-CA 0.1470889 493.1541 0.7857143</code></pre>
+CA 0.1978253 1326.522 0.6734694</code></pre>
 </div>
 </div>
 </section>
 <section id="predictions-geo-pooling" class="slide level2">
 <h2>Predictions (geo-pooling)</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/arx-geo-pooling-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-geo-pooling-all-states_e6364704b31ad4b0e6165f0f3a66abcb">
+<img data-src="day2-afternoon_files/figure-revealjs/arx-geo-pooling-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>         MAE     MASE  Coverage
-MA 0.1244185 256.5266 0.7894737
-NY 0.1352486 276.1753 0.8631579
-TX 0.1662284 330.8706 0.8315789</code></pre>
+MA 0.1244297 256.5498 0.7894737
+NY 0.1367143 279.1683 0.8631579
+TX 0.1607668 319.9994 0.8421053</code></pre>
 </div>
 </div>
 </section>
@@ -1084,7 +1076,7 @@ TX 0.1662284 330.8706 0.8315789</code></pre>
 <li><p>can benefit by combination with geo-pooling (much more data to train on)</p></li>
 </ul></li>
 </ul>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/qr-geo-pooling_3f9d7c2af8b6dc621be1b1888d3e3d9f">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb85" data-code-line-numbers="|8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a></a><span class="fu">library</span>(quantreg)</span>
 <span id="cb85-2"><a></a></span>
 <span id="cb85-3"><a></a>pred_qr_geo_pool <span class="ot">&lt;-</span> usa_archive_dv <span class="sc">|&gt;</span></span>
@@ -1107,22 +1099,22 @@ TX 0.1662284 330.8706 0.8315789</code></pre>
 <section id="predictions-geo-pooling-quantile-regression-california" class="slide level2">
 <h2>Predictions (geo-pooling + quantile regression): California</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/qr-geo-pooling-plot-ca-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-qr-geo-pooling_06be7b7401f63eb7fb5a60ace0313181">
+<img data-src="day2-afternoon_files/figure-revealjs/qr-geo-pooling-plot-ca-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>         MAE    MASE Coverage
-CA 0.1604641 537.998 0.877551</code></pre>
+<pre><code>         MAE     MASE  Coverage
+CA 0.2086903 1399.377 0.5510204</code></pre>
 </div>
 </div>
 </section>
 <section id="predictions-geo-pooling-quantile-regression" class="slide level2">
 <h2>Predictions (geo-pooling + quantile regression)</h2>
 
-<img data-src="day2-afternoon_files/figure-revealjs/qr-geo-pooling-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/error-qr-geo-pooling-all-states_d86d5f93ab98cf8dc77c6fd688c5a9d5">
+<img data-src="day2-afternoon_files/figure-revealjs/qr-geo-pooling-plot-1.svg" class="quarto-figure quarto-figure-left r-stretch"><div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>         MAE     MASE  Coverage
-MA 0.1260110 259.8102 0.7052632
-NY 0.1397487 285.3646 0.7684211
-TX 0.1639215 326.2788 0.7578947</code></pre>
+MA 0.1256939 259.1563 0.6947368
+NY 0.1422547 290.4818 0.7578947
+TX 0.1611587 320.7796 0.7789474</code></pre>
 </div>
 </div>
 </section></section>
@@ -1162,7 +1154,7 @@ TX 0.1639215 326.2788 0.7578947</code></pre>
 </section>
 <section id="fit-a-forecaster-from-scratch-1" class="slide level2">
 <h2>Fit a forecaster from scratch</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/forecaster-from-scratch_39bcb8591faa8aec266bdc61dd260e43">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb88" data-code-line-numbers="1-6|8-9|11-16|18-20|21-29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a><span class="co"># A preprocessing "recipe" that turns raw data into features / response</span></span>
 <span id="cb88-2"><a></a>r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(ca) <span class="sc">|&gt;</span></span>
 <span id="cb88-3"><a></a>  <span class="fu">step_epi_lag</span>(cases, <span class="at">lag =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>)) <span class="sc">|&gt;</span></span>
@@ -1201,31 +1193,33 @@ TX 0.1639215 326.2788 0.7578947</code></pre>
 </section>
 <section id="flu-data-archive" class="slide level2">
 <h2>Flu data archive</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/show-flu-data_25d504f5f45655d0a12a04c01943fa1c">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
 ℹ Min/max time values: 2020-01-01 / 2024-03-20
 ℹ First/last version with update: 2023-10-04 / 2024-03-27
 ℹ Versions end: 2024-03-27
 ℹ A preview of the table (14420 rows x 4 columns):
-          version geo_value time_value hhs
-    1: 2023-10-04        ak 2020-07-15  67
-    2: 2023-10-04        ak 2020-07-22 120
-    3: 2023-10-04        ak 2020-07-29  99
-    4: 2023-10-04        ak 2020-08-05 108
-    5: 2023-10-04        ak 2020-08-12  76
-   ---                                    
-14416: 2024-03-20        wy 2024-03-06  51
-14417: 2024-03-27        wy 2024-03-06  47
-14418: 2024-03-20        wy 2024-03-13  58
-14419: 2024-03-27        wy 2024-03-13  43
-14420: 2024-03-27        wy 2024-03-20  39</code></pre>
+Key: &lt;geo_value, time_value, version&gt;
+          version geo_value time_value   hhs
+           &lt;Date&gt;    &lt;char&gt;     &lt;Date&gt; &lt;num&gt;
+    1: 2023-10-04        ak 2020-07-15    67
+    2: 2023-10-04        ak 2020-07-22   120
+    3: 2023-10-04        ak 2020-07-29    99
+    4: 2023-10-04        ak 2020-08-05   108
+    5: 2023-10-04        ak 2020-08-12    76
+   ---                                      
+14416: 2024-03-20        wy 2024-03-06    51
+14417: 2024-03-27        wy 2024-03-06    47
+14418: 2024-03-20        wy 2024-03-13    58
+14419: 2024-03-27        wy 2024-03-13    43
+14420: 2024-03-27        wy 2024-03-20    39</code></pre>
 </div>
 </div>
 </section>
 <section id="build-forecaster" class="slide level2">
 <h2>Build forecaster</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/forecaster-flu_4065541317ea98de976f2b90d284b7b1">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a></a><span class="co"># A preprocessing "recipe" that turns raw data into features / response</span></span>
 <span id="cb90-2"><a></a>r <span class="ot">&lt;-</span> <span class="fu">epi_recipe</span>(flu) <span class="sc">|&gt;</span></span>
 <span id="cb90-3"><a></a>  <span class="co">#drop_non_seasons() |&gt;</span></span>
@@ -1273,7 +1267,7 @@ TX 0.1639215 326.2788 0.7578947</code></pre>
 </section>
 <section id="predictions-at-one-forecast-date" class="slide level2">
 <h2>Predictions at one forecast date</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/pred-one-forecast-date_696193871c574c3fcc2c30d08384ae5b">
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 21 × 27
    geo_value time_value target_date forecast_date `0.01` `0.025` `0.05` `0.1`
@@ -1298,7 +1292,7 @@ TX 0.1639215 326.2788 0.7578947</code></pre>
 </section>
 <section id="slide-forecaster" class="slide level2">
 <h2>Slide forecaster</h2>
-<div class="cell" data-layout-align="center" data-hash="day2-afternoon_cache/revealjs/slide-flu-forecaster_2c5c27911935326eec6c07eb9f5c7e92">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a>flu_forecast <span class="ot">&lt;-</span> <span class="cf">function</span>(epi_archive, forecast_date, <span class="at">ahead =</span> <span class="dv">14</span>) {</span>
 <span id="cb92-2"><a></a>  flu <span class="ot">&lt;-</span> epi_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> </span>
 <span id="cb92-3"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span> forecast_date) <span class="sc">|&gt;</span></span>

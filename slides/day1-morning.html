@@ -202,11 +202,11 @@
 
 </div>
 <section id="section" class="slide level2 w-80" data-background-image="gfx/cover-art-1.svg" data-background-position="bottom">
-<h2>Signal Discovery, Data Fetching, &amp; Panel Data</h2>
+<h2>Introduction to Panel Data in Epidemiology</h2>
 <h3 id="section-1">InsightNet Forecasting Workshop 2024</h3>
 <p><br></p>
 <h4 id="section-2">Alice Cima, Rachel Lobay, Daniel McDonald, Ryan Tibshirani</h4>
-<p><span class="fstyle">with thanks to Delphi Tooling &amp; Forecasting Team: Logan Brooks, Nat DeFries, Dmitry Shemetov, David Webber</span></p>
+<p><span class="fstyle">with huge thanks to Alice Cima, and also Xueda Shen, Nat DeFries, Dmitry Shemetov, and David Webber</span></p>
 <p>11 December – Morning</p>
 </section>
 </div>
@@ -262,11 +262,48 @@
 <h1><span class="header-section-number">2</span> Workshop Overview and System Setup</h1>
 
 </section>
-<section id="a-few-slides-here" class="slide level2">
-<h2>A few slides here</h2>
+<section id="what-we-will-cover" class="slide level2">
+<h2>What we will cover</h2>
+<ul>
+<li>Characteristics of panel data in epidemiology</li>
+<li>Tools for processing and plotting panel data</li>
+<li>Statistical background on nowcasting and forecasting</li>
+<li>Tools for building nowcasting and forecasting models</li>
+<li>Plenty of examples throughout of real case studies</li>
+</ul>
 </section>
-<section id="a-few-slides-here-1" class="slide level2">
-<h2>A few slides here</h2>
+<section id="goals-part-i" class="slide level2">
+<h2>Goals part I</h2>
+<ul>
+<li>Expose you to a statistical way of thinking about now/forecasting</li>
+<li>Certain basic mindsets (e.g., the importance of empirical validation using techniques like time series cross-validation) are ubiquitous</li>
+<li>Certain basic modeling considerations (e.g., starting simple and building up complexity, taming variance through regularization, addressing nonstationarity with trailing training windows) are also ubiquitous</li>
+</ul>
+</section>
+<section id="goals-part-ii" class="slide level2">
+<h2>Goals part II</h2>
+<ul>
+<li>Expose you to software packages which aid processing, tracking, nowcasting, and forecasting with panel data</li>
+<li>These tools are still in development and we welcome your feedback</li>
+<li>We have tried hard to get the framework right; but many individual pieces themselves could still be improved</li>
+<li>If these aren’t working for you, then we want to hear from you!</li>
+<li>We welcome collaboration, and everything we do is open source</li>
+</ul>
+</section>
+<section id="a-disclaimer" class="slide level2">
+<h2>A disclaimer</h2>
+<ul>
+<li>Our backgrounds are primarily in statistics and computer science</li>
+<li>This obviously influences our way of thinking and our approach to nowcasting and forecasting</li>
+<li>We don’t have nearly as much experience with traditional epi models but we do have opinions about the pros/cons. Ask us at any point if you have a question about why we’re doing things a certain way</li>
+</ul>
+</section>
+<section id="one-last-slide" class="slide level2">
+<h2>One last slide</h2>
+<ul>
+<li>This workshop is supposed to be useful for YOU. Ask questions if you have them, don’t be shy</li>
+<li>We may not (likely won’t?) cover everything. Hopefully the materials will be a resource for you beyond this workshop</li>
+</ul>
 </section>
 <section id="system-setup-passive-viewing" class="slide level2">
 <h2>System setup – Passive viewing</h2>
@@ -352,7 +389,7 @@
 <h2>Panel data</h2>
 <ul>
 <li><p><a href="https://en.wikipedia.org/wiki/Panel_data"><strong>Panel data</strong></a> or longitudinal data, contain cross-sectional measurements of subjects over time.</p></li>
-<li><p>Since we’re working with aggregated data, the subjects are geographic units (e.g.&nbsp;counties, states)</p></li>
+<li><p>Since we’re working with aggregated data, the subjects are geographic units (e.g.&nbsp;counties, states).</p></li>
 </ul>
 <!-- and not individuals.-->
 <ul>
@@ -409,11 +446,13 @@
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/examples-chng-cli-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -423,11 +462,13 @@
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/examples-chng-covid-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -444,9 +485,11 @@ Example: gathering different signals + visualizing panel data
 
 
 
+
 ::: {.cell layout-align="center"}
 
 :::
+
 
 
 
@@ -455,13 +498,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 <div style="text-align: center;">
@@ -477,11 +522,13 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/plot-ca-cases-deaths-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -1571,6 +1618,7 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 
 
 
+
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -1583,6 +1631,7 @@ dv_state_default <- pub_covidcast(
 )
 ```
 :::
+
 
 
 
@@ -1631,13 +1680,15 @@ dv_state_default <- pub_covidcast(
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 </div>
@@ -1650,13 +1701,15 @@ dv_state_default <- pub_covidcast(
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 </div>
