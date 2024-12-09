@@ -1757,7 +1757,7 @@ get_predictor_training_data <- function(archive, varname, lag_days, predictor_na
 #| echo: true
 get_predictor_training_data(nchs_ca_past_archive, "mortality", 7, "mortality_lag7_realtime")
 ```
-The first value here is a version of $Y_{2020-11-30}$ as it was reported in version 2020-12-06.  We expect it to have similar characteristics as $Y_{t - 7\text{ days}}$ as reported in version $t$ for other values of $t$.
+The first value here is a version of $Y_{\text{2020-11-30}}$ as it was reported in version 2020-12-06.  We expect it to have similar characteristics as $Y_{t - 7\text{ days}}$ as reported in version $t$ for other values of $t$.
 
 ## Get our predictor and target data
 
