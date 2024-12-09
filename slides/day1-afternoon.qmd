@@ -2015,7 +2015,7 @@ The main steps are...
 
 3. [**Model & Prediction**]{.primary}: Fit a linear model to predict cases based on %CLI, trained on a 30-day rolling window.
 
-4. [**Nowcast Execution**]{.primary}: Use `epix_slide` to nowcast the cases dynamically.
+4. [**Nowcast Execution**]{.primary}: Use `epix_slide()` to nowcast the cases dynamically.
 
 5. [**Visualization**]{.primary}: Plot actual vs. nowcasted cases with confidence intervals to assess model accuracy.
 
