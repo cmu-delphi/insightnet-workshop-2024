@@ -2015,6 +2015,7 @@ arx_nowcasts <- hosp_mort_archive |>
 
 ```{r regression-nowcast-plot-comparison}
 ratio_nowcasts_archive <- nowcasts |>
+  filter(geo_value == "ca") |>
   rename(time_value = target_date,
          prediction_ratio = nowcast) |>
   as_epi_archive(compactify = TRUE)
