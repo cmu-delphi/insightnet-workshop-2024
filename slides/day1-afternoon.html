@@ -218,7 +218,6 @@
 <li><p>Epiverse Software ecosystem</p></li>
 <li><p>Panel and Versioned Data in the epiverse</p></li>
 <li><p>Basic Nowcasting using <code>{epiprocess}</code></p></li>
-<li><p>Nowcasting with One Variable</p></li>
 <li><p>Nowcasting with Two Variables</p></li>
 <li><p>Case Study - Nowcasting Cases Using %CLI</p></li>
 </ol>
@@ -351,7 +350,6 @@ $ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -380,7 +378,6 @@ tibble(x = letters, y = 1:26)
 
 :::
 :::
-
 
 
 -->
@@ -437,7 +434,6 @@ tibble(x = letters, y = 1:26)
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -459,7 +455,6 @@ pull(cases_df, raw_cases)
 
 :::
 :::
-
 
 
 -->
@@ -615,7 +610,6 @@ pull(cases_df, raw_cases)
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -642,7 +636,6 @@ ny_subset |>
 
 :::
 :::
-
 
 
 -->
@@ -679,7 +672,6 @@ ny_subset |>
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -707,7 +699,6 @@ cases_df |>
 
 :::
 :::
-
 
 
 -->
@@ -1219,9 +1210,9 @@ In this section:</li>
 1 ak        2020-12-31      35.9      0.158
 2 al        2020-12-31      65.1      0.438
 3 ar        2020-12-31      66.0      1.27 
-4 as        2020-12-31       0        0    
-5 az        2020-12-31      76.8      1.10 
-6 ca        2020-12-31      96.0      0.751</code></pre>
+4 az        2020-12-31      76.8      1.10 
+5 ca        2020-12-31      96.0      0.751
+6 co        2020-12-31      35.8      0.649</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:40%;">
@@ -1382,8 +1373,7 @@ Key: &lt;geo_value, time_value, version&gt;
 </section>
 <section id="revision-patterns" class="slide level2">
 <h2>Revision patterns</h2>
-
-<img data-src="day1-afternoon_files/figure-revealjs/plot-revision-patterns-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+</section>
 <section id="finalized-data" class="slide level2">
 <h2>Finalized data</h2>
 <ul>
@@ -1460,38 +1450,11 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </div>
 </div>
 <ul>
-<li><p>We also have access to <span class="math inline">\(p\)</span> other time series <span class="math inline">\(x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots,p\)</span></p></li>
-<li><p>All may be subject to revisions.</p></li>
+<li>We may also have access to <span class="math inline">\(p\)</span> other time series <span class="math inline">\(x_{ij},\; i=1,\ldots,t, \; j = 1,\ldots, p\)</span> which may be subject to revisions.</li>
 </ul>
 </section>
-<section id="aside-on-nowcasting" class="slide level2">
-<h2>Aside on nowcasting</h2>
-<ul>
-<li><p>To some Epis, “nowcasting” can be equated with “estimate the time-varying instantaneous reproduction number, <span class="math inline">\(R_t\)</span>”</p></li>
-<li><p>Ex. using the number of reported COVID-19 cases in British Columbia between Jan.&nbsp;2020 and Apr.&nbsp;15, 2023.</p></li>
-</ul>
-<!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. -->
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="day1-afternoon_files/figure-revealjs/nowcasting-1.svg" class="quarto-figure quarto-figure-center" height="400"></p>
-</figure>
-</div>
-</div>
-</div>
-<ul>
-<li><p>Group built <a href="https://dajmcdon.github.io/rtestim"><code>{rtestim}</code></a> doing for this nonparametrically.</p></li>
-<li><p>We may come back to this later…</p></li>
-</ul>
-</section></section>
-<section>
-<section id="nowcasting-with-one-variable" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> Nowcasting with One Variable</h1>
-
-</section>
-<section id="nowcasting-simple-ratio-ex-nchs-mortality" class="slide level2">
-<h2>Nowcasting simple ratio Ex: NCHS mortality</h2>
+<section id="case-study-nchs-mortality" class="slide level2">
+<h2>Case study: NCHS mortality</h2>
 <ul>
 <li>In this example, we’ll demonstrate the concept of nowcasting using <span class="primary"><strong>NHCS mortality data</strong></span>. (the number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population).</li>
 <li>We will work with <span class="primary"><strong>provisional</strong></span> data (real-time reports) and compare them to <strong>finalized</strong> data (final reports).</li>
@@ -1503,53 +1466,88 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <p>Let’s fetch versioned mortality data from the API (<code>pub_covidcast</code>) for CA (<code>geo_values = "ca"</code>) and the signal of interest (<code>deaths_covid_incidence_num</code>) over early 2024.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a><span class="co"># Fetch the versioned NCHS mortality data (weekly)</span></span>
-<span id="cb64-2"><a></a>mortality_archive <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb64-2"><a></a>nchs_archive <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
 <span id="cb64-3"><a></a>  <span class="at">source =</span> <span class="st">"nchs-mortality"</span>,</span>
 <span id="cb64-4"><a></a>  <span class="at">signals =</span> <span class="st">"deaths_covid_incidence_num"</span>,</span>
 <span id="cb64-5"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
 <span id="cb64-6"><a></a>  <span class="at">time_type =</span> <span class="st">"week"</span>,</span>
-<span id="cb64-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ca"</span>,  <span class="co"># California (CA)</span></span>
-<span id="cb64-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">202401</span>, <span class="dv">202413</span>),  </span>
+<span id="cb64-7"><a></a>  <span class="at">geo_values =</span> <span class="fu">c</span>(<span class="st">"ca"</span>, <span class="st">"ut"</span>),  </span>
+<span id="cb64-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">202001</span>, <span class="dv">202440</span>),  </span>
 <span id="cb64-9"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
 <span id="cb64-10"><a></a>) <span class="sc">|&gt;</span> </span>
 <span id="cb64-11"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">mortality =</span> value) <span class="sc">|&gt;</span> </span>
-<span id="cb64-12"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb64-13"><a></a></span>
-<span id="cb64-14"><a></a><span class="co"># Set the start and end days for the analysis </span></span>
-<span id="cb64-15"><a></a><span class="co"># corresponding to the weeks entered in time_values</span></span>
-<span id="cb64-16"><a></a>start_time <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2023-12-31"</span>)</span>
-<span id="cb64-17"><a></a>end_time <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-03-24"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb64-12"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="latency-in-reporting---minimum-lag" class="slide level2">
-<h2>Latency in reporting - Minimum lag</h2>
+<section id="analysis-of-versioning-behavior" class="slide level2">
+<h2>Analysis of versioning behavior</h2>
+<p>Recall, we need to watch out for:</p>
 <ul>
-<li>A quick inspection reveals that mortality rates are systematically 7 days latent (<span class="primary"><strong>fixed lag</strong></span>).</li>
+<li><span class="primary"><strong>Latency</strong></span> the time difference between date of occurrence and date of the initial report</li>
+<li><span class="primary"><strong>Backfill</strong></span> how data for a given date is updated after initial report.</li>
+</ul>
+<p><code>revision_summary()</code> provides a sumamry to both aspects.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a></a>revision_data <span class="ot">=</span> <span class="fu">revision_summary</span>(nchs_archive, mortality, <span class="at">print_inform =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="versioning-analysis-latency" class="slide level2">
+<h2>Versioning analysis – latency</h2>
+<ul>
+<li><span class="primary"><strong>Question:</strong></span> What is the latency of NCHS data?</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a></a>mortality_revision_inspect <span class="ot">=</span> mortality_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">version_time_diff =</span> version <span class="sc">-</span> time_value)</span>
-<span id="cb65-2"><a></a></span>
-<span id="cb65-3"><a></a><span class="co"># Look at the first revision for each week</span></span>
-<span id="cb65-4"><a></a>mortality_revision_inspect <span class="sc">|&gt;</span> <span class="fu">group_by</span>(time_value) <span class="sc">|&gt;</span> <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a></a>revision_data <span class="sc">|&gt;</span> <span class="fu">select</span>(geo_value, time_value, min_lag) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 5
-# Groups:   time_value [6]
-  geo_value time_value version    mortality version_time_diff
-  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;         &lt;dbl&gt; &lt;drtn&gt;           
-1 ca        2023-12-31 2024-01-07        48 7 days           
-2 ca        2024-01-07 2024-01-14        28 7 days           
-3 ca        2024-01-14 2024-01-21        47 7 days           
-4 ca        2024-01-21 2024-01-28        41 7 days           
-5 ca        2024-01-28 2024-02-04        31 7 days           
-6 ca        2024-02-04 2024-02-11        47 7 days           </code></pre>
+<pre><code># A tibble: 10 × 3
+   geo_value time_value min_lag
+   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt; 
+ 1 ca        2023-12-10  7 days
+ 2 ca        2024-08-25 14 days
+ 3 ca        2022-02-27  7 days
+ 4 ca        2023-12-03  7 days
+ 5 ca        2024-06-02  7 days
+ 6 ca        2024-02-18  7 days
+ 7 ca        2021-11-14  7 days
+ 8 ca        2023-07-16  7 days
+ 9 ca        2023-11-19  7 days
+10 ca        2023-11-05  7 days</code></pre>
 </div>
 </div>
 <ul>
-<li>Use <code>revision_summary()</code> from <code>epiprocess</code> to generate basic statistics about the revision behavior for the dataset.</li>
+<li>We randomly sampled some dates to check if there is a consistent latency pattern.</li>
+<li>Understanding latency prevents us from using data that we shouldn’t have access to.</li>
 </ul>
 </section>
-<section id="latency-in-reporting---finalized-value-attainment" class="slide level2">
-<h2>Latency in reporting - Finalized value attainment</h2>
+<section id="versioning-analysis-backfill" class="slide level2">
+<h2>Versioning analysis – backfill</h2>
+<ul>
+<li><span class="primary"><strong>Question:</strong></span> How long does it take for the reported value to be close to the finalized value?</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+   geo_value time_value time_near_latest
+   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          
+ 1 ca        2021-12-05 35 days         
+ 2 ca        2023-02-12 28 days         
+ 3 ca        2024-02-11 28 days         
+ 4 ca        2022-09-18 21 days         
+ 5 ca        2023-07-16 21 days         
+ 6 ca        2023-09-24 21 days         
+ 7 ca        2024-02-04 21 days         
+ 8 ca        2021-02-21 42 days         
+ 9 ca        2022-07-03 28 days         
+10 ca        2023-10-29 28 days         </code></pre>
+</div>
+</div>
+<ul>
+<li>It generally takes at least 4 weeks for reported value to be within 20% of the finalized value.</li>
+<li>We can change the threshold of percentage difference by specifying <code>within_latest</code> argument of <code>revision_summary()</code>.</li>
+</ul>
+</section>
+<section id="versioning-analysis---backfill" class="slide level2">
+<h2>Versioning analysis - backfill</h2>
 <ul>
 <li><span class="primary"><strong>Question:</strong></span> When is the <span class="primary"><strong>finalized value</strong></span> first attained for each date? Would we have access to any in real-time?</li>
 <li>How fast are the final values attained &amp; what’s the pattern for these times, if any?</li>
@@ -1559,28 +1557,27 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <pre><code># A tibble: 6 × 4
   geo_value time_value min_version diff    
   &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;drtn&gt;  
-1 ca        2023-12-31 2024-10-13  287 days
-2 ca        2024-01-07 2024-10-27  294 days
-3 ca        2024-01-14 2024-06-09  147 days
-4 ca        2024-01-21 2024-08-11  203 days
-5 ca        2024-01-28 2024-07-07  161 days
-6 ca        2024-02-04 2024-10-13  252 days</code></pre>
+1 ca        2021-02-21 2022-04-03  406 days
+2 ca        2021-02-28 2022-01-30  336 days
+3 ca        2021-03-07 2021-12-26  294 days
+4 ca        2021-03-14 2022-03-06  357 days
+5 ca        2021-03-21 2022-07-10  476 days
+6 ca        2021-03-28 2022-07-10  469 days</code></pre>
 </div>
 </div>
-<p>And here’s a numerical summary:</p>
+<p>Here is a look at its quantiles:</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   84.0   147.0   189.0   192.8   259.0   294.0 </code></pre>
+   84.0   147.0   189.0   198.7   259.0   329.0 </code></pre>
 </div>
 </div>
 <ul>
-<li><span class="primary"><strong>Conclusion</strong></span>: Tends to take a long time &amp; varies. Even for this relatively small time period… Goes as low as 84 days or as high as 294 days. Yikes.</li>
-<li>So if we were doing this in real-time, then we wouldn’t have access to the finalized data.</li>
+<li><span class="primary"><strong>Conclusion</strong></span>: The revision behavior is pretty long-tailed. Value reported 4 weeks later is reasonably close to the finalized value.</li>
 </ul>
 </section>
-<section id="comparison-of-final-vs.-multiple-revisions" class="slide level2">
-<h2>Comparison of final vs.&nbsp;multiple revisions</h2>
+<section id="revision-pattern-visualization" class="slide level2">
+<h2>Revision pattern visualization</h2>
 <p>This shows the finalized rates in comparison to <span class="primary"><strong>multiple revisions</strong></span> to see how the data changes over time:</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -1592,321 +1589,370 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </div>
 </div>
 </section>
-<section id="comparison-of-final-vs.-one-revision" class="slide level2">
-<h2>Comparison of final vs.&nbsp;one revision</h2>
-<p>The below figure compares the finalized rates (in black) to <span class="primary"><strong>one revision</strong></span> (in yellow) from March 3, 2024.</p>
+<section id="revision-pattern-visualization-1" class="slide level2">
+<h2>Revision pattern visualization</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="day1-afternoon_files/figure-revealjs/one-revision-final-plot-1.svg" class="quarto-figure quarto-figure-center" height="400"></p>
+<p><img data-src="day1-afternoon_files/figure-revealjs/nchs-plot-val-different-ver-1.svg" class="quarto-figure quarto-figure-center" height="500"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The real-time data is biased downwards (systematically below the true value). That is, the signal tends to get scaled up with future revisions.</p>
 </section>
-<section id="calculate-one-ratio-provisional-vs.-finalized-data" class="slide level2">
-<h2>Calculate one ratio: Provisional vs.&nbsp;finalized data</h2>
-<!-- * Let's start simple with computing one ratio. -->
-<p>Suppose that the day is March 10, 2024. Then, because the data is 7 days latent, we can compute the ratio between provisional and finalized data for <span class="primary"><strong>March 3, 2024</strong></span>.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-03-10"</span>); fixed_lag <span class="ot">=</span> <span class="dv">7</span></span>
-<span id="cb69-2"><a></a></span>
-<span id="cb69-3"><a></a><span class="co"># Load the finalized mortality data for CA</span></span>
-<span id="cb69-4"><a></a>ca_finalized <span class="ot">&lt;-</span> mortality_latest <span class="sc">|&gt;</span></span>
-<span id="cb69-5"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> (as_of_date <span class="sc">-</span> fixed_lag)) <span class="sc">|&gt;</span></span>
-<span id="cb69-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(mortality)</span>
-<span id="cb69-7"><a></a></span>
-<span id="cb69-8"><a></a><span class="co"># Load the provisional mortality data for the same week</span></span>
-<span id="cb69-9"><a></a>mortality_old <span class="ot">=</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date)</span>
-<span id="cb69-10"><a></a></span>
-<span id="cb69-11"><a></a>ca_provisional <span class="ot">&lt;-</span> mortality_old <span class="sc">|&gt;</span></span>
-<span id="cb69-12"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> (as_of_date <span class="sc">-</span> fixed_lag)) <span class="sc">|&gt;</span></span>
-<span id="cb69-13"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(mortality)</span>
-<span id="cb69-14"><a></a></span>
-<span id="cb69-15"><a></a><span class="co"># Calculate ratio between provisional and finalized cases for the week of interest</span></span>
-<span id="cb69-16"><a></a>ratio <span class="ot">&lt;-</span> ca_provisional<span class="sc">$</span>mortality <span class="sc">/</span> ca_finalized<span class="sc">$</span>mortality</span>
-<span id="cb69-17"><a></a>ratio</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3611111</code></pre>
-</div>
-</div>
-<p><span class="primary"><strong>Conclusion</strong></span>: The real-time rate is well below the finalized for this time (26 vs 72 here).</p>
-<p><span class="primary"><strong>Question</strong></span>: Can we generalize this over many days?</p>
-</section>
-<section id="calculating-the-ratio-using-multiple-dates" class="slide level2">
-<h2>Calculating the ratio using multiple dates</h2>
-<p>Let’s move from calculating the ratio by using one day to multiple days with the goal to use it to nowcast for Feb.&nbsp;18, which has a <span class="primary"><strong>provisional value</strong></span> of 23</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-02-25"</span>)</span>
-<span id="cb71-2"><a></a></span>
-<span id="cb71-3"><a></a>provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date) <span class="sc">|&gt;</span></span>
-<span id="cb71-4"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
-<span id="cb71-5"><a></a>  <span class="fu">pull</span>(mortality)</span>
-<span id="cb71-6"><a></a>provisional</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 23</code></pre>
-</div>
-</div>
-<p><br> and a <span class="primary"><strong>finalized value</strong></span> of 104</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a>finalized <span class="ot">&lt;-</span> mortality_latest <span class="sc">|&gt;</span></span>
-<span id="cb73-2"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
-<span id="cb73-3"><a></a>  <span class="fu">pull</span>(mortality)</span>
-<span id="cb73-4"><a></a>finalized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 104</code></pre>
-</div>
-</div>
-</section>
-<section id="calculating-the-ratio-using-multiple-dates-1" class="slide level2">
-<h2>Calculating the ratio using multiple dates</h2>
-<p>First, let’s download the real-time rates for CA, and compare them to their finalized version.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a>dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(start_time, (as_of_date <span class="sc">-</span> <span class="dv">7</span>), <span class="at">by =</span> <span class="st">"day"</span>)</span>
-<span id="cb75-2"><a></a>mortality_real_time <span class="ot">&lt;-</span> <span class="cf">function</span>(date) {</span>
-<span id="cb75-3"><a></a>  <span class="fu">epix_as_of</span>(mortality_archive, date <span class="sc">+</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
-<span id="cb75-4"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> date)</span>
-<span id="cb75-5"><a></a>}</span>
-<span id="cb75-6"><a></a>mortality_real_time_df <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(dates, mortality_real_time)</span>
-<span id="cb75-7"><a></a><span class="fu">head</span>(mortality_real_time_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>An `epi_df` object, 6 x 3 with metadata:
-* geo_type  = state
-* time_type = day
-* as_of     = 2024-01-07
-
-# A tibble: 6 × 3
-  geo_value time_value mortality
-* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;
-1 ca        2023-12-31        48
-2 ca        2024-01-07        28
-3 ca        2024-01-14        47
-4 ca        2024-01-21        41
-5 ca        2024-01-28        31
-6 ca        2024-02-04        47</code></pre>
-</div>
-</div>
-</section>
-<section id="calculating-the-ratio-using-multiple-dates-2" class="slide level2">
-<h2>Calculating the ratio using multiple dates</h2>
-<p>Now, let’s plot the real-time vs the finalized mortality rates:</p>
-
-<img data-src="day1-afternoon_files/figure-revealjs/real-time-vs-finalized-1.svg" class="quarto-figure quarto-figure-center r-stretch"><ul>
-<li><span class="primary"><strong>Takeaways</strong></span>: The real-time counts are biased <span class="primary"><strong>well below</strong></span> the finalized counts.</li>
-<li>Systematic underreporting tends to lessen over time (the gap between the lines decreases).</li>
-</ul>
-</section>
-<section id="realistic-limitation-of-nowcasting---finalized-data" class="slide level2">
-<h2>Realistic limitation of nowcasting - Finalized data</h2>
+<section id="aside-do-we-need-a-burn-intraining-set" class="slide level2">
+<h2>Aside: Do we need a burn-in/training set?</h2>
 <ul>
-<li>Recall that real-time access to finalized data is limited as finalized values can take months to report (e.g., Jan.&nbsp;7 is finalized 294 days later).</li>
-<li>To nowcast accurately, we must rely on the <span class="primary"><strong>best available approximation of finalized data</strong></span> at the time of estimation (Feb.&nbsp;25).</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a></a>mortality_as_of_feb25 <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date)</span>
-<span id="cb77-2"><a></a><span class="fu">head</span>(mortality_as_of_feb25)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>An `epi_df` object, 6 x 3 with metadata:
-* geo_type  = state
-* time_type = week
-* as_of     = 2024-02-25
-
-# A tibble: 6 × 3
-  geo_value time_value mortality
-* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;
-1 ca        2023-12-31       213
-2 ca        2024-01-07       183
-3 ca        2024-01-14       183
-4 ca        2024-01-21       146
-5 ca        2024-01-28       124
-6 ca        2024-02-04       120</code></pre>
-</div>
-</div>
-</section>
-<section id="ratio-calculation-summary" class="slide level2">
-<h2>Ratio calculation &amp; summary</h2>
-<p>We then use these “finalized” and real-time values to compute the mean ratio:</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a><span class="co"># exclude date we're nowcasting for</span></span>
-<span id="cb79-2"><a></a>mortality_real_time_df <span class="ot">=</span> mortality_real_time_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>) </span>
-<span id="cb79-3"><a></a>mortality_as_of_feb25 <span class="ot">=</span> mortality_as_of_feb25 <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>)</span>
-<span id="cb79-4"><a></a>ratio_real_time_to_feb25 <span class="ot">&lt;-</span> mortality_real_time_df<span class="sc">$</span>mortality <span class="sc">/</span> mortality_as_of_feb25<span class="sc">$</span>mortality</span>
-<span id="cb79-5"><a></a><span class="fu">summary</span>(ratio_real_time_to_feb25)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.1530  0.2317  0.2500  0.2565  0.2688  0.3917 </code></pre>
-</div>
-</div>
-<p>On average, the real-time rates are ~25.7% of the finalized.</p>
-
-<img data-src="day1-afternoon_files/figure-revealjs/boxplot-ratio-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Tells us the distribution is right-skewed (mean &gt; median) and so we should opt for the median.</p>
-</section>
-<section id="nowcasting-on-feb.-25" class="slide level2">
-<h2>Nowcasting on Feb.&nbsp;25</h2>
+<li><p>Typical stat-ML practise suggests a train, validation, test split.</p></li>
+<li><p>But our exploratory analysis covered all available data, is that fine?</p></li>
+<li><p>Generally, for exploratory analysis, it is fine to not do train/test split.</p>
 <ul>
-<li>Since the <span class="primary"><strong>median ratio</strong></span> between real-time and finalized values is <span class="primary"><strong>0.250</strong></span> (i.e., real-time values are typically 25% of the finalized), then the nowcast is</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a><span class="co"># Now we can nowcast properly:</span></span>
-<span id="cb81-2"><a></a>nowcast <span class="ot">&lt;-</span> provisional <span class="sc">*</span></span>
-<span id="cb81-3"><a></a>  <span class="dv">1</span> <span class="sc">/</span> <span class="fu">median</span>(ratio_real_time_to_feb25)</span>
-<span id="cb81-4"><a></a>nowcast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 92</code></pre>
-</div>
-</div>
+<li>These analyses do not involve model fitting, we have little risk of an overly optimistic performance evaluation (no overfitting on test data).</li>
+</ul></li>
+<li><p>However, for a <span class="primary"><strong>psuedo-prospective analysis</strong></span>, the best practise is to do a train/test split.</p>
 <ul>
-<li>To get the accompanying 95% prediction interval, calculate the 2.5th and 97.5th percentiles:</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a>percentile_97<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">quantile</span>(ratio_real_time_to_feb25, <span class="fl">0.975</span>) <span class="sc">|&gt;</span> <span class="fu">unname</span>()</span>
-<span id="cb83-2"><a></a></span>
-<span id="cb83-3"><a></a>(lower_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> percentile_97<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 61.3268</code></pre>
-</div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a></a>percentile_2<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">quantile</span>(ratio_real_time_to_feb25, <span class="fl">0.025</span>) <span class="sc">|&gt;</span> <span class="fu">unname</span>()</span>
-<span id="cb85-2"><a></a>(upper_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> percentile_2<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 140.3659</code></pre>
-</div>
-</div>
-<ul>
-<li>So, the <span class="primary"><strong>nowcast is 92</strong></span> with 95% PI: [61, 140], which is much closer to the <span class="primary"><strong>finalized value of 104</strong></span> than the <span class="primary"><strong>provisional value of 23</strong></span>.</li>
-</ul>
-</section>
-<section id="summary-of-three-main-steps" class="slide level2">
-<h2>Summary of three main steps</h2>
-<p>So the main steps for this type of fixed lag nowcasting are…</p>
-<ol type="1">
-<li><p>Obtain the <span class="primary"><strong>provisional value</strong></span> for the target.</p></li>
-<li><p>Estimate the ratio using the <span class="primary"><strong>real-time</strong></span> and <span class="primary"><strong>“finalized”</strong></span> data (for all previous dates that follow a consistent pattern in reporting).</p></li>
-<li><p>Profit.</p></li>
-</ol>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Expand for the accompanying code</summary>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a></a><span class="co"># Today</span></span>
-<span id="cb87-2"><a></a>as_of_date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">"2024-02-25"</span>)</span>
-<span id="cb87-3"><a></a></span>
-<span id="cb87-4"><a></a><span class="co"># 1. Obtain the provisional value</span></span>
-<span id="cb87-5"><a></a>provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date) <span class="sc">|&gt;</span></span>
-<span id="cb87-6"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
-<span id="cb87-7"><a></a>  <span class="fu">pull</span>(mortality)</span>
-<span id="cb87-8"><a></a>provisional</span>
-<span id="cb87-9"><a></a></span>
-<span id="cb87-10"><a></a><span class="co"># 2. Estimate the ratio </span></span>
-<span id="cb87-11"><a></a>mortality_real_time_df <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(dates, mortality_real_time) <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>) <span class="co"># Real-time</span></span>
-<span id="cb87-12"><a></a>mortality_as_of_feb25 <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date) <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">!=</span> <span class="st">"2024-02-18"</span>)  <span class="co"># "Finalized"</span></span>
-<span id="cb87-13"><a></a></span>
-<span id="cb87-14"><a></a>ratio_real_time_to_feb25 <span class="ot">&lt;-</span> mortality_real_time_df<span class="sc">$</span>mortality <span class="sc">/</span> mortality_as_of_feb25<span class="sc">$</span>mortality</span>
-<span id="cb87-15"><a></a></span>
-<span id="cb87-16"><a></a><span class="co"># 3. Profit.</span></span>
-<span id="cb87-17"><a></a>(nowcast <span class="ot">&lt;-</span> provisional <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">median</span>(ratio_real_time_to_feb25))</span>
-<span id="cb87-18"><a></a></span>
-<span id="cb87-19"><a></a>(upper_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">quantile</span>(ratio_real_time_to_feb25, <span class="fl">0.025</span>))</span>
-<span id="cb87-20"><a></a>(lower_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">quantile</span>(ratio_real_time_to_feb25, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</section>
-<section id="nowcasting-mortality-for-multiple-dates" class="slide level2">
-<h2>Nowcasting mortality for multiple dates</h2>
-<ul>
-<li><span class="primary"><strong>Define Nowcast Function</strong></span>:
-<ul>
-<li><span class="primary"><strong>Input</strong></span>: Takes in the dates to nowcast and the fixed lag</li>
-<li><span class="primary"><strong>Output</strong></span>: The nowcasted mortality rates based on the ratio of real-time to finalized data.</li>
+<li>In such analysis, one would be fitting and validating many models, a train/test split provides a more rigorous control on overfitting to test set.</li>
 </ul></li>
 </ul>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a>nowcast_function <span class="ot">&lt;-</span> <span class="cf">function</span>(nowcast_date, fixed_lag) {</span>
-<span id="cb88-2"><a></a>  as_of_date <span class="ot">=</span> nowcast_date <span class="sc">+</span> fixed_lag</span>
-<span id="cb88-3"><a></a>  </span>
-<span id="cb88-4"><a></a>  <span class="co"># 1. Obtain the provisional value for the target.</span></span>
-<span id="cb88-5"><a></a>  provisional <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date) <span class="sc">|&gt;</span></span>
-<span id="cb88-6"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> as_of_date <span class="sc">-</span> fixed_lag) <span class="sc">|&gt;</span></span>
-<span id="cb88-7"><a></a>    <span class="fu">pull</span>(mortality)</span>
-<span id="cb88-8"><a></a>  </span>
-<span id="cb88-9"><a></a>  <span class="co">#2. Estimate the ratio multiplier using</span></span>
-<span id="cb88-10"><a></a>  <span class="co"># real-time</span></span>
-<span id="cb88-11"><a></a>  dates_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(start_time, (nowcast_date <span class="sc">-</span> fixed_lag), <span class="at">by =</span> <span class="st">"week"</span>)</span>
-<span id="cb88-12"><a></a>  mortality_real_time <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(dates_seq, mortality_real_time)</span>
-<span id="cb88-13"><a></a>  </span>
-<span id="cb88-14"><a></a>  <span class="co"># and "finalized" data</span></span>
-<span id="cb88-15"><a></a>  finalized <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(mortality_archive, as_of_date) <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> start_time <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> (nowcast_date <span class="sc">-</span> fixed_lag)) </span>
-<span id="cb88-16"><a></a>  </span>
-<span id="cb88-17"><a></a>  ratios <span class="ot">&lt;-</span> mortality_real_time<span class="sc">$</span>mortality <span class="sc">/</span> finalized<span class="sc">$</span>mortality</span>
-<span id="cb88-18"><a></a>  </span>
-<span id="cb88-19"><a></a>  <span class="co"># Remove infinite or NaN ratios (i.e., keep only finite values)</span></span>
-<span id="cb88-20"><a></a>  median_ratio <span class="ot">&lt;-</span> <span class="fu">median</span>(ratios[<span class="fu">is.finite</span>(ratios)])</span>
-<span id="cb88-21"><a></a>  </span>
-<span id="cb88-22"><a></a>  <span class="co">#3. Profit.</span></span>
-<span id="cb88-23"><a></a>  nowcast <span class="ot">&lt;-</span> provisional <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> median_ratio)</span>
-<span id="cb88-24"><a></a>  upper_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> <span class="fu">quantile</span>(ratios[<span class="fu">is.finite</span>(ratios)], <span class="fl">0.025</span>))</span>
-<span id="cb88-25"><a></a>  lower_PI <span class="ot">&lt;-</span> provisional <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> <span class="fu">quantile</span>(ratios[<span class="fu">is.finite</span>(ratios)], <span class="fl">0.975</span>))</span>
-<span id="cb88-26"><a></a>  </span>
-<span id="cb88-27"><a></a>  <span class="co"># Return a dataframe with the nowcast and date</span></span>
-<span id="cb88-28"><a></a>  <span class="fu">tibble</span>(</span>
-<span id="cb88-29"><a></a>    <span class="at">time_value =</span> nowcast_date,</span>
-<span id="cb88-30"><a></a>    <span class="at">nowcast =</span> nowcast,</span>
-<span id="cb88-31"><a></a>    <span class="at">lower_PI =</span> lower_PI,</span>
-<span id="cb88-32"><a></a>    <span class="at">upper_PI =</span> upper_PI </span>
-<span id="cb88-33"><a></a>  )</span>
-<span id="cb88-34"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+</section>
+<section id="ratio-nowcaster-jumping-from-provisional-to-finalized-value" class="slide level2">
+<h2>Ratio nowcaster: jumping from provisional to finalized value</h2>
+<ul>
+<li>Recall, the goal of nowcast at date <span class="math inline">\(t\)</span> is to use project the <span class="primary"><em>finalized value</em></span> of <span class="math inline">\(y_t,\)</span> given the information available on date <span class="math inline">\(t\)</span>.</li>
+<li>A very simple nowcaster is the ratio between finalized and provisional value.</li>
+</ul>
+<p><br></p>
+<p>How can we sensibly estimate this quantity?</p>
+<p><br></p>
+<div class="fragment fade-in">
+<ul>
+<li>At nowcast date <span class="math inline">\(t,\)</span> would have recieved reports with versions up to and including <span class="math inline">\(t.\)</span></li>
+<li>We need to build training samples, which
+<ul>
+<li>correctly aligns finalized value against provisional value</li>
+<li>uses features that would have been available at test time</li>
+<li>have enough data to ensure sensible estimation results</li>
+</ul></li>
+</ul>
 </div>
 </section>
-<section id="map-nowcast-over-multiple-dates" class="slide level2">
-<h2>Map nowcast over multiple dates</h2>
+<section id="ratio-nowcaster-building-training-samples" class="slide level2">
+<h2>Ratio nowcaster: building training samples</h2>
 <ul>
-<li>We can use <code>map2()</code> to apply the function to a series of weeks (e.g., Jan.&nbsp;28 to Mar.&nbsp;24).</li>
-<li>Returns a <span class="primary"><strong>dataframe</strong></span> with nowcasted results.</li>
+<li>At nowcast date <span class="math inline">\(t,\)</span> would have recieved reports with versions up to and including <span class="math inline">\(t.\)</span></li>
+<li>We need to build training samples, which
+<ul>
+<li>correctly aligns finalized value against provisional value</li>
+<li>uses features that would have been available at test time</li>
+<li>have enough samples to ensure sensible estimation results</li>
+</ul></li>
 </ul>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a></a><span class="co"># Apply Nowcast Function Over Multiple Dates</span></span>
-<span id="cb89-2"><a></a>nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2024-01-28"</span>), <span class="fu">as.Date</span>(<span class="st">"2024-03-24"</span>), <span class="at">by =</span> <span class="st">"week"</span>)</span>
-<span id="cb89-3"><a></a>fixed_lag <span class="ot">&lt;-</span> <span class="dv">7</span></span>
-<span id="cb89-4"><a></a>nowcast_results_df <span class="ot">&lt;-</span> <span class="fu">map2</span>(nowcast_dates, fixed_lag, nowcast_function) <span class="sc">|&gt;</span> <span class="fu">list_rbind</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="fragment fade-in">
+<ul>
+<li>Build training samples by treating dates prior to date <span class="math inline">\(t\)</span> as actual nowcast dates.
+<ul>
+<li>What is the provisional data on that date?</li>
+<li>Have we recieved finalized value for that date?</li>
+</ul></li>
+</ul>
 </div>
-<p>Let’s smooth with a rolling trailing mean (window size 4) &amp; see the results:</p>
+</section>
+<section id="ratio-nowcaster-building-training-samples-1" class="slide level2">
+<h2>Ratio nowcaster: building training samples</h2>
+<ul>
+<li>At an earlier nowcast date <span class="math inline">\(t_0,\)</span> we define
+<ul>
+<li><span class="primary"><strong>Provisional value</strong></span> as the reported value of <span class="math inline">\(Y_s\)</span> with version <span class="math inline">\(t_0.\)</span> Here <span class="math inline">\(s_0\)</span> is the largest occurence date among all values reported up until <span class="math inline">\(t_0.\)</span></li>
+<li><span class="primary"><strong>Finalized value</strong></span> as the (potentially unobserved) finalized value of <span class="math inline">\(Y_{s_0}.\)</span>
+<ul>
+<li>We only know in <em>hindsight</em> when reported value of <span class="math inline">\(Y_{s_0}\)</span> is finalized – need an approximation.</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="fragment fade-in">
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 9 × 2
-  time_value nowcast_mortality
-  &lt;date&gt;                 &lt;dbl&gt;
-1 2024-01-28             116. 
-2 2024-02-04             145. 
-3 2024-02-11             114. 
-4 2024-02-18             109. 
-5 2024-02-25             110. 
-6 2024-03-03              92.8
-7 2024-03-10              90.3
-8 2024-03-17              82.6
-9 2024-03-24              65.4</code></pre>
+<pre><code># A tibble: 5 × 3
+  geo_value time_value time_near_latest
+  &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          
+1 ca        2023-12-10 28 days         
+2 ca        2024-08-25 21 days         
+3 ca        2022-02-27 49 days         
+4 ca        2023-12-03 28 days         
+5 ca        2024-06-02 21 days         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Time differences in days
+  0%  25%  50%  75% 100% 
+  14   21   28   35   63 </code></pre>
+</div>
+</div>
+</div>
+<div class="fragment fade-in">
+<p>We can say data reported 49 days after occurrence date is good enough to be considered finalized.</p>
+</div>
+</section>
+<section id="ratio-nowcaster-test-time-feature" class="slide level2">
+<h2>Ratio nowcaster: test time feature</h2>
+<ul>
+<li>At test time <span class="math inline">\(t,\)</span> take provisional value to be <span class="math inline">\(Y_s,\)</span> where <span class="math inline">\(s\)</span> is the largest occureence date among all values reported up until time <span class="math inline">\(t.\)</span></li>
+</ul>
+</section>
+<section id="nowcasting-at-a-single-date-building-training-samples" class="slide level2">
+<h2>Nowcasting at a single date: building training samples</h2>
+<div class="fragment fade-in">
+<ul>
+<li>Searching for provisional values, at previous hypothetical nowcast dates.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a>nowcast_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2022-01-02"</span>); window_length <span class="ot">=</span> <span class="dv">180</span></span>
+<span id="cb73-2"><a></a></span>
+<span id="cb73-3"><a></a>initial_data <span class="ot">&lt;-</span> nchs_archive<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb73-4"><a></a>  <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb73-5"><a></a>  <span class="fu">filter</span>(version <span class="sc">==</span> <span class="fu">min</span>(version)) <span class="sc">|&gt;</span></span>
+<span id="cb73-6"><a></a>  <span class="fu">rename</span>(<span class="at">initial_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb73-7"><a></a>  <span class="fu">select</span>(geo_value, time_value, initial_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Searching for finalized values, at previous hypothetical nowcast dates.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a>finalized_data <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(nchs_archive, nowcast_date) <span class="sc">|&gt;</span></span>
+<span id="cb74-2"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> nowcast_date <span class="sc">-</span> <span class="dv">49</span> <span class="sc">-</span> window_length <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> nowcast_date <span class="sc">-</span> <span class="dv">49</span>) <span class="sc">|&gt;</span></span>
+<span id="cb74-3"><a></a>  <span class="fu">rename</span>(<span class="at">finalized_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb74-4"><a></a>  <span class="fu">select</span>(geo_value, time_value, finalized_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>After searching for both provisional and finalized values, we merge them together and estimate the ratio.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a>ratio <span class="ot">&lt;-</span> finalized_data <span class="sc">|&gt;</span></span>
+<span id="cb75-2"><a></a>  <span class="fu">inner_join</span>(initial_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb75-3"><a></a>  <span class="fu">mutate</span>(<span class="at">ratio =</span> finalized_val <span class="sc">/</span> initial_val) <span class="sc">|&gt;</span></span>
+<span id="cb75-4"><a></a>  <span class="fu">pull</span>(ratio) <span class="sc">|&gt;</span></span>
+<span id="cb75-5"><a></a>  <span class="fu">mean</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </section>
-<section id="visualize-nowcast-real-time-and-finalized-values" class="slide level2">
-<h2>Visualize nowcast, real-time, and finalized values</h2>
-<p>Finally, we can compare these nowcast results to the real-time and finalized values:</p>
+<section id="nowcasting-at-a-single-date-test-feature-and-actual-nowcast" class="slide level2">
+<h2>Nowcasting at a single date: test feature and actual nowcast</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a></a>last_avail <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(nchs_archive, nowcast_date) <span class="sc">|&gt;</span></span>
+<span id="cb76-2"><a></a>  <span class="fu">slice_max</span>(time_value) <span class="sc">|&gt;</span></span>
+<span id="cb76-3"><a></a>  <span class="fu">pull</span>(mortality) </span>
+<span id="cb76-4"><a></a></span>
+<span id="cb76-5"><a></a>nowcast <span class="ot">&lt;-</span> last_avail <span class="sc">*</span> ratio</span>
+<span id="cb76-6"><a></a>nowcast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] Inf</code></pre>
+</div>
+</div>
+</section>
+<section id="nowcasting-for-multiple-dates" class="slide level2">
+<h2>Nowcasting for multiple dates</h2>
+<ul>
+<li>All previous manipulations should really be seen as a template for all nowcast dates.</li>
+<li>The template computation sould be applied over all nowcast dates, <span class="primary"><strong>but we must respect data versioning</strong></span>!</li>
+<li><code>epix_slide()</code> is designed just for this! It behaves similarly to <code>epi_slide</code>.</li>
+<li>Key exception: <code>epix_slide()</code> is version aware: the sliding computation at any reference time <span class="math inline">\(t\)</span> is performed on <span class="primary"><strong>data that would have been available as of t</strong></span>.</li>
+</ul>
+</section>
+<section id="nowcasting-for-multiple-dates-via-epix_slide" class="slide level2">
+<h2>Nowcasting for multiple dates via <code>epix_slide()</code></h2>
+<p>We begin by templatizing our previous operations.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a></a>nowcaster <span class="ot">=</span> <span class="cf">function</span>(x, g, t, <span class="at">wl=</span><span class="dv">180</span>, <span class="at">appx=</span><span class="dv">49</span>) {</span>
+<span id="cb78-2"><a></a>  </span>
+<span id="cb78-3"><a></a></span>
+<span id="cb78-4"><a></a>  initial_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb78-5"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb78-6"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">min</span>(version)) <span class="sc">|&gt;</span></span>
+<span id="cb78-7"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
+<span id="cb78-8"><a></a>    <span class="fu">rename</span>(<span class="at">initial_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb78-9"><a></a>    <span class="fu">select</span>(geo_value, time_value, initial_val)</span>
+<span id="cb78-10"><a></a></span>
+<span id="cb78-11"><a></a>  finalized_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb78-12"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb78-13"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">max</span>(version)) <span class="sc">|&gt;</span></span>
+<span id="cb78-14"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
+<span id="cb78-15"><a></a>    <span class="fu">rename</span>(<span class="at">finalized_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb78-16"><a></a>    <span class="fu">select</span>(geo_value, time_value, finalized_val)</span>
+<span id="cb78-17"><a></a>  </span>
+<span id="cb78-18"><a></a>  ratio <span class="ot">=</span> finalized_data <span class="sc">|&gt;</span></span>
+<span id="cb78-19"><a></a>    <span class="fu">inner_join</span>(initial_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb78-20"><a></a>    <span class="fu">mutate</span>(<span class="at">ratio =</span> finalized_val <span class="sc">/</span> initial_val) <span class="sc">|&gt;</span></span>
+<span id="cb78-21"><a></a>    <span class="fu">pull</span>(ratio) <span class="sc">|&gt;</span></span>
+<span id="cb78-22"><a></a>    <span class="fu">median</span>(<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span>
+<span id="cb78-23"><a></a></span>
+<span id="cb78-24"><a></a>  last_avail <span class="ot">=</span> <span class="fu">epix_as_of</span>(x, t) <span class="sc">|&gt;</span></span>
+<span id="cb78-25"><a></a>    <span class="fu">slice_max</span>(time_value) <span class="sc">|&gt;</span></span>
+<span id="cb78-26"><a></a>    <span class="fu">pull</span>(mortality) </span>
+<span id="cb78-27"><a></a>  </span>
+<span id="cb78-28"><a></a>  res <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">geo_value =</span> x<span class="sc">$</span>geo_value, <span class="at">target_date =</span> t, <span class="at">nowcast =</span> last_avail <span class="sc">*</span> ratio)</span>
+<span id="cb78-29"><a></a>  </span>
+<span id="cb78-30"><a></a>  <span class="fu">return</span>(res)</span>
+<span id="cb78-31"><a></a>  </span>
+<span id="cb78-32"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="nowcasting-for-multiple-dates-via-epix_slide-1" class="slide level2">
+<h2>Nowcasting for multiple dates via <code>epix_slide()</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a>nowcasts <span class="ot">=</span> nchs_archive <span class="sc">|&gt;</span></span>
+<span id="cb79-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb79-3"><a></a>  <span class="fu">epix_slide</span>(</span>
+<span id="cb79-4"><a></a>    nowcaster,</span>
+<span id="cb79-5"><a></a>    <span class="at">.before=</span><span class="cn">Inf</span>,</span>
+<span id="cb79-6"><a></a>    <span class="at">.versions =</span> all_nowcast_dates,</span>
+<span id="cb79-7"><a></a>    <span class="at">.all_versions =</span> <span class="cn">TRUE</span></span>
+<span id="cb79-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="details-of-epix_slide" class="slide level2">
+<h2>Details of <code>epix_slide()</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a></a><span class="fu">epix_slide</span>(</span>
+<span id="cb80-2"><a></a>  .x,</span>
+<span id="cb80-3"><a></a>  .f,</span>
+<span id="cb80-4"><a></a>  ...,</span>
+<span id="cb80-5"><a></a>  <span class="at">.before =</span> <span class="cn">Inf</span>,</span>
+<span id="cb80-6"><a></a>  <span class="at">.versions =</span> <span class="cn">NULL</span>,</span>
+<span id="cb80-7"><a></a>  <span class="at">.new_col_name =</span> <span class="cn">NULL</span>,</span>
+<span id="cb80-8"><a></a>  <span class="at">.all_versions =</span> <span class="cn">FALSE</span></span>
+<span id="cb80-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><code>.f</code> in <code>epix_slide()</code> can be specified with the same form of custom function as <code>epi_slide()</code>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a><span class="cf">function</span>(x, g, t) {</span>
+<span id="cb81-2"><a></a>  <span class="co"># function body</span></span>
+<span id="cb81-3"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Mandatory variables of <code>.f</code> would have different forms depending on the value of <code>.all_versions</code>.</li>
+</ul>
+</section>
+<section id="details-of-epix_slide-1" class="slide level2">
+<h2>Details of <code>epix_slide()</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb82" data-code-line-numbers="|8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a></a><span class="fu">epix_slide</span>(</span>
+<span id="cb82-2"><a></a>  .x,                          </span>
+<span id="cb82-3"><a></a>  .f,                         </span>
+<span id="cb82-4"><a></a>  ...,                        </span>
+<span id="cb82-5"><a></a>  <span class="at">.before =</span> <span class="cn">Inf</span>,             </span>
+<span id="cb82-6"><a></a>  <span class="at">.versions =</span> <span class="cn">NULL</span>,           </span>
+<span id="cb82-7"><a></a>  <span class="at">.new_col_name =</span> <span class="cn">NULL</span>,      </span>
+<span id="cb82-8"><a></a>  <span class="at">.all_versions =</span> <span class="cn">FALSE</span></span>
+<span id="cb82-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>When <code>.all_versions = FALSE</code>, <code>epix_slide()</code> essentially iterates the templatized computation over snapshots.</li>
+<li>Said differently, when <code>.all_versions = FALSE</code>, data accessed at any sliding iteration <span class="primary"><strong>only involves a single version</strong></span>.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Hence:
+<ul>
+<li><code>x</code>: an <code>epi_df</code> with same column names as archive’s <code>DT</code>, minus the <code>version</code> column.</li>
+<li><code>g</code>: a one-row tibble containing the values of groupping variables of the associated group.</li>
+<li><code>t</code>: the <code>ref_time_value</code> of the current window.</li>
+<li><code>...</code>: additional arguments.</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="details-of-epix_slide-2" class="slide level2">
+<h2>Details of <code>epix_slide()</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb83" data-code-line-numbers="|8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a><span class="fu">epix_slide</span>(</span>
+<span id="cb83-2"><a></a>  .x,                          </span>
+<span id="cb83-3"><a></a>  .f,                         </span>
+<span id="cb83-4"><a></a>  ...,                        </span>
+<span id="cb83-5"><a></a>  <span class="at">.before =</span> <span class="cn">Inf</span>,             </span>
+<span id="cb83-6"><a></a>  <span class="at">.versions =</span> <span class="cn">NULL</span>,           </span>
+<span id="cb83-7"><a></a>  <span class="at">.new_col_name =</span> <span class="cn">NULL</span>,      </span>
+<span id="cb83-8"><a></a>  <span class="at">.all_versions =</span> <span class="cn">TRUE</span></span>
+<span id="cb83-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>When <code>.all_versions = FALSE</code>, data accessed at any sliding iteration involves versions <span class="primary"><strong>up to and including .ref_time_value</strong></span>.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Hence:
+<ul>
+<li><code>x</code>: an <code>epi_archive</code>, with version up to and including <code>.ref_time_value</code>.</li>
+<li><code>g</code>: a one-row tibble containing the values of groupping variables of the associated group.</li>
+<li><code>t</code>: the <code>ref_time_value</code> of the current window.</li>
+<li><code>...</code>: additional arguments.</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="details-of-epix_slide-3" class="slide level2">
+<h2>Details of <code>epix_slide()</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb84" data-code-line-numbers="|7,13,17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a></a>nowcasts <span class="ot">&lt;-</span> nchs_archive <span class="sc">|&gt;</span></span>
+<span id="cb84-2"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb84-3"><a></a>  <span class="fu">epix_slide</span>(</span>
+<span id="cb84-4"><a></a>    nowcaster,</span>
+<span id="cb84-5"><a></a>    <span class="at">.before=</span><span class="cn">Inf</span>,</span>
+<span id="cb84-6"><a></a>    <span class="at">.versions =</span> all_nowcast_dates,</span>
+<span id="cb84-7"><a></a>    <span class="at">.all_versions =</span> <span class="cn">TRUE</span></span>
+<span id="cb84-8"><a></a>)</span>
+<span id="cb84-9"><a></a></span>
+<span id="cb84-10"><a></a>nowcaster <span class="ot">&lt;-</span> <span class="cf">function</span>(x, g, t, <span class="at">wl=</span><span class="dv">180</span>, <span class="at">appx=</span><span class="dv">49</span>) {</span>
+<span id="cb84-11"><a></a>  </span>
+<span id="cb84-12"><a></a></span>
+<span id="cb84-13"><a></a>  initial_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb84-14"><a></a>    <span class="co"># Function body, omitted</span></span>
+<span id="cb84-15"><a></a></span>
+<span id="cb84-16"><a></a></span>
+<span id="cb84-17"><a></a>  finalized_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb84-18"><a></a>    <span class="co"># Function body, omitted</span></span>
+<span id="cb84-19"><a></a>  </span>
+<span id="cb84-20"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualize-nowcasts" class="slide level2">
+<h2>Visualize nowcasts</h2>
+<p>We are now finally able to compare nowcasts against first available reports:</p>
 
-<img data-src="day1-afternoon_files/figure-revealjs/nowcast-fun-plot-results-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).</p>
+<img data-src="day1-afternoon_files/figure-revealjs/nowcast-fun-plot-results-1.svg" class="quarto-figure quarto-figure-center r-stretch"><ul>
+<li>The real-time counts tend to be biased below the finalized counts. Nowcasted values tend to provide a much better approximation of the truth (at least for these dates).</li>
+</ul>
 </section>
+<section id="smoothing-nowcasts" class="slide level2">
+<h2>Smoothing nowcasts</h2>
+<ul>
+<li>Nowcasts are quite volatile, reflecting the provisional counts are far from complete.</li>
+<li>We can use a trailing average to smooth them.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a></a>smoothed_nowcasts <span class="ot">&lt;-</span> <span class="fu">epi_slide</span>(</span>
+<span id="cb85-2"><a></a>  nowcasts <span class="sc">|&gt;</span> <span class="fu">as_epi_df</span>(),</span>
+<span id="cb85-3"><a></a>  <span class="at">smoothed_nowcasts =</span> <span class="fu">mean</span>(nowcast, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb85-4"><a></a>  <span class="at">.window_size =</span> <span class="fu">as.difftime</span>(<span class="dv">3</span>, <span class="at">units =</span> <span class="st">"weeks"</span>)</span>
+<span id="cb85-5"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+<img data-src="day1-afternoon_files/figure-revealjs/nowcast-smoothed-vis-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="evaluation-using-mae" class="slide level2">
 <h2>Evaluation using MAE</h2>
 <ul>
 <li><p>Assume we have prediction <span class="math inline">\(\hat y_{t}\)</span> for the provisional value at time <span class="math inline">\(t\)</span>.</p></li>
 <li><p>Then for <span class="math inline">\(y_{t}\)</span> over times <span class="math inline">\(t = 1, \dots, N\)</span>, then we may compute error metrics like mean absolute error (MAE).</p></li>
-</ul>
-<!-- We'll see other error measures later on! For now, let's start with one that is simple and easy to interpret.-->
-<ul>
-<li>MAE measures the average absolute difference between the nowcast and finalized values.</li>
+<li><p>MAE measures the average absolute difference between the nowcast and finalized values.</p></li>
 </ul>
 <p><span class="math display">\[MAE = \frac{1}{N} \sum_{t=1}^N |y_{t}- \hat y_{t}|\]</span></p>
 <ul>
@@ -1918,49 +1964,29 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <p>Let’s numerically evaluate our point nowcasts for the provisional values of a time series (e.g., COVID-19 mortality) using MAE.</p>
 <!-- Accuracy of nowcast is assessed by how close provisional estimates are to the finalized values to gauge the model's performance. -->
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a></a><span class="co"># Step 1: Join the mortality data with nowcast data</span></span>
-<span id="cb91-2"><a></a>mae_data <span class="ot">&lt;-</span> mortality_latest <span class="sc">|&gt;</span> </span>
-<span id="cb91-3"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">%in%</span> nowcast_dates) <span class="sc">|&gt;</span>   </span>
-<span id="cb91-4"><a></a>  <span class="fu">left_join</span>(nowcast_results_df, <span class="at">by =</span> <span class="st">"time_value"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb91-5"><a></a>  <span class="fu">left_join</span>(<span class="fu">map_dfr</span>(nowcast_dates, mortality_real_time) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">real_time =</span> mortality), <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
-<span id="cb91-6"><a></a></span>
-<span id="cb91-7"><a></a><span class="co"># Step 2: Calculate the absolute error between actual and nowcasted values</span></span>
-<span id="cb91-8"><a></a>mae_data <span class="ot">&lt;-</span> mae_data <span class="sc">|&gt;</span> </span>
-<span id="cb91-9"><a></a>  <span class="fu">mutate</span>(<span class="at">nc_abs_error =</span> <span class="fu">abs</span>(mortality <span class="sc">-</span> nowcast),</span>
-<span id="cb91-10"><a></a>         <span class="at">rt_abs_error =</span> <span class="fu">abs</span>(mortality <span class="sc">-</span> real_time))  </span>
-<span id="cb91-11"><a></a></span>
-<span id="cb91-12"><a></a><span class="co"># Step 3: Compute the MAE (mean of absolute errors)</span></span>
-<span id="cb91-13"><a></a>mae_value <span class="ot">&lt;-</span> mae_data <span class="sc">|&gt;</span> </span>
-<span id="cb91-14"><a></a>  <span class="fu">summarise</span>(<span class="at">nc_MAE =</span> <span class="fu">mean</span>(nc_abs_error),</span>
-<span id="cb91-15"><a></a>            <span class="at">rt_MAE =</span> <span class="fu">mean</span>(rt_abs_error))</span>
-<span id="cb91-16"><a></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mae_value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top">
 <thead>
 <tr class="header">
-<th style="text-align: right;">nc_MAE</th>
-<th style="text-align: right;">rt_MAE</th>
+<th style="text-align: right;">Smoothed MAE</th>
+<th style="text-align: right;">Unsmoothed nowcast MAE</th>
+<th style="text-align: right;">Provisional value MAE</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">28.88889</td>
-<td style="text-align: right;">71.44444</td>
+<td style="text-align: right;">161.731</td>
+<td style="text-align: right;">172.4131</td>
+<td style="text-align: right;">199.6061</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-</section>
-<section id="evaluation-using-mae-2" class="slide level2">
-<h2>Evaluation using MAE</h2>
-<p>Finally, we may visualize the distribution of errors across time:</p>
-
-<img data-src="day1-afternoon_files/figure-revealjs/abs-error-plot-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>We can see that the absolute errors are almost always lower for nowcasting.</p>
 </section></section>
 <section>
-<section id="nowcasting-with-two-variables" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> Nowcasting with Two Variables</h1>
+<section id="nowcasting-with-two-variables" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> Nowcasting with Two Variables</h1>
 
 </section>
 <section id="nowcasting-moving-from-one-signal-to-two" class="slide level2">
@@ -1989,43 +2015,43 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="data-sources-google-searches-hospital-admissions-1" class="slide level2">
 <h2>Data Sources: Google searches &amp; hospital admissions</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a><span class="co"># Fetch Google symptom data for s01 and s02</span></span>
-<span id="cb92-2"><a></a>x1 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb92-3"><a></a>  <span class="at">source =</span> <span class="st">"google-symptoms"</span>,</span>
-<span id="cb92-4"><a></a>  <span class="at">signals =</span> <span class="st">"s01_smoothed_search"</span>, </span>
-<span id="cb92-5"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb92-6"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb92-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
-<span id="cb92-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
-<span id="cb92-9"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb92-10"><a></a>) <span class="sc">|&gt;</span></span>
-<span id="cb92-11"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s01 =</span> value) <span class="sc">|&gt;</span></span>
-<span id="cb92-12"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb92-13"><a></a></span>
-<span id="cb92-14"><a></a>x2 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb92-15"><a></a>  <span class="at">source =</span> <span class="st">"google-symptoms"</span>,</span>
-<span id="cb92-16"><a></a>  <span class="at">signals =</span> <span class="st">"s02_smoothed_search"</span>,</span>
-<span id="cb92-17"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb92-18"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb92-19"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
-<span id="cb92-20"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
-<span id="cb92-21"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb92-22"><a></a>) <span class="sc">|&gt;</span></span>
-<span id="cb92-23"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s02 =</span> value) <span class="sc">|&gt;</span></span>
-<span id="cb92-24"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb92-25"><a></a></span>
-<span id="cb92-26"><a></a><span class="co"># Fetch hospital admissions data</span></span>
-<span id="cb92-27"><a></a>y1 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb92-28"><a></a>  <span class="at">source =</span> <span class="st">"hhs"</span>,</span>
-<span id="cb92-29"><a></a>  <span class="at">signals =</span> <span class="st">"confirmed_admissions_influenza_1d"</span>,</span>
-<span id="cb92-30"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb92-31"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb92-32"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
-<span id="cb92-33"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
-<span id="cb92-34"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
-<span id="cb92-35"><a></a>) <span class="sc">|&gt;</span></span>
-<span id="cb92-36"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">admissions =</span> value) <span class="sc">|&gt;</span></span>
-<span id="cb92-37"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a></a><span class="co"># Fetch Google symptom data for s01 and s02</span></span>
+<span id="cb86-2"><a></a>x1 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb86-3"><a></a>  <span class="at">source =</span> <span class="st">"google-symptoms"</span>,</span>
+<span id="cb86-4"><a></a>  <span class="at">signals =</span> <span class="st">"s01_smoothed_search"</span>, </span>
+<span id="cb86-5"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb86-6"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb86-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
+<span id="cb86-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
+<span id="cb86-9"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
+<span id="cb86-10"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb86-11"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s01 =</span> value) <span class="sc">|&gt;</span></span>
+<span id="cb86-12"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb86-13"><a></a></span>
+<span id="cb86-14"><a></a>x2 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb86-15"><a></a>  <span class="at">source =</span> <span class="st">"google-symptoms"</span>,</span>
+<span id="cb86-16"><a></a>  <span class="at">signals =</span> <span class="st">"s02_smoothed_search"</span>,</span>
+<span id="cb86-17"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb86-18"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb86-19"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
+<span id="cb86-20"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
+<span id="cb86-21"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
+<span id="cb86-22"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb86-23"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">avg_search_vol_s02 =</span> value) <span class="sc">|&gt;</span></span>
+<span id="cb86-24"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb86-25"><a></a></span>
+<span id="cb86-26"><a></a><span class="co"># Fetch hospital admissions data</span></span>
+<span id="cb86-27"><a></a>y1 <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb86-28"><a></a>  <span class="at">source =</span> <span class="st">"hhs"</span>,</span>
+<span id="cb86-29"><a></a>  <span class="at">signals =</span> <span class="st">"confirmed_admissions_influenza_1d"</span>,</span>
+<span id="cb86-30"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb86-31"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb86-32"><a></a>  <span class="at">geo_values =</span> <span class="st">"ga"</span>,</span>
+<span id="cb86-33"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20230401</span>, <span class="dv">20230701</span>),</span>
+<span id="cb86-34"><a></a>  <span class="at">issues =</span> <span class="st">"*"</span></span>
+<span id="cb86-35"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb86-36"><a></a>  <span class="fu">select</span>(geo_value, time_value, <span class="at">version =</span> issue, <span class="at">admissions =</span> value) <span class="sc">|&gt;</span></span>
+<span id="cb86-37"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="merging-the-archives" class="slide level2">
@@ -2075,27 +2101,27 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="multiple-linear-regression-model-1" class="slide level2">
 <h2>Multiple linear regression model</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a></a><span class="co"># Define the function for lm model fit and prediction</span></span>
-<span id="cb93-2"><a></a>lm_mod_pred <span class="ot">&lt;-</span> <span class="cf">function</span>(data, gk, rtv, ...) {</span>
-<span id="cb93-3"><a></a>  </span>
-<span id="cb93-4"><a></a>  <span class="co"># Fit the linear model</span></span>
-<span id="cb93-5"><a></a>  model <span class="ot">&lt;-</span> <span class="fu">lm</span>(admissions <span class="sc">~</span> avg_search_vol_s01 <span class="sc">+</span> avg_search_vol_s02, <span class="at">data =</span> data)</span>
-<span id="cb93-6"><a></a>  </span>
-<span id="cb93-7"><a></a>  <span class="co"># Make predictions</span></span>
-<span id="cb93-8"><a></a>  predictions <span class="ot">=</span> <span class="fu">predict</span>(model,</span>
-<span id="cb93-9"><a></a>                        <span class="at">newdata =</span> data <span class="sc">|&gt;</span></span>
-<span id="cb93-10"><a></a>                          <span class="co"># Use tidyr::fill() for LOCF if predictor data is incomplete </span></span>
-<span id="cb93-11"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s01, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb93-12"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s02, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb93-13"><a></a>                          <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)),</span>
-<span id="cb93-14"><a></a>                        <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.9</span></span>
-<span id="cb93-15"><a></a>  )</span>
-<span id="cb93-16"><a></a></span>
-<span id="cb93-17"><a></a>  <span class="co"># Pull off true time value for comparison to target</span></span>
-<span id="cb93-18"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span> <span class="fu">pull</span>(admissions)</span>
-<span id="cb93-19"><a></a></span>
-<span id="cb93-20"><a></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(predictions, <span class="at">actual_nowcast_date =</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value), <span class="at">real_time_val =</span> real_time_val))</span>
-<span id="cb93-21"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a></a><span class="co"># Define the function for lm model fit and prediction</span></span>
+<span id="cb87-2"><a></a>lm_mod_pred <span class="ot">&lt;-</span> <span class="cf">function</span>(data, gk, rtv, ...) {</span>
+<span id="cb87-3"><a></a>  </span>
+<span id="cb87-4"><a></a>  <span class="co"># Fit the linear model</span></span>
+<span id="cb87-5"><a></a>  model <span class="ot">&lt;-</span> <span class="fu">lm</span>(admissions <span class="sc">~</span> avg_search_vol_s01 <span class="sc">+</span> avg_search_vol_s02, <span class="at">data =</span> data)</span>
+<span id="cb87-6"><a></a>  </span>
+<span id="cb87-7"><a></a>  <span class="co"># Make predictions</span></span>
+<span id="cb87-8"><a></a>  predictions <span class="ot">=</span> <span class="fu">predict</span>(model,</span>
+<span id="cb87-9"><a></a>                        <span class="at">newdata =</span> data <span class="sc">|&gt;</span></span>
+<span id="cb87-10"><a></a>                          <span class="co"># Use tidyr::fill() for LOCF if predictor data is incomplete </span></span>
+<span id="cb87-11"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s01, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb87-12"><a></a>                          <span class="fu">fill</span>(avg_search_vol_s02, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-13"><a></a>                          <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)),</span>
+<span id="cb87-14"><a></a>                        <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.9</span></span>
+<span id="cb87-15"><a></a>  )</span>
+<span id="cb87-16"><a></a></span>
+<span id="cb87-17"><a></a>  <span class="co"># Pull off true time value for comparison to target</span></span>
+<span id="cb87-18"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span> <span class="fu">pull</span>(admissions)</span>
+<span id="cb87-19"><a></a></span>
+<span id="cb87-20"><a></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(predictions, <span class="at">actual_nowcast_date =</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value), <span class="at">real_time_val =</span> real_time_val))</span>
+<span id="cb87-21"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Note that this code is intentionally simple; while it can be refined to handle cases like negatives or other boundary conditions, we aim to avoid unnecessary complexity.</p>
 </section>
@@ -2110,26 +2136,26 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="nowcasting-with-epix_slide-1" class="slide level2">
 <h2>Nowcasting with <code>epix_slide()</code></h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a></a><span class="co"># Define the reference time points for nowcasting</span></span>
-<span id="cb94-2"><a></a>targeted_nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2023-04-15"</span>), <span class="fu">as.Date</span>(<span class="st">"2023-06-15"</span>), <span class="at">by =</span> <span class="st">"1 week"</span>)</span>
-<span id="cb94-3"><a></a>ref_time_values <span class="ot">=</span> targeted_nowcast_dates <span class="sc">+</span> <span class="dv">2</span>  <span class="co"># Adjust for the systematic 2-day latency in the response</span></span>
-<span id="cb94-4"><a></a><span class="co"># Determine this from revision_summary(y1, print_inform = TRUE) </span></span>
-<span id="cb94-5"><a></a></span>
-<span id="cb94-6"><a></a><span class="co"># Perform nowcasting using epix_slide</span></span>
-<span id="cb94-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span></span>
-<span id="cb94-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
-<span id="cb94-9"><a></a>  <span class="fu">epix_slide</span>(</span>
-<span id="cb94-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,</span>
-<span id="cb94-11"><a></a>    <span class="at">.before =</span> <span class="dv">14</span>,  <span class="co"># 14-day training period</span></span>
-<span id="cb94-12"><a></a>    <span class="at">.versions =</span> ref_time_values, </span>
-<span id="cb94-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
-<span id="cb94-14"><a></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb94-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span> <span class="co"># Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. </span></span>
-<span id="cb94-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates, <span class="at">time_value =</span> actual_nowcast_date) <span class="sc">|&gt;</span></span>
-<span id="cb94-17"><a></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb94-18"><a></a></span>
-<span id="cb94-19"><a></a><span class="co"># View results</span></span>
-<span id="cb94-20"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a><span class="co"># Define the reference time points for nowcasting</span></span>
+<span id="cb88-2"><a></a>targeted_nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2023-04-15"</span>), <span class="fu">as.Date</span>(<span class="st">"2023-06-15"</span>), <span class="at">by =</span> <span class="st">"1 week"</span>)</span>
+<span id="cb88-3"><a></a>ref_time_values <span class="ot">=</span> targeted_nowcast_dates <span class="sc">+</span> <span class="dv">2</span>  <span class="co"># Adjust for the systematic 2-day latency in the response</span></span>
+<span id="cb88-4"><a></a><span class="co"># Determine this from revision_summary(y1, print_inform = TRUE) </span></span>
+<span id="cb88-5"><a></a></span>
+<span id="cb88-6"><a></a><span class="co"># Perform nowcasting using epix_slide</span></span>
+<span id="cb88-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span></span>
+<span id="cb88-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb88-9"><a></a>  <span class="fu">epix_slide</span>(</span>
+<span id="cb88-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,</span>
+<span id="cb88-11"><a></a>    <span class="at">.before =</span> <span class="dv">14</span>,  <span class="co"># 14-day training period</span></span>
+<span id="cb88-12"><a></a>    <span class="at">.versions =</span> ref_time_values, </span>
+<span id="cb88-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
+<span id="cb88-14"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb88-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span> <span class="co"># Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. </span></span>
+<span id="cb88-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates, <span class="at">time_value =</span> actual_nowcast_date) <span class="sc">|&gt;</span></span>
+<span id="cb88-17"><a></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb88-18"><a></a></span>
+<span id="cb88-19"><a></a><span class="co"># View results</span></span>
+<span id="cb88-20"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 9
   geo_value version      fit    lwr   upr actual_nowcast_date real_time_val
@@ -2144,12 +2170,12 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Compare with the actual admissions</h2>
 <p>After making predictions, we compare them to the actual hospital admissions.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a></a><span class="co"># Left join with latest results </span></span>
-<span id="cb96-2"><a></a><span class="co"># Latest snapshot of data (with the latest/finalized admissions)</span></span>
-<span id="cb96-3"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(avg_search_vol_s01, avg_search_vol_s02))</span>
-<span id="cb96-4"><a></a></span>
-<span id="cb96-5"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">|&gt;</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">join_by</span>(geo_value, time_value))</span>
-<span id="cb96-6"><a></a><span class="fu">head</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a></a><span class="co"># Left join with latest results </span></span>
+<span id="cb90-2"><a></a><span class="co"># Latest snapshot of data (with the latest/finalized admissions)</span></span>
+<span id="cb90-3"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(avg_search_vol_s01, avg_search_vol_s02))</span>
+<span id="cb90-4"><a></a></span>
+<span id="cb90-5"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">|&gt;</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">join_by</span>(geo_value, time_value))</span>
+<span id="cb90-6"><a></a><span class="fu">head</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 10
   geo_value version      fit    lwr   upr actual_nowcast_date real_time_val
@@ -2170,22 +2196,22 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <p>We can then visualize the nowcast results alongside the true values using <code>ggplot2</code>:</p>
 
 <img data-src="day1-afternoon_files/figure-revealjs/plot-multiple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
-<section id="evaluation-using-mae-3" class="slide level2">
+<section id="evaluation-using-mae-2" class="slide level2">
 <h2>Evaluation using MAE</h2>
 <ul>
 <li>As before, we can evaluate our point nowcasts numerically using MAE.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a></a><span class="co"># Calculate the absolute error between actual and nowcasted values</span></span>
-<span id="cb98-2"><a></a>mae_data_admissions <span class="ot">&lt;-</span> res <span class="sc">|&gt;</span> </span>
-<span id="cb98-3"><a></a>  <span class="fu">mutate</span>(<span class="at">nc_abs_error =</span> <span class="fu">abs</span>(admissions <span class="sc">-</span> fit),  <span class="co"># Nowcast vs Finalized admissions</span></span>
-<span id="cb98-4"><a></a>         <span class="at">rt_abs_error =</span> <span class="fu">abs</span>(admissions <span class="sc">-</span> real_time_val))  <span class="co"># Real-Time vs Finalized admissions</span></span>
-<span id="cb98-5"><a></a></span>
-<span id="cb98-6"><a></a><span class="co"># Compute the MAE (mean of absolute errors)</span></span>
-<span id="cb98-7"><a></a>mae_value_admissions <span class="ot">&lt;-</span> mae_data_admissions <span class="sc">|&gt;</span> </span>
-<span id="cb98-8"><a></a>  <span class="fu">summarise</span>(<span class="at">nc_MAE =</span> <span class="fu">mean</span>(nc_abs_error),</span>
-<span id="cb98-9"><a></a>            <span class="at">rt_MAE =</span> <span class="fu">mean</span>(rt_abs_error))</span>
-<span id="cb98-10"><a></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mae_value_admissions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a><span class="co"># Calculate the absolute error between actual and nowcasted values</span></span>
+<span id="cb92-2"><a></a>mae_data_admissions <span class="ot">&lt;-</span> res <span class="sc">|&gt;</span> </span>
+<span id="cb92-3"><a></a>  <span class="fu">mutate</span>(<span class="at">nc_abs_error =</span> <span class="fu">abs</span>(admissions <span class="sc">-</span> fit),  <span class="co"># Nowcast vs Finalized admissions</span></span>
+<span id="cb92-4"><a></a>         <span class="at">rt_abs_error =</span> <span class="fu">abs</span>(admissions <span class="sc">-</span> real_time_val))  <span class="co"># Real-Time vs Finalized admissions</span></span>
+<span id="cb92-5"><a></a></span>
+<span id="cb92-6"><a></a><span class="co"># Compute the MAE (mean of absolute errors)</span></span>
+<span id="cb92-7"><a></a>mae_value_admissions <span class="ot">&lt;-</span> mae_data_admissions <span class="sc">|&gt;</span> </span>
+<span id="cb92-8"><a></a>  <span class="fu">summarise</span>(<span class="at">nc_MAE =</span> <span class="fu">mean</span>(nc_abs_error),</span>
+<span id="cb92-9"><a></a>            <span class="at">rt_MAE =</span> <span class="fu">mean</span>(rt_abs_error))</span>
+<span id="cb92-10"><a></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mae_value_admissions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top">
 <thead>
@@ -2207,7 +2233,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li>Based off of comparing these simple error measures, the nowcast MAE is clearly better.</li>
 </ul>
 </section>
-<section id="evaluation-using-mae-4" class="slide level2">
+<section id="evaluation-using-mae-3" class="slide level2">
 <h2>Evaluation using MAE</h2>
 <p>However, when we visualize the distribution of errors across time, it is not so cut-and-dry:</p>
 
@@ -2225,8 +2251,8 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </ul>
 </section></section>
 <section>
-<section id="case-study---nowcasting-cases-using-cli" class="title-slide slide level1 center" data-number="7">
-<h1><span class="header-section-number">7</span> Case Study - Nowcasting Cases Using %CLI</h1>
+<section id="case-study---nowcasting-cases-using-cli" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> Case Study - Nowcasting Cases Using %CLI</h1>
 
 </section>
 <section id="goal-of-this-case-study" class="slide level2">
@@ -2301,55 +2327,55 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="fetch-data---code-for-one-date" class="slide level2">
 <h2>Fetch Data - Code for one date</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a></a><span class="co"># Load required libraries</span></span>
-<span id="cb99-2"><a></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb99-3"><a></a><span class="fu">library</span>(readxl)</span>
-<span id="cb99-4"><a></a><span class="fu">library</span>(httr)</span>
-<span id="cb99-5"><a></a><span class="fu">library</span>(tibble)</span>
-<span id="cb99-6"><a></a><span class="fu">library</span>(epiprocess)</span>
-<span id="cb99-7"><a></a></span>
-<span id="cb99-8"><a></a><span class="co"># Function to download and process each Excel file for a given date</span></span>
-<span id="cb99-9"><a></a>process_covid_data <span class="ot">&lt;-</span> <span class="cf">function</span>(Date) {</span>
-<span id="cb99-10"><a></a>  <span class="co"># Generate the URL for the given date</span></span>
-<span id="cb99-11"><a></a>  url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://www.mass.gov/doc/covid-19-raw-data-"</span>, <span class="fu">tolower</span>(<span class="fu">gsub</span>(<span class="st">"-0"</span>, <span class="st">"-"</span>, <span class="fu">format</span>(Date, <span class="st">"%B-%d-%Y"</span>))), <span class="st">"/download"</span>) </span>
-<span id="cb99-12"><a></a>  <span class="co"># Applies gsub("-0", "-", ...) to replace any occurrence of -0 (such as in "April-01") with just - (resulting in "April-1").</span></span>
-<span id="cb99-13"><a></a>  </span>
-<span id="cb99-14"><a></a>  <span class="co"># Check if the URL exists (handle the 404 error by skipping that date)</span></span>
-<span id="cb99-15"><a></a>  response <span class="ot">&lt;-</span> <span class="fu">GET</span>(url)</span>
-<span id="cb99-16"><a></a>  </span>
-<span id="cb99-17"><a></a>  <span class="cf">if</span> (<span class="fu">status_code</span>(response) <span class="sc">!=</span> <span class="dv">200</span>) {</span>
-<span id="cb99-18"><a></a>    <span class="fu">return</span>(<span class="cn">NULL</span>)  <span class="co"># Skip if URL doesn't exist (404)</span></span>
-<span id="cb99-19"><a></a>  }</span>
-<span id="cb99-20"><a></a>  </span>
-<span id="cb99-21"><a></a>  <span class="co"># Define the destination file path for the Excel file</span></span>
-<span id="cb99-22"><a></a>  file_path <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".xlsx"</span>)</span>
-<span id="cb99-23"><a></a>  </span>
-<span id="cb99-24"><a></a>  <span class="co"># Download the Excel file</span></span>
-<span id="cb99-25"><a></a>  <span class="fu">GET</span>(url, <span class="fu">write_disk</span>(file_path, <span class="at">overwrite =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb99-26"><a></a>  </span>
-<span id="cb99-27"><a></a>  <span class="co"># Read the relevant sheet from the Excel file</span></span>
-<span id="cb99-28"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(file_path, <span class="at">sheet =</span> <span class="st">"CasesByDate (Test Date)"</span>)</span>
-<span id="cb99-29"><a></a>  </span>
-<span id="cb99-30"><a></a>  <span class="co"># Process the data: rename columns and convert Date</span></span>
-<span id="cb99-31"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb99-32"><a></a>    <span class="fu">rename</span>(</span>
-<span id="cb99-33"><a></a>      <span class="at">Date =</span> <span class="st">`</span><span class="at">Date</span><span class="st">`</span>,</span>
-<span id="cb99-34"><a></a>      <span class="at">Positive_Total =</span> <span class="st">`</span><span class="at">Positive Total</span><span class="st">`</span>,</span>
-<span id="cb99-35"><a></a>      <span class="at">Positive_New =</span> <span class="st">`</span><span class="at">Positive New</span><span class="st">`</span>,</span>
-<span id="cb99-36"><a></a>      <span class="at">Case_Average_7day =</span> <span class="st">`</span><span class="at">7-day confirmed case average</span><span class="st">`</span></span>
-<span id="cb99-37"><a></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb99-38"><a></a>    <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">as.Date</span>(Date))  <span class="co"># Convert to Date class</span></span>
-<span id="cb99-39"><a></a>  </span>
-<span id="cb99-40"><a></a>  <span class="co"># Create a tibble with the required columns for the epi_archive</span></span>
-<span id="cb99-41"><a></a>  tib <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb99-42"><a></a>    <span class="at">geo_value =</span> <span class="st">"ma"</span>,  <span class="co"># Massachusetts (geo_value)</span></span>
-<span id="cb99-43"><a></a>    <span class="at">time_value =</span> data<span class="sc">$</span>Date,  <span class="co"># Date from the data</span></span>
-<span id="cb99-44"><a></a>    <span class="at">version =</span> Date,  <span class="co"># The extracted version date</span></span>
-<span id="cb99-45"><a></a>    <span class="at">case_rate_7d_av =</span> data<span class="sc">$</span>Case_Average_7day  <span class="co"># 7-day average case value</span></span>
-<span id="cb99-46"><a></a>  )</span>
-<span id="cb99-47"><a></a>  </span>
-<span id="cb99-48"><a></a>  <span class="fu">return</span>(tib)</span>
-<span id="cb99-49"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a></a><span class="co"># Load required libraries</span></span>
+<span id="cb93-2"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb93-3"><a></a><span class="fu">library</span>(readxl)</span>
+<span id="cb93-4"><a></a><span class="fu">library</span>(httr)</span>
+<span id="cb93-5"><a></a><span class="fu">library</span>(tibble)</span>
+<span id="cb93-6"><a></a><span class="fu">library</span>(epiprocess)</span>
+<span id="cb93-7"><a></a></span>
+<span id="cb93-8"><a></a><span class="co"># Function to download and process each Excel file for a given date</span></span>
+<span id="cb93-9"><a></a>process_covid_data <span class="ot">&lt;-</span> <span class="cf">function</span>(Date) {</span>
+<span id="cb93-10"><a></a>  <span class="co"># Generate the URL for the given date</span></span>
+<span id="cb93-11"><a></a>  url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://www.mass.gov/doc/covid-19-raw-data-"</span>, <span class="fu">tolower</span>(<span class="fu">gsub</span>(<span class="st">"-0"</span>, <span class="st">"-"</span>, <span class="fu">format</span>(Date, <span class="st">"%B-%d-%Y"</span>))), <span class="st">"/download"</span>) </span>
+<span id="cb93-12"><a></a>  <span class="co"># Applies gsub("-0", "-", ...) to replace any occurrence of -0 (such as in "April-01") with just - (resulting in "April-1").</span></span>
+<span id="cb93-13"><a></a>  </span>
+<span id="cb93-14"><a></a>  <span class="co"># Check if the URL exists (handle the 404 error by skipping that date)</span></span>
+<span id="cb93-15"><a></a>  response <span class="ot">&lt;-</span> <span class="fu">GET</span>(url)</span>
+<span id="cb93-16"><a></a>  </span>
+<span id="cb93-17"><a></a>  <span class="cf">if</span> (<span class="fu">status_code</span>(response) <span class="sc">!=</span> <span class="dv">200</span>) {</span>
+<span id="cb93-18"><a></a>    <span class="fu">return</span>(<span class="cn">NULL</span>)  <span class="co"># Skip if URL doesn't exist (404)</span></span>
+<span id="cb93-19"><a></a>  }</span>
+<span id="cb93-20"><a></a>  </span>
+<span id="cb93-21"><a></a>  <span class="co"># Define the destination file path for the Excel file</span></span>
+<span id="cb93-22"><a></a>  file_path <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".xlsx"</span>)</span>
+<span id="cb93-23"><a></a>  </span>
+<span id="cb93-24"><a></a>  <span class="co"># Download the Excel file</span></span>
+<span id="cb93-25"><a></a>  <span class="fu">GET</span>(url, <span class="fu">write_disk</span>(file_path, <span class="at">overwrite =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb93-26"><a></a>  </span>
+<span id="cb93-27"><a></a>  <span class="co"># Read the relevant sheet from the Excel file</span></span>
+<span id="cb93-28"><a></a>  data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(file_path, <span class="at">sheet =</span> <span class="st">"CasesByDate (Test Date)"</span>)</span>
+<span id="cb93-29"><a></a>  </span>
+<span id="cb93-30"><a></a>  <span class="co"># Process the data: rename columns and convert Date</span></span>
+<span id="cb93-31"><a></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb93-32"><a></a>    <span class="fu">rename</span>(</span>
+<span id="cb93-33"><a></a>      <span class="at">Date =</span> <span class="st">`</span><span class="at">Date</span><span class="st">`</span>,</span>
+<span id="cb93-34"><a></a>      <span class="at">Positive_Total =</span> <span class="st">`</span><span class="at">Positive Total</span><span class="st">`</span>,</span>
+<span id="cb93-35"><a></a>      <span class="at">Positive_New =</span> <span class="st">`</span><span class="at">Positive New</span><span class="st">`</span>,</span>
+<span id="cb93-36"><a></a>      <span class="at">Case_Average_7day =</span> <span class="st">`</span><span class="at">7-day confirmed case average</span><span class="st">`</span></span>
+<span id="cb93-37"><a></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb93-38"><a></a>    <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">as.Date</span>(Date))  <span class="co"># Convert to Date class</span></span>
+<span id="cb93-39"><a></a>  </span>
+<span id="cb93-40"><a></a>  <span class="co"># Create a tibble with the required columns for the epi_archive</span></span>
+<span id="cb93-41"><a></a>  tib <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb93-42"><a></a>    <span class="at">geo_value =</span> <span class="st">"ma"</span>,  <span class="co"># Massachusetts (geo_value)</span></span>
+<span id="cb93-43"><a></a>    <span class="at">time_value =</span> data<span class="sc">$</span>Date,  <span class="co"># Date from the data</span></span>
+<span id="cb93-44"><a></a>    <span class="at">version =</span> Date,  <span class="co"># The extracted version date</span></span>
+<span id="cb93-45"><a></a>    <span class="at">case_rate_7d_av =</span> data<span class="sc">$</span>Case_Average_7day  <span class="co"># 7-day average case value</span></span>
+<span id="cb93-46"><a></a>  )</span>
+<span id="cb93-47"><a></a>  </span>
+<span id="cb93-48"><a></a>  <span class="fu">return</span>(tib)</span>
+<span id="cb93-49"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="fetch-data---code-breakdown" class="slide level2">
@@ -2374,30 +2400,30 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="fetch-data---process-range-of-dates" class="slide level2">
 <h2>Fetch Data - Process range of dates</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a></a><span class="co"># Function to process data for a range of dates</span></span>
-<span id="cb100-2"><a></a>process_data_for_date_range <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date) {</span>
-<span id="cb100-3"><a></a>  <span class="co"># Generate a sequence of dates between start_date and end_date</span></span>
-<span id="cb100-4"><a></a>  date_sequence <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(start_date), <span class="fu">as.Date</span>(end_date), <span class="at">by =</span> <span class="st">"day"</span>)</span>
-<span id="cb100-5"><a></a>  </span>
-<span id="cb100-6"><a></a>  <span class="co"># Process data for each date and combine results</span></span>
-<span id="cb100-7"><a></a>  covid_data_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(date_sequence, <span class="cf">function</span>(Date) {</span>
-<span id="cb100-8"><a></a>    <span class="fu">process_covid_data</span>(Date)  <span class="co"># Skip over dates with no data (NULLs will be ignored)</span></span>
-<span id="cb100-9"><a></a>  })</span>
-<span id="cb100-10"><a></a>  </span>
-<span id="cb100-11"><a></a>  <span class="co"># Combine all non-null individual tibbles into one data frame</span></span>
-<span id="cb100-12"><a></a>  combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(covid_data_list[<span class="sc">!</span><span class="fu">sapply</span>(covid_data_list, is.null)])</span>
-<span id="cb100-13"><a></a>  </span>
-<span id="cb100-14"><a></a>  <span class="co"># Convert the combined data into an epi_archive object</span></span>
-<span id="cb100-15"><a></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(combined_data) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb100-16"><a></a>    epi_archive_data <span class="ot">&lt;-</span> combined_data <span class="sc">|&gt;</span></span>
-<span id="cb100-17"><a></a>      <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb100-18"><a></a>    </span>
-<span id="cb100-19"><a></a>    <span class="fu">return</span>(epi_archive_data)</span>
-<span id="cb100-20"><a></a>  } <span class="cf">else</span> {</span>
-<span id="cb100-21"><a></a>    <span class="fu">message</span>(<span class="st">"No valid data available for the given date range."</span>)</span>
-<span id="cb100-22"><a></a>    <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
-<span id="cb100-23"><a></a>  }</span>
-<span id="cb100-24"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a></a><span class="co"># Function to process data for a range of dates</span></span>
+<span id="cb94-2"><a></a>process_data_for_date_range <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date) {</span>
+<span id="cb94-3"><a></a>  <span class="co"># Generate a sequence of dates between start_date and end_date</span></span>
+<span id="cb94-4"><a></a>  date_sequence <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(start_date), <span class="fu">as.Date</span>(end_date), <span class="at">by =</span> <span class="st">"day"</span>)</span>
+<span id="cb94-5"><a></a>  </span>
+<span id="cb94-6"><a></a>  <span class="co"># Process data for each date and combine results</span></span>
+<span id="cb94-7"><a></a>  covid_data_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(date_sequence, <span class="cf">function</span>(Date) {</span>
+<span id="cb94-8"><a></a>    <span class="fu">process_covid_data</span>(Date)  <span class="co"># Skip over dates with no data (NULLs will be ignored)</span></span>
+<span id="cb94-9"><a></a>  })</span>
+<span id="cb94-10"><a></a>  </span>
+<span id="cb94-11"><a></a>  <span class="co"># Combine all non-null individual tibbles into one data frame</span></span>
+<span id="cb94-12"><a></a>  combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(covid_data_list[<span class="sc">!</span><span class="fu">sapply</span>(covid_data_list, is.null)])</span>
+<span id="cb94-13"><a></a>  </span>
+<span id="cb94-14"><a></a>  <span class="co"># Convert the combined data into an epi_archive object</span></span>
+<span id="cb94-15"><a></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(combined_data) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb94-16"><a></a>    epi_archive_data <span class="ot">&lt;-</span> combined_data <span class="sc">|&gt;</span></span>
+<span id="cb94-17"><a></a>      <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb94-18"><a></a>    </span>
+<span id="cb94-19"><a></a>    <span class="fu">return</span>(epi_archive_data)</span>
+<span id="cb94-20"><a></a>  } <span class="cf">else</span> {</span>
+<span id="cb94-21"><a></a>    <span class="fu">message</span>(<span class="st">"No valid data available for the given date range."</span>)</span>
+<span id="cb94-22"><a></a>    <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb94-23"><a></a>  }</span>
+<span id="cb94-24"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="fetch-data---code-breakdown-1" class="slide level2">
@@ -2417,9 +2443,9 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </ul>
 <!-- To wonder why you chose Expect building the archive to take a nontrivial amount of time (enough for a cup of coffee or to wonder why you chose coding in the first place). -->
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a></a><span class="co"># Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021</span></span>
-<span id="cb101-2"><a></a>y <span class="ot">&lt;-</span> <span class="fu">process_data_for_date_range</span>(<span class="st">"2021-01-10"</span>, <span class="st">"2021-12-01"</span>)  <span class="co"># Raw .xlsx data is first released on Jan. 4, 2021</span></span>
-<span id="cb101-3"><a></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a></a><span class="co"># Example usage: process data between Jan. 10, 2021, and Dec. 1, 2021</span></span>
+<span id="cb95-2"><a></a>y <span class="ot">&lt;-</span> <span class="fu">process_data_for_date_range</span>(<span class="st">"2021-01-10"</span>, <span class="st">"2021-12-01"</span>)  <span class="co"># Raw .xlsx data is first released on Jan. 4, 2021</span></span>
+<span id="cb95-3"><a></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
 ℹ Min/max time values: 2020-01-29 / 2021-11-30
@@ -2446,7 +2472,7 @@ Key: &lt;geo_value, time_value, version&gt;
 <li>Alternatively, you may run the following to load <code>y</code> that was previously saved as an RDS file:</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a></a>y <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"_data/ma_case_archive.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a></a>y <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"_data/ma_case_archive.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="fetch-data---outpatient-doctors-visits-for-cli" class="slide level2">
@@ -2457,21 +2483,21 @@ Key: &lt;geo_value, time_value, version&gt;
 <li>This will be the predictor when we nowcast COVID-19 cases in MA.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a></a><span class="co"># Step 1: Fetch Versioned Data </span></span>
-<span id="cb104-2"><a></a>x <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb104-3"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
-<span id="cb104-4"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
-<span id="cb104-5"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb104-6"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb104-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ma"</span>, <span class="co"># Just for MA to keep it simple (&amp; to go with the case data by test date for that state)</span></span>
-<span id="cb104-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20210301</span>, <span class="dv">20211231</span>),</span>
-<span id="cb104-9"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="dv">20210301</span>, <span class="dv">20211231</span>)</span>
-<span id="cb104-10"><a></a>) <span class="sc">|&gt;</span></span>
-<span id="cb104-11"><a></a>  <span class="fu">select</span>(geo_value, time_value,</span>
-<span id="cb104-12"><a></a>         <span class="at">version =</span> issue,</span>
-<span id="cb104-13"><a></a>         <span class="at">percent_cli =</span> value</span>
-<span id="cb104-14"><a></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb104-15"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a></a><span class="co"># Step 1: Fetch Versioned Data </span></span>
+<span id="cb98-2"><a></a>x <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb98-3"><a></a>  <span class="at">source =</span> <span class="st">"doctor-visits"</span>,</span>
+<span id="cb98-4"><a></a>  <span class="at">signals =</span> <span class="st">"smoothed_adj_cli"</span>,</span>
+<span id="cb98-5"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb98-6"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb98-7"><a></a>  <span class="at">geo_values =</span> <span class="st">"ma"</span>, <span class="co"># Just for MA to keep it simple (&amp; to go with the case data by test date for that state)</span></span>
+<span id="cb98-8"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20210301</span>, <span class="dv">20211231</span>),</span>
+<span id="cb98-9"><a></a>  <span class="at">issues =</span> <span class="fu">epirange</span>(<span class="dv">20210301</span>, <span class="dv">20211231</span>)</span>
+<span id="cb98-10"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb98-11"><a></a>  <span class="fu">select</span>(geo_value, time_value,</span>
+<span id="cb98-12"><a></a>         <span class="at">version =</span> issue,</span>
+<span id="cb98-13"><a></a>         <span class="at">percent_cli =</span> value</span>
+<span id="cb98-14"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb98-15"><a></a>  <span class="fu">as_epi_archive</span>(<span class="at">compactify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="use-epix_merge-to-merge-the-two-archives" class="slide level2">
@@ -2479,12 +2505,12 @@ Key: &lt;geo_value, time_value, version&gt;
 <p>Now we’ll use <code>epix_merge()</code> to combine the two <code>epi_archive</code>s that share the same <code>geo_value</code> &amp; <code>time_value</code>.</p>
 <!-- LOCF is used to ensure missing data is handled by filling forward. -->
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a></a>archive <span class="ot">&lt;-</span> <span class="fu">epix_merge</span>(</span>
-<span id="cb105-2"><a></a>  x, y,</span>
-<span id="cb105-3"><a></a>  <span class="at">sync =</span> <span class="st">"locf"</span>,</span>
-<span id="cb105-4"><a></a>  <span class="at">compactify =</span> <span class="cn">FALSE</span></span>
-<span id="cb105-5"><a></a>)</span>
-<span id="cb105-6"><a></a>archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a></a>archive <span class="ot">&lt;-</span> <span class="fu">epix_merge</span>(</span>
+<span id="cb99-2"><a></a>  x, y,</span>
+<span id="cb99-3"><a></a>  <span class="at">sync =</span> <span class="st">"locf"</span>,</span>
+<span id="cb99-4"><a></a>  <span class="at">compactify =</span> <span class="cn">FALSE</span></span>
+<span id="cb99-5"><a></a>)</span>
+<span id="cb99-6"><a></a>archive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>→ An `epi_archive` object, with metadata:
 ℹ Min/max time values: 2020-01-29 / 2021-12-13
@@ -2516,23 +2542,23 @@ Key: &lt;geo_value, time_value, version&gt;
 <li>Save the actual cases to compare to the nowcasts later.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a></a>lm_mod_pred <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
-<span id="cb107-2"><a></a>  <span class="co"># Linear model</span></span>
-<span id="cb107-3"><a></a>  model <span class="ot">&lt;-</span> <span class="fu">lm</span>(case_rate_7d_av <span class="sc">~</span> percent_cli, <span class="at">data =</span> data)</span>
-<span id="cb107-4"><a></a></span>
-<span id="cb107-5"><a></a>  <span class="co"># Make predictions</span></span>
-<span id="cb107-6"><a></a>  predictions <span class="ot">=</span> <span class="fu">predict</span>(model,</span>
-<span id="cb107-7"><a></a>                        <span class="at">newdata =</span> data <span class="sc">|&gt;</span></span>
-<span id="cb107-8"><a></a>                          <span class="fu">fill</span>(percent_cli, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb107-9"><a></a>                          <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)),</span>
-<span id="cb107-10"><a></a>                        <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.9</span>)</span>
-<span id="cb107-11"><a></a>  </span>
-<span id="cb107-12"><a></a>  <span class="co"># Pull off real-time value for later comparison to the nowcast value</span></span>
-<span id="cb107-13"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span> <span class="fu">pull</span>(case_rate_7d_av)</span>
-<span id="cb107-14"><a></a>  </span>
-<span id="cb107-15"><a></a>  <span class="co"># Could clip predictions and bounds at 0</span></span>
-<span id="cb107-16"><a></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(predictions, <span class="at">actual_nowcast_date =</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value), <span class="at">real_time_val =</span> real_time_val)) </span>
-<span id="cb107-17"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a></a>lm_mod_pred <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
+<span id="cb101-2"><a></a>  <span class="co"># Linear model</span></span>
+<span id="cb101-3"><a></a>  model <span class="ot">&lt;-</span> <span class="fu">lm</span>(case_rate_7d_av <span class="sc">~</span> percent_cli, <span class="at">data =</span> data)</span>
+<span id="cb101-4"><a></a></span>
+<span id="cb101-5"><a></a>  <span class="co"># Make predictions</span></span>
+<span id="cb101-6"><a></a>  predictions <span class="ot">=</span> <span class="fu">predict</span>(model,</span>
+<span id="cb101-7"><a></a>                        <span class="at">newdata =</span> data <span class="sc">|&gt;</span></span>
+<span id="cb101-8"><a></a>                          <span class="fu">fill</span>(percent_cli, <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb101-9"><a></a>                          <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)),</span>
+<span id="cb101-10"><a></a>                        <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.9</span>)</span>
+<span id="cb101-11"><a></a>  </span>
+<span id="cb101-12"><a></a>  <span class="co"># Pull off real-time value for later comparison to the nowcast value</span></span>
+<span id="cb101-13"><a></a>  real_time_val <span class="ot">=</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> <span class="fu">max</span>(time_value)) <span class="sc">|&gt;</span> <span class="fu">pull</span>(case_rate_7d_av)</span>
+<span id="cb101-14"><a></a>  </span>
+<span id="cb101-15"><a></a>  <span class="co"># Could clip predictions and bounds at 0</span></span>
+<span id="cb101-16"><a></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(predictions, <span class="at">actual_nowcast_date =</span> <span class="fu">max</span>(data<span class="sc">$</span>time_value), <span class="at">real_time_val =</span> real_time_val)) </span>
+<span id="cb101-17"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="nowcasting-with-epix_slide-2" class="slide level2">
@@ -2546,26 +2572,26 @@ Key: &lt;geo_value, time_value, version&gt;
 <section id="nowcasting-with-epix_slide-3" class="slide level2">
 <h2>Nowcasting with <code>epix_slide()</code></h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a></a><span class="co"># Define the reference time points (to give the training/test split)</span></span>
-<span id="cb108-2"><a></a>targeted_nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2021-04-01"</span>), <span class="fu">as.Date</span>(<span class="st">"2021-11-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>) </span>
-<span id="cb108-3"><a></a>ref_time_values <span class="ot">=</span> targeted_nowcast_dates <span class="sc">+</span> <span class="dv">1</span> <span class="co"># + 1 because the case data is 1 day latent. </span></span>
-<span id="cb108-4"><a></a><span class="co"># Determine this from revision_summary(y)</span></span>
-<span id="cb108-5"><a></a></span>
-<span id="cb108-6"><a></a><span class="co"># Use epix_slide to perform the nowcasting with a training-test split</span></span>
-<span id="cb108-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span></span>
-<span id="cb108-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
-<span id="cb108-9"><a></a>  <span class="fu">epix_slide</span>(</span>
-<span id="cb108-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,  <span class="co"># Pass the function defined above</span></span>
-<span id="cb108-11"><a></a>    <span class="at">.before =</span> <span class="dv">30</span>,   <span class="co"># Training period of 30 days</span></span>
-<span id="cb108-12"><a></a>    <span class="at">.versions =</span> ref_time_values, <span class="co"># Determines the day where training data goes up to (not inclusive)</span></span>
-<span id="cb108-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
-<span id="cb108-14"><a></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb108-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span></span>
-<span id="cb108-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates,</span>
-<span id="cb108-17"><a></a>         <span class="at">time_value =</span> actual_nowcast_date)</span>
-<span id="cb108-18"><a></a></span>
-<span id="cb108-19"><a></a><span class="co"># Take a peek at the results</span></span>
-<span id="cb108-20"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a></a><span class="co"># Define the reference time points (to give the training/test split)</span></span>
+<span id="cb102-2"><a></a>targeted_nowcast_dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2021-04-01"</span>), <span class="fu">as.Date</span>(<span class="st">"2021-11-01"</span>), <span class="at">by =</span> <span class="st">"1 month"</span>) </span>
+<span id="cb102-3"><a></a>ref_time_values <span class="ot">=</span> targeted_nowcast_dates <span class="sc">+</span> <span class="dv">1</span> <span class="co"># + 1 because the case data is 1 day latent. </span></span>
+<span id="cb102-4"><a></a><span class="co"># Determine this from revision_summary(y)</span></span>
+<span id="cb102-5"><a></a></span>
+<span id="cb102-6"><a></a><span class="co"># Use epix_slide to perform the nowcasting with a training-test split</span></span>
+<span id="cb102-7"><a></a>nowcast_res <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span></span>
+<span id="cb102-8"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb102-9"><a></a>  <span class="fu">epix_slide</span>(</span>
+<span id="cb102-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,  <span class="co"># Pass the function defined above</span></span>
+<span id="cb102-11"><a></a>    <span class="at">.before =</span> <span class="dv">30</span>,   <span class="co"># Training period of 30 days</span></span>
+<span id="cb102-12"><a></a>    <span class="at">.versions =</span> ref_time_values, <span class="co"># Determines the day where training data goes up to (not inclusive)</span></span>
+<span id="cb102-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
+<span id="cb102-14"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb102-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span></span>
+<span id="cb102-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates,</span>
+<span id="cb102-17"><a></a>         <span class="at">time_value =</span> actual_nowcast_date)</span>
+<span id="cb102-18"><a></a></span>
+<span id="cb102-19"><a></a><span class="co"># Take a peek at the results</span></span>
+<span id="cb102-20"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 9
 # Groups:   geo_value [1]
@@ -2580,12 +2606,12 @@ Key: &lt;geo_value, time_value, version&gt;
 <h2>Visualizing nowcasts vs.&nbsp;actual values</h2>
 <p>Merge the nowcast results with the latest data for more direct comparison:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span></span>
-<span id="cb110-2"><a></a>  <span class="fu">select</span>(<span class="sc">-</span>percent_cli) </span>
-<span id="cb110-3"><a></a></span>
-<span id="cb110-4"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">|&gt;</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">join_by</span>(geo_value, time_value))</span>
-<span id="cb110-5"><a></a></span>
-<span id="cb110-6"><a></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a></a>x_latest <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(archive, <span class="fu">max</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>version)) <span class="sc">|&gt;</span></span>
+<span id="cb104-2"><a></a>  <span class="fu">select</span>(<span class="sc">-</span>percent_cli) </span>
+<span id="cb104-3"><a></a></span>
+<span id="cb104-4"><a></a>res <span class="ot">&lt;-</span> nowcast_res <span class="sc">|&gt;</span> <span class="fu">left_join</span>(x_latest, <span class="at">by =</span> <span class="fu">join_by</span>(geo_value, time_value))</span>
+<span id="cb104-5"><a></a></span>
+<span id="cb104-6"><a></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 10
 # Groups:   geo_value [1]
@@ -2609,23 +2635,23 @@ Key: &lt;geo_value, time_value, version&gt;
 <p>Now, plot the predictions &amp; real-time values on top of latest COVID-19 cases using <code>ggplot2</code>:</p>
 
 <img data-src="day1-afternoon_files/figure-revealjs/plot-simple-lr-nowcast-res-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
-<section id="evaluation-using-mae-5" class="slide level2">
+<section id="evaluation-using-mae-4" class="slide level2">
 <h2>Evaluation using MAE</h2>
 <ul>
 <li><p>Finally, we numerically evaluate our nowcasts using MAE.</p></li>
 <li><p>Shows that the nowcast errors are lower than those of the real-time estimates.</p></li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a></a><span class="co"># Calculate the absolute error between actual and nowcasted COVID-19 cases</span></span>
-<span id="cb112-2"><a></a>mae_data_cases <span class="ot">&lt;-</span> res <span class="sc">|&gt;</span> </span>
-<span id="cb112-3"><a></a>  <span class="fu">mutate</span>(<span class="at">nc_abs_error =</span> <span class="fu">abs</span>(case_rate_7d_av <span class="sc">-</span> fit),  <span class="co"># Nowcast vs Finalized cases (7-day average)</span></span>
-<span id="cb112-4"><a></a>         <span class="at">rt_abs_error =</span> <span class="fu">abs</span>(case_rate_7d_av <span class="sc">-</span> real_time_val))  <span class="co"># Real-Time vs Finalized cases</span></span>
-<span id="cb112-5"><a></a></span>
-<span id="cb112-6"><a></a><span class="co"># Compute the MAE (mean of absolute errors)</span></span>
-<span id="cb112-7"><a></a>mae_value_cases <span class="ot">&lt;-</span> mae_data_cases <span class="sc">|&gt;</span> </span>
-<span id="cb112-8"><a></a>  <span class="fu">summarise</span>(<span class="at">nc_MAE =</span> <span class="fu">mean</span>(nc_abs_error),</span>
-<span id="cb112-9"><a></a>            <span class="at">rt_MAE =</span> <span class="fu">mean</span>(rt_abs_error))</span>
-<span id="cb112-10"><a></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mae_value_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a></a><span class="co"># Calculate the absolute error between actual and nowcasted COVID-19 cases</span></span>
+<span id="cb106-2"><a></a>mae_data_cases <span class="ot">&lt;-</span> res <span class="sc">|&gt;</span> </span>
+<span id="cb106-3"><a></a>  <span class="fu">mutate</span>(<span class="at">nc_abs_error =</span> <span class="fu">abs</span>(case_rate_7d_av <span class="sc">-</span> fit),  <span class="co"># Nowcast vs Finalized cases (7-day average)</span></span>
+<span id="cb106-4"><a></a>         <span class="at">rt_abs_error =</span> <span class="fu">abs</span>(case_rate_7d_av <span class="sc">-</span> real_time_val))  <span class="co"># Real-Time vs Finalized cases</span></span>
+<span id="cb106-5"><a></a></span>
+<span id="cb106-6"><a></a><span class="co"># Compute the MAE (mean of absolute errors)</span></span>
+<span id="cb106-7"><a></a>mae_value_cases <span class="ot">&lt;-</span> mae_data_cases <span class="sc">|&gt;</span> </span>
+<span id="cb106-8"><a></a>  <span class="fu">summarise</span>(<span class="at">nc_MAE =</span> <span class="fu">mean</span>(nc_abs_error),</span>
+<span id="cb106-9"><a></a>            <span class="at">rt_MAE =</span> <span class="fu">mean</span>(rt_abs_error))</span>
+<span id="cb106-10"><a></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mae_value_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top">
 <thead>
@@ -2646,7 +2672,7 @@ Key: &lt;geo_value, time_value, version&gt;
 </div>
 </div>
 </section>
-<section id="evaluation-using-mae-6" class="slide level2">
+<section id="evaluation-using-mae-5" class="slide level2">
 <h2>Evaluation using MAE</h2>
 
 <img data-src="day1-afternoon_files/figure-revealjs/abs-error-plot-cases-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>The elevated errors at both ends highlight periods where the discrepancies between the real-time and nowcast estimates are most pronounced.</p>
@@ -2663,6 +2689,27 @@ Key: &lt;geo_value, time_value, version&gt;
 <li><p><span class="primary"><strong>Evaluate</strong></span>: Calculate error measures and numerically and visually assess the results.</p></li>
 </ol>
 <p>Overall, nowcasting, based on the linear model, provided a closer approximation of true cases compared to the real-time values.</p>
+</section>
+<section id="aside-on-nowcasting" class="slide level2">
+<h2>Aside on nowcasting</h2>
+<ul>
+<li><p>To some Epis, “nowcasting” can be equated with “estimate the time-varying instantaneous reproduction number, <span class="math inline">\(R_t\)</span>”</p></li>
+<li><p>Ex. using the number of reported COVID-19 cases in British Columbia between Jan.&nbsp;2020 and Apr.&nbsp;15, 2023.</p></li>
+</ul>
+<!-- This data is the number of reported COVID-19 cases in British Columbia between January 2020 and April 15, 2023. The values are.up-to-date as of August 2023. -->
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="day1-afternoon_files/figure-revealjs/nowcasting-1.svg" class="quarto-figure quarto-figure-center" height="400"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Group built <a href="https://dajmcdon.github.io/rtestim"><code>{rtestim}</code></a> doing for this nonparametrically.</p></li>
+<li><p>We may come back to this later…</p></li>
+</ul>
 
 
 </section></section>
