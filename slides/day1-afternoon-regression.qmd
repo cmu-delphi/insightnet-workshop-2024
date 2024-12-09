@@ -87,7 +87,7 @@ nowcasts = nchs_fullarchive |>
 
 ## One date
 
-```{r}
+```{r mortality-regression-nowcaster}
 
 # trial_nowcast_date <- all_nowcast_dates[[1]]
 # trial_nowcast_date <- all_nowcast_dates[[10]]
@@ -213,12 +213,41 @@ ar_settings <- list(
 
 # FIXME TODO outlier detection?
 
-regression_nowcaster <- function(archive, settings) {
+# We can apply this separately for each nowcast_date to ensure that we consider
+# the latest possible value for every signal, though whether that is advisable
+# or not may depend on revision characteristics of the signals.
+daily_to_weekly_archive <- function(archive) {
+  key_nms <- key(archive$DT)
+  val_nms <- setdiff(names(archive$DT), key_nms)
+  update_tbl <- as_tibble(archive$DT)
+  val_nms |>
+    lapply(function(val_nm) {
+      update_tbl[c(key_nms, val_nm)] |>
+        # thin out to weekly, making sure that we keep the max time_value with non-NA value:
+        filter(as.POSIXlt(time_value)$wday == as.POSIXlt(max(time_value[!is.na(.data[[val_nm]])]))$wday) |>
+        # re-align:
+        mutate(
+          time_value = time_value - as.POSIXlt(time_value)$wday, # Sunday of same epiweek
+          old_version = version,
+          version = version - as.POSIXlt(version)$wday # Sunday of same epiweek
+        ) |>
+        slice_max(old_version, by = all_of(key_nms)) |>
+        select(-old_version) |>
+        as_epi_archive(other_keys = setdiff(key_nms, c("geo_value", "time_value", "version")),
+                       compactify = TRUE)
+    }) |>
+    reduce(epix_merge, sync = "locf")
+}
+
+regression_nowcaster <- function(archive, settings, return_info = FALSE) {
   if (!inherits(archive, "epi_archive")) {
     stop("`archive` isn't an `epi_archive`")
   }
   if (length(unique(archive$DT$geo_value)) != 1L) {
     stop("Expected exactly one unique `geo_value`")
+  }
+  if (archive$time_type == "day") {
+    archive <- daily_to_weekly_archive(archive)
   }
 
   nowcast_date <- archive$versions_end
@@ -232,6 +261,7 @@ regression_nowcaster <- function(archive, settings) {
     select(-c(geo_value, time_value)) |>
     pivot_longer(-lag_days, names_to = "varname", values_to = "value") |>
     drop_na(value) |>
+  # TODO sanity-check presence of requested variables
     inner_join(settings$predictors, by = "varname") |>
     filter(abs(lag_days) <= max_abs_shift_days) |>
     arrange(varname, abs(lag_days)) |>
@@ -257,7 +287,7 @@ regression_nowcaster <- function(archive, settings) {
 
   target <- latest_edf |>
     filter(time_value <= max(time_value) - settings$days_until_target_semistable) |>
-    rename(mortality_semistable = mortality)
+    select(geo_value, time_value, mortality_semistable = mortality)
 
   training_test <- full_join(predictors, target, by = c("geo_value", "time_value"))
 
@@ -269,7 +299,7 @@ regression_nowcaster <- function(archive, settings) {
     filter(time_value == nowcast_date)
 
   fit <- training |>
-    select(all_of(predictor_descriptions$predictor_name), mortality_semistable) |>
+    select(any_of(predictor_descriptions$predictor_name), mortality_semistable) |>
     quantreg::rq(formula = mortality_semistable ~ ., tau = 0.5)
 
   pred <- tibble(
@@ -279,8 +309,16 @@ regression_nowcaster <- function(archive, settings) {
     prediction = unname(predict(fit, test))
   )
 
-  # TODO return not just pred?
-  return(pred)
+  # TODO intercept toggle?
+
+  if (return_info) {
+    return(tibble(
+      coefficients = list(coef(fit)),
+      predictions = list(pred)
+    ))
+  } else {
+    return(pred)
+  }
 }
 
 nchs_past_archive |>
@@ -377,9 +415,153 @@ nchs_fullarchive |>
 
 
 
+ratio_adjustment_settings <- list(
+  predictors = tribble(
+    ~varname, ~max_abs_shift_days, ~max_n_shifts,
+    # FIXME TODO vs. list of lags relative to max time value? target max time
+    # value? after turning into weekly via extraction? maybe do sequential
+    # intersection and skip joining when would reduce number of rows too much?
+    # "mortality", 35, 3,
+    "prediction_ratio", 0, 1,
+    ),
+  min_n_training_per_predictor = 30, # or else exclude predictor
+  days_until_target_semistable = 7 * 4, # filter out unstable when training (and evaluating)
+  min_n_training_intersection = 20, # or else raise error
+  max_n_training_intersection = Inf # or else filter down rows
+)
 
-# nchs_fullarchive |>
-#   epix_merge(ratio_nowcasts_archive, sync = "locf") |>
-  
+nchs_fullarchive |>
+  epix_merge(ratio_nowcasts_archive, sync = "locf") |>
+  epix_as_of(trial_nowcast_date, all_versions = TRUE) |>
+  regression_nowcaster(ratio_adjustment_settings)
 
+ratio_adj_nowcast_dates <- tail(ratio_nowcasts_archive$DT[!is.na(prediction_ratio), unique(version)], -ratio_adjustment_settings$min_n_training_per_predictor - ratio_adjustment_settings$days_until_target_semistable / 7 - 1)
+
+ratio_adj_nowcasts <- nchs_fullarchive |>
+  epix_merge(ratio_nowcasts_archive, sync = "locf") |>
+  epix_slide(~ regression_nowcaster(.x, ratio_adjustment_settings),
+             .versions = ratio_adj_nowcast_dates, .all_versions = TRUE) |>
+  rename(prediction_ratio_adj = prediction)
+
+
+ar_nowcasts |>
+  full_join(locf_nowcasts,
+            by = c("geo_value", "target_date"),
+            suffix = c("_ar", "_locf")) |>
+  full_join(ratio_nowcasts_archive |> epix_as_of(ratio_nowcasts_archive$versions_end),
+            by = c("geo_value", "target_date" = "time_value"),
+            suffix = c("_ar", "_locf")) |>
+  full_join(ratio_adj_nowcasts,
+            by = c("geo_value", "target_date"),
+            suffix = c("_ar", "_locf")) |>
+  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+            by = c("geo_value", "target_date" = "time_value")) |>
+  # summarize(mean(abs(mortality - prediction)/mortality * 100, na.rm = TRUE))
+  # summarize(across(c(prediction_locf, prediction_ar),
+  #                  ~ mean(abs(mortality - .x)/mortality * 100, na.rm = TRUE)))
+  # summarize(across(c(prediction_locf, prediction_ar),
+  #                  ~ mean(abs(mortality - .x), na.rm = TRUE)))
+  ggplot() +
+  geom_line(aes(target_date, mortality)) +
+  geom_line(aes(target_date, prediction_locf), colour = "red") +
+  geom_line(aes(target_date, prediction_ar), colour = "blue") +
+  geom_line(aes(target_date, prediction_ratio), colour = "purple") +
+  geom_line(aes(target_date, prediction_ratio_adj), colour = "violet") +
+  geom_line(aes(time_value, mort14),
+            get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mort14"),
+            colour = "orange")
+
+ratio_adj_nowcasts_with_info <- nchs_fullarchive |>
+  epix_merge(ratio_nowcasts_archive, sync = "locf") |>
+  epix_slide(~ regression_nowcaster(.x, ratio_adjustment_settings, return_info = TRUE), .versions = all_nowcast_dates, .all_versions = TRUE)
+
+
+# TODO optional warning on dropping variable altogether?
+
+# TODO check for requests for nonexistant variables?
+
+```
+
+
+Incorporating hospitalizations
+```{r mortality-regression-nowcaster-with-hosps}
+
+
+hhs_hosp_archive <- pub_covidcast(
+  source = "hhs",
+  signals = "confirmed_admissions_covid_1d_7dav",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "ca",
+  time_values = epirange(20210301, 20241001),
+  issues = "*"
+) |>
+  transmute(geo_value, time_value, version = issue, admissions = 7 * value) |>
+  as_epi_archive(compactify = TRUE)
+
+nchs_fullarchive_daily <-
+  nchs_fullarchive$DT |>
+  as_tibble() |>
+  mutate(
+    time_value = time_value + 6L, # align with trailing averages
+    version = version + 4L # assume NCHS data were released only on Thursdays
+  ) |>
+  group_by(geo_value, time_value, version) |>
+  reframe(time_value = time_value - 6:0,
+          mortality = c(rep(NA, 6), mortality)) |>
+  as_epi_archive(compactify = TRUE)
+
+hosp_mort_archive <- epix_merge(hhs_hosp_archive, nchs_fullarchive_daily, sync = "locf")
+
+hosp_mort_archive$DT |>
+  as_tibble() |>
+  select(-mortality) |>
+  filter(!all(is.na(admissions)), .by = c(geo_value, time_value)) |>
+  as_epi_archive(compactify = TRUE) |>
+  (\(x) tail(x$DT, n = 30))()
+
+daily_to_weekly_archive(hosp_mort_archive)$DT |>
+  as_tibble() |>
+  select(-mortality) |>
+  filter(!all(is.na(admissions)), .by = c(geo_value, time_value)) |>
+  as_epi_archive(compactify = TRUE) |>
+  (\(x) tail(x$DT, n = 30))()
+
+arx_settings <- list(
+  predictors = tribble(
+    ~varname, ~max_abs_shift_days, ~max_n_shifts,
+    # FIXME TODO vs. list of lags relative to max time value? target max time
+    # value? after turning into weekly via extraction? maybe do sequential
+    # intersection and skip joining when would reduce number of rows too much?
+    "admissions", 35, 3,
+    "mortality", 35, 3,
+    ),
+  min_n_training_per_predictor = 30, # or else exclude predictor
+  days_until_target_semistable = 7 * 4, # filter out unstable when training (and evaluating)
+  min_n_training_intersection = 20, # or else raise error
+  max_n_training_intersection = Inf # or else filter down rows
+)
+
+
+arx_nowcasts <- hosp_mort_archive |>
+  epix_slide(~ regression_nowcaster(.x, arx_settings),
+             .versions = all_nowcast_dates + 4, # assume we nowcast on Thursday, same day as assumed NCHS release
+             .all_versions = TRUE) |>
+  rename(prediction_arx = prediction)
+
+arx_nowcasts |>
+  full_join(locf_nowcasts |> rename(prediction_locf = prediction),
+            by = c("geo_value", "target_date"),
+            suffix = c("_arx", "_locf")) |>
+  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+            by = c("geo_value", "target_date" = "time_value")) |>
+  # summarize(mean(abs(mortality - prediction)/mortality * 100, na.rm = TRUE))
+  # summarize(across(c(prediction_locf, prediction_ar),
+  #                  ~ mean(abs(mortality - .x)/mortality * 100, na.rm = TRUE)))
+  # summarize(across(c(prediction_locf, prediction_ar),
+  #                  ~ mean(abs(mortality - .x), na.rm = TRUE)))
+  ggplot() +
+  geom_line(aes(target_date, mortality)) +
+  geom_line(aes(target_date, prediction_locf), colour = "red") +
+  geom_line(aes(target_date, prediction_arx), colour = "blue")
 ```
