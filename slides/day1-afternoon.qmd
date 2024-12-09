@@ -955,7 +955,7 @@ custom_function <- function(x, g, t, ...) {
 * `...`: additional arguments. 
 
 
-## Features -- sliding computation on a `epi_df`
+## Features -- sliding a computation on an `epi_df`
 
 ```{r slide-apply-custom-function}
 #| echo: true
