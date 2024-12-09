@@ -916,9 +916,6 @@ cases_7dav <- epi_slide(
   cases_7dav = mean(raw_cases, na.rm = TRUE),
   .window_size = 7,
   .align = "right",
-  .ref_time_values = NULL,
-  .new_col_name = NULL,
-  .all_rows = FALSE
 )
 ```
 
