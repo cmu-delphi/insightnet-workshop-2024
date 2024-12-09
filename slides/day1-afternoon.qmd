@@ -1085,10 +1085,11 @@ head(revision_data)
 versions <- seq(as.Date("2020-07-01"), as.Date("2021-11-30"), by = "1 month")
 max_version <- max(versions)
 
-snapshots <- map(versions, function(v) {
-  res = epix_as_of(archive_cases_dv_subset_all_states, v) |>
-    mutate(version = v)} |>
-  filter(geo_value %in% c("ca", "ut"))) |>
+snapshots <- map(versions, \(v) {
+  epix_as_of(archive_cases_dv_subset_all_states, v) |>
+    mutate(version = v) |>
+    filter(geo_value %in% c("ca", "ut"))
+  }) |>
   bind_rows() |>
   mutate(latest = version == max_version) 
 
