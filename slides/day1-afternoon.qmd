@@ -865,7 +865,7 @@ edfo |>
 ```
 
 
-## Features -- sliding computation on a `epi_df`
+## Features -- sliding a computation on an `epi_df`
 
 * It is often useful to compute rolling summaries of signals. 
 
