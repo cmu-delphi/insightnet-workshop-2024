@@ -1805,9 +1805,10 @@ pred
 ## Backtesting our nowcaster
 
 We'll use `epix_slide()` again.
-- And get an error --- some versions $t$ don't include a value $Y_{t-7}$ or $Y_{t-14}$.
-  - So let's try including even more lags, but add a limit to make sure we don't include too many.
-- Some other features and fixes are also included in the code below.
+
+* And get an error --- some versions $t$ don't include a value $Y_{t-7}$ or $Y_{t-14}$.
+    * So let's try including even more lags, but add a limit to make sure we don't include too many.
+* Some other features and fixes are also included in the code below.
 
 ```{r regression-nowcaster-function-2}
 regression_nowcaster <- function(archive, settings, return_info = FALSE) {
