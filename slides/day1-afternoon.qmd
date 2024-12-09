@@ -1995,6 +1995,9 @@ nchs_archive_daily <-
 
 hosp_mort_archive <- epix_merge(hhs_hosp_archive, nchs_archive_daily, sync = "locf")
 
+locf_nowcasts <- nchs_archive |>
+  epix_slide(~ locf_nowcaster(.x), .versions = all_nowcast_dates, .all_versions = TRUE)
+
 ar_nowcasts <- nchs_archive |>
   epix_slide(~ regression_nowcaster(.x, ar_settings), .versions = all_nowcast_dates, .all_versions = TRUE)
 
