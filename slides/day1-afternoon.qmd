@@ -867,11 +867,11 @@ edfo |>
 
 ## Features -- sliding computation on a `epi_df`
 
-* Many aggregations on panel data applies some function to a rolling window of data. 
+* It is often useful to compute rolling summaries of signals. 
 
-* By sliding the window, we could apply function to different parts of the snapshot. 
+* These depend on the reference time, and are computed separately over geographies (and other groups). 
 
-* For example, trailing average is often used to smooth out noises in individual data points.
+* For example, a trailing average can smooth out daily variation.
 
 * In `epiprocess`, this is achieved by `epi_slide()`.
 
