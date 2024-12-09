@@ -1066,7 +1066,7 @@ revision_data <- revision_summary(
 )
 ```
 
-## Features -- revision analysis helper function
+## Features -- summarize revision behavior
 
 ```{r epiprocess-revision-summary-results}
 #| echo: true
