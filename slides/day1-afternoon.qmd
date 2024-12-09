@@ -967,12 +967,9 @@ mean_by_hand <- function(x, g, t, ...) {
 
 cases_mean_custom_f = epi_slide(
     .x = cases_edf,
-    .f = custom_function,
+    .f = mean_by_hand,
     .window_size = 7,
     .align = "right",
-    .ref_time_values = NULL,
-    .new_col_name = NULL,
-    .all_rows = FALSE
 )
 
 ```
