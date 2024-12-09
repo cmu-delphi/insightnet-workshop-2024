@@ -1,4 +1,5 @@
 
+TODO move to consider finalized after 49 days
 
 ```{r copy-paste-dependency-material}
 library(tidyverse)
@@ -7,7 +8,7 @@ library(epipredict)
 library(epidatasets)
 theme_set(theme_bw())
 
-nchs_fullarchive <- pub_covidcast(
+nchs_archive <- pub_covidcast(
   source = "nchs-mortality",
   signals = "deaths_covid_incidence_num",
   geo_type = "state",
@@ -20,7 +21,7 @@ nchs_fullarchive <- pub_covidcast(
   as_epi_archive(compactify = TRUE)
 
 
-nchs_fullarchive2 <- pub_covidcast(
+nchs_archive2 <- pub_covidcast(
   source = "nchs-mortality",
   signals = "deaths_covid_incidence_num",
   geo_type = "state",
@@ -66,12 +67,12 @@ nowcaster = function(x, g, t, wl=180, appx=49) {
 
 }
 
-all_nowcast_dates = nchs_fullarchive$DT |>
+all_nowcast_dates = nchs_archive$DT |>
   filter(time_value > as.Date("2021-12-31")) |>
   distinct(time_value) |>
   pull(time_value)
 
-nowcasts = nchs_fullarchive |>
+nowcasts = nchs_archive |>
   epix_slide(
     nowcaster,
     .before=Inf,
@@ -89,11 +90,11 @@ nowcasts = nchs_fullarchive |>
 
 ```{r mortality-regression-nowcaster}
 
-# trial_nowcast_date <- all_nowcast_dates[[1]]
+trial_nowcast_date <- all_nowcast_dates[[1]]
 # trial_nowcast_date <- all_nowcast_dates[[10]]
-trial_nowcast_date <- all_nowcast_dates[[length(all_nowcast_dates)]]
+# trial_nowcast_date <- all_nowcast_dates[[length(all_nowcast_dates)]]
 
-nchs_past_archive <- nchs_fullarchive |>
+nchs_past_archive <- nchs_archive |>
   epix_as_of(trial_nowcast_date, all_versions = TRUE)
 
 nchs_past_latest <- nchs_past_archive |>
@@ -142,7 +143,7 @@ predictors <- predictor_descriptions |>
   }) |>
   reduce(full_join, by = c("geo_value", "time_value"))
 
-revision_summary(nchs_fullarchive, mortality, within_latest = 0.05)
+revision_summary(nchs_archive, mortality, within_latest = 0.05)
 
 target <- nchs_past_latest |>
   filter(time_value <= max(time_value) - 90) |>
@@ -324,21 +325,21 @@ regression_nowcaster <- function(archive, settings, return_info = FALSE) {
 nchs_past_archive |>
   regression_nowcaster(ar_settings)
 
-locf_nowcasts <- nchs_fullarchive |>
+locf_nowcasts <- nchs_archive |>
   epix_slide(~ locf_nowcaster(.x), .versions = all_nowcast_dates, .all_versions = TRUE)
 
-nchs_fullarchive |>
+nchs_archive |>
   epix_as_of(as.Date("2022-01-02"), all_versions = TRUE) |>
   regression_nowcaster(ar_settings)
 
-ar_nowcasts <- nchs_fullarchive |>
+ar_nowcasts <- nchs_archive |>
   epix_slide(~ regression_nowcaster(.x, ar_settings), .versions = all_nowcast_dates, .all_versions = TRUE)
 
 ar_nowcasts |>
   full_join(locf_nowcasts,
             by = c("geo_value", "target_date"),
             suffix = c("_ar", "_locf")) |>
-  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  full_join(nchs_archive |> epix_as_of(nchs_archive$versions_end),
             by = c("geo_value", "target_date" = "time_value")) |>
   # summarize(mean(abs(mortality - prediction)/mortality * 100, na.rm = TRUE))
   # summarize(across(c(prediction_locf, prediction_ar),
@@ -350,19 +351,19 @@ ar_nowcasts |>
   geom_line(aes(target_date, prediction_locf), colour = "red") +
   geom_line(aes(target_date, prediction_ar), colour = "blue") +
   geom_line(aes(time_value, mort14),
-            get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mort14"),
+            get_predictor_training_data(nchs_archive, "mortality", 14L, "mort14"),
             colour = "orange") +
   geom_line(aes(time_value, mort21),
-            get_predictor_training_data(nchs_fullarchive, "mortality", 21L, "mort21"),
+            get_predictor_training_data(nchs_archive, "mortality", 21L, "mort21"),
             colour = "brown") +
   geom_line(aes(time_value, mort28),
-            get_predictor_training_data(nchs_fullarchive, "mortality", 28L, "mort28"),
+            get_predictor_training_data(nchs_archive, "mortality", 28L, "mort28"),
             colour = "green")
 
 
 full_join(
-  get_predictor_training_data(nchs_fullarchive, "mortality", 7L, "mortality_lag7_realtime"),
-  nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  get_predictor_training_data(nchs_archive, "mortality", 7L, "mortality_lag7_realtime"),
+  nchs_archive |> epix_as_of(nchs_archive$versions_end),
   by = c("geo_value", "time_value")
 ) |>
   mutate(ratio =  mortality / mortality_lag7_realtime) |>
@@ -371,8 +372,8 @@ full_join(
   geom_line()
 
 full_join(
-  get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mortality_lag14_realtime"),
-  nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  get_predictor_training_data(nchs_archive, "mortality", 14L, "mortality_lag14_realtime"),
+  nchs_archive |> epix_as_of(nchs_archive$versions_end),
   by = c("geo_value", "time_value")
 ) |>
   mutate(ratio =  mortality / mortality_lag14_realtime) |>
@@ -386,8 +387,8 @@ training |>
   geom_point() +
   geom_line()
 
-# nchs_fullarchive %>%
-nchs_fullarchive2 %>%
+# nchs_archive %>%
+nchs_archive2 %>%
   epix_slide(latency_days = as.integer(.version - max(time_value))) %>%
   ggplot(aes(version, latency_days)) %>%
   `+`(geom_line()) %>%
@@ -405,7 +406,7 @@ ar_nowcasts_archive <- ar_nowcasts |>
          prediction_ar = prediction) |>
   as_epi_archive(compactify = TRUE)
 
-nchs_fullarchive |>
+nchs_archive |>
   epix_merge(ratio_nowcasts_archive, sync = "locf") |>
   epix_merge(ar_nowcasts_archive, sync = "locf") |>
   (\(x) {epix_as_of(x, x$versions_end)})() |>
@@ -430,14 +431,14 @@ ratio_adjustment_settings <- list(
   max_n_training_intersection = Inf # or else filter down rows
 )
 
-nchs_fullarchive |>
+nchs_archive |>
   epix_merge(ratio_nowcasts_archive, sync = "locf") |>
   epix_as_of(trial_nowcast_date, all_versions = TRUE) |>
   regression_nowcaster(ratio_adjustment_settings)
 
 ratio_adj_nowcast_dates <- tail(ratio_nowcasts_archive$DT[!is.na(prediction_ratio), unique(version)], -ratio_adjustment_settings$min_n_training_per_predictor - ratio_adjustment_settings$days_until_target_semistable / 7 - 1)
 
-ratio_adj_nowcasts <- nchs_fullarchive |>
+ratio_adj_nowcasts <- nchs_archive |>
   epix_merge(ratio_nowcasts_archive, sync = "locf") |>
   epix_slide(~ regression_nowcaster(.x, ratio_adjustment_settings),
              .versions = ratio_adj_nowcast_dates, .all_versions = TRUE) |>
@@ -454,7 +455,7 @@ ar_nowcasts |>
   full_join(ratio_adj_nowcasts,
             by = c("geo_value", "target_date"),
             suffix = c("_ar", "_locf")) |>
-  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  full_join(nchs_archive |> epix_as_of(nchs_archive$versions_end),
             by = c("geo_value", "target_date" = "time_value")) |>
   # summarize(mean(abs(mortality - prediction)/mortality * 100, na.rm = TRUE))
   # summarize(across(c(prediction_locf, prediction_ar),
@@ -468,10 +469,10 @@ ar_nowcasts |>
   geom_line(aes(target_date, prediction_ratio), colour = "purple") +
   geom_line(aes(target_date, prediction_ratio_adj), colour = "violet") +
   geom_line(aes(time_value, mort14),
-            get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mort14"),
+            get_predictor_training_data(nchs_archive, "mortality", 14L, "mort14"),
             colour = "orange")
 
-ratio_adj_nowcasts_with_info <- nchs_fullarchive |>
+ratio_adj_nowcasts_with_info <- nchs_archive |>
   epix_merge(ratio_nowcasts_archive, sync = "locf") |>
   epix_slide(~ regression_nowcaster(.x, ratio_adjustment_settings, return_info = TRUE), .versions = all_nowcast_dates, .all_versions = TRUE)
 
@@ -499,8 +500,8 @@ hhs_hosp_archive <- pub_covidcast(
   transmute(geo_value, time_value, version = issue, admissions = 7 * value) |>
   as_epi_archive(compactify = TRUE)
 
-nchs_fullarchive_daily <-
-  nchs_fullarchive$DT |>
+nchs_archive_daily <-
+  nchs_archive$DT |>
   as_tibble() |>
   mutate(
     time_value = time_value + 6L, # align with trailing averages
@@ -511,7 +512,7 @@ nchs_fullarchive_daily <-
           mortality = c(rep(NA, 6), mortality)) |>
   as_epi_archive(compactify = TRUE)
 
-hosp_mort_archive <- epix_merge(hhs_hosp_archive, nchs_fullarchive_daily, sync = "locf")
+hosp_mort_archive <- epix_merge(hhs_hosp_archive, nchs_archive_daily, sync = "locf")
 
 hosp_mort_archive$DT |>
   as_tibble() |>
@@ -553,12 +554,12 @@ list(
   ar_nowcasts |> rename(prediction_ar = prediction),
   locf_nowcasts |> rename(prediction_locf = prediction),
   ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
-  get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mortality_lag14_realtime") |>
+  get_predictor_training_data(nchs_archive, "mortality", 14L, "mortality_lag14_realtime") |>
     transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
 ) |>
   lapply(select, -any_of("version")) |>
   reduce(full_join, by = c("geo_value", "nowcast_date", "target_date")) |>
-  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  full_join(nchs_archive |> epix_as_of(nchs_archive$versions_end),
             by = c("geo_value", "target_date" = "time_value")) |>
   pivot_longer(starts_with("prediction"), names_to = "nowcaster", values_to = "prediction") |>
   ggplot() +
@@ -571,20 +572,63 @@ list(
   ar_nowcasts |> rename(prediction_ar = prediction),
   locf_nowcasts |> rename(prediction_locf = prediction),
   ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
-  get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mortality_lag14_realtime") |>
+  get_predictor_training_data(nchs_archive, "mortality", 14L, "mortality_lag14_realtime") |>
     transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
 ) |>
   lapply(select, -any_of("version")) |>
   reduce(full_join, by = c("geo_value", "nowcast_date", "target_date")) |>
-  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+  full_join(nchs_archive |> epix_as_of(nchs_archive$versions_end),
             by = c("geo_value", "target_date" = "time_value")) |>
   # Limit evaluation to forecasting tasks with predictions from all methods:
   drop_na(starts_with("prediction")) |>
   pivot_longer(starts_with("prediction"), names_to = "nowcaster", values_to = "prediction") |>
   # Filter evaluation based on target stability
-  filter(target_date <= nchs_fullarchive$versions_end - 90) |>
+  filter(target_date <= nchs_archive$versions_end - 90) |>
   summarize(.by = nowcaster,
             MAE = mean(abs(mortality - prediction)),
             MAPE = 100*mean(abs(mortality - prediction)/abs(mortality)))
+
+ratio_adj2_settings <- list(
+  predictors = tribble(
+    ~varname, ~max_abs_shift_days, ~max_n_shifts,
+    # FIXME TODO vs. list of lags relative to max time value? target max time
+    # value? after turning into weekly via extraction? maybe do sequential
+    # intersection and skip joining when would reduce number of rows too much?
+    # "mortality", 35, 3,
+    "prediction_ratio", 0, 1,
+    "admissions", 35, 3,
+    ),
+  min_n_training_per_predictor = 30, # or else exclude predictor
+  days_until_target_semistable = 7 * 4, # filter out unstable when training (and evaluating)
+  min_n_training_intersection = 20, # or else raise error
+  max_n_training_intersection = Inf # or else filter down rows
+)
+
+ratio_nowcasts_archive_daily <-
+  ratio_nowcasts_archive$DT |>
+  as_tibble() |>
+  mutate(
+    time_value = time_value + 6L, # align with trailing averages
+    version = version + 4L # assume NCHS data were released only on Thursdays
+  ) |>
+  group_by(geo_value, time_value, version) |>
+  reframe(time_value = time_value - 6:0,
+          prediction_ratio = c(rep(NA, 6), prediction_ratio)) |>
+  as_epi_archive(compactify = TRUE)
+
+ratio_adj2_nowcast_dates <- tail(ratio_nowcasts_archive$DT[!is.na(prediction_ratio), unique(version)], -ratio_adj2_settings$min_n_training_per_predictor - ratio_adj2_settings$days_until_target_semistable / 7 - 1)
+ratio_adj2_nowcast_dates <- ratio_adj2_nowcast_dates[ratio_adj2_nowcast_dates <= as.Date("2024-06-16")]
+
+ratio_adj2_nowcasts <- nchs_archive_daily |>
+  epix_merge(ratio_nowcasts_archive_daily, sync = "locf") |>
+  epix_merge(hhs_hosp_archive, sync = "locf") |>
+  epix_slide(~ regression_nowcaster(.x, ratio_adj2_settings),
+             .versions = ratio_adj2_nowcast_dates, .all_versions = TRUE) |>
+  rename(prediction_ratio_adj2 = prediction)
+# ... we lost all predictors.  Really need some backup plan.  Can it be AR but ignore collinearity?
+
+tibble(x1 = rnorm(100), x2 = x1, y = 4 * x1 + rnorm(100)) |>
+  quantreg::rq(formula = y ~ x1 + x2, tau = 0.5, method = "lasso", lambda = 1e-6)
+# ... but from memory don't think this is a reliable solution...
 
 ```
