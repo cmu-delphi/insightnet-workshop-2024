@@ -1673,14 +1673,384 @@ knitr::kable(mae_value)
 ```
 
 
-# Nowcasting with Two Variables
+# Nowcasting with Regression
 
-## Nowcasting: Moving from one signal to two
+## Nowcasting: Moving from one predictor to multiple
 
-* Recall that in nowcasting the goal is to predict a finalized value from a provisional value.
-* Now, we'll move from one signal to two, creating a simple linear model to nowcast.
-* Exogenous features (predictors) could include relevant signals, such as Google symptom search trends.
-* We will use these signals to nowcast hospital admissions related to influenza.
+* The ratio model predicts the finalized value of $Y_t$ from $Y_{s}$, the last value included in the report at time $t$.
+* $Y_s$ is the closest in time we can get to $Y_t$, but we also expect it to be the least reliable value in version $t$.
+* Can we add $Y_{s - 1}$, $Y_{s - 2}$, and even other data sources to the model to try to find a good mix of relevant and reliable signals?
+* Regressions models will let us do that; let's start by adding $Y_{s - 1}$, etc.
+
+##
+
+We'll start experimenting with just a single nowcast date:
+
+```{r regression-trial-nowcast-data}
+#| echo: true
+trial_nowcast_date <- all_nowcast_dates[[1]]
+
+# This is the version history we'd have seen at that point:
+nchs_past_archive <- nchs_archive |>
+  epix_as_of(trial_nowcast_date, all_versions = TRUE)
+
+# And this is what the latest version was at that point:
+nchs_past_latest <- nchs_past_archive |>
+  epix_as_of(trial_nowcast_date)
+
+# At version t, our target is finalized Y_t:
+target_time_value <- trial_nowcast_date
+```
+
+## What predictors do we use?
+
+Let's try using provisional $Y_s$ to predict $Y_t$ as long as $s$ is within 2 weeks of $t$:
+
+```{r predictor-descriptions}
+#| echo: true
+predictor_descriptions <- nchs_past_latest |>
+  filter(as.integer(target_time_value - time_value) <= 14) |>
+  mutate(lag_days = as.integer(trial_nowcast_date - time_value)) |>
+  select(-c(geo_value, time_value)) |>
+  pivot_longer(-lag_days, names_to = "varname") |>
+  mutate(predictor_name = paste0(varname, "_lag", lag_days, "_realtime")) |>
+  drop_na() |>
+  select(varname, lag_days, predictor_name)
+predictor_descriptions
+```
+
+## Line up with training data
+
+Just like with the ratio nowcaster, we need to make sure to line up our predictors in `nchs_past_latest` with training data that is analogous (e.g., "equally unreliable").  Here's a utility function we'll be using:
+
+```{r regression-trial-nowcast-analogues}
+#| echo: true
+library(data.table)
+get_predictor_training_data <- function(archive, varname, lag_days, predictor_name) {
+  epikeytime_names <- setdiff(key(archive$DT), "version")
+  requests <- unique(archive$DT, by = epikeytime_names, cols = character())[
+  , version := time_value + ..lag_days
+  ]
+  setkeyv(requests, c(epikeytime_names, "version"))
+  result <- archive$DT[
+    requests, c(key(archive$DT), varname), roll = TRUE, nomatch = NULL, allow.cartesian = TRUE, with = FALSE
+  ][
+  , time_value := version
+  ][
+  , version := NULL
+  ]
+  nms <- names(result)
+  nms[[match(varname, nms)]] <- predictor_name
+  setnames(result, nms)
+  setDF(result)
+  as_tibble(result)
+}
+```
+
+##
+
+
+```{r regression-trial-nowcast-analogues-example}
+#| echo: true
+get_predictor_training_data(nchs_past_archive, "mortality", 7, "mortality_lag7_realtime")
+```
+The first value here is a version of $Y_{2020-11-30}$ as it was reported in version 2020-12-06.  We expect it to have similar characteristics as $Y_{t - 7\text{ days}}$ as reported in version $t$ for other values of $t$.
+
+## Get our predictor and target data
+
+```{r regression-trial-nowcast-predictor-target}
+#| echo: true
+predictors <- predictor_descriptions |>
+  pmap(function(varname, lag_days, predictor_name) {
+    get_predictor_training_data(nchs_past_archive, varname, lag_days, predictor_name)
+  }) |>
+  reduce(full_join, by = c("geo_value", "time_value"))
+
+target <- nchs_past_latest |>
+  filter(time_value <= max(time_value) - 49) |>
+  rename(mortality_stable = mortality)
+```
+
+## Fit the regression model
+
+```{r regression-trial-nowcast-fit}
+#| echo: true
+training_test <- full_join(predictors, target, by = c("geo_value", "time_value"))
+
+training <- training_test |> drop_na()
+test <- training_test |> filter(time_value == trial_nowcast_date)
+
+fit <- training |>
+  select(all_of(predictor_descriptions$predictor_name), mortality_stable) |>
+  quantreg::rq(formula = mortality_stable ~ ., tau = 0.5)
+
+pred <- tibble(
+  nowcast_date = trial_nowcast_date,
+  target_date = target_time_value,
+  prediction = unname(predict(fit, test))
+)
+```
+
+## Our prediction
+
+```{r regression-trial-nowcast-pred}
+#| echo: true
+
+pred
+```
+
+## Backtesting our nowcaster
+
+We'll use `epix_slide()` again.
+- And get an error --- some versions $t$ don't include a value $Y_{t-7}$ or $Y_{t-14}$.
+  - So let's try including even more lags, but add a limit to make sure we don't include too many.
+- Some other features and fixes are also included in the code below.
+
+```{r regression-nowcaster-function}
+regression_nowcaster <- function(archive, settings, return_info = FALSE) {
+  if (!inherits(archive, "epi_archive")) {
+    stop("`archive` isn't an `epi_archive`")
+  }
+  if (length(unique(archive$DT$geo_value)) != 1L) {
+    stop("Expected exactly one unique `geo_value`")
+  }
+  if (archive$time_type == "day") {
+    archive <- daily_to_weekly_archive(archive)
+  }
+
+  nowcast_date <- archive$versions_end
+  target_time_value <- nowcast_date
+  latest_edf <- archive |> epix_as_of(nowcast_date)
+  print(nowcast_date)
+
+  predictor_descriptions <-
+    latest_edf |>
+    mutate(lag_days = as.integer(nowcast_date - time_value)) |>
+    select(-c(geo_value, time_value)) |>
+    pivot_longer(-lag_days, names_to = "varname", values_to = "value") |>
+    drop_na(value) |>
+  # TODO sanity-check presence of requested variables
+    inner_join(settings$predictors, by = "varname") |>
+    filter(abs(lag_days) <= max_abs_shift_days) |>
+    arrange(varname, abs(lag_days)) |>
+    group_by(varname) |>
+    filter(seq_len(n()) <= max_n_shifts[[1]]) |>
+    ungroup() |>
+    mutate(predictor_name = paste0(varname, "_lag", lag_days, "_realtime")) |>
+    select(varname, lag_days, predictor_name)
+
+  predictor_edfs <- predictor_descriptions |>
+    pmap(function(varname, lag_days, predictor_name) {
+      get_predictor_training_data(archive, varname, lag_days, predictor_name)
+    }) |>
+    lapply(na.omit) |>
+    keep(~ nrow(.x) >= settings$min_n_training_per_predictor)
+
+  if (length(predictor_edfs) == 0) {
+    stop("Couldn't find acceptable predictors in the latest data.")
+  }
+
+  predictors <- predictor_edfs |>
+    reduce(full_join, by = c("geo_value", "time_value"))
+
+  target <- latest_edf |>
+    filter(time_value <= max(time_value) - settings$days_until_target_semistable) |>
+    select(geo_value, time_value, mortality_semistable = mortality)
+
+  training_test <- full_join(predictors, target, by = c("geo_value", "time_value"))
+
+  training <- training_test |>
+    drop_na() |>
+    slice_max(time_value, n = settings$max_n_training_intersection)
+
+  test <- training_test |>
+    filter(time_value == nowcast_date)
+
+  fit <- training |>
+    select(any_of(predictor_descriptions$predictor_name), mortality_semistable) |>
+    quantreg::rq(formula = mortality_semistable ~ ., tau = 0.5)
+
+  pred <- tibble(
+    geo_value = "ca",
+    nowcast_date = nowcast_date,
+    target_date = target_time_value,
+    prediction = unname(predict(fit, test))
+  )
+
+  # TODO intercept toggle?
+
+  if (return_info) {
+    return(tibble(
+      coefficients = list(coef(fit)),
+      predictions = list(pred)
+    ))
+  } else {
+    return(pred)
+  }
+}
+
+# We can apply this separately for each nowcast_date to ensure that we consider
+# the latest possible value for every signal, though whether that is advisable
+# or not may depend on revision characteristics of the signals.
+daily_to_weekly_archive <- function(archive) {
+  key_nms <- key(archive$DT)
+  val_nms <- setdiff(names(archive$DT), key_nms)
+  update_tbl <- as_tibble(archive$DT)
+  val_nms |>
+    lapply(function(val_nm) {
+      update_tbl[c(key_nms, val_nm)] |>
+        # thin out to weekly, making sure that we keep the max time_value with non-NA value:
+        filter(as.POSIXlt(time_value)$wday == as.POSIXlt(max(time_value[!is.na(.data[[val_nm]])]))$wday) |>
+        # re-align:
+        mutate(
+          time_value = time_value - as.POSIXlt(time_value)$wday, # Sunday of same epiweek
+          old_version = version,
+          version = version - as.POSIXlt(version)$wday # Sunday of same epiweek
+        ) |>
+        slice_max(old_version, by = all_of(key_nms)) |>
+        select(-old_version) |>
+        as_epi_archive(other_keys = setdiff(key_nms, c("geo_value", "time_value", "version")),
+                       compactify = TRUE)
+    }) |>
+    reduce(epix_merge, sync = "locf")
+}
+
+# Baseline model:
+locf_nowcaster <- function(archive) {
+  nowcast_date <- archive$versions_end
+  target_time_value <- nowcast_date
+  latest_edf <- archive |> epix_as_of(nowcast_date)
+
+  latest_edf |>
+    complete(geo_value, time_value = target_time_value) |>
+    arrange(geo_value, time_value) |>
+    group_by(geo_value) |>
+    fill(mortality) |>
+    ungroup() |>
+    filter(time_value == target_time_value) |>
+    transmute(
+      geo_value,
+      nowcast_date = nowcast_date,
+      target_date = time_value,
+      prediction = mortality
+    )
+}
+```
+
+##
+
+```{r regression-model-settings}
+ar_settings <- list(
+  predictors = tribble(
+    ~varname, ~max_abs_shift_days, ~max_n_shifts,
+    # FIXME TODO vs. list of lags relative to max time value? target max time
+    # value? after turning into weekly via extraction? maybe do sequential
+    # intersection and skip joining when would reduce number of rows too much?
+    "mortality", 35, 3,
+    ),
+  min_n_training_per_predictor = 30, # or else exclude predictor
+  days_until_target_semistable = 7 * 4, # filter out unstable when training (and evaluating)
+  min_n_training_intersection = 20, # or else raise error
+  max_n_training_intersection = Inf # or else filter down rows
+)
+
+arx_settings <- list(
+  predictors = tribble(
+    ~varname, ~max_abs_shift_days, ~max_n_shifts,
+    # FIXME TODO vs. list of lags relative to max time value? target max time
+    # value? after turning into weekly via extraction? maybe do sequential
+    # intersection and skip joining when would reduce number of rows too much?
+    "admissions", 35, 3,
+    "mortality", 35, 3,
+    ),
+  min_n_training_per_predictor = 30, # or else exclude predictor
+  days_until_target_semistable = 7 * 4, # filter out unstable when training (and evaluating)
+  min_n_training_intersection = 20, # or else raise error
+  max_n_training_intersection = Inf # or else filter down rows
+)
+
+hhs_hosp_archive <- pub_covidcast(
+  source = "hhs",
+  signals = "confirmed_admissions_covid_1d_7dav",
+  geo_type = "state",
+  time_type = "day",
+  geo_values = "ca",
+  time_values = epirange(20210301, 20241001),
+  issues = "*"
+) |>
+  transmute(geo_value, time_value, version = issue, admissions = 7 * value) |>
+  as_epi_archive(compactify = TRUE)
+
+nchs_archive_daily <-
+  nchs_archive$DT |>
+  as_tibble() |>
+  mutate(
+    time_value = time_value + 6L, # align with trailing averages
+    version = version + 4L # assume NCHS data were released only on Thursdays
+  ) |>
+  group_by(geo_value, time_value, version) |>
+  reframe(time_value = time_value - 6:0,
+          mortality = c(rep(NA, 6), mortality)) |>
+  as_epi_archive(compactify = TRUE)
+
+hosp_mort_archive <- epix_merge(hhs_hosp_archive, nchs_archive_daily, sync = "locf")
+
+ar_nowcasts <- nchs_archive |>
+  epix_slide(~ regression_nowcaster(.x, ar_settings), .versions = all_nowcast_dates, .all_versions = TRUE)
+
+arx_nowcasts <- hosp_mort_archive |>
+  epix_slide(~ regression_nowcaster(.x, arx_settings),
+             .versions = all_nowcast_dates + 4, # assume we nowcast on Thursday, same day as assumed NCHS release
+             .all_versions = TRUE)
+
+```
+
+## Comparison
+
+```{r regression-nowcast-plot-comparison}
+list(
+  arx_nowcasts |> rename(prediction_arx = prediction),
+  ar_nowcasts |> rename(prediction_ar = prediction),
+  locf_nowcasts |> rename(prediction_locf = prediction),
+  ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
+  get_predictor_training_data(nchs_archive, "mortality", 14L, "mortality_lag14_realtime") |>
+    transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
+) |>
+  lapply(select, -any_of("version")) |>
+  reduce(full_join, by = c("geo_value", "nowcast_date", "target_date")) |>
+  full_join(nchs_archive |> epix_as_of(nchs_archive$versions_end),
+            by = c("geo_value", "target_date" = "time_value")) |>
+  pivot_longer(starts_with("prediction"), names_to = "nowcaster", values_to = "prediction") |>
+  ggplot() +
+  geom_line(aes(target_date, mortality)) +
+  geom_line(aes(target_date, prediction, colour = nowcaster)) +
+  scale_color_delphi()
+```
+
+## Evaluations
+
+```{r regression-nowcast-eval-comparison}
+list(
+  arx_nowcasts |> rename(prediction_arx = prediction),
+  ar_nowcasts |> rename(prediction_ar = prediction),
+  locf_nowcasts |> rename(prediction_locf = prediction),
+  ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
+  get_predictor_training_data(nchs_archive, "mortality", 14L, "mortality_lag14_realtime") |>
+    transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
+) |>
+  lapply(select, -any_of("version")) |>
+  reduce(full_join, by = c("geo_value", "nowcast_date", "target_date")) |>
+  full_join(nchs_archive |> epix_as_of(nchs_archive$versions_end),
+            by = c("geo_value", "target_date" = "time_value")) |>
+  # Limit evaluation to forecasting tasks with predictions from all methods:
+  drop_na(starts_with("prediction")) |>
+  pivot_longer(starts_with("prediction"), names_to = "nowcaster", values_to = "prediction") |>
+  # Filter evaluation based on target stability
+  filter(target_date <= nchs_archive$versions_end - 90) |>
+  summarize(.by = nowcaster,
+            MAE = mean(abs(mortality - prediction)),
+            MAPE = 100*mean(abs(mortality - prediction)/abs(mortality)))
+```
 
 
 ## Data Sources: Google searches & hospital admissions
