@@ -975,6 +975,7 @@ cases_mean_custom_f = epi_slide(
 ```
 
 
+
 ```{r epi-slide-custom-function-display-result}
 cases_mean_custom_f |>
   arrange(geo_value, time_value) |>
