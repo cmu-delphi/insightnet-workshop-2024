@@ -899,7 +899,7 @@ For example, we can use `epi_slide()` to compute a trailing 7-day average.
 
 * For a grouped `epi_df`, `epi_slide()` applies the computation to groups [separately]{.primary}. 
 
-```{r, grouppped-df-to-slide}
+```{r, grouped-df-to-slide}
 #| echo: false
 
 cases_edf <- cases_df |>
