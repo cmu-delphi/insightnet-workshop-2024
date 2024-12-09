@@ -1042,8 +1042,41 @@ epix_slide(
 This functionality is very helpful in version aware forecasting. We will return with a concrete example. 
   
 
+## Features -- revision analysis helper function
 
-## Revision patterns
+* `revision_summary()` is a helper function that summarizes revision behavior of an `epix_archive`.
+
+```{r epiprocess-revision-summary-demo}
+#| echo: true
+#| eval: true
+
+revision_data <- revision_summary(
+  archive_cases_dv_subset,
+  case_rate_7d_av,
+  drop_nas = TRUE,
+  print_inform = FALSE, # NOT the default, to save space
+  min_waiting_period = as.difftime(60, units = "days"),
+  within_latest = 0.2,
+  quick_revision = as.difftime(3, units = "days"),
+  few_revisions = 3,
+  abs_spread_threshold = NULL,
+  rel_spread_threshold = 0.1,
+  compactify_tol = .Machine$double.eps^0.5,
+  should_compactify = TRUE
+)
+```
+
+## Features -- revision analysis helper function
+
+```{r epiprocess-revision-summary-results}
+#| echo: true
+
+head(revision_data)
+```
+
+
+
+## Revision pattern visualization
 
 ```{r plot-revision-patterns}
 #| fig-width: 7
