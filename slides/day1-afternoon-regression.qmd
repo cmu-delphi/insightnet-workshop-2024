@@ -546,22 +546,45 @@ arx_settings <- list(
 arx_nowcasts <- hosp_mort_archive |>
   epix_slide(~ regression_nowcaster(.x, arx_settings),
              .versions = all_nowcast_dates + 4, # assume we nowcast on Thursday, same day as assumed NCHS release
-             .all_versions = TRUE) |>
-  rename(prediction_arx = prediction)
+             .all_versions = TRUE)
 
-arx_nowcasts |>
-  full_join(locf_nowcasts |> rename(prediction_locf = prediction),
-            by = c("geo_value", "target_date"),
-            suffix = c("_arx", "_locf")) |>
+list(
+  arx_nowcasts |> rename(prediction_arx = prediction),
+  ar_nowcasts |> rename(prediction_ar = prediction),
+  locf_nowcasts |> rename(prediction_locf = prediction),
+  ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
+  get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mortality_lag14_realtime") |>
+    transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
+) |>
+  lapply(select, -any_of("version")) |>
+  reduce(full_join, by = c("geo_value", "nowcast_date", "target_date")) |>
   full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
             by = c("geo_value", "target_date" = "time_value")) |>
-  # summarize(mean(abs(mortality - prediction)/mortality * 100, na.rm = TRUE))
-  # summarize(across(c(prediction_locf, prediction_ar),
-  #                  ~ mean(abs(mortality - .x)/mortality * 100, na.rm = TRUE)))
-  # summarize(across(c(prediction_locf, prediction_ar),
-  #                  ~ mean(abs(mortality - .x), na.rm = TRUE)))
+  pivot_longer(starts_with("prediction"), names_to = "nowcaster", values_to = "prediction") |>
   ggplot() +
   geom_line(aes(target_date, mortality)) +
-  geom_line(aes(target_date, prediction_locf), colour = "red") +
-  geom_line(aes(target_date, prediction_arx), colour = "blue")
+  geom_line(aes(target_date, prediction, colour = nowcaster)) +
+  scale_color_delphi()
+
+list(
+  arx_nowcasts |> rename(prediction_arx = prediction),
+  ar_nowcasts |> rename(prediction_ar = prediction),
+  locf_nowcasts |> rename(prediction_locf = prediction),
+  ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
+  get_predictor_training_data(nchs_fullarchive, "mortality", 14L, "mortality_lag14_realtime") |>
+    transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
+) |>
+  lapply(select, -any_of("version")) |>
+  reduce(full_join, by = c("geo_value", "nowcast_date", "target_date")) |>
+  full_join(nchs_fullarchive |> epix_as_of(nchs_fullarchive$versions_end),
+            by = c("geo_value", "target_date" = "time_value")) |>
+  # Limit evaluation to forecasting tasks with predictions from all methods:
+  drop_na(starts_with("prediction")) |>
+  pivot_longer(starts_with("prediction"), names_to = "nowcaster", values_to = "prediction") |>
+  # Filter evaluation based on target stability
+  filter(target_date <= nchs_fullarchive$versions_end - 90) |>
+  summarize(.by = nowcaster,
+            MAE = mean(abs(mortality - prediction)),
+            MAPE = 100*mean(abs(mortality - prediction)/abs(mortality)))
+
 ```
