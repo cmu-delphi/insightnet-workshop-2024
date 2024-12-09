@@ -2011,6 +2011,11 @@ arx_nowcasts <- hosp_mort_archive |>
 ## Comparison
 
 ```{r regression-nowcast-plot-comparison}
+ratio_nowcasts_archive <- nowcasts |>
+  rename(time_value = target_date,
+         prediction_ratio = nowcast) |>
+  as_epi_archive(compactify = TRUE)
+
 list(
   arx_nowcasts |> rename(prediction_arx = prediction),
   ar_nowcasts |> rename(prediction_ar = prediction),
