@@ -1677,7 +1677,7 @@ knitr::kable(mae_value)
 
 ## Nowcasting: Moving from one predictor to multiple
 
-* The ratio model predicts the finalized value of $Y_t$ from $Y_{s}$, the last value included in the report at time $t$.
+* The ratio model predicts the finalized value of $Y_t$ from $Y_{s}$, the last value included in the version $t$ report.
 * $Y_s$ is the closest in time we can get to $Y_t$, but we also expect it to be the least reliable value in version $t$.
 * Can we add $Y_{s - 1}$, $Y_{s - 2}$, and even other data sources to the model to try to find a good mix of relevant and reliable signals?
 * Regressions models will let us do that; let's start by adding $Y_{s - 1}$, etc.
@@ -1686,7 +1686,7 @@ knitr::kable(mae_value)
 
 We'll start experimenting with just a single nowcast date:
 
-```{r regression-trial-nowcast-data}
+```{r regression-trial-nowcast-data-2}
 #| echo: true
 nchs_ca_archive <- nchs_archive$DT[geo_value == "ca",] |>
   as_epi_archive()
@@ -1709,7 +1709,7 @@ target_time_value <- trial_nowcast_date
 
 Let's try using provisional $Y_s$ to predict $Y_t$ as long as $s$ is within 2 weeks of $t$:
 
-```{r predictor-descriptions}
+```{r predictor-descriptions-2}
 #| echo: true
 predictor_descriptions <- nchs_past_latest |>
   filter(as.integer(target_time_value - time_value) <= 14) |>
@@ -1726,7 +1726,7 @@ predictor_descriptions
 
 Just like with the ratio nowcaster, we need to make sure to line up our predictors in `nchs_past_latest` with training data that is analogous (e.g., "equally unreliable").  Here's a utility function we'll be using:
 
-```{r regression-trial-nowcast-analogues}
+```{r regression-trial-nowcast-analogues-2}
 #| echo: true
 library(data.table)
 get_predictor_training_data <- function(archive, varname, lag_days, predictor_name) {
@@ -1753,7 +1753,7 @@ get_predictor_training_data <- function(archive, varname, lag_days, predictor_na
 ##
 
 
-```{r regression-trial-nowcast-analogues-example}
+```{r regression-trial-nowcast-analogues-example-2}
 #| echo: true
 get_predictor_training_data(nchs_ca_past_archive, "mortality", 7, "mortality_lag7_realtime")
 ```
@@ -1761,7 +1761,7 @@ The first value here is a version of $Y_{2020-11-30}$ as it was reported in vers
 
 ## Get our predictor and target data
 
-```{r regression-trial-nowcast-predictor-target}
+```{r regression-trial-nowcast-predictor-target-2}
 #| echo: true
 predictors <- predictor_descriptions |>
   pmap(function(varname, lag_days, predictor_name) {
@@ -1776,7 +1776,7 @@ target <- nchs_past_latest |>
 
 ## Fit the regression model
 
-```{r regression-trial-nowcast-fit}
+```{r regression-trial-nowcast-fit-2}
 #| echo: true
 training_test <- full_join(predictors, target, by = c("geo_value", "time_value"))
 
@@ -1796,7 +1796,7 @@ pred <- tibble(
 
 ## Our prediction
 
-```{r regression-trial-nowcast-pred}
+```{r regression-trial-nowcast-pred-2}
 #| echo: true
 
 pred
@@ -1809,7 +1809,7 @@ We'll use `epix_slide()` again.
   - So let's try including even more lags, but add a limit to make sure we don't include too many.
 - Some other features and fixes are also included in the code below.
 
-```{r regression-nowcaster-function}
+```{r regression-nowcaster-function-2}
 regression_nowcaster <- function(archive, settings, return_info = FALSE) {
   if (!inherits(archive, "epi_archive")) {
     stop("`archive` isn't an `epi_archive`")
@@ -1942,7 +1942,7 @@ locf_nowcaster <- function(archive) {
 
 ##
 
-```{r regression-model-settings}
+```{r regression-model-settings-2}
 ar_settings <- list(
   predictors = tribble(
     ~varname, ~max_abs_shift_days, ~max_n_shifts,
@@ -2013,7 +2013,7 @@ arx_nowcasts <- hosp_mort_archive |>
 
 ## Comparison
 
-```{r regression-nowcast-plot-comparison}
+```{r regression-nowcast-plot-comparison-2}
 ratio_nowcasts_archive <- nowcasts |>
   filter(geo_value == "ca") |>
   rename(time_value = target_date,
@@ -2041,7 +2041,7 @@ list(
 
 ## Evaluations
 
-```{r regression-nowcast-eval-comparison}
+```{r regression-nowcast-eval-comparison-2}
 list(
   arx_nowcasts |> rename(prediction_arx = prediction),
   ar_nowcasts |> rename(prediction_ar = prediction),
