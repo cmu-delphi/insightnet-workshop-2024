@@ -696,6 +696,7 @@ attr(edf, "metadata")
 1. Correlating signals across location or time 
 1. Computing growth rates
 1. Detecting and removing outliers
+1. Applying computation with rolling window 
 1. Dealing with revisions 
 
 ## Features - Correlations at different lags
@@ -864,6 +865,136 @@ edfo |>
 ```
 
 
+## Features -- sliding computation on a `epi_df`
+
+* Many aggregations on panel data applies some function to a rolling window of data. 
+
+* By sliding the window, we could apply function to different parts of the snapshot. 
+
+* For example, trailing average is often used to smooth out noises in individual data points.
+
+* In `epiprocess`, this is achieved by `epi_slide()`.
+
+```{r epi-slide-example-call}
+#| echo: true
+#| eval: false
+
+epi_slide(
+  .x,
+  .f,
+  ...,
+  .window_size = NULL,
+  .align = c("right", "center", "left"),
+  .ref_time_values = NULL,
+  .new_col_name = NULL,
+  .all_rows = FALSE
+)
+```
+
+As an example, we show how we can use `epi_slide` to compute a trailing 7-day average. 
+
+## Features -- sliding computation on a `epi_df`
+
+* The simplest way to use `epi_slide` is tidy evaluation. 
+
+* For a groupped `epi_df`, `epi_slide()` applies the computation to groups [separately]{.primary}. 
+
+```{r, grouppped-df-to-slide}
+#| echo: false
+
+cases_edf <- cases_df |>
+  group_by(geo_value) |>
+  as_epi_df()
+
+```
+
+```{r epi-slide-tidy-eval}
+#| echo: true
+
+cases_7dav <- epi_slide(
+  .x = cases_edf,
+  cases_7dav = mean(raw_cases, na.rm = TRUE),
+  .window_size = 7,
+  .align = "right",
+  .ref_time_values = NULL,
+  .new_col_name = NULL,
+  .all_rows = FALSE
+)
+```
+
+
+```{r epi-slide-tidy-eval-display-result}
+#| echo: false
+
+cases_7dav |>
+  arrange(geo_value, time_value) |>
+  group_by(geo_value) |>
+  slice_min(time_value, n = 2) |>
+  as_tibble() |>
+  print()
+
+```
+
+
+
+## Features -- sliding computation on a `epi_df`
+
+`epi_slide` also accepts custom functions of a certain form. 
+
+```{r epi-slide-custom-fucntion-mandatory-form}
+#| eval: false
+#| echo: true
+
+custom_function <- function(x, g, t, ...) {
+  
+  # Function body
+  
+}
+```
+
+* `x`: the data frame with all the columns with original object [except]{.primary} groupping vars. 
+* `g`: the one-row tibble with values of gropping vars of the given group. 
+* `t`: the `.ref_time_value` of the current window. 
+* `...`: additional arguments. 
+
+
+## Features -- sliding computation on a `epi_df`
+
+```{r slide-apply-custom-function}
+#| echo: true
+#| code-line-numbers: "|9-17"
+
+custom_function <- function(x, g, t, ...) {
+
+  result = data.frame(cases_7dav = mean(x$raw_cases, na.rm = TRUE))
+
+  return(result)
+
+}
+
+cases_mean_custom_f = epi_slide(
+    .x = cases_edf,
+    .f = custom_function,
+    .window_size = 7,
+    .align = "right",
+    .ref_time_values = NULL,
+    .new_col_name = NULL,
+    .all_rows = FALSE
+)
+
+```
+
+
+```{r epi-slide-custom-function-display-result}
+cases_mean_custom_f |>
+  arrange(geo_value, time_value) |>
+  slice_min(time_value, n = 2) |>
+  as_tibble() |>
+  print()
+```
+
+
+
 ## `epi_archive`: Collection of `epi_df`s
 
 * full version history of a data set
@@ -875,7 +1006,7 @@ edfo |>
 
 Epidemiology data gets revised frequently.
 
-* We may want to use the data [as it looked in the past]{.primary} 
+* We may want to use the data [as it looked in the past].{.primary} 
 * or we may want to examine [the history of revisions]{.primary}.
 :::
 
@@ -887,9 +1018,32 @@ Subset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 state
 #| echo: true
 archive_cases_dv_subset
 ```
-  
-## Revision patterns
 
+## Features -- sliding computation over `epi_df`s
+
+* We can apply a computation over different snapshots in an `epi_archive`.
+
+```{r}
+#| echo: true
+#| eval: false
+
+epix_slide(
+  .x,
+  .f,
+  ...,
+  .before = Inf,
+  .versions = NULL,
+  .new_col_name = NULL,
+  .all_versions = FALSE
+)
+
+```
+
+This functionality is very helpful in version aware forecasting. We will return with a concrete example. 
+  
+
+
+## Revision patterns
 
 ```{r plot-revision-patterns}
 #| fig-width: 7
@@ -907,9 +1061,10 @@ ggplot(snapshots |> filter(!latest),
             inherit.aes = FALSE, color = "black")
 ```
 
-## Finalized data
+  
+## Types of prediction
 
-  * Counts are revised as time proceeds
+* Counts are revised as time proceeds
 * Want to know the [final]{.primary} value 
 * Often not available until weeks/months later
 
@@ -925,6 +1080,8 @@ ggplot(snapshots |> filter(!latest),
   
   Nowcasting
 : At time $t$, predict the final value for time $t$
+
+
 
 # Basic Nowcasting in the Epiverse
 
@@ -1783,7 +1940,8 @@ So visualizing can provide an important perspective that is missed from a simple
 * [**Sliding Window Approach**]{.primary}: Predictions are based on [data up to the current time]{.primary}, ensuring no future information influences the nowcast.
 * [**Evaluation**]{.primary}: Predictions are compared with actual admissions using numerical and visual perspectives.
 
-# Case Study - Nowcasting Cases Using %CLI 
+
+# Case Study - Nowcasting Cases Using %CLI
 
 ## Goal of this case study
 
@@ -1796,7 +1954,7 @@ So visualizing can provide an important perspective that is missed from a simple
 
 ## Summary of main steps
 
-The workflow is similar to the previous example where we nowcasted using two variables, only more involved. 
+The workflow is similar to the previous example where we nowcasted using two variables, only more involved.
 The main steps are...
 
 1. [**Fetch Data**]{.primary}: Retrieve %CLI and COVID-19 case data (by specimen collection date) for MA.
@@ -1805,7 +1963,7 @@ The main steps are...
 
 3. [**Model & Prediction**]{.primary}: Fit a linear model to predict cases based on %CLI, trained on a 30-day rolling window.
 
-4. [**Nowcast Execution**]{.primary}: Use `epix_slide` to nowcast the cases dynamically. 
+4. [**Nowcast Execution**]{.primary}: Use `epix_slide` to nowcast the cases dynamically.
 
 5. [**Visualization**]{.primary}: Plot actual vs. nowcasted cases with confidence intervals to assess model accuracy.
 
@@ -1843,11 +2001,11 @@ Brief summary of this data:
 ## Main steps to construct the `epi_archive`
 
 1. [**Load necessary Libraries**]{.primary}: Such as `tidyverse`, `readxl`, `epiprocess`.
-2. [**Process Each Date's Data**]{.primary}: 
+2. [**Process Each Date's Data**]{.primary}:
    * A function we'll make (`process_covid_data`) downloads and processes daily COVID-19 data from the MA gov Excel files on their website.
    * The data is cleaned and formatted with columns: `geo_value`, `time_value`, `version`, and values.
 3. [**Handle Missing Data**]{.primary}: Checks if a date's data is available (handle 404 errors).
-4. [**Create `epi_archive`**]{.primary}: 
+4. [**Create `epi_archive`**]{.primary}:
    * Combine processed data into a tibble.
    * Convert the tibble to an `epi_archive` object using `as_epi_archive()`.
 
@@ -1865,25 +2023,25 @@ library(epiprocess)
 # Function to download and process each Excel file for a given date
 process_covid_data <- function(Date) {
   # Generate the URL for the given date
-  url <- paste0("https://www.mass.gov/doc/covid-19-raw-data-", tolower(gsub("-0", "-", format(Date, "%B-%d-%Y"))), "/download") 
+  url <- paste0("https://www.mass.gov/doc/covid-19-raw-data-", tolower(gsub("-0", "-", format(Date, "%B-%d-%Y"))), "/download")
   # Applies gsub("-0", "-", ...) to replace any occurrence of -0 (such as in "April-01") with just - (resulting in "April-1").
-  
+
   # Check if the URL exists (handle the 404 error by skipping that date)
   response <- GET(url)
-  
+
   if (status_code(response) != 200) {
     return(NULL)  # Skip if URL doesn't exist (404)
   }
-  
+
   # Define the destination file path for the Excel file
   file_path <- tempfile(fileext = ".xlsx")
-  
+
   # Download the Excel file
   GET(url, write_disk(file_path, overwrite = TRUE))
-  
+
   # Read the relevant sheet from the Excel file
   data <- read_excel(file_path, sheet = "CasesByDate (Test Date)")
-  
+
   # Process the data: rename columns and convert Date
   data <- data |>
     rename(
@@ -1893,7 +2051,7 @@ process_covid_data <- function(Date) {
       Case_Average_7day = `7-day confirmed case average`
     ) |>
     mutate(Date = as.Date(Date))  # Convert to Date class
-  
+
   # Create a tibble with the required columns for the epi_archive
   tib <- tibble(
     geo_value = "ma",  # Massachusetts (geo_value)
@@ -1901,12 +2059,12 @@ process_covid_data <- function(Date) {
     version = Date,  # The extracted version date
     case_rate_7d_av = data$Case_Average_7day  # 7-day average case value
   )
-  
+
   return(tib)
 }
 ```
 
-## Fetch Data - Code breakdown 
+## Fetch Data - Code breakdown
 
 * This purpose of this function is to download and process each Excel file as of a date.
 * [**URL Creation**]{.primary}: Dynamically generates the URL based on the date, removing leading zeros in day values (e.g., "April-01" → "April-1").
@@ -1928,20 +2086,20 @@ process_covid_data <- function(Date) {
 process_data_for_date_range <- function(start_date, end_date) {
   # Generate a sequence of dates between start_date and end_date
   date_sequence <- seq(as.Date(start_date), as.Date(end_date), by = "day")
-  
+
   # Process data for each date and combine results
   covid_data_list <- lapply(date_sequence, function(Date) {
     process_covid_data(Date)  # Skip over dates with no data (NULLs will be ignored)
   })
-  
+
   # Combine all non-null individual tibbles into one data frame
   combined_data <- bind_rows(covid_data_list[!sapply(covid_data_list, is.null)])
-  
+
   # Convert the combined data into an epi_archive object
   if (nrow(combined_data) > 0) {
     epi_archive_data <- combined_data |>
       as_epi_archive(compactify = FALSE)
-    
+
     return(epi_archive_data)
   } else {
     message("No valid data available for the given date range.")
@@ -1973,7 +2131,7 @@ y <- process_data_for_date_range("2021-01-10", "2021-12-01")  # Raw .xlsx data i
 y
 ```
 
-* Alternatively, you may run the following to load `y` that was previously saved as an RDS file: 
+* Alternatively, you may run the following to load `y` that was previously saved as an RDS file:
 ```{r load-ma-case-data}
 #| echo: true
 #| eval: FALSE
@@ -1990,7 +2148,7 @@ y <- readRDS("_data/ma_case_archive.rds")
 
 ```{r fetch-outpatient-cli}
 #| echo: true
-# Step 1: Fetch Versioned Data 
+# Step 1: Fetch Versioned Data
 x <- pub_covidcast(
   source = "doctor-visits",
   signals = "smoothed_adj_cli",
@@ -2036,15 +2194,15 @@ lm_mod_pred <- function(data, ...) {
   # Make predictions
   predictions = predict(model,
                         newdata = data |>
-                          fill(percent_cli, .direction = "down") |> 
+                          fill(percent_cli, .direction = "down") |>
                           filter(time_value == max(time_value)),
                         interval = "prediction", level = 0.9)
-  
+
   # Pull off real-time value for later comparison to the nowcast value
   real_time_val = data |> filter(time_value == max(time_value)) |> pull(case_rate_7d_av)
-  
+
   # Could clip predictions and bounds at 0
-  return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val)) 
+  return(data.frame(predictions, actual_nowcast_date = max(data$time_value), real_time_val = real_time_val))
 }
 ```
 
@@ -2057,8 +2215,8 @@ lm_mod_pred <- function(data, ...) {
 ```{r nowcasting-epix-slide-cases}
 #| echo: true
 # Define the reference time points (to give the training/test split)
-targeted_nowcast_dates <- seq(as.Date("2021-04-01"), as.Date("2021-11-01"), by = "1 month") 
-ref_time_values = targeted_nowcast_dates + 1 # + 1 because the case data is 1 day latent. 
+targeted_nowcast_dates <- seq(as.Date("2021-04-01"), as.Date("2021-11-01"), by = "1 month")
+ref_time_values = targeted_nowcast_dates + 1 # + 1 because the case data is 1 day latent.
 # Determine this from revision_summary(y)
 
 # Use epix_slide to perform the nowcasting with a training-test split
@@ -2084,7 +2242,7 @@ Merge the nowcast results with the latest data for more direct comparison:
 ```{r join-with-actual-cases}
 #| echo: true
 x_latest <- epix_as_of(archive, max(archive$DT$version)) |>
-  select(-percent_cli) 
+  select(-percent_cli)
 
 res <- nowcast_res |> left_join(x_latest, by = join_by(geo_value, time_value))
 
@@ -2113,7 +2271,7 @@ ggplot(res, aes(x = time_value)) +
   # Adjust colors
   scale_color_manual(values = c("Finalized Cases (7-dav)" = "black",
                                 "Nowcast" = "#1f78b4",
-                                "Real Time" = "darkred")) + 
+                                "Real Time" = "darkred")) +
   scale_fill_manual(values = c("Pred. Interval" = "#a6cee3")) + # Light blue
   # Improve the theme
   theme_minimal() +
@@ -2133,12 +2291,12 @@ ggplot(res, aes(x = time_value)) +
 ```{r mae-code-cases}
 #| echo: true
 # Calculate the absolute error between actual and nowcasted COVID-19 cases
-mae_data_cases <- res |> 
+mae_data_cases <- res |>
   mutate(nc_abs_error = abs(case_rate_7d_av - fit),  # Nowcast vs Finalized cases (7-day average)
          rt_abs_error = abs(case_rate_7d_av - real_time_val))  # Real-Time vs Finalized cases
 
 # Compute the MAE (mean of absolute errors)
-mae_value_cases <- mae_data_cases |> 
+mae_value_cases <- mae_data_cases |>
   summarise(nc_MAE = mean(nc_abs_error),
             rt_MAE = mean(rt_abs_error))
 knitr::kable(mae_value_cases)
@@ -2150,18 +2308,18 @@ knitr::kable(mae_value_cases)
 ```{r abs-error-plot-cases}
 # Plot the absolute errors for Nowcast and Real-Time vs Finalized COVID-19 cases
 ggplot(mae_data_cases) +
-  # Nowcast Absolute Error 
+  # Nowcast Absolute Error
   geom_point(aes(x = time_value, y = nc_abs_error), color = "#1f78b4", size = 2) +
   geom_line(aes(x = time_value, y = nc_abs_error), color = "#1f78b4") +
   # Horizontal line for Nowcast Mean Absolute Error
   geom_hline(aes(yintercept = mean(nc_abs_error), color = "Nowcast MAE"), linetype = "dashed") +
-  
-  # Real-Time Absolute Error 
+
+  # Real-Time Absolute Error
   geom_point(aes(x = time_value, y = rt_abs_error), color = "darkred", size = 2) +
   geom_line(aes(x = time_value, y = rt_abs_error), color = "darkred") +
   # Horizontal line for Real-Time Mean Absolute Error
   geom_hline(aes(yintercept = mean(rt_abs_error), color = "Real-Time MAE"), linetype = "dashed") +
-  
+
   # Customize the x and y axes labels, legend & add title
   xlab("Date") + ylab("Absolute Error") +
   scale_color_manual(values = c("Real-Time MAE" = "darkred", "Nowcast MAE" = "#1f78b4")) +
