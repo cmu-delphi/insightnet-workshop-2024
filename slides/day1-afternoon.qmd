@@ -2058,7 +2058,7 @@ list(
   drop_na(starts_with("prediction")) |>
   pivot_longer(starts_with("prediction"), names_to = "nowcaster", values_to = "prediction") |>
   # Filter evaluation based on target stability
-  filter(target_date <= nchs_ca_archive$versions_end - 90) |>
+  filter(target_date <= nchs_ca_archive$versions_end - 49) |>
   summarize(.by = nowcaster,
             MAE = mean(abs(mortality - prediction)),
             MAPE = 100*mean(abs(mortality - prediction)/abs(mortality)))
