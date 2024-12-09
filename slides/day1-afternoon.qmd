@@ -934,7 +934,7 @@ cases_7dav |>
 
 
 
-## Features -- sliding computation on a `epi_df`
+## Features -- sliding a computation on an `epi_df`
 
 `epi_slide` also accepts custom functions of a certain form. 
 
