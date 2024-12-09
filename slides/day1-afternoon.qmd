@@ -961,12 +961,8 @@ custom_function <- function(x, g, t, ...) {
 #| echo: true
 #| code-line-numbers: "|9-17"
 
-custom_function <- function(x, g, t, ...) {
-
-  result = data.frame(cases_7dav = mean(x$raw_cases, na.rm = TRUE))
-
-  return(result)
-
+mean_by_hand <- function(x, g, t, ...) {
+  data.frame(cases_7dav = mean(x$raw_cases, na.rm = TRUE))
 }
 
 cases_mean_custom_f = epi_slide(
