@@ -897,7 +897,7 @@ For example, we can use `epi_slide()` to compute a trailing 7-day average.
 
 * The simplest way to use `epi_slide` is tidy evaluation. 
 
-* For a groupped `epi_df`, `epi_slide()` applies the computation to groups [separately]{.primary}. 
+* For a grouped `epi_df`, `epi_slide()` applies the computation to groups [separately]{.primary}. 
 
 ```{r, grouppped-df-to-slide}
 #| echo: false
