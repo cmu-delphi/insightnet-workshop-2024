@@ -821,7 +821,7 @@ edfg |>
 ```{r outlier-ex}
 #| echo: true
 #| message: false
-edfo <- filter(edf, geo_value %in% c("ut", "ca")) |>
+edfo <- filter(edf, geo_value %in% c("ca", "ut")) |>
   select(geo_value, time_value, case_rate) |>
   as_epi_df() |>
   group_by(geo_value) |>
@@ -1012,11 +1012,11 @@ Epidemiology data gets revised frequently.
 
 ## `epi_archive`: Collection of `epi_df`s
 
-Subset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in `archive` format:
+Subset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from all U.S. states in `archive` format:
 
 ```{r archive-ex}
 #| echo: true
-archive_cases_dv_subset
+archive_cases_dv_subset_all_states |> head()
 ```
 
 ## Features -- sliding computation over `epi_df`s
@@ -1077,6 +1077,24 @@ head(revision_data)
 
 
 ## Revision pattern visualization
+
+```{r create-snapshots-of-data}
+#| echo: false
+#| eval: true
+
+versions <- seq(as.Date("2020-07-01"), as.Date("2021-11-30"), by = "1 month")
+max_version <- max(versions)
+
+snapshots <- map(versions, function(v) {
+  res = epix_as_of(archive_cases_dv_subset_all_states, v) |>
+    mutate(version = v)} |>
+  filter(geo_value %in% c("ca", "ut"))) |>
+  bind_rows() |>
+  mutate(latest = version == max_version) 
+
+```
+
+
 
 ```{r plot-revision-patterns}
 #| fig-width: 7
