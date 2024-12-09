@@ -1076,7 +1076,7 @@ head(revision_data)
 
 
 
-## Revision pattern visualization
+## Visualize revision patterns
 
 ```{r create-snapshots-of-data}
 #| echo: false
