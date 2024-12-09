@@ -893,7 +893,7 @@ epi_slide(
 
 For example, we can use `epi_slide()` to compute a trailing 7-day average. 
 
-## Features -- sliding computation on a `epi_df`
+## Features -- sliding a computation on an `epi_df`
 
 * The simplest way to use `epi_slide` is tidy evaluation. 
 
