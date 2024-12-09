@@ -696,7 +696,7 @@ attr(edf, "metadata")
 1. Correlating signals across location or time 
 1. Computing growth rates
 1. Detecting and removing outliers
-1. Applying computation with rolling window 
+1. Calculating summaries with rolling windows
 1. Dealing with revisions 
 
 ## Features - Correlations at different lags
