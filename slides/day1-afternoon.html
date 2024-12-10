@@ -1097,7 +1097,7 @@ In this section:</li>
 <span id="cb51-2"><a></a>  <span class="fu">as_epi_df</span>(<span class="at">as_of =</span> <span class="fu">as.Date</span>(<span class="st">"2024-01-01"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb51-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
 <span id="cb51-4"><a></a>  <span class="fu">epi_slide_mean</span>(scaled_cases, <span class="at">.window_size =</span> <span class="dv">14</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb51-5"><a></a>  <span class="fu">rename</span>(<span class="at">smoothed_scaled_cases =</span> slide_value_scaled_cases)</span>
+<span id="cb51-5"><a></a>  <span class="fu">rename</span>(<span class="at">smoothed_scaled_cases =</span> scaled_cases_14dav)</span>
 <span id="cb51-6"><a></a><span class="fu">head</span>(case_rates_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `epi_df` object, 6 x 6 with metadata:
@@ -2381,15 +2381,13 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb100-9"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb100-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,</span>
 <span id="cb100-11"><a></a>    <span class="at">.before =</span> <span class="dv">14</span>,  <span class="co"># 14-day training period</span></span>
-<span id="cb100-12"><a></a>    <span class="at">.versions =</span> ref_time_values, </span>
-<span id="cb100-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
-<span id="cb100-14"><a></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb100-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span> <span class="co"># Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. </span></span>
-<span id="cb100-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates, <span class="at">time_value =</span> actual_nowcast_date) <span class="sc">|&gt;</span></span>
-<span id="cb100-17"><a></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb100-18"><a></a></span>
-<span id="cb100-19"><a></a><span class="co"># View results</span></span>
-<span id="cb100-20"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb100-12"><a></a>    <span class="at">.versions =</span> ref_time_values</span>
+<span id="cb100-13"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb100-14"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates, <span class="at">time_value =</span> actual_nowcast_date) <span class="sc">|&gt;</span></span>
+<span id="cb100-15"><a></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb100-16"><a></a></span>
+<span id="cb100-17"><a></a><span class="co"># View results</span></span>
+<span id="cb100-18"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 9
   geo_value version      fit    lwr   upr actual_nowcast_date real_time_val
@@ -2817,15 +2815,13 @@ Key: &lt;geo_value, time_value, version&gt;
 <span id="cb114-9"><a></a>  <span class="fu">epix_slide</span>(</span>
 <span id="cb114-10"><a></a>    <span class="at">.f =</span> lm_mod_pred,  <span class="co"># Pass the function defined above</span></span>
 <span id="cb114-11"><a></a>    <span class="at">.before =</span> <span class="dv">30</span>,   <span class="co"># Training period of 30 days</span></span>
-<span id="cb114-12"><a></a>    <span class="at">.versions =</span> ref_time_values, <span class="co"># Determines the day where training data goes up to (not inclusive)</span></span>
-<span id="cb114-13"><a></a>    <span class="at">.new_col_name =</span> <span class="st">"res"</span></span>
-<span id="cb114-14"><a></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb114-15"><a></a>  <span class="fu">unnest</span>() <span class="sc">|&gt;</span></span>
-<span id="cb114-16"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates,</span>
-<span id="cb114-17"><a></a>         <span class="at">time_value =</span> actual_nowcast_date)</span>
-<span id="cb114-18"><a></a></span>
-<span id="cb114-19"><a></a><span class="co"># Take a peek at the results</span></span>
-<span id="cb114-20"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb114-12"><a></a>    <span class="at">.versions =</span> ref_time_values <span class="co"># Determines the day where training data goes up to (not inclusive)</span></span>
+<span id="cb114-13"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb114-14"><a></a>  <span class="fu">mutate</span>(<span class="at">targeted_nowcast_date =</span> targeted_nowcast_dates,</span>
+<span id="cb114-15"><a></a>         <span class="at">time_value =</span> actual_nowcast_date)</span>
+<span id="cb114-16"><a></a></span>
+<span id="cb114-17"><a></a><span class="co"># Take a peek at the results</span></span>
+<span id="cb114-18"><a></a><span class="fu">head</span>(nowcast_res, <span class="at">n =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 9
 # Groups:   geo_value [1]
