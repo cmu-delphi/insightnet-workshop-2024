@@ -1764,11 +1764,11 @@
     "text": "Visualize revision patterns"
   },
   {
-    "objectID": "slides/day1-afternoon.html#types-of-prediction",
-    "href": "slides/day1-afternoon.html#types-of-prediction",
+    "objectID": "slides/day1-afternoon.html#finalized-data",
+    "href": "slides/day1-afternoon.html#finalized-data",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Types of prediction",
-    "text": "Types of prediction\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)"
+    "section": "Finalized data",
+    "text": "Finalized data\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)"
   },
   {
     "objectID": "slides/day1-afternoon.html#backfill-canadian-edition",
@@ -1810,7 +1810,7 @@
     "href": "slides/day1-afternoon.html#analysis-of-versioning-behavior",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Analysis of versioning behavior",
-    "text": "Analysis of versioning behavior\nRecall, we need to watch out for:\n\nLatency the time difference between date of occurrence and date of the initial report\nBackfill how data for a given date is updated after initial report.\n\nrevision_summary() provides a sumamry to both aspects.\n\nrevision_data = revision_summary(nchs_archive, mortality, print_inform = FALSE)"
+    "text": "Analysis of versioning behavior\nRecall, we need to watch out for:\n\nLatency the time difference between date of reference and date of the initial report\nBackfill how data for a given date is updated after initial report.\n\nrevision_summary() provides a sumamry to both aspects.\n\nrevision_data = revision_summary(nchs_archive, mortality, print_inform = FALSE)"
   },
   {
     "objectID": "slides/day1-afternoon.html#versioning-analysis-latency",
@@ -1824,14 +1824,14 @@
     "href": "slides/day1-afternoon.html#versioning-analysis-backfill",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioning analysis – backfill",
-    "text": "Versioning analysis – backfill\n\nQuestion: How long does it take for the reported value to be close to the finalized value?\n\n\n\n# A tibble: 10 × 3\n   geo_value time_value time_near_latest\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n 1 ut        2021-11-14  28 days        \n 2 ut        2021-03-28  28 days        \n 3 ut        2021-02-21  28 days        \n 4 ca        2022-07-17  28 days        \n 5 ca        2022-10-30  28 days        \n 6 ut        2020-08-30  98 days        \n 7 ca        2021-08-29  28 days        \n 8 ut        2022-03-27   7 days        \n 9 ca        2020-12-06  70 days        \n10 ca        2020-05-03 217 days        \n\n\n\nIt generally takes at least 4 weeks for reported value to be within 20% of the finalized value.\nWe can change the threshold of percentage difference by specifying within_latest argument of revision_summary()."
+    "text": "Versioning analysis – backfill\n\nQuestion: How long does it take for the reported value to be close to the finalized value?\n\n\nrevision_data |&gt; select(geo_value, time_value, time_near_latest) |&gt; slice_sample(n = 10)\n\n# A tibble: 10 × 3\n   geo_value time_value time_near_latest\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n 1 ut        2021-11-14  28 days        \n 2 ut        2021-03-28  28 days        \n 3 ut        2021-02-21  28 days        \n 4 ca        2022-07-17  28 days        \n 5 ca        2022-10-30  28 days        \n 6 ut        2020-08-30  98 days        \n 7 ca        2021-08-29  28 days        \n 8 ut        2022-03-27   7 days        \n 9 ca        2020-12-06  70 days        \n10 ca        2020-05-03 217 days        \n\n\n\nIt generally takes at least 4 weeks for reported value to be within 20% (default in revision_summary()) of the finalized value.\nWe can change the threshold of percentage difference by specifying the within_latest argument of revision_summary()."
   },
   {
     "objectID": "slides/day1-afternoon.html#versioning-analysis---backfill",
     "href": "slides/day1-afternoon.html#versioning-analysis---backfill",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioning analysis - backfill",
-    "text": "Versioning analysis - backfill\n\nQuestion: When is the finalized value first attained for each date? Would we have access to any in real-time?\nHow fast are the final values attained & what’s the pattern for these times, if any?\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value min_version diff    \n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;drtn&gt;  \n1 ca        2020-01-26 2020-12-06  315 days\n2 ca        2020-02-09 2020-12-06  301 days\n3 ca        2020-02-23 2020-12-06  287 days\n4 ca        2020-03-15 2020-12-06  266 days\n5 ca        2020-03-22 2021-05-16  420 days\n6 ca        2020-03-29 2021-04-04  371 days\n\n\nHere is a look at its quantiles:\n\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   84.0   147.0   189.0   192.8   259.0   294.0 \n\n\n\nConclusion: The revision behavior is pretty long-tailed. Value reported 4 weeks later is reasonably close to the finalized value."
+    "text": "Versioning analysis - backfill\n\nQuestion: When is the finalized value first attained for each date? Would we have access to any in real-time?\nHow fast are the final values attained & what’s the pattern for these times, if any?\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value min_version diff    \n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;drtn&gt;  \n1 ca        2020-01-26 2020-12-06  315 days\n2 ca        2020-02-09 2020-12-06  301 days\n3 ca        2020-02-23 2020-12-06  287 days\n4 ca        2020-03-15 2020-12-06  266 days\n5 ca        2020-03-22 2021-05-16  420 days\n6 ca        2020-03-29 2021-04-04  371 days\n\n\n\nConclusion: The revision behavior is pretty long-tailed. Value reported 4 weeks later is reasonably close to the finalized value."
   },
   {
     "objectID": "slides/day1-afternoon.html#revision-pattern-visualization",
@@ -1848,53 +1848,67 @@
     "text": "Revision pattern visualization"
   },
   {
-    "objectID": "slides/day1-afternoon.html#aside-do-we-need-a-burn-intraining-set",
-    "href": "slides/day1-afternoon.html#aside-do-we-need-a-burn-intraining-set",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Aside: Do we need a burn-in/training set?",
-    "text": "Aside: Do we need a burn-in/training set?\n\nTypical stat-ML practise suggests a train, validation, test split.\nBut our exploratory analysis covered all available data, is that fine?\nGenerally, for exploratory analysis, it is fine to not do train/test split.\n\nThese analyses do not involve model fitting, we have little risk of an overly optimistic performance evaluation (no overfitting on test data).\n\nHowever, for a psuedo-prospective analysis, the best practise is to do a train/test split.\n\nIn such analysis, one would be fitting and validating many models, a train/test split provides a more rigorous control on overfitting to test set."
-  },
-  {
     "objectID": "slides/day1-afternoon.html#ratio-nowcaster-jumping-from-provisional-to-finalized-value",
     "href": "slides/day1-afternoon.html#ratio-nowcaster-jumping-from-provisional-to-finalized-value",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ratio nowcaster: jumping from provisional to finalized value",
-    "text": "Ratio nowcaster: jumping from provisional to finalized value\n\nRecall, the goal of nowcast at date \\(t\\) is to use project the finalized value of \\(y_t,\\) given the information available on date \\(t\\).\nA very simple nowcaster is the ratio between finalized and provisional value.\n\n\nHow can we sensibly estimate this quantity?\n\n\n\nAt nowcast date \\(t,\\) would have recieved reports with versions up to and including \\(t.\\)\nWe need to build training samples, which\n\ncorrectly aligns finalized value against provisional value\nuses features that would have been available at test time\nhave enough data to ensure sensible estimation results"
+    "text": "Ratio nowcaster: jumping from provisional to finalized value\n\nRecall, the goal of nowcast at date \\(t\\) is to use project the finalized value of \\(y_t,\\) given the information available on date \\(t\\).\nA very simple nowcaster is the ratio between finalized and provisional value.\n\nHow can we sensibly estimate this quantity?"
   },
   {
     "objectID": "slides/day1-afternoon.html#ratio-nowcaster-building-training-samples",
     "href": "slides/day1-afternoon.html#ratio-nowcaster-building-training-samples",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ratio nowcaster: building training samples",
-    "text": "Ratio nowcaster: building training samples\n\nAt nowcast date \\(t,\\) would have recieved reports with versions up to and including \\(t.\\)\nWe need to build training samples, which\n\ncorrectly aligns finalized value against provisional value\nuses features that would have been available at test time\nhave enough samples to ensure sensible estimation results\n\n\n\n\nBuild training samples by treating dates prior to date \\(t\\) as actual nowcast dates.\n\nWhat is the provisional data on that date?\nHave we recieved finalized value for that date?"
+    "text": "Ratio nowcaster: building training samples\n\nAt nowcast date \\(t,\\) would have received reports with versions up to and including \\(t.\\)\nWe need to build training samples, which\n\ncorrectly aligns finalized value against provisional value\nuses features that would have been available at test time\nhave enough samples to ensure sensible estimation results\n\n\n\n\nBuild training samples by treating dates prior to date \\(t\\) as actual nowcast dates.\n\nWhat is the provisional data on that date?\nHave we received finalized value for that date?"
   },
   {
     "objectID": "slides/day1-afternoon.html#ratio-nowcaster-building-training-samples-1",
     "href": "slides/day1-afternoon.html#ratio-nowcaster-building-training-samples-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ratio nowcaster: building training samples",
-    "text": "Ratio nowcaster: building training samples\n\nAt an earlier nowcast date \\(t_0,\\) we define\n\nProvisional value as the reported value of \\(Y_s\\) with version \\(t_0.\\) Here \\(s_0\\) is the largest occurence date among all values reported up until \\(t_0.\\)\nFinalized value as the (potentially unobserved) finalized value of \\(Y_{s_0}.\\)\n\nWe only know in hindsight when reported value of \\(Y_{s_0}\\) is finalized – need an approximation.\n\n\n\n\n\n\n# A tibble: 5 × 3\n  geo_value time_value time_near_latest\n  &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n1 ca        2022-08-07 21 days         \n2 ca        2023-10-01 28 days         \n3 ca        2024-04-21 42 days         \n4 ut        2022-12-25 21 days         \n5 ut        2020-09-27 70 days         \n\n\nTime differences in days\n  0%  25%  50%  75% 100% \n   7   21   28   49  315 \n\n\n\n\nWe can say data reported 49 days after occurrence date is good enough to be considered finalized."
+    "text": "Ratio nowcaster: building training samples\n\nAt an earlier nowcast date \\(t_0,\\) we define\n\nProvisional value as the reported value of \\(Y_s\\) with version \\(t_0.\\) Here \\(s_0\\) is the largest occurence date among all values reported up until \\(t_0.\\)\nFinalized value as the (potentially unobserved) finalized value of \\(Y_{s_0}.\\)\n\nWe only know in hindsight when reported value of \\(Y_{s_0}\\) is finalized – need an approximation."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#revisiting-revision_summary",
+    "href": "slides/day1-afternoon.html#revisiting-revision_summary",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Revisiting revision_summary()",
+    "text": "Revisiting revision_summary()\nRecall, revision_summary() reports the number of days to be within 20% (default value) of finalized value\n\n\n# A tibble: 5 × 3\n  geo_value time_value time_near_latest\n  &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n1 ca        2022-08-07 21 days         \n2 ca        2023-10-01 28 days         \n3 ca        2024-04-21 42 days         \n4 ut        2022-12-25 21 days         \n5 ut        2020-09-27 70 days         \n\n\nTime differences in days\n  0%  25%  50%  75% 100% \n   7   21   28   49  315 \n\n\n\nLet’s say data reported 49 days after reference date is good enough to be considered finalized."
   },
   {
     "objectID": "slides/day1-afternoon.html#ratio-nowcaster-test-time-feature",
     "href": "slides/day1-afternoon.html#ratio-nowcaster-test-time-feature",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ratio nowcaster: test time feature",
-    "text": "Ratio nowcaster: test time feature\n\nAt test time \\(t,\\) take provisional value to be \\(Y_s,\\) where \\(s\\) is the largest occureence date among all values reported up until time \\(t.\\)"
+    "text": "Ratio nowcaster: test time feature\n\nDue to latency, provisional values may not be available at lag 0\nWe use last-observation-carried-forward (LOCF) to impute missing values at test time\nPrecisely, at test time \\(t,\\) we use last observed data point (among all those reported up through time \\(t\\))"
   },
   {
     "objectID": "slides/day1-afternoon.html#nowcasting-at-a-single-date-building-training-samples",
     "href": "slides/day1-afternoon.html#nowcasting-at-a-single-date-building-training-samples",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Nowcasting at a single date: building training samples",
-    "text": "Nowcasting at a single date: building training samples\n\n\nSearching for provisional values, at previous hypothetical nowcast dates.\n\n\nnowcast_date &lt;- as.Date(\"2022-01-02\"); window_length = 180\n\ninitial_data &lt;- nchs_archive$DT |&gt;\n  group_by(geo_value, time_value) |&gt;\n  filter(version == min(version)) |&gt;\n  rename(initial_val = mortality) |&gt;\n  select(geo_value, time_value, initial_val)\n\n\n\n\nSearching for finalized values, at previous hypothetical nowcast dates.\n\n\nfinalized_data &lt;- epix_as_of(nchs_archive, nowcast_date) |&gt;\n  filter(time_value &gt;= nowcast_date - 49 - window_length & time_value &lt;= nowcast_date - 49) |&gt;\n  rename(finalized_val = mortality) |&gt;\n  select(geo_value, time_value, finalized_val)\n\n\n\n\nAfter searching for both provisional and finalized values, we merge them together and estimate the ratio.\n\n\nratio &lt;- finalized_data |&gt;\n  inner_join(initial_data, by = c(\"geo_value\", \"time_value\")) |&gt;\n  mutate(ratio = finalized_val / initial_val) |&gt;\n  pull(ratio) |&gt;\n  mean(na.rm = TRUE)"
+    "text": "Nowcasting at a single date: building training samples\n\n\nSearching for provisional values, at previous hypothetical nowcast dates.\n\n\nnowcast_date &lt;- as.Date(\"2022-01-02\"); window_length = 180\n\ninitial_data &lt;- nchs_archive$DT |&gt;\n  group_by(geo_value, time_value) |&gt;\n  filter(version == min(version)) |&gt;\n  rename(initial_val = mortality) |&gt;\n  select(geo_value, time_value, initial_val)\n\n\n\n\nSearching for finalized values, at previous hypothetical nowcast dates.\n\n\nfinalized_data &lt;- epix_as_of(nchs_archive, nowcast_date) |&gt;\n  filter(time_value &gt;= nowcast_date - approx_final_lag - window_length & time_value &lt;= nowcast_date - approx_final_lag) |&gt;\n  rename(finalized_val = mortality) |&gt;\n  select(geo_value, time_value, finalized_val)"
   },
   {
-    "objectID": "slides/day1-afternoon.html#nowcasting-at-a-single-date-test-feature-and-actual-nowcast",
-    "href": "slides/day1-afternoon.html#nowcasting-at-a-single-date-test-feature-and-actual-nowcast",
+    "objectID": "slides/day1-afternoon.html#nowcasting-at-a-single-date-estimating-ratio-model",
+    "href": "slides/day1-afternoon.html#nowcasting-at-a-single-date-estimating-ratio-model",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Nowcasting at a single date: test feature and actual nowcast",
-    "text": "Nowcasting at a single date: test feature and actual nowcast\n\nlast_avail &lt;- epix_as_of(nchs_archive, nowcast_date) |&gt;\n  slice_max(time_value) |&gt;\n  pull(mortality) \n\nnowcast &lt;- last_avail * ratio\nnowcast\n\n[1] 245.2997"
+    "section": "Nowcasting at a single date: estimating ratio model",
+    "text": "Nowcasting at a single date: estimating ratio model\n\nAfter searching for both provisional and finalized values, we merge them together and estimate the ratio.\n\n\nratio &lt;- finalized_data |&gt;\n  inner_join(initial_data, by = c(\"geo_value\", \"time_value\")) |&gt;\n  mutate(ratio = finalized_val / initial_val) |&gt;\n  pull(ratio) |&gt;\n  median(na.rm = TRUE)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#nowcasting-at-a-single-date-test-feature-construction",
+    "href": "slides/day1-afternoon.html#nowcasting-at-a-single-date-test-feature-construction",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Nowcasting at a single date: test feature construction",
+    "text": "Nowcasting at a single date: test feature construction\n\nlast_avail &lt;- epix_as_of(nchs_archive, nowcast_date) |&gt;\n  slice_max(time_value) |&gt;\n  pull(mortality)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#nowcasting-at-a-single-date-producing-the-nowcast",
+    "href": "slides/day1-afternoon.html#nowcasting-at-a-single-date-producing-the-nowcast",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Nowcasting at a single date: producing the nowcast",
+    "text": "Nowcasting at a single date: producing the nowcast\n\nnowcast &lt;- last_avail * ratio\nfinalized_val &lt;- epix_as_of(nchs_archive, nchs_archive$versions_end) |&gt;\n  filter(time_value == nowcast_date) |&gt;\npull(mortality)\n\nnowcast_final = data.frame(Nowcast = nowcast, `Finalized value` = finalized_val, check.names=FALSE)\nknitr::kable(nowcast_final)\n\n\n\n\nNowcast\nFinalized value\n\n\n\n\n305.1608\n946"
   },
   {
     "objectID": "slides/day1-afternoon.html#nowcasting-for-multiple-dates",
@@ -1908,7 +1922,14 @@
     "href": "slides/day1-afternoon.html#nowcasting-for-multiple-dates-via-epix_slide",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Nowcasting for multiple dates via epix_slide()",
-    "text": "Nowcasting for multiple dates via epix_slide()\nWe begin by templatizing our previous operations.\n\nnowcaster = function(x, g, t, wl=180, appx=49) {\n  \n\n  initial_data = x$DT |&gt;\n    group_by(geo_value, time_value) |&gt;\n    filter(version ==  min(version)) |&gt;\n    filter(time_value &gt;= t - wl - appx & time_value &lt;= t - appx) |&gt;\n    rename(initial_val = mortality) |&gt;\n    select(geo_value, time_value, initial_val)\n\n  finalized_data = x$DT |&gt;\n    group_by(geo_value, time_value) |&gt;\n    filter(version ==  max(version)) |&gt;\n    filter(time_value &gt;= t - wl - appx & time_value &lt;= t - appx) |&gt;\n    rename(finalized_val = mortality) |&gt;\n    select(geo_value, time_value, finalized_val)\n  \n  ratio = finalized_data |&gt;\n    inner_join(initial_data, by = c(\"geo_value\", \"time_value\")) |&gt;\n    mutate(ratio = finalized_val / initial_val) |&gt;\n    pull(ratio) |&gt;\n    median(na.rm=TRUE)\n\n  last_avail = epix_as_of(x, t) |&gt;\n    slice_max(time_value) |&gt;\n    pull(mortality) \n  \n  res = tibble(geo_value = x$geo_value, target_date = t, nowcast = last_avail * ratio)\n  \n  return(res)\n  \n}"
+    "text": "Nowcasting for multiple dates via epix_slide()\nWe begin by templatizing our previous operations.\n\nnowcaster = function(x, g, t, wl=180, appx=approx_final_lag) {\n  \n\n  initial_data = x$DT |&gt;\n    group_by(geo_value, time_value) |&gt;\n    filter(version ==  min(version)) |&gt;\n    filter(time_value &gt;= t - wl - appx & time_value &lt;= t - appx) |&gt;\n    rename(initial_val = mortality) |&gt;\n    select(geo_value, time_value, initial_val)\n\n  finalized_data = x$DT |&gt;\n    group_by(geo_value, time_value) |&gt;\n    filter(version ==  max(version)) |&gt;\n    filter(time_value &gt;= t - wl - appx & time_value &lt;= t - appx) |&gt;\n    rename(finalized_val = mortality) |&gt;\n    select(geo_value, time_value, finalized_val)\n  \n  ratio = finalized_data |&gt;\n    inner_join(initial_data, by = c(\"geo_value\", \"time_value\")) |&gt;\n    mutate(ratio = finalized_val / initial_val) |&gt;\n    pull(ratio) |&gt;\n    median(na.rm=TRUE)\n\n  last_avail = epix_as_of(x, t) |&gt;\n    slice_max(time_value) |&gt;\n    pull(mortality) \n\n\n  res = tibble(geo_value = x$geo_value, target_date = t, nowcast = last_avail * ratio)\n  \n  return(res)\n  \n}"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#sanity-check-of-epix_slide",
+    "href": "slides/day1-afternoon.html#sanity-check-of-epix_slide",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Sanity check of epix_slide()",
+    "text": "Sanity check of epix_slide()\n\nslided_nowcast_1d = epix_slide(\n  .x = nchs_archive,\n  .f = nowcaster,\n  .before = Inf,\n  .versions = nowcast_date,\n  .all_versions = TRUE\n)\n\nnowcast_check = data.frame(`Manual nowcast` = nowcast, `Slided nowcast` = slided_nowcast_1d$nowcast, check.names = FALSE)\nknitr::kable(nowcast_check)\n\n\n\n\nManual nowcast\nSlided nowcast\n\n\n\n\n305.1608\n305.1608"
   },
   {
     "objectID": "slides/day1-afternoon.html#nowcasting-for-multiple-dates-via-epix_slide-1",
@@ -1943,7 +1964,14 @@
     "href": "slides/day1-afternoon.html#details-of-epix_slide-3",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Details of epix_slide()",
-    "text": "Details of epix_slide()\n\nnowcasts &lt;- nchs_archive |&gt;\n  group_by(geo_value) |&gt;\n  epix_slide(\n    nowcaster,\n    .before=Inf,\n    .versions = all_nowcast_dates,\n    .all_versions = TRUE\n)\n\nnowcaster &lt;- function(x, g, t, wl=180, appx=49) {\n  \n\n  initial_data = x$DT |&gt;\n    # Function body, omitted\n\n\n  finalized_data = x$DT |&gt;\n    # Function body, omitted\n  \n}"
+    "text": "Details of epix_slide()\n\nnowcasts &lt;- nchs_archive |&gt;\n  group_by(geo_value) |&gt;\n  epix_slide(\n    nowcaster,\n    .before=Inf,\n    .versions = all_nowcast_dates,\n    .all_versions = TRUE\n)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#details-of-epix_slide-4",
+    "href": "slides/day1-afternoon.html#details-of-epix_slide-4",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Details of epix_slide()",
+    "text": "Details of epix_slide()\n\nnowcaster = function(x, g, t, wl=180, appx=approx_final_lag) {\n\n  initial_data = x$DT |&gt;\n    group_by(geo_value, time_value) |&gt;\n    filter(version ==  min(version)) |&gt;\n    filter(time_value &gt;= t - wl - appx & time_value &lt;= t - appx) |&gt;\n    rename(initial_val = mortality) |&gt;\n    select(geo_value, time_value, initial_val)\n\n  finalized_data = x$DT |&gt;\n    group_by(geo_value, time_value) |&gt;\n    filter(version ==  max(version)) |&gt;\n    filter(time_value &gt;= t - wl - appx & time_value &lt;= t - appx) |&gt;\n    rename(finalized_val = mortality) |&gt;\n    select(geo_value, time_value, finalized_val)\n  \n  ratio = finalized_data |&gt;\n    inner_join(initial_data, by = c(\"geo_value\", \"time_value\")) |&gt;\n    mutate(ratio = finalized_val / initial_val) |&gt;\n    pull(ratio) |&gt;\n    median(na.rm=TRUE)\n\n  last_avail = epix_as_of(x, t) |&gt;\n    slice_max(time_value) |&gt;\n    pull(mortality) \n  \n  res = tibble(geo_value = x$geo_value, target_date = t, nowcast = last_avail * ratio)\n  \n  return(res)\n  \n}"
   },
   {
     "objectID": "slides/day1-afternoon.html#visualize-nowcasts",
