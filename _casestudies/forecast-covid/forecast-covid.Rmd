@@ -65,12 +65,14 @@ ca <- ca %>%
   select(-pop)
 ```
 
-Now, use `epi_slide()`, to calculate trailing 7 day averages of cases and deaths.
+Now, use `epi_slide_mean()`, to calculate trailing 7 day averages of cases and deaths.
 
 ```{r trailing-averages}
 ca <- ca %>%
-  epi_slide(cases = mean(cases), before = 6) %>%
-  epi_slide(deaths = mean(deaths), before = 6) 
+  epi_slide_mean(c(cases, deaths), .window_size = 7) %>%
+  epi_slide_mean(deaths, .window_size = 7) %>%
+  select(-cases, -deaths) %>%
+  rename(cases = cases_7dav, deaths = deaths_7dav)
 ```
 
 Visualize the data.
@@ -222,13 +224,13 @@ MASE <- function(truth, prediction) {
 ```
 
 ```{r training-error}
-pred_train <- predict(reg_lagged)
-train$pred_train <- c(rep(NA, k), pred_train)
+pred_train <- predict(reg_lagged, train)
+train$pred_train <- pred_train
 
-errors <- data.frame("MSE" = MSE(train$deaths[-(1:k)], pred_train), 
-                     "MAE"= MAE(train$deaths[-(1:k)], pred_train), 
-                     "MAPE" = MAPE(train$deaths[-(1:k)], pred_train), 
-                     "MASE" = MASE(train$deaths[-(1:k)], pred_train), 
+errors <- data.frame("MSE" = MSE(train$deaths[-seq_len(7+k-1)], pred_train[-seq_len(7+k-1)]), 
+                     "MAE"= MAE(train$deaths[-seq_len(7+k-1)], pred_train[-seq_len(7+k-1)]), 
+                     "MAPE" = MAPE(train$deaths[-seq_len(7+k-1)], pred_train[-seq_len(7+k-1)]), 
+                     "MASE" = MASE(train$deaths[-seq_len(7+k-1)], pred_train[-seq_len(7+k-1)]), 
                      row.names = "training")
 errors
 ```
@@ -411,15 +413,17 @@ epi_pred_cv_trailing <- epi_slide(
                    trainer = linear_reg() %>% set_engine("lm"),
                    args_list = arx_args_list(lags = k-1, ahead = 1L)
                    )$predictions,
-  # notice that `before` is not simply equal to w-1. That's because previously, 
-  # when considering a window from t to t+w, we had access to y_t, ..., y_{t+w} 
-  # and also to x_{t-k}, ..., x_{t+w-k}. (That's because of how we structured 
+  # notice that `.window_size` is not simply equal to w. That's because previously, 
+  # when considering a window from t to t+w-1, we had access to y_t, ..., y_{t+w-1} 
+  # and also to x_{t-k}, ..., x_{t+w-1-k}. (That's because of how we structured 
   # the dataframe after manually lagging x.) So we were cheating by saying that 
-  # the trailing window had length w, as its actual size was w+k! 
-  before = (w+k-1), 
-  ref_time_values = fc_time_values,
-  new_col_name = "fc"
-)
+  # the trailing window had length w, as its actual size was (t+w-1)-(t-k)+1 = w+k! 
+  .window_size = w + k,
+  .ref_time_values = fc_time_values,
+  .new_col_name = "fc"
+) |>
+  # split tibble-type column `fc` into multiple columns with names prefixed by `fc_`:
+  unpack(fc, names_sep = "_")
 
 # they match exactly
 head(epi_pred_cv_trailing %>% select(fc_.pred, fc_target_date))
@@ -441,8 +445,9 @@ epi_pred_cv <- epi_slide(
                    )$predictions,
   before = Inf, 
   ref_time_values = fc_time_values,
-  new_col_name = "fc"
-)
+  .new_col_name = "fc"
+) |>
+  unpack(fc, names_sep = "_")
 
 # they match exactly
 head(epi_pred_cv %>% select(fc_.pred, fc_target_date))
@@ -457,13 +462,13 @@ pred_all_past <- rep(NA, length = n - t0)
 n_ahead <- 7
 
 for (t in (t0+1):n) {
-    reg_all_past = lm(deaths ~ lagged_cases, data = ca, 
-                      subset = (1:n) <= (t-n_ahead)) 
-    pred_all_past[t-t0] = predict(reg_all_past, newdata = data.frame(ca[t, ]))
+  reg_all_past = lm(deaths ~ lagged_cases, data = ca, 
+                    subset = (1:n) <= (t-n_ahead)) 
+  pred_all_past[t-t0] = predict(reg_all_past, newdata = data.frame(ca[t, ]))
 }
 
 test$pred_cv_7 <- pred_all_past
-    
+
 
 fc_time_values_7 <- seq(
   from = as.Date("2021-02-23"),
@@ -481,8 +486,9 @@ epi_pred_cv_7 <- epi_slide(
                    )$predictions,
   before = Inf, 
   ref_time_values = fc_time_values_7,
-  new_col_name = "fc"
-)
+  .new_col_name = "fc"
+) |>
+  unpack(fc, names_sep = "_")
 
 # they match
 head(epi_pred_cv_7 %>% select(fc_.pred, fc_target_date))
@@ -721,8 +727,9 @@ ar_all_past <- epi_slide(
                    )$predictions,
   before = Inf, 
   ref_time_values = fc_time_values,
-  new_col_name = "all_past"
-) 
+  .new_col_name = "all_past"
+) |>
+  unpack(all_past, names_sep = "_")
 
 ar_trailing <- epi_slide(
   ca, 
@@ -734,8 +741,9 @@ ar_trailing <- epi_slide(
                    )$predictions,
   before = w, 
   ref_time_values = fc_time_values,
-  new_col_name = "trailing"
-)
+  .new_col_name = "trailing"
+) |>
+  unpack(trailing, names_sep = "_")
 ```
 
 ```{r plot-ar-predictions}
@@ -946,8 +954,9 @@ arx_all_past <- epi_slide(
                    )$predictions,
   before = Inf, 
   ref_time_values = fc_time_values,
-  new_col_name = "all_past"
-) 
+  .new_col_name = "all_past"
+) |>
+  unpack(all_past, names_sep = "_")
 
 arx_trailing <- epi_slide(
   ca, 
@@ -960,8 +969,9 @@ arx_trailing <- epi_slide(
                    )$predictions,
   before = (w+k-1), 
   ref_time_values = fc_time_values,
-  new_col_name = "trailing"
-)
+  .new_col_name = "trailing"
+) |>
+  unpack(trailing, names_sep = "_")
 
 
 ```
@@ -1546,12 +1556,8 @@ data_archive <- data_archive %>%
     ref_time_values = fc_time_values,
     function(x, gk, rtv) {
       x %>%
-        #group_by(geo_value) %>%
-        epi_slide_mean(case_rate, before = 6L) %>%
-        epi_slide_mean(death_rate, before = 6L) %>%
-        #ungroup() %>%
-        rename(case_rate_7d_av = slide_value_case_rate,
-               death_rate_7d_av = slide_value_death_rate)
+        epi_slide_mean(case_rate, .window_size = 7L, .suffix = "_7d_av") %>%
+        epi_slide_mean(death_rate, .window_size = 7L, .suffix = "_7d_av")
     }
   ) %>%
   rename(version = time_value) %>%

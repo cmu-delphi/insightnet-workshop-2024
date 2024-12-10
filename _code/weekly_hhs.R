@@ -110,7 +110,8 @@ if (!file.exists(file_path)) {
             agg_columns,
             .window_size = 7L,
             na.rm = TRUE,
-            .ref_time_values = valid_slide_days
+            .ref_time_values = valid_slide_days,
+            .prefix = "slide_value_"
           ) %>%
           select(-all_of(agg_columns)) %>%
           rename_with(~ gsub("slide_value_", "", .x)) %>%

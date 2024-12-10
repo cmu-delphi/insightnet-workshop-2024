@@ -580,7 +580,7 @@ case_rates_df <- case_rates_df |>
   as_epi_df(as_of = as.Date("2024-01-01")) |>
   group_by(geo_value) |>
   epi_slide_mean(scaled_cases, .window_size = 14, na.rm = TRUE) |>
-  rename(smoothed_scaled_cases = slide_value_scaled_cases)
+  rename(smoothed_scaled_cases = scaled_cases_14dav)
 head(case_rates_df)
 ```
 
@@ -2072,10 +2072,8 @@ nowcast_res <- archive |>
   epix_slide(
     .f = lm_mod_pred,
     .before = 14,  # 14-day training period
-    .versions = ref_time_values, 
-    .new_col_name = "res"
+    .versions = ref_time_values
   ) |>
-  unnest() |> # Nesting creates a list-column of data frames; unnesting flattens it back out into regular columns. 
   mutate(targeted_nowcast_date = targeted_nowcast_dates, time_value = actual_nowcast_date) |>
   ungroup()
 
@@ -2462,10 +2460,8 @@ nowcast_res <- archive |>
   epix_slide(
     .f = lm_mod_pred,  # Pass the function defined above
     .before = 30,   # Training period of 30 days
-    .versions = ref_time_values, # Determines the day where training data goes up to (not inclusive)
-    .new_col_name = "res"
+    .versions = ref_time_values # Determines the day where training data goes up to (not inclusive)
   ) |>
-  unnest() |>
   mutate(targeted_nowcast_date = targeted_nowcast_dates,
          time_value = actual_nowcast_date)
 
