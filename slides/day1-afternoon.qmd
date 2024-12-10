@@ -1728,6 +1728,7 @@ Just like with the ratio nowcaster, we need to make sure to line up our predicto
 
 ```{r regression-trial-nowcast-analogues-2}
 #| echo: true
+#| code-fold: true
 library(data.table)
 get_predictor_training_data <- function(archive, varname, lag_days, predictor_name) {
   epikeytime_names <- setdiff(key(archive$DT), "version")
@@ -1749,6 +1750,8 @@ get_predictor_training_data <- function(archive, varname, lag_days, predictor_na
   as_tibble(result)
 }
 ```
+
+TODO print fn prototype or name
 
 ##
 
@@ -1787,6 +1790,8 @@ fit <- training |>
   select(all_of(predictor_descriptions$predictor_name), mortality_stable) |>
   quantreg::rq(formula = mortality_stable ~ ., tau = 0.5)
 
+# TODO test linear and use if not worse
+
 pred <- tibble(
   nowcast_date = trial_nowcast_date,
   target_date = target_time_value,
@@ -1806,8 +1811,11 @@ pred
 
 We'll use `epix_slide()` again.
 
-* And get an error --- some versions $t$ don't include a value $Y_{t-7}$ or $Y_{t-14}$.
-    * So let's try including even more lags, but add a limit to make sure we don't include too many.
+* And get an error --- some versions $t$ don't include a value $Y_{t-1}$ or $Y_{t-2}$.
+    * So let's try looking farther into the past at $Y_{t-3}$, etc.
+    * ... but don't look too far: $Y_{t-5}$ is the limit.
+    * The same idea applies to models with 3 or more features.
+    * Including more features tends to improve performance, up to a point.
 * Some other features and fixes are also included in the code below.
 
 ```{r regression-nowcaster-function-2}
@@ -1819,7 +1827,7 @@ regression_nowcaster <- function(archive, settings, return_info = FALSE) {
     stop("Expected exactly one unique `geo_value`")
   }
   if (archive$time_type == "day") {
-    archive <- daily_to_weekly_archive(archive)
+    archive <- thin_daily_to_weekly_archive(archive)
   }
 
   nowcast_date <- archive$versions_end
@@ -1896,7 +1904,7 @@ regression_nowcaster <- function(archive, settings, return_info = FALSE) {
 # We can apply this separately for each nowcast_date to ensure that we consider
 # the latest possible value for every signal, though whether that is advisable
 # or not may depend on revision characteristics of the signals.
-daily_to_weekly_archive <- function(archive) {
+thin_daily_to_weekly_archive <- function(archive) {
   key_nms <- key(archive$DT)
   val_nms <- setdiff(names(archive$DT), key_nms)
   update_tbl <- as_tibble(archive$DT)
@@ -1946,14 +1954,14 @@ locf_nowcaster <- function(archive) {
 ```{r regression-model-settings-2}
 ar_settings <- list(
   predictors = tribble(
-    ~varname, ~max_abs_shift_days, ~max_n_shifts,
+    ~varname,    ~max_abs_shift_days, ~max_n_shifts,
+    "mortality",                  35,             3,
     # FIXME TODO vs. list of lags relative to max time value? target max time
     # value? after turning into weekly via extraction? maybe do sequential
     # intersection and skip joining when would reduce number of rows too much?
-    "mortality", 35, 3,
     ),
   min_n_training_per_predictor = 30, # or else exclude predictor
-  days_until_target_semistable = 7 * 4, # filter out unstable when training (and evaluating)
+  days_until_target_semistable = 7 * 7, # filter out unstable when training (and evaluating)
   min_n_training_intersection = 20, # or else raise error
   max_n_training_intersection = Inf # or else filter down rows
 )
@@ -2023,11 +2031,11 @@ ratio_nowcasts_archive <- nowcasts |>
 
 list(
   arx_nowcasts |> rename(prediction_arx = prediction),
-  ar_nowcasts |> rename(prediction_ar = prediction),
-  locf_nowcasts |> rename(prediction_locf = prediction),
-  ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
-  get_predictor_training_data(nchs_ca_archive, "mortality", 14L, "mortality_lag14_realtime") |>
-    transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
+  ar_nowcasts |> rename(prediction_ar = prediction)#,
+  # locf_nowcasts |> rename(prediction_locf = prediction),
+  # ratio_nowcasts_archive$DT |> as_tibble() |> rename(nowcast_date = version, target_date = time_value),
+#   get_predictor_training_data(nchs_ca_archive, "mortality", 14L, "mortality_lag14_realtime") |>
+#     transmute(geo_value, nowcast_date = time_value, target_date = time_value, mortality_lag14_realtime)
 ) |>
   lapply(select, -any_of("version")) |>
   reduce(full_join, by = c("geo_value", "nowcast_date", "target_date")) |>
@@ -2039,6 +2047,14 @@ list(
   geom_line(aes(target_date, prediction, colour = nowcaster)) +
   scale_color_delphi()
 ```
+
+TODO improve legends, standardize plots
+
+TODO explain in slides that are including hospitalizations
+
+TODO `_ar`, `_arx` -> `reg` / etc.
+
+TODO mea culpa complicated quick, will explain concepts of regression, lagged features, evaluation more carefully tomorrow; call it after the evaluations
 
 ## Evaluations
 
