@@ -1341,7 +1341,7 @@
     "href": "slides/day1-afternoon.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\nEssentials of {dplyr} and {tidyr}\nEpiverse Software ecosystem\nPanel and Versioned Data in the epiverse\nBasic Nowcasting using {epiprocess}\nNowcasting with Two Variables\nCase Study - Nowcasting Cases Using %CLI"
+    "text": "Outline\n\nEssentials of {dplyr} and {tidyr}\nEpiverse Software ecosystem\nPanel and Versioned Data in the epiverse\nBasic Nowcasting using {epiprocess}\nNowcasting with One Variable\nNowcasting with Two Variables\nCase Study - Nowcasting Cases Using %CLI"
   },
   {
     "objectID": "slides/day1-afternoon.html#down-with-spreadsheets-for-data-manipulation",
@@ -1649,14 +1649,14 @@
     "href": "slides/day1-afternoon.html#epi_df-snapshot-of-a-dataset-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "epi_df: Snapshot of a dataset",
-    "text": "epi_df: Snapshot of a dataset\n\nConsider the same dataset we just encountered on JHU daily COVID-19 cases and deaths rates from all states as of May 31, 2022.\nWe can see that it meets the criteria epi_df (has geo_value and time_value columns) and that it contains additional metadata (i.e. geo_type, time_type, as_of, and other_keys).\n\n\n\n\nedf |&gt; head()\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 6 × 4\n  geo_value time_value case_rate death_rate\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ak        2020-12-31      35.9      0.158\n2 al        2020-12-31      65.1      0.438\n3 ar        2020-12-31      66.0      1.27 \n4 az        2020-12-31      76.8      1.10 \n5 ca        2020-12-31      96.0      0.751\n6 co        2020-12-31      35.8      0.649\n\n\n\n\nattr(edf, \"metadata\")\n\n$geo_type\n[1] \"state\"\n\n$time_type\n[1] \"day\"\n\n$as_of\n[1] \"2022-05-31\"\n\n$other_keys\ncharacter(0)"
+    "text": "epi_df: Snapshot of a dataset\n\nConsider the same dataset we just encountered on JHU daily COVID-19 cases and deaths rates from all states as of May 31, 2022.\nWe can see that it meets the criteria epi_df (has geo_value and time_value columns) and that it contains additional metadata (i.e. geo_type, time_type, as_of, and other_keys).\n\n\n\n\nedf |&gt; head()\n\nAn `epi_df` object, 6 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-05-31\n\n# A tibble: 6 × 4\n  geo_value time_value case_rate death_rate\n* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ak        2020-12-31      35.9      0.158\n2 al        2020-12-31      65.1      0.438\n3 ar        2020-12-31      66.0      1.27 \n4 as        2020-12-31       0        0    \n5 az        2020-12-31      76.8      1.10 \n6 ca        2020-12-31      96.0      0.751\n\n\n\n\nattr(edf, \"metadata\")\n\n$geo_type\n[1] \"state\"\n\n$time_type\n[1] \"day\"\n\n$as_of\n[1] \"2022-05-31\"\n\n$other_keys\ncharacter(0)"
   },
   {
     "objectID": "slides/day1-afternoon.html#examples-of-preprocessing",
     "href": "slides/day1-afternoon.html#examples-of-preprocessing",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Examples of preprocessing",
-    "text": "Examples of preprocessing\nEDA features\n\nMaking locations commensurate (per capita scaling)\nCorrelating signals across location or time\nComputing growth rates\nDetecting and removing outliers\nDealing with revisions"
+    "text": "Examples of preprocessing\nEDA features\n\nMaking locations commensurate (per capita scaling)\nCorrelating signals across location or time\nComputing growth rates\nDetecting and removing outliers\nCalculating summaries with rolling windows\nDealing with revisions"
   },
   {
     "objectID": "slides/day1-afternoon.html#features---correlations-at-different-lags",
@@ -1684,7 +1684,7 @@
     "href": "slides/day1-afternoon.html#features---outlier-detection",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Features - Outlier detection",
-    "text": "Features - Outlier detection\n\n\nThe detect_outlr() function offers multiple outlier detection methods on a signal.\nThe simplest is detect_outlr_rm(), which works by calculating an outlier threshold using the rolling median and the rolling Interquartile Range (IQR) for each time point:\n\nThreshold = Rolling Median ± (Detection Multiplier × Rolling IQR)\n\nNote that the default number of time steps to use in the rolling window by default is 21 and is centrally aligned.\nThe detection multiplier default is 2 and controls how far away a data point must be from the median to be considered an outlier.\n\n\nedfo &lt;- filter(edf, geo_value %in% c(\"ut\", \"ca\")) |&gt;\n  select(geo_value, time_value, case_rate) |&gt;\n  as_epi_df() |&gt;\n  group_by(geo_value) |&gt;\n  mutate(outlier_info = detect_outlr_rm(\n    x = time_value, y = case_rate\n  )) |&gt;\n  ungroup()"
+    "text": "Features - Outlier detection\n\n\nThe detect_outlr() function offers multiple outlier detection methods on a signal.\nThe simplest is detect_outlr_rm(), which works by calculating an outlier threshold using the rolling median and the rolling Interquartile Range (IQR) for each time point:\n\nThreshold = Rolling Median ± (Detection Multiplier × Rolling IQR)\n\nNote that the default number of time steps to use in the rolling window by default is 21 and is centrally aligned.\nThe detection multiplier default is 2 and controls how far away a data point must be from the median to be considered an outlier.\n\n\nedfo &lt;- filter(edf, geo_value %in% c(\"ca\", \"ut\")) |&gt;\n  select(geo_value, time_value, case_rate) |&gt;\n  as_epi_df() |&gt;\n  group_by(geo_value) |&gt;\n  mutate(outlier_info = detect_outlr_rm(\n    x = time_value, y = case_rate\n  )) |&gt;\n  ungroup()"
   },
   {
     "objectID": "slides/day1-afternoon.html#features---outlier-detection-1",
@@ -1694,32 +1694,81 @@
     "text": "Features - Outlier detection\n\nSeveral data points that deviate from the expected case cadence have been flagged as outliers, and may require further investigation.\nHowever, the peak in Jan. 2022 has also been flagged as an outlier. This highlights the importance of manual inspection before correcting the data, as these may represent valid events (e.g., a genuine surge in cases)."
   },
   {
+    "objectID": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df",
+    "href": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features – sliding a computation on an epi_df",
+    "text": "Features – sliding a computation on an epi_df\n\nIt is often useful to compute rolling summaries of signals.\nThese depend on the reference time, and are computed separately over geographies (and other groups).\nFor example, a trailing average can smooth out daily variation.\nIn epiprocess, this is achieved by epi_slide().\n\n\nepi_slide(\n  .x,\n  .f,\n  ...,\n  .window_size = NULL,\n  .align = c(\"right\", \"center\", \"left\"),\n  .ref_time_values = NULL,\n  .new_col_name = NULL,\n  .all_rows = FALSE\n)\n\nFor example, we can use epi_slide() to compute a trailing 7-day average."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df-1",
+    "href": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features – sliding a computation on an epi_df",
+    "text": "Features – sliding a computation on an epi_df\n\nThe simplest way to use epi_slide is tidy evaluation.\nFor a grouped epi_df, epi_slide() applies the computation to groups separately.\n\n\ncases_7dav &lt;- epi_slide(\n  .x = cases_edf,\n  cases_7dav = mean(raw_cases, na.rm = TRUE),\n  .window_size = 7,\n  .align = \"right\"\n)\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value raw_cases cases_7dav\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ca        2022-03-01      4310       4310\n2 ca        2022-03-02      7044       5677\n3 nc        2022-03-01      1231       1231\n4 nc        2022-03-02      2243       1737\n5 ny        2022-03-01      1487       1487\n6 ny        2022-03-02      1889       1688"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df-2",
+    "href": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df-2",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features – sliding a computation on an epi_df",
+    "text": "Features – sliding a computation on an epi_df\nepi_slide also accepts custom functions of a certain form.\n\ncustom_function &lt;- function(x, g, t, ...) {\n  \n  # Function body\n  \n}\n\n\nx: the data frame with all the columns with original object except groupping vars.\ng: the one-row tibble with values of gropping vars of the given group.\nt: the .ref_time_value of the current window.\n...: additional arguments."
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df-3",
+    "href": "slides/day1-afternoon.html#features-sliding-a-computation-on-an-epi_df-3",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features – sliding a computation on an epi_df",
+    "text": "Features – sliding a computation on an epi_df\n\nmean_by_hand &lt;- function(x, g, t, ...) {\n  data.frame(cases_7dav = mean(x$raw_cases, na.rm = TRUE))\n}\n\ncases_mean_custom_f = epi_slide(\n    .x = cases_edf,\n    .f = mean_by_hand,\n    .window_size = 7,\n    .align = \"right\"\n)\n\n\n\n# A tibble: 3 × 4\n  geo_value time_value raw_cases cases_7dav\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;\n1 ca        2022-03-01      4310       4310\n2 nc        2022-03-01      1231       1231\n3 ny        2022-03-01      1487       1487"
+  },
+  {
     "objectID": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs",
     "href": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "epi_archive: Collection of epi_dfs",
-    "text": "epi_archive: Collection of epi_dfs\n\nfull version history of a data set\nacts like a bunch of epi_dfs — but stored compactly\nallows similar functionality as epi_df but using only data that would have been available at the time\n\n\n\n\n\n\n\nRevisions\n\n\nEpidemiology data gets revised frequently.\n\nWe may want to use the data as it looked in the past\nor we may want to examine the history of revisions."
+    "text": "epi_archive: Collection of epi_dfs\n\nfull version history of a data set\nacts like a bunch of epi_dfs — but stored compactly\nallows similar functionality as epi_df but using only data that would have been available at the time\n\n\n\n\n\n\n\nRevisions\n\n\nEpidemiology data gets revised frequently.\n\nWe may want to use the data [as it looked in the past].{.primary}\nor we may want to examine the history of revisions."
   },
   {
     "objectID": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs-1",
     "href": "slides/day1-afternoon.html#epi_archive-collection-of-epi_dfs-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "epi_archive: Collection of epi_dfs",
-    "text": "epi_archive: Collection of epi_dfs\nSubset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from 6 states in archive format:\n\narchive_cases_dv_subset\n\n→ An `epi_archive` object, with metadata:\nℹ Min/max time values: 2020-06-01 / 2021-11-30\nℹ First/last version with update: 2020-06-02 / 2021-12-01\nℹ Versions end: 2021-12-01\nℹ A preview of the table (129638 rows x 5 columns):\nKey: &lt;geo_value, time_value, version&gt;\n        geo_value time_value    version percent_cli case_rate_7d_av\n           &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n     1:        ca 2020-06-01 2020-06-02          NA        6.628329\n     2:        ca 2020-06-01 2020-06-06    2.140116        6.628329\n     3:        ca 2020-06-01 2020-06-07    2.140116        6.628329\n     4:        ca 2020-06-01 2020-06-08    2.140379        6.628329\n     5:        ca 2020-06-01 2020-06-09    2.114430        6.628329\n    ---                                                            \n129634:        tx 2021-11-26 2021-11-29    1.858596        7.957657\n129635:        tx 2021-11-27 2021-11-28          NA        7.174299\n129636:        tx 2021-11-28 2021-11-29          NA        6.834681\n129637:        tx 2021-11-29 2021-11-30          NA        8.841247\n129638:        tx 2021-11-30 2021-12-01          NA        9.566218"
+    "text": "epi_archive: Collection of epi_dfs\nSubset of daily COVID-19 doctor visits (Optum) and cases (JHU CSSE) from all U.S. states in archive format:\n\narchive_cases_dv_subset_all_states |&gt; head()\n\n$DT\nKey: &lt;geo_value, time_value, version&gt;\n         geo_value time_value    version percent_cli case_rate_7d_av\n            &lt;char&gt;     &lt;Date&gt;     &lt;Date&gt;       &lt;num&gt;           &lt;num&gt;\n      1:        ak 2020-06-01 2020-06-02          NA        1.145652\n      2:        ak 2020-06-01 2020-06-06    0.136815        1.145652\n      3:        ak 2020-06-01 2020-06-08    0.136249        1.145652\n      4:        ak 2020-06-01 2020-06-09    0.106744        1.145652\n      5:        ak 2020-06-01 2020-06-10    0.106676        1.145652\n     ---                                                            \n1514485:        wy 2021-11-26 2021-11-29    3.739819       23.207343\n1514486:        wy 2021-11-27 2021-11-28          NA       23.207343\n1514487:        wy 2021-11-28 2021-11-29          NA       23.207343\n1514488:        wy 2021-11-29 2021-11-30          NA       25.071781\n1514489:        wy 2021-11-30 2021-12-01          NA       25.464294\n\n$geo_type\n[1] \"state\"\n\n$time_type\n[1] \"day\"\n\n$other_keys\ncharacter(0)\n\n$clobberable_versions_start\n[1] NA\n\n$versions_end\n[1] \"2021-12-01\""
   },
   {
-    "objectID": "slides/day1-afternoon.html#revision-patterns",
-    "href": "slides/day1-afternoon.html#revision-patterns",
+    "objectID": "slides/day1-afternoon.html#features-sliding-computation-over-epi_dfs",
+    "href": "slides/day1-afternoon.html#features-sliding-computation-over-epi_dfs",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Revision patterns",
-    "text": "Revision patterns"
+    "section": "Features – sliding computation over epi_dfs",
+    "text": "Features – sliding computation over epi_dfs\n\nWe can apply a computation over different snapshots in an epi_archive.\n\n\nepix_slide(\n  .x,\n  .f,\n  ...,\n  .before = Inf,\n  .versions = NULL,\n  .new_col_name = NULL,\n  .all_versions = FALSE\n)\n\nThis functionality is very helpful in version aware forecasting. We will return with a concrete example."
   },
   {
-    "objectID": "slides/day1-afternoon.html#finalized-data",
-    "href": "slides/day1-afternoon.html#finalized-data",
+    "objectID": "slides/day1-afternoon.html#features-summarize-revision-behavior",
+    "href": "slides/day1-afternoon.html#features-summarize-revision-behavior",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Finalized data",
-    "text": "Finalized data\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)"
+    "section": "Features – summarize revision behavior",
+    "text": "Features – summarize revision behavior\n\nrevision_summary() is a helper function that summarizes revision behavior of an epix_archive.\n\n\nrevision_data &lt;- revision_summary(\n  archive_cases_dv_subset,\n  case_rate_7d_av,\n  drop_nas = TRUE,\n  print_inform = FALSE, # NOT the default, to save space\n  min_waiting_period = as.difftime(60, units = \"days\"),\n  within_latest = 0.2,\n  quick_revision = as.difftime(3, units = \"days\"),\n  few_revisions = 3,\n  abs_spread_threshold = NULL,\n  rel_spread_threshold = 0.1,\n  compactify_tol = .Machine$double.eps^0.5,\n  should_compactify = TRUE\n)"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#features-summarize-revision-behavior-1",
+    "href": "slides/day1-afternoon.html#features-summarize-revision-behavior-1",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Features – summarize revision behavior",
+    "text": "Features – summarize revision behavior\n\nhead(revision_data)\n\n# A tibble: 6 × 11\n  time_value geo_value n_revisions min_lag max_lag  time_near_latest spread\n  &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;drtn&gt;  &lt;drtn&gt;   &lt;drtn&gt;            &lt;dbl&gt;\n1 2020-06-01 ca                 12 1 days  546 days 1 days           0.248 \n2 2020-06-02 ca                 12 1 days  545 days 1 days           0.416 \n3 2020-06-03 ca                 11 1 days  544 days 1 days           0.115 \n4 2020-06-04 ca                 11 1 days  543 days 1 days           0.342 \n5 2020-06-05 ca                  7 1 days  520 days 1 days           0.0982\n6 2020-06-06 ca                  8 1 days  519 days 1 days           0.188 \n# ℹ 4 more variables: rel_spread &lt;dbl&gt;, min_value &lt;dbl&gt;, max_value &lt;dbl&gt;,\n#   median_value &lt;dbl&gt;"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#visualize-revision-patterns",
+    "href": "slides/day1-afternoon.html#visualize-revision-patterns",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Visualize revision patterns",
+    "text": "Visualize revision patterns"
+  },
+  {
+    "objectID": "slides/day1-afternoon.html#types-of-prediction",
+    "href": "slides/day1-afternoon.html#types-of-prediction",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Types of prediction",
+    "text": "Types of prediction\n\nCounts are revised as time proceeds\nWant to know the final value\nOften not available until weeks/months later\n\nForecasting\n\nAt time \\(t\\), predict the final value for time \\(t+h\\), \\(h &gt; 0\\)\n\n\n\n\nBackcasting\n\nAt time \\(t\\), predict the final value for time \\(t-h\\), \\(h &lt; 0\\)\n\n\n\n\nNowcasting\n\nAt time \\(t\\), predict the final value for time \\(t\\)"
   },
   {
     "objectID": "slides/day1-afternoon.html#backfill-canadian-edition",
@@ -1768,21 +1817,21 @@
     "href": "slides/day1-afternoon.html#versioning-analysis-latency",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioning analysis – latency",
-    "text": "Versioning analysis – latency\n\nQuestion: What is the latency of NCHS data?\n\n\nrevision_data |&gt; select(geo_value, time_value, min_lag) |&gt; slice_sample(n = 10)\n\n# A tibble: 10 × 3\n   geo_value time_value min_lag\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt; \n 1 ca        2023-12-10  7 days\n 2 ca        2024-08-25 14 days\n 3 ca        2022-02-27  7 days\n 4 ca        2023-12-03  7 days\n 5 ca        2024-06-02  7 days\n 6 ca        2024-02-18  7 days\n 7 ca        2021-11-14  7 days\n 8 ca        2023-07-16  7 days\n 9 ca        2023-11-19  7 days\n10 ca        2023-11-05  7 days\n\n\n\nWe randomly sampled some dates to check if there is a consistent latency pattern.\nUnderstanding latency prevents us from using data that we shouldn’t have access to."
+    "text": "Versioning analysis – latency\n\nQuestion: What is the latency of NCHS data?\n\n\nrevision_data |&gt; select(geo_value, time_value, min_lag) |&gt; slice_sample(n = 10)\n\n# A tibble: 10 × 3\n   geo_value time_value min_lag\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt; \n 1 ca        2022-08-07  7 days\n 2 ca        2023-10-01  7 days\n 3 ca        2024-04-21 14 days\n 4 ut        2022-12-25 14 days\n 5 ut        2020-09-27 70 days\n 6 ut        2022-07-31 21 days\n 7 ut        2023-07-09  7 days\n 8 ca        2023-05-07  7 days\n 9 ca        2020-09-27 70 days\n10 ut        2022-04-17  7 days\n\n\n\nWe randomly sampled some dates to check if there is a consistent latency pattern.\nUnderstanding latency prevents us from using data that we shouldn’t have access to."
   },
   {
     "objectID": "slides/day1-afternoon.html#versioning-analysis-backfill",
     "href": "slides/day1-afternoon.html#versioning-analysis-backfill",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioning analysis – backfill",
-    "text": "Versioning analysis – backfill\n\nQuestion: How long does it take for the reported value to be close to the finalized value?\n\n\n\n# A tibble: 10 × 3\n   geo_value time_value time_near_latest\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n 1 ca        2021-12-05 35 days         \n 2 ca        2023-02-12 28 days         \n 3 ca        2024-02-11 28 days         \n 4 ca        2022-09-18 21 days         \n 5 ca        2023-07-16 21 days         \n 6 ca        2023-09-24 21 days         \n 7 ca        2024-02-04 21 days         \n 8 ca        2021-02-21 42 days         \n 9 ca        2022-07-03 28 days         \n10 ca        2023-10-29 28 days         \n\n\n\nIt generally takes at least 4 weeks for reported value to be within 20% of the finalized value.\nWe can change the threshold of percentage difference by specifying within_latest argument of revision_summary()."
+    "text": "Versioning analysis – backfill\n\nQuestion: How long does it take for the reported value to be close to the finalized value?\n\n\n\n# A tibble: 10 × 3\n   geo_value time_value time_near_latest\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n 1 ut        2021-11-14  28 days        \n 2 ut        2021-03-28  28 days        \n 3 ut        2021-02-21  28 days        \n 4 ca        2022-07-17  28 days        \n 5 ca        2022-10-30  28 days        \n 6 ut        2020-08-30  98 days        \n 7 ca        2021-08-29  28 days        \n 8 ut        2022-03-27   7 days        \n 9 ca        2020-12-06  70 days        \n10 ca        2020-05-03 217 days        \n\n\n\nIt generally takes at least 4 weeks for reported value to be within 20% of the finalized value.\nWe can change the threshold of percentage difference by specifying within_latest argument of revision_summary()."
   },
   {
     "objectID": "slides/day1-afternoon.html#versioning-analysis---backfill",
     "href": "slides/day1-afternoon.html#versioning-analysis---backfill",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioning analysis - backfill",
-    "text": "Versioning analysis - backfill\n\nQuestion: When is the finalized value first attained for each date? Would we have access to any in real-time?\nHow fast are the final values attained & what’s the pattern for these times, if any?\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value min_version diff    \n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;drtn&gt;  \n1 ca        2021-02-21 2022-04-03  406 days\n2 ca        2021-02-28 2022-01-30  336 days\n3 ca        2021-03-07 2021-12-26  294 days\n4 ca        2021-03-14 2022-03-06  357 days\n5 ca        2021-03-21 2022-07-10  476 days\n6 ca        2021-03-28 2022-07-10  469 days\n\n\nHere is a look at its quantiles:\n\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   84.0   147.0   189.0   198.7   259.0   329.0 \n\n\n\nConclusion: The revision behavior is pretty long-tailed. Value reported 4 weeks later is reasonably close to the finalized value."
+    "text": "Versioning analysis - backfill\n\nQuestion: When is the finalized value first attained for each date? Would we have access to any in real-time?\nHow fast are the final values attained & what’s the pattern for these times, if any?\n\n\n\n# A tibble: 6 × 4\n  geo_value time_value min_version diff    \n  &lt;chr&gt;     &lt;date&gt;     &lt;date&gt;      &lt;drtn&gt;  \n1 ca        2020-01-26 2020-12-06  315 days\n2 ca        2020-02-09 2020-12-06  301 days\n3 ca        2020-02-23 2020-12-06  287 days\n4 ca        2020-03-15 2020-12-06  266 days\n5 ca        2020-03-22 2021-05-16  420 days\n6 ca        2020-03-29 2021-04-04  371 days\n\n\nHere is a look at its quantiles:\n\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   84.0   147.0   189.0   192.8   259.0   294.0 \n\n\n\nConclusion: The revision behavior is pretty long-tailed. Value reported 4 weeks later is reasonably close to the finalized value."
   },
   {
     "objectID": "slides/day1-afternoon.html#revision-pattern-visualization",
@@ -1824,7 +1873,7 @@
     "href": "slides/day1-afternoon.html#ratio-nowcaster-building-training-samples-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Ratio nowcaster: building training samples",
-    "text": "Ratio nowcaster: building training samples\n\nAt an earlier nowcast date \\(t_0,\\) we define\n\nProvisional value as the reported value of \\(Y_s\\) with version \\(t_0.\\) Here \\(s_0\\) is the largest occurence date among all values reported up until \\(t_0.\\)\nFinalized value as the (potentially unobserved) finalized value of \\(Y_{s_0}.\\)\n\nWe only know in hindsight when reported value of \\(Y_{s_0}\\) is finalized – need an approximation.\n\n\n\n\n\n\n# A tibble: 5 × 3\n  geo_value time_value time_near_latest\n  &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n1 ca        2023-12-10 28 days         \n2 ca        2024-08-25 21 days         \n3 ca        2022-02-27 49 days         \n4 ca        2023-12-03 28 days         \n5 ca        2024-06-02 21 days         \n\n\nTime differences in days\n  0%  25%  50%  75% 100% \n  14   21   28   35   63 \n\n\n\n\nWe can say data reported 49 days after occurrence date is good enough to be considered finalized."
+    "text": "Ratio nowcaster: building training samples\n\nAt an earlier nowcast date \\(t_0,\\) we define\n\nProvisional value as the reported value of \\(Y_s\\) with version \\(t_0.\\) Here \\(s_0\\) is the largest occurence date among all values reported up until \\(t_0.\\)\nFinalized value as the (potentially unobserved) finalized value of \\(Y_{s_0}.\\)\n\nWe only know in hindsight when reported value of \\(Y_{s_0}\\) is finalized – need an approximation.\n\n\n\n\n\n\n# A tibble: 5 × 3\n  geo_value time_value time_near_latest\n  &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n1 ca        2022-08-07 21 days         \n2 ca        2023-10-01 28 days         \n3 ca        2024-04-21 42 days         \n4 ut        2022-12-25 21 days         \n5 ut        2020-09-27 70 days         \n\n\nTime differences in days\n  0%  25%  50%  75% 100% \n   7   21   28   49  315 \n\n\n\n\nWe can say data reported 49 days after occurrence date is good enough to be considered finalized."
   },
   {
     "objectID": "slides/day1-afternoon.html#ratio-nowcaster-test-time-feature",
@@ -1845,7 +1894,7 @@
     "href": "slides/day1-afternoon.html#nowcasting-at-a-single-date-test-feature-and-actual-nowcast",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Nowcasting at a single date: test feature and actual nowcast",
-    "text": "Nowcasting at a single date: test feature and actual nowcast\n\nlast_avail &lt;- epix_as_of(nchs_archive, nowcast_date) |&gt;\n  slice_max(time_value) |&gt;\n  pull(mortality) \n\nnowcast &lt;- last_avail * ratio\nnowcast\n\n[1] Inf"
+    "text": "Nowcasting at a single date: test feature and actual nowcast\n\nlast_avail &lt;- epix_as_of(nchs_archive, nowcast_date) |&gt;\n  slice_max(time_value) |&gt;\n  pull(mortality) \n\nnowcast &lt;- last_avail * ratio\nnowcast\n\n[1] 245.2997"
   },
   {
     "objectID": "slides/day1-afternoon.html#nowcasting-for-multiple-dates",
@@ -1922,7 +1971,7 @@
     "href": "slides/day1-afternoon.html#evaluation-using-mae-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Evaluation using MAE",
-    "text": "Evaluation using MAE\nLet’s numerically evaluate our point nowcasts for the provisional values of a time series (e.g., COVID-19 mortality) using MAE.\n\n\n\n\n\n\nSmoothed MAE\nUnsmoothed nowcast MAE\nProvisional value MAE\n\n\n\n\n161.731\n172.4131\n199.6061"
+    "text": "Evaluation using MAE\nLet’s numerically evaluate our point nowcasts for the provisional values of a time series (e.g., COVID-19 mortality) using MAE.\n\n\n\n\n\n\nSmoothed MAE\nUnsmoothed nowcast MAE\nProvisional value MAE\n\n\n\n\n161.6591\n172.4131\n199.6061"
   },
   {
     "objectID": "slides/day1-afternoon.html#nowcasting-moving-from-one-signal-to-two",
@@ -2202,28 +2251,56 @@
     "href": "slides/day2-afternoon.html#outline",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Outline",
-    "text": "Outline\n\n{epipredict}\nCustomizing arx_forecaster()\nAdvanced Customizations\nBuilding a Forecaster\nA Flu Forecaster\nAdvanced Topics"
+    "text": "Outline\n\nFundamentals of Forecasting\n{epipredict}\nCustomizing arx_forecaster()\nBuild a Forecaster from Scratch\nAdvanced Topics"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#care-with-your-data",
+    "href": "slides/day2-afternoon.html#care-with-your-data",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Care with your data",
+    "text": "Care with your data\n\nData splitting\n\nSome data you see. You can use it to create your model: Training data.\nSome data you don’t see. It may arrive later, or you may hold it out to validate your process.\n\nOnly training data can be used to create your model.\n\nMuch more subtle than it sounds.\nEverything about your model must flow from this\n\nChoosing the model: AR vs ARX, number of lags to use\nEstimates of model parameters\nHow much regularization to use\nAny transformations you make of your data\n\n\n\nWe’ve emphasized most of this already.\nBut that point about transformations is VERY important. And often overlooked."
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#preprocessing-correctly",
+    "href": "slides/day2-afternoon.html#preprocessing-correctly",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Preprocessing correctly",
+    "text": "Preprocessing correctly\n\nA standard proprecessing routine is to scale() each of the predictors.\nThis requires calculating the mean and standard deviation on the training data.\nAnd using those values when you make predictions\nThis is hard to do with standard R operations.\n\n\nchicago_ell &lt;- modeldata::Chicago |&gt;\n  select(ridership, temp, humidity, percip) |&gt;\n  mutate(across(everything(), scale))\n\n\nlm(ridership ~ ., data = chicago_ell)\n\nWe didn’t save the means and variances.\nWe need them to process the test data.\nWe would also need to invert (postprocess) the predictions.\nFor example: undoing scaling to predict deaths not deaths per 100K population"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#tidymodels",
+    "href": "slides/day2-afternoon.html#tidymodels",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "{tidymodels}",
+    "text": "{tidymodels}\n\nThe {tidymodels} suite of packages is intended to handle this situation correctly.\nIt’s written by programmers at Posit (the people behind {tidyverse})\nIt doesn’t work for panel data.\nThat’s what we need for Epidemiological Time Series\nWe’ve been working with their team to develop this functionality."
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#anatomy-of-a-forecaster",
+    "href": "slides/day2-afternoon.html#anatomy-of-a-forecaster",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Anatomy of a forecaster",
+    "text": "Anatomy of a forecaster\n\nWe should build up modular components\nBe able to add/remove layers of complexity sequentially, not all at once\nWe should be able to make preprocessing independent of the model fitting\nWe should be able to postprocess the predictions\n\n\n\nPreprocessor: do things to the data before model training\nTrainer: train a model on data, resulting in a fitted model object\nPredictor: make predictions, using a fitted model object\nPostprocessor: do things to the predictions before returning"
   },
   {
     "objectID": "slides/day2-afternoon.html#epipredict-1",
     "href": "slides/day2-afternoon.html#epipredict-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "{epipredict}",
-    "text": "{epipredict}\nhttps://cmu-delphi.github.io/epipredict\nInstallation\n\n# Stable version\n# pak::pkg_install(\"cmu-delphi/epipredict@main\")\n# Development version\npak::pkg_install(\"cmu-delphi/epipredict@dev\")"
+    "text": "{epipredict}\nhttps://cmu-delphi.github.io/epipredict\nInstallation\n\n# Stable version\npak::pkg_install(\"cmu-delphi/epipredict@main\")\n\n\n# Development version\n# We're using this.\npak::pkg_install(\"cmu-delphi/epipredict@dev\")"
   },
   {
     "objectID": "slides/day2-afternoon.html#what-epipredict-provides-i",
     "href": "slides/day2-afternoon.html#what-epipredict-provides-i",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "What {epipredict} provides (i)",
-    "text": "What {epipredict} provides (i)\nBasic and easy to use “canned” forecasters:\n\nBaseline flat forecaster\nAutoregressive forecaster (ARX)\nAutoregressive classifier\nCDC FluSight flatline forecaster"
+    "text": "What {epipredict} provides (i)\nBasic and easy to use “canned” forecasters:\n\nBaseline flat forecaster\nAutoregressive forecaster (ARX)\nAutoregressive classifier\nCDC FluSight flatline forecaster\n\nThese are supposed to work easily\n\nHandle lots of cases we’ve already seen\n\nWe’ll start here"
   },
   {
     "objectID": "slides/day2-afternoon.html#what-epipredict-provides-ii",
     "href": "slides/day2-afternoon.html#what-epipredict-provides-ii",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "What {epipredict} provides (ii)",
-    "text": "What {epipredict} provides (ii)\n\nA framework for creating custom forecasters out of modular components.\nThere are four types of components:\n\nPreprocessor: do things to the data before model training\nTrainer: train a model on data, resulting in a fitted model object\nPredictor: make predictions, using a fitted model object\nPostprocessor: do things to the predictions before returning"
+    "text": "What {epipredict} provides (ii)\n\nA framework for creating custom forecasters out of modular components.\nThis is highly customizable, extends {tidymodels} to panel data\nGood for building a new forecaster from scratch\nWe’ll do an example at the end\nThere are four types of components:\n\nPreprocessor: do things to the data before model training\nTrainer: train a model on data, resulting in a fitted model object\nPredictor: make predictions, using a fitted model object\nPostprocessor: do things to the predictions before returning"
   },
   {
     "objectID": "slides/day2-afternoon.html#examples-of-pre-processing",
@@ -2233,67 +2310,60 @@
     "text": "Examples of pre-processing\n\nEDA type stuff\n\nMaking locations/signals commensurate (scaling)\nDealing with revisions\nDetecting and removing outliers\nImputing or removing missing data\n\n\n\nFeature engineering\n\nCreating lagged predictors\nDay of Week effects\nRolling averages for smoothing\nLagged differences\nGrowth rates instead of raw signals\nThe sky’s the limit"
   },
   {
-    "objectID": "slides/day2-afternoon.html#get-the-data",
-    "href": "slides/day2-afternoon.html#get-the-data",
+    "objectID": "slides/day2-afternoon.html#get-some-data",
+    "href": "slides/day2-afternoon.html#get-some-data",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Get the data",
-    "text": "Get the data\n\nlibrary(epidatr)\nlibrary(epiprocess)\nlibrary(epipredict)\n\ncases &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_incidence_num\",\n  time_type = \"day\",\n  geo_type = \"state\",\n  time_values = epirange(20200401, 20230401),\n  geo_values = \"*\") |&gt;\n  select(geo_value, time_value, cases = value)\n\ndeaths &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"deaths_incidence_num\",\n  time_type = \"day\",\n  geo_type = \"state\",\n  time_values = epirange(20200401, 20230401),\n  geo_values = \"*\") |&gt;\n  select(geo_value, time_value, deaths = value)"
-  },
-  {
-    "objectID": "slides/day2-afternoon.html#create-an-epi_df",
-    "href": "slides/day2-afternoon.html#create-an-epi_df",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Create an epi_df",
-    "text": "Create an epi_df\n\ndf &lt;- left_join(cases, deaths, by = c(\"time_value\", \"geo_value\")) |&gt;\n  as_epi_df()\n\ndf\n\nAn `epi_df` object, 60,036 x 4 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2024-12-07 16:23:18.293021\n\n# A tibble: 60,036 × 4\n   geo_value time_value cases deaths\n * &lt;chr&gt;     &lt;date&gt;     &lt;dbl&gt;  &lt;dbl&gt;\n 1 ak        2020-04-01    13      0\n 2 al        2020-04-01   112      4\n 3 ar        2020-04-01    61      2\n 4 as        2020-04-01     0      0\n 5 az        2020-04-01   124      7\n 6 ca        2020-04-01  1254     29\n 7 co        2020-04-01  4655    388\n 8 ct        2020-04-01   429     16\n 9 dc        2020-04-01    91      0\n10 de        2020-04-01    49     10\n# ℹ 60,026 more rows"
+    "section": "Get some data",
+    "text": "Get some data\n\nlibrary(epidatr)\nlibrary(epiprocess)\nlibrary(epipredict)\n\ncases &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_incidence_num\",\n  time_type = \"day\",\n  geo_type = \"state\",\n  time_values = epirange(20200401, 20230401),\n  geo_values = \"*\") |&gt;\n  select(geo_value, time_value, cases = value)\n\ndeaths &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"deaths_incidence_num\",\n  time_type = \"day\",\n  geo_type = \"state\",\n  time_values = epirange(20200401, 20230401),\n  geo_values = \"*\") |&gt;\n  select(geo_value, time_value, deaths = value)\n\ncases_deaths &lt;- full_join(cases, deaths, by = c(\"time_value\", \"geo_value\")) |&gt;\n  as_epi_df()"
   },
   {
     "objectID": "slides/day2-afternoon.html#pre-processing-data-scaling",
     "href": "slides/day2-afternoon.html#pre-processing-data-scaling",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Pre-processing: data scaling",
-    "text": "Pre-processing: data scaling\nScale cases and deaths by population and multiply by 100K\n\ndf &lt;- left_join(\n  x = df,\n  y = state_census |&gt; select(pop, abbr),   # state_census is available in epipredict\n  by = c(\"geo_value\" = \"abbr\")) |&gt;\n    mutate(cases = cases / pop * 1e5, \n           deaths = deaths / pop * 1e5) |&gt; \n    select(-pop)"
+    "text": "Pre-processing: data scaling\nScale cases and deaths by population and multiply by 100K\n\ncases_deaths &lt;- left_join(\n  x = cases_deaths,\n  y = state_census |&gt; select(pop, abbr),   # state_census is available in epipredict\n  by = join_by(geo_value == abbr)\n) |&gt;\n  mutate(\n    cases = cases / pop * 1e5, \n    deaths = deaths / pop * 1e5\n  ) |&gt; \n  select(-pop)"
   },
   {
     "objectID": "slides/day2-afternoon.html#scaled-covid-cases-and-deaths",
     "href": "slides/day2-afternoon.html#scaled-covid-cases-and-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Scaled COVID cases and deaths",
-    "text": "Scaled COVID cases and deaths\n\n\nCode\ndf |&gt; \n  filter(geo_value %in% c(\"ca\", \"ma\", \"ny\", \"tx\")) |&gt;\n  autoplot(cases, deaths)"
+    "text": "Scaled COVID cases and deaths\n\n\nCode\ncases_deaths |&gt; \n  filter(geo_value %in% c(\"ca\", \"ma\", \"ny\", \"tx\")) |&gt;\n  autoplot(cases, deaths) +\n  scale_color_delphi(name = \"\") +\n  xlab(\"Reference date\")"
   },
   {
     "objectID": "slides/day2-afternoon.html#pre-processing-smoothing",
     "href": "slides/day2-afternoon.html#pre-processing-smoothing",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Pre-processing: smoothing",
-    "text": "Pre-processing: smoothing\nSmooth the data by computing 7-day averages of cases and deaths for each state\n\ndf &lt;- df |&gt;\n  group_by(geo_value) |&gt;\n  epi_slide(cases_7dav = mean(cases, na.rm = T),\n            deaths_7dav = mean(deaths, na.rm = T),\n            .window_size = 7) |&gt;\n  ungroup() |&gt;\n  select(!c(cases, deaths)) |&gt;\n  rename(cases = cases_7dav, \n         deaths = deaths_7dav)"
+    "text": "Pre-processing: smoothing\nSmooth the data by computing 7-day averages of cases and deaths for each state\n\ncases_deaths &lt;- cases_deaths |&gt;\n  group_by(geo_value) |&gt;\n  epi_slide(\n    cases_7dav = mean(cases, na.rm = TRUE),\n    deaths_7dav = mean(deaths, na.rm = TRUE),\n    .window_size = 7\n  ) |&gt;\n  ungroup() |&gt;\n  mutate(cases = NULL, deaths = NULL) |&gt;\n  rename(cases = cases_7dav, deaths = deaths_7dav)"
   },
   {
     "objectID": "slides/day2-afternoon.html#scaled-and-smoothed-covid-cases-deaths",
     "href": "slides/day2-afternoon.html#scaled-and-smoothed-covid-cases-deaths",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Scaled and smoothed COVID cases deaths",
-    "text": "Scaled and smoothed COVID cases deaths\n\n\nCode\ndf |&gt; \n  filter(geo_value %in% c(\"ca\", \"ma\", \"ny\", \"tx\")) |&gt;\n  autoplot(cases, deaths)"
+    "text": "Scaled and smoothed COVID cases deaths\n\n\nCode\ncases_deaths |&gt; \n  filter(geo_value %in% c(\"ca\", \"ma\", \"ny\", \"tx\")) |&gt;\n  autoplot(cases, deaths)  +\n  scale_color_delphi(name = \"\") +\n  xlab(\"Reference date\")"
   },
   {
     "objectID": "slides/day2-afternoon.html#pre-processing-fix-outliers-and-negative-values",
     "href": "slides/day2-afternoon.html#pre-processing-fix-outliers-and-negative-values",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Pre-processing: fix outliers and negative values",
-    "text": "Pre-processing: fix outliers and negative values\n\n\nCode\ndetection_methods &lt;- dplyr::bind_rows(\n  dplyr::tibble(method = \"rm\", args = list(list(detect_negatives = TRUE)), abbr = \"rm\")#,\n  #dplyr::tibble(method = \"stl\", args = list(list(detect_negatives = TRUE, seasonal_period = 7)),\n  #              abbr = \"stl_seasonal\")\n  )\n\ndeaths_outlr &lt;- df |&gt; \n  group_by(geo_value) |&gt;\n  mutate(outlier_info = detect_outlr(x = time_value, \n                                     y = deaths, \n                                     methods = detection_methods, \n                                     combiner = \"median\"\n                                     )) |&gt;\n  ungroup() |&gt;\n  unnest(outlier_info)"
+    "text": "Pre-processing: fix outliers and negative values\n\n\nCode\ndeaths_outlr &lt;- cases_deaths |&gt; \n  group_by(geo_value) |&gt;\n  mutate(outlr = detect_outlr_rm(time_value, deaths, detect_negatives = TRUE)) |&gt;\n  unnest(outlr) |&gt;\n  ungroup()"
   },
   {
     "objectID": "slides/day2-afternoon.html#fit-arx_forecaster-on-training-set",
     "href": "slides/day2-afternoon.html#fit-arx_forecaster-on-training-set",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Fit arx_forecaster on training set",
-    "text": "Fit arx_forecaster on training set\n\nBack to the ARX(1) model for COVID deaths: \\(\\quad \\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\)\nOnly focus on California (for now)\nUsing {epipredict}\n\n\n# split into train and test \nca &lt;- df |&gt; filter(geo_value == \"ca\")\nt0_date &lt;- as.Date('2021-04-01')\ntrain &lt;- ca |&gt; filter(time_value &lt;= t0_date)\ntest &lt;- ca |&gt; filter(time_value &gt; t0_date)\n\n# fit ARX\nepi_arx &lt;- arx_forecaster(epi_data = train |&gt; as_epi_df(), \n                          outcome = \"deaths\", \n                          predictors = c(\"cases\", \"deaths\"),\n                          trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                          args_list = arx_args_list(lags = 0, ahead = 28,\n                                                    quantile_levels = c(0.1, 0.9)))"
+    "text": "Fit arx_forecaster on training set\n\nBack to the ARX(1) model for COVID deaths: \\(\\quad \\hat y_{t+28} = \\hat\\phi + \\hat\\phi_0 y_{t} + \\hat\\beta_0 x_{t}\\)\nOnly focus on California (for now)\nUsing {epipredict}\n\n\n# split into train and test \nca &lt;- cases_deaths |&gt; filter(geo_value == \"ca\")\nt0_date &lt;- as.Date('2021-04-01')\ntrain &lt;- ca |&gt; filter(time_value &lt;= t0_date)\ntest &lt;- ca |&gt; filter(time_value &gt; t0_date)\n\n# fit ARX\nepi_arx &lt;- arx_forecaster(\n  epi_data = train |&gt; as_epi_df(), \n  outcome = \"deaths\", \n  predictors = c(\"cases\", \"deaths\"),\n  trainer = linear_reg(),\n  args_list = arx_args_list(lags = 0, ahead = 28, quantile_levels = c(0.1, 0.9))\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#arx_forecaster-output",
     "href": "slides/day2-afternoon.html#arx_forecaster-output",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "arx_forecaster output",
-    "text": "arx_forecaster output\n\nA fitted model object which can be used any time in the future to create forecasts ($epi_workflow).\nA forecast (point prediction + interval) for 28 days after the last available time value in the data ($predictions)."
+    "text": "arx_forecaster output\n\nA workflow object which can be used any time in the future to create forecasts ($epi_workflow).\n\nAll necessary preprocessing; both the sequence of steps, and any necessary statistics\nThe fitted model object\nThe sequence of steps for postprocessing\n\nA forecast (point prediction + interval) for 28 days after the last available time value in the data ($predictions)."
   },
   {
     "objectID": "slides/day2-afternoon.html#arx_forecaster-output-1",
@@ -2349,14 +2419,14 @@
     "href": "slides/day2-afternoon.html#predict-with-arx-re-fitting-on-trailing-window",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predict with ARX (re-fitting on trailing window)",
-    "text": "Predict with ARX (re-fitting on trailing window)\n\nh &lt;- 28         #horizon\nw &lt;- 120 + h    #trailing window length\n\n# Specify the forecast dates\nfc_time_values &lt;- seq(from = t0_date, to = as.Date(\"2023-02-09\"), by = \"1 week\")\n\n# Slide the arx_forecaster over the epi_archive\npred_arx &lt;- ca_archive |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"cases\", \"deaths\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(lags = 0, ahead = h,\n                                               quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
+    "text": "Predict with ARX (re-fitting on trailing window)\n\nh &lt;- 28         # horizon\nw &lt;- 120 + h    # trailing window length\n\n# Specify the forecast dates\nfc_time_values &lt;- seq(from = t0_date, to = as.Date(\"2023-02-09\"), by = \"1 week\")\n\n# Slide the arx_forecaster over the epi_archive\npred_arx &lt;- ca_archive |&gt; epix_slide(\n  ~ arx_forecaster(epi_data = .x,\n                   outcome = \"deaths\", \n                   predictors = c(\"cases\", \"deaths\"), \n                   trainer = linear_reg(),\n                   args_list = arx_args_list(lags = 0, ahead = h, quantile_levels = c(0.1, 0.9))\n  )$predictions |&gt;\n    pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predict-with-arx",
     "href": "slides/day2-afternoon.html#predict-with-arx",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predict with ARX",
-    "text": "Predict with ARX\n\n\n\nNote (window length)\n\n\nWe set \\(w = 120 + h\\) to match the window size of the ARX model we fitted manually. Previously, when considering a window from \\(t-w\\) to \\(t\\), we had access to all outcomes in that window, and to all predictors between \\(t-w-h\\) and \\(t-h\\). (That’s because we lagged \\(x\\) before applying the window.) So we were “cheating” by saying that the trailing window had length \\(w=120\\), as its actual size was \\(120+h\\)!\n\n\n\n\n\n\nNote (all past)\n\n\nThe method fitting on all past data up to the forecasting date can be implemented by setting:\n.window_size = Inf in epi_slide."
+    "text": "Predict with ARX\n\n\n\nNote (window length)\n\n\nWe set \\(w = 120 + h\\) to match the window size of the ARX model we fitted manually.\nWhen considering a window from \\(t-w\\) to \\(t\\), we had access to all outcomes in that window, and to all predictors between \\(t-w-h\\) and \\(t-h\\).\n(That’s because we lagged \\(x\\) before applying the window.)\nSo we were “cheating” by saying that the trailing window had length \\(w=120\\), as its actual size was \\(120+h\\)!\n\n\n\n\n\n\nNote (all past)\n\n\nThe method fitting on all past data up to the forecasting date can be implemented by setting:\n.before = Inf in epix_slide()."
   },
   {
     "objectID": "slides/day2-afternoon.html#predict-with-arx-re-fitting-on-trailing-window-1",
@@ -2376,15 +2446,15 @@
     "objectID": "slides/day2-afternoon.html#customizing-arx_forecaster",
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\n\narx_forecaster(epi_data = train |&gt; as_epi_df(), \n               outcome = \"deaths\", \n               predictors = c(\"cases\", \"deaths\"),\n               trainer = linear_reg() |&gt; set_engine(\"lm\"),\n               args_list = arx_args_list(lags = 0, ahead = 28,\n                                         quantile_levels = c(0.1, 0.9)))\n\n\n\nModify predictors to add/drop predictors\n\ne.g. drop deaths for regression with a lagged predictor, or drop cases to get AR model\ndefault: predictors = outcome"
+    "section": "Customizing arx_forecaster()",
+    "text": "Customizing arx_forecaster()\n\narx_forecaster(\n  epi_data = train, \n  outcome = \"deaths\", \n  predictors = c(\"cases\", \"deaths\"),\n  trainer = linear_reg() |&gt; set_engine(\"lm\"),\n  args_list = arx_args_list(lags = 0, ahead = 28, quantile_levels = c(0.1, 0.9))\n)\n\n\n\nModify predictors to add/drop predictors\n\ne.g. drop deaths for regression with a lagged predictor, or drop cases to get AR model\ndefault: predictors = outcome"
   },
   {
     "objectID": "slides/day2-afternoon.html#customizing-arx_forecaster-1",
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\n\narx_forecaster(epi_data = train |&gt; as_epi_df(), \n               outcome = \"deaths\", \n               predictors = c(\"cases\", \"deaths\"),\n               trainer = linear_reg() |&gt; set_engine(\"lm\"),\n               args_list = arx_args_list(lags = 0, ahead = 28,\n                                         quantile_levels = c(0.1, 0.9)))\n\n\nModify arx_args_list to change lags, horizon, quantile levels, …\n\n\n\narx_args_list(\n  lags = c(0L, 7L, 14L),\n  ahead = 7L,\n  n_training = Inf,\n  forecast_date = NULL,\n  target_date = NULL,\n  adjust_latency = c(\"none\", \"extend_ahead\", \"extend_lags\", \"locf\"),\n  warn_latency = TRUE,\n  quantile_levels = c(0.05, 0.95),\n  symmetrize = TRUE,\n  nonneg = TRUE,\n  quantile_by_key = character(0L),\n  check_enough_data_n = NULL,\n  check_enough_data_epi_keys = NULL,\n  ...\n)"
+    "section": "Customizing arx_forecaster()",
+    "text": "Customizing arx_forecaster()\n\narx_forecaster(\n  epi_data = train, \n  outcome = \"deaths\", \n  predictors = c(\"cases\", \"deaths\"),\n  trainer = linear_reg(),\n  args_list = arx_args_list(lags = 0, ahead = 28, quantile_levels = c(0.1, 0.9))\n)\n\n\nModify arx_args_list to change lags, horizon, quantile levels, …\n\n\n\narx_args_list(\n  lags = c(0L, 7L, 14L),\n  ahead = 7L,\n  n_training = Inf,\n  forecast_date = NULL,\n  target_date = NULL,\n  adjust_latency = c(\"none\", \"extend_ahead\", \"extend_lags\", \"locf\"),\n  warn_latency = TRUE,\n  quantile_levels = c(0.05, 0.95),\n  symmetrize = TRUE,\n  nonneg = TRUE,\n  quantile_by_key = character(0L),\n  check_enough_data_n = NULL,\n  check_enough_data_epi_keys = NULL,\n  ...\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#customizing-arx_forecaster-2",
@@ -2398,7 +2468,7 @@
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster-3",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\nChange predictors: doctor visits instead of cases\n\npred_arx_hosp &lt;- ca_archive_dv |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"doctor_visits\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(lags = 0, ahead = 28,\n                                               quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
+    "text": "Customizing arx_forecaster\nChange predictors: doctor visits instead of cases\n\npred_arx_hosp &lt;- ca_archive_dv |&gt; epix_slide(\n  ~ arx_forecaster(epi_data = .x,\n                   outcome = \"deaths\", \n                   predictors = c(\"deaths\", \"doctor_visits\"), \n                   trainer = linear_reg(),\n                   args_list = arx_args_list(lags = 0, ahead = 28, quantile_levels = c(0.1, 0.9))\n  )$predictions |&gt;\n    pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-doctor-visits-instead-of-cases-in-predictor-set",
@@ -2412,7 +2482,7 @@
     "href": "slides/day2-afternoon.html#customizing-arx_forecaster-4",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Customizing arx_forecaster",
-    "text": "Customizing arx_forecaster\nAdd more lags\n\npred_arx_more_lags &lt;- ca_archive_dv |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"doctor_visits\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(\n                       lags = c(0, 7, 14),\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
+    "text": "Customizing arx_forecaster\nAdd more lags\n\npred_arx_more_lags &lt;- ca_archive_dv |&gt; epix_slide(\n  ~ arx_forecaster(epi_data = .x,\n                   outcome = \"deaths\", \n                   predictors = c(\"deaths\", \"doctor_visits\"), \n                   trainer = linear_reg(),\n                   args_list = arx_args_list(\n                     lags = c(0, 7, 14), \n                     ahead = 28, quantile_levels = c(0.1, 0.9)\n                   )\n  )$predictions |&gt;\n    pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-more-lags",
@@ -2440,7 +2510,7 @@
     "href": "slides/day2-afternoon.html#changing-trainer",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Changing trainer",
-    "text": "Changing trainer\n\narx_forecaster(epi_data = train |&gt; as_epi_df(), \n               outcome = \"deaths\", \n               predictors = c(\"cases\", \"deaths\"),\n               trainer = linear_reg() |&gt; set_engine(\"lm\"),\n               args_list = arx_args_list(lags = 0, ahead = 28,\n                                         quantile_levels = c(0.1, 0.9)))\n\n\nModify trainer to use a model that is not lm (default)\n\n e.g. trainer = rand_forest()\ncan use any {parsnip} models, see list"
+    "text": "Changing trainer\n\narx_forecaster(epi_data = train |&gt; as_epi_df(), \n               outcome = \"deaths\", \n               predictors = c(\"cases\", \"deaths\"),\n               trainer = linear_reg() |&gt; set_engine(\"lm\"),\n               args_list = arx_args_list(lags = 0, ahead = 28,\n                                         quantile_levels = c(0.1, 0.9)))\n\nModify trainer to use a model that is not lm (default)\n\ne.g. trainer = rand_forest()\ncan use any {parsnip} models, see list\n{epipredict} has a number of custom engines as well"
   },
   {
     "objectID": "slides/day2-afternoon.html#changing-trainer-1",
@@ -2461,21 +2531,28 @@
     "href": "slides/day2-afternoon.html#warning",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Warning!",
-    "text": "Warning!\nRandom forests has really poor coverage here. Can change engine to get better coverage:\nspecify engine = \"grf_quantiles\" in the rand_forest call"
+    "text": "Warning!\n\nRandom forests has really poor coverage here.\nThe reason is the way intervals are calculated.\nCan change engine to get better coverage:\n\nspecify engine = \"grf_quantiles\" in the rand_forest call"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#predictions-from-a-random-forest-with-grf_quantiles",
+    "href": "slides/day2-afternoon.html#predictions-from-a-random-forest-with-grf_quantiles",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Predictions from a random forest with grf_quantiles",
+    "text": "Predictions from a random forest with grf_quantiles\n\n\n\n        MAE     MASE  Coverage\n 0.08871281 297.4329 0.4081633"
   },
   {
     "objectID": "slides/day2-afternoon.html#geo-pooling",
     "href": "slides/day2-afternoon.html#geo-pooling",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Geo-pooling",
-    "text": "Geo-pooling\n\nAssume we observe data over time from multiple locations (e.g. states or counties).\nWe could\n\nEstimate coefficients separately for each location (as we have done so far), or\nFit one model using all locations together at each time point (geo-pooling). Estimated coefficients will not be location specific.\n\nWe will now pool data from all US states to make predictions."
+    "text": "Geo-pooling\n\nWhen we observe data over time from multiple locations (e.g. states or counties).\n\n\n\nWe could\n\nEstimate coefficients separately for each location (as we have done so far), or\nFit one model using all locations together at each time point (geo-pooling).\nEstimated coefficients will not be location specific.\n\n\n\n\nWe will now pool data from all US states to make predictions."
   },
   {
     "objectID": "slides/day2-afternoon.html#geo-pooling-1",
     "href": "slides/day2-afternoon.html#geo-pooling-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Geo-pooling",
-    "text": "Geo-pooling\n\npred_arx_geo_pool &lt;- usa_archive_dv |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"doctor_visits\"), \n                     trainer = linear_reg() |&gt; set_engine(\"lm\"),\n                     args_list = arx_args_list(\n                       lags = 0, #c(0, 7, 14),\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
+    "text": "Geo-pooling\n\npred_arx_geo_pool &lt;- usa_archive_dv |&gt; epix_slide(\n  ~ arx_forecaster(epi_data = .x,\n                   outcome = \"deaths\", \n                   predictors = c(\"deaths\", \"doctor_visits\"), \n                   args_list = arx_args_list(lags = 0, ahead = 28, quantile_levels = c(0.1, 0.9))\n  )$predictions |&gt;\n    pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-geo-pooling-h28",
@@ -2496,7 +2573,7 @@
     "href": "slides/day2-afternoon.html#geo-pooling-or-not",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Geo-pooling or not?",
-    "text": "Geo-pooling or not?\n\nGeo-pooled predictions tend to be more stable with wider intervals\nMeanwhile, predictions from state-wise models tend to be more volatile\n\nThe extent to which this occurs differs based on the horizon. Previously we studied \\(h=28\\). What happens for \\(h=7\\)?"
+    "text": "Geo-pooling or not?\n\nGeo-pooled predictions tend to be more stable\nGenerally with wider intervals (and better coverage)\nMeanwhile, predictions from state-wise models tend to be more volatile\n\nThe extent to which this occurs differs based on the horizon.\nPreviously we studied \\(h=28\\). What happens for \\(h=7\\)?"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-geo-pooling-h-7",
@@ -2517,14 +2594,14 @@
     "href": "slides/day2-afternoon.html#what-are-these-arx-intervals",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "What are these ARX intervals?",
-    "text": "What are these ARX intervals?\n\n{epipredict} takes quantiles of training residuals to form its prediction intervals\nIn comparison to traditional (parametric) intervals from lm(), this is more flexible\nIt can in principle adapt to asymmetric or heavy-tailed error distributions\n\nTaking quantiles of training residuals can be problematic if the model is overfit. Quantile regression provides an alternative, wherein we estimate these quantiles directly"
+    "text": "What are these ARX intervals?\n\n{epipredict} takes quantiles of training residuals to form its prediction intervals\nIn comparison to traditional (parametric) intervals from lm(), this is more flexible\nIt can in principle adapt to asymmetric or heavy-tailed error distributions\n\n\nTaking quantiles of training residuals can be problematic if the model is overfit.\n\nQuantile regression provides an alternative, wherein we estimate these quantiles directly\nTechnically, grf_quantiles was using Quantile Loss with Random Forests"
   },
   {
     "objectID": "slides/day2-afternoon.html#quantile-regression",
     "href": "slides/day2-afternoon.html#quantile-regression",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Quantile regression",
-    "text": "Quantile regression\nNow we directly target conditional quantiles of the outcome over time. Estimating tail quantiles requires more data, so\n\nunsuitable for settings with small training set (e.g. trailing window on one state)\ncan benefit by combination with geo-pooling (much more data to train on)\n\n\nlibrary(quantreg)\n\npred_qr_geo_pool &lt;- usa_archive_dv |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"doctor_visits\"), \n                     trainer = quantile_reg(),\n                     args_list = arx_args_list(\n                       lags = 0, #c(0, 7, 14),\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
+    "text": "Quantile regression\nNow we directly target conditional quantiles of the outcome over time.\nEstimating tail quantiles requires more data, so\n\nunsuitable for settings with small training set (e.g. trailing window on one state)\ncan benefit by combination with geo-pooling (much more data to train on)\n\n\nlibrary(quantreg)\n\npred_qr_geo_pool &lt;- usa_archive_dv |&gt;\n  epix_slide(\n    ~ arx_forecaster(epi_data = .x,\n                     outcome = \"deaths\", \n                     predictors = c(\"deaths\", \"doctor_visits\"), \n                     trainer = quantile_reg(),\n                     args_list = arx_args_list(\n                       lags = 0, #c(0, 7, 14),\n                       ahead = 28,\n                       quantile_levels = c(0.1, 0.9))\n                     )$predictions |&gt;\n        pivot_quantiles_wider(.pred_distn),\n  .before = w, \n  .versions = fc_time_values\n)"
   },
   {
     "objectID": "slides/day2-afternoon.html#predictions-geo-pooling-quantile-regression-h28",
@@ -2534,25 +2611,53 @@
     "text": "Predictions (geo-pooling + quantile regression, \\(h=28\\))\n\n\n\n         MAE      MASE  Coverage\nCA 0.2086903 1399.3774 0.5510204\nMA 0.1280667  633.7333 0.7731959\nNY 0.1695396  835.5988 0.6288660\nTX 0.1921947  823.5808 0.5773196"
   },
   {
-    "objectID": "slides/day2-afternoon.html#anatomy-of-a-forecaster",
-    "href": "slides/day2-afternoon.html#anatomy-of-a-forecaster",
+    "objectID": "slides/day2-afternoon.html#build-a-forecaster-from-scratch-1",
+    "href": "slides/day2-afternoon.html#build-a-forecaster-from-scratch-1",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Anatomy of a forecaster",
-    "text": "Anatomy of a forecaster\n\nWe should build up modular components\nBe able to add/remove layers of complexity sequentially\n\n\n\nPreprocessor: do things to the data before model training\nTrainer: train a model on data, resulting in a fitted model object\nPredictor: make predictions, using a fitted model object\nPostprocessor: do things to the predictions before returning"
+    "section": "Build a forecaster from scratch",
+    "text": "Build a forecaster from scratch\n\nSo far, we performed manual pre-processing,\nand then relied on a canned forecaster\nto automatically perform more pre-processing, training, predicting, and post-processing.\n\n\n\n\nWhat if we want more direct control on each single step?"
   },
   {
-    "objectID": "slides/day2-afternoon.html#fit-a-forecaster-from-scratch",
-    "href": "slides/day2-afternoon.html#fit-a-forecaster-from-scratch",
+    "objectID": "slides/day2-afternoon.html#under-the-hood-of-arx_forecaster",
+    "href": "slides/day2-afternoon.html#under-the-hood-of-arx_forecaster",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fit a forecaster from scratch",
-    "text": "Fit a forecaster from scratch\nSo far, we performed some manual pre-processing, and then relied on a canned forecaster to automatically perform more pre-processing, training, predicting, and post-processing.\n\n\n\nWhat if we want more direct control on each single step?"
+    "section": "Under the hood of `arx_forecaster()",
+    "text": "Under the hood of `arx_forecaster()\n\n# A preprocessing \"recipe\" that turns raw data into features / response\nrec &lt;- epi_recipe(ca) |&gt;\n  step_epi_lag(cases, lag = c(0, 7, 14)) |&gt;\n  step_epi_lag(deaths, lag = c(0, 7, 14)) |&gt;\n  step_epi_ahead(deaths, ahead = 28) |&gt;\n  step_epi_naomit()\n\n# Training engine\neng &lt;- quantile_reg(quantile_levels = c(.1, .5, .9))\n\n# A post-processing routine describing what to do to the predictions\nfrost &lt;- frosting() |&gt;\n  layer_predict() |&gt;\n  layer_threshold(.pred, lower = 0) |&gt; # predictions / intervals should be non-negative\n  layer_add_target_date() |&gt;\n  layer_add_forecast_date()\n\n# Bundle up the preprocessor, training engine, and postprocessor\n# We use quantile regression\newf &lt;- epi_workflow(rec, eng, frost)\n\n# Fit it to data (we could fit this to ANY data that has the same format)\ntrained_ewf &lt;- fit(ewf, data = ca)\n\n# Make predictions from the end of our training data\nfcasts &lt;- forecast(trained_ewf)\n\n# we could have made predictions using the same model on ANY test data"
   },
   {
-    "objectID": "slides/day2-afternoon.html#fit-a-forecaster-from-scratch-1",
-    "href": "slides/day2-afternoon.html#fit-a-forecaster-from-scratch-1",
+    "objectID": "slides/day2-afternoon.html#predicting-influenza-hospitalizations",
+    "href": "slides/day2-afternoon.html#predicting-influenza-hospitalizations",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Fit a forecaster from scratch",
-    "text": "Fit a forecaster from scratch\n\n# A preprocessing \"recipe\" that turns raw data into features / response\nr &lt;- epi_recipe(ca) |&gt;\n  step_epi_lag(cases, lag = c(0, 7, 14)) |&gt;\n  step_epi_lag(deaths, lag = c(0, 7, 14)) |&gt;\n  step_epi_ahead(deaths, ahead = 28) |&gt;\n  step_epi_naomit()\n\n# Training engine\ne &lt;- quantile_reg(quantile_levels = c(.1, .5, .9))\n\n# A post-processing routine describing what to do to the predictions\nf &lt;- frosting() |&gt;\n  layer_predict() |&gt;\n  layer_threshold(.pred, lower = 0) |&gt; # predictions / intervals should be non-negative\n  layer_add_target_date() |&gt;\n  layer_add_forecast_date()\n\n# Bundle up the preprocessor, training engine, and postprocessor\n# We use quantile regression\newf &lt;- epi_workflow(r, e, f)\n\n# Fit it to data (we could fit this to ANY data that has the same format)\ntrained_ewf &lt;- ewf |&gt; fit(ca)\n\n# examines the recipe to determine what we need to make the prediction\nlatest &lt;- get_test_data(r, ca)\n\n# we could make predictions using the same model on ANY test data\npreds &lt;- trained_ewf |&gt; predict(new_data = latest)"
+    "section": "Predicting influenza hospitalizations",
+    "text": "Predicting influenza hospitalizations\n\nCurrent task: predict influenza hospitalizations for all states + DC + PR.\nForecasts submitted to CDC Flusight Forecast Hub\n\nSpecifically:\n\nFrom November 20, 2024 until May 31, 2025\nEvery Wednesday at 11pm EDT\nPredict 0, 1, 2, 3 epiweeks ahead\nPoint forecast + 23 quantiles\nResponse is NHSN Weekly Hospitalizations"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#aside-data-issues",
+    "href": "slides/day2-afternoon.html#aside-data-issues",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Aside: data issues",
+    "text": "Aside: data issues\n\nHospital reporting was down for a period over the summer.\nThe current data doesn’t seem to match the historical data very well."
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#we-dont-know-if-we-trust-the-data-yet-enough",
+    "href": "slides/day2-afternoon.html#we-dont-know-if-we-trust-the-data-yet-enough",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "We don’t know if we trust the data yet enough",
+    "text": "We don’t know if we trust the data yet enough\n\nIt may get revised significantly\nLet’s do something super simple, until we’re more confident\n\n\nClimatological forecaster\n\nFor a given epiweek, predict the historical quantiles\n\n\nMake adjustments to address the fact that we have some new data\n\n\nPrivledge the history\n\n\nThink like the weather: “what is the typical weather in February in Georgia, that’s our forecast”"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#climatological-forecaster",
+    "href": "slides/day2-afternoon.html#climatological-forecaster",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Climatological forecaster",
+    "text": "Climatological forecaster\n\nclimatological_model &lt;- function(epi_data, forecast_date, ahead, window_size = 3, geo_agg = FALSE) {\n  forecast_week &lt;- epiweek(forecast_date)\n  last_date_data &lt;- max(epi_data$time_value)\n  probs &lt;- c(.1, .5, .9)\n  filtered &lt;- epi_data |&gt; \n    filter(\n      (season != \"2020/21\") & (season != \"2021/22\"), # drop weird years\n      # keep data either within the window, or within the past window weeks\n      (abs(forecast_week + ahead - epiweek) &lt;= window_size) |\n        (last_date_data - time_value &lt;= window_size * 7)\n    )\n  if (geo_agg) {\n    filtered &lt;- filtered |&gt;\n      left_join(state_census |&gt; select(geo_value = abbr, pop), by = \"geo_value\") |&gt;\n      mutate(nhsn = nhsn / pop * 1e5) %&gt;%\n      select(geo_value, epiweek, epiyear, season, season_week, nhsn, pop)\n  } else {\n    filtered &lt;- filtered |&gt; group_by(geo_value)\n  }\n  naive_preds &lt;- filtered |&gt; reframe(enframe(\n    quantile(nhsn, probs = probs, na.rm = TRUE, type = 8), name = \"quantile\"\n  )) |&gt;\n    mutate(\n      forecast_date = forecast_date,\n      target_end_date = forecast_date + ahead * 7,\n      quantile = as.numeric(sub(\"%\", \"\", quantile)) / 100\n    )\n  if (!geo_agg) {\n    naive_preds &lt;- naive_preds |&gt; group_by(geo_value)\n  }\n  naive_preds &lt;- naive_preds |&gt; mutate(value = pmax(0, value))\n  if (geo_agg) {\n    naive_preds &lt;- naive_preds |&gt;\n      expand_grid(filtered |&gt; distinct(geo_value, pop)) |&gt;\n      mutate(value = value * pop / 1e5) |&gt;\n      select(-pop) |&gt;\n      select(geo_value, forecast_date, target_end_date, quantile, value) |&gt;\n      arrange(geo_value, forecast_date, target_end_date)\n  }\n  naive_preds |&gt; ungroup() |&gt; mutate(value = pmax(0, value))\n}"
+  },
+  {
+    "objectID": "slides/day2-afternoon.html#climate-predictions-for-this-week",
+    "href": "slides/day2-afternoon.html#climate-predictions-for-this-week",
+    "title": "InsightNet EpiData Workshop 2024",
+    "section": "Climate predictions for this week",
+    "text": "Climate predictions for this week"
   },
   {
     "objectID": "slides/day2-afternoon.html#flu-data-archive",
