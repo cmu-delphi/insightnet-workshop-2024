@@ -1782,7 +1782,7 @@
     "href": "slides/day1-afternoon.html#analysis-of-versioning-behavior",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Analysis of versioning behavior",
-    "text": "Analysis of versioning behavior\nRecall, we need to watch out for:\n\nLatency the time difference between date of reference and date of the initial report\nBackfill how data for a given date is updated after initial report.\n\nrevision_summary() provides a sumamry to both aspects.\n\nrevision_data = revision_summary(nchs_archive, mortality, print_inform = FALSE)"
+    "text": "Analysis of versioning behavior\nRecall, we need to watch out for:\n\nLatency the time difference between date of reference and date of the initial report\nBackfill how data for a given date is updated after initial report.\n\nrevision_summary() provides a summary of both aspects.\n\nrevision_data = revision_summary(nchs_archive, mortality, print_inform = FALSE)"
   },
   {
     "objectID": "slides/day1-afternoon.html#versioning-analysis-latency",
