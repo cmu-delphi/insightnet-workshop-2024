@@ -334,7 +334,6 @@ Use `glimpse()` to get a compact overview of the dataset.
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -356,7 +355,6 @@ $ raw_cases  <dbl> 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3586,�
 :::
 
 
-
 -->
 <!-- ## Creating tibbles
 
@@ -364,7 +362,6 @@ $ raw_cases  <dbl> 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3586,�
 * Rows represent [**observations**]{.primary} (or cases).
 * Columns represent [**variables**]{.primary} (or features).
 * You can create tibbles manually using the `tibble()` function.
-
 
 
 
@@ -396,7 +393,6 @@ tibble(x = letters, y = 1:26)
 
 :::
 :::
-
 
 
 -->
@@ -453,7 +449,6 @@ tibble(x = letters, y = 1:26)
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -475,7 +470,6 @@ pull(cases_df, raw_cases)
 
 :::
 :::
-
 
 
 -->
@@ -621,7 +615,6 @@ pull(cases_df, raw_cases)
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -648,7 +641,6 @@ ny_subset |>
 
 :::
 :::
-
 
 
 -->
@@ -685,7 +677,6 @@ ny_subset |>
 
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -715,7 +706,6 @@ cases_df |>
 :::
 
 
-
 -->
 </section>
 <section id="summarizing-data-with-summarise" class="slide level2">
@@ -743,7 +733,6 @@ cases_df |>
 For example, if we want to get the total number of complete rows for each state, then
 
 
-
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -755,10 +744,8 @@ cases_count <- cases_df |>
 :::
 
 
-
 <br>
 is equivalent to 
-
 
 
 
@@ -786,7 +773,6 @@ cases_count # Let's see what the counts are.
 
 :::
 :::
-
 
 
 
@@ -1102,43 +1088,59 @@ cases_count # Let's see what the counts are.
 </details>
 </div>
 <p>Congratulations for making it through this crash course! That’s all for this <code>glimpse()</code> into the tidyverse.</p>
+</section></section>
+<section>
+<section id="epiverse-software-ecosystem" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> Epiverse Software Ecosystem</h1>
+
 </section>
 <section id="epi.-data-processing-with-epiprocess" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
 <ul>
-<li><code>epiprocess</code> is a package that offers additional functionality to pre-process such epidemiological data.</li>
+<li><code>epiprocess</code> is a package that offers additional functionality to pre-process epidemiological data.</li>
 <li>You can work with an <code>epi_df</code> like you can with a tibble by using dplyr verbs.</li>
 <li>For example, on <code>cases_df</code>, we can easily use <code>epi_slide_mean()</code> to calculate trailing 14 day averages of cases:</li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell columns column-output-location" data-layout-align="center">
+<div class="column">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a>case_rates_df <span class="ot">&lt;-</span> case_rates_df <span class="sc">|&gt;</span></span>
 <span id="cb44-2"><a></a>  <span class="fu">as_epi_df</span>(<span class="at">as_of =</span> <span class="fu">as.Date</span>(<span class="st">"2024-01-01"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb44-3"><a></a>  <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
-<span id="cb44-4"><a></a>  <span class="fu">epi_slide_mean</span>(scaled_cases, <span class="at">.window_size =</span> <span class="dv">14</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb44-5"><a></a>  <span class="fu">rename</span>(<span class="at">smoothed_scaled_cases =</span> scaled_cases_14dav)</span>
-<span id="cb44-6"><a></a><span class="fu">head</span>(case_rates_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb44-4"><a></a>  <span class="fu">epi_slide_mean</span>(</span>
+<span id="cb44-5"><a></a>    scaled_cases, </span>
+<span id="cb44-6"><a></a>    <span class="at">.window_size =</span> <span class="dv">14</span>, </span>
+<span id="cb44-7"><a></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb44-8"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb44-9"><a></a>  <span class="fu">rename</span>(<span class="at">smoothed_scaled_cases =</span> scaled_cases_14dav)</span>
+<span id="cb44-10"><a></a>case_rates_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
 <div class="cell-output cell-output-stdout">
-<pre><code>An `epi_df` object, 6 x 6 with metadata:
+<pre><code>An `epi_df` object, 93 x 6 with metadata:
 * geo_type  = state
 * time_type = day
 * as_of     = 2024-01-01
 
-# A tibble: 6 × 6
-# Groups:   geo_value [1]
-  geo_value time_value raw_cases      pop scaled_cases smoothed_scaled_cases
-* &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;
-1 ca        2022-03-01      4310 39512223        10.9                   10.9
-2 ca        2022-03-02      7044 39512223        17.8                   14.4
-3 ca        2022-03-03      7509 39512223        19.0                   15.9
-4 ca        2022-03-04      3586 39512223         9.08                  14.2
-5 ca        2022-03-05      1438 39512223         3.64                  12.1
-6 ca        2022-03-06      6465 39512223        16.4                   12.8</code></pre>
+# A tibble: 93 × 6
+# Groups:   geo_value [3]
+   geo_value time_value raw_cases      pop scaled_cases smoothed_scaled_cases
+ * &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;
+ 1 ca        2022-03-01      4310 39512223        10.9                   10.9
+ 2 ca        2022-03-02      7044 39512223        17.8                   14.4
+ 3 ca        2022-03-03      7509 39512223        19.0                   15.9
+ 4 ca        2022-03-04      3586 39512223         9.08                  14.2
+ 5 ca        2022-03-05      1438 39512223         3.64                  12.1
+ 6 ca        2022-03-06      6465 39512223        16.4                   12.8
+ 7 ca        2022-03-07      6690 39512223        16.9                   13.4
+ 8 ca        2022-03-08      3424 39512223         8.67                  12.8
+ 9 ca        2022-03-09      4591 39512223        11.6                   12.7
+10 ca        2022-03-10      5359 39512223        13.6                   12.8
+# ℹ 83 more rows</code></pre>
 </div>
-</div>
+</div></div>
 </section>
 <section id="epi.-data-processing-with-epiprocess-1" class="slide level2">
 <h2>Epi. data processing with <code>epiprocess</code></h2>
-<p>It is easy to produce an autoplot the smoothed confirmed daily cases for each <code>geo_value</code>:</p>
+<p>It is easy to produce an autoplot of the smoothed confirmed daily cases for each <code>geo_value</code>:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>case_rates_df <span class="sc">|&gt;</span></span>
 <span id="cb46-2"><a></a>  <span class="fu">autoplot</span>(smoothed_scaled_cases)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1150,11 +1152,6 @@ cases_count # Let's see what the counts are.
 <p>Alternatively, we can display both the smoothed and the original daily case rates:</p>
 
 <img data-src="day1-afternoon_files/figure-revealjs/smoothed-original-plot-1.svg" class="quarto-figure quarto-figure-center r-stretch"><p>Now, before exploring some more features of <code>epiprocess</code>, let’s have a look at the epiverse software ecosystem it’s part of…</p>
-</section></section>
-<section>
-<section id="epiverse-software-ecosystem" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> Epiverse Software Ecosystem</h1>
-
 </section>
 <section id="the-epiverse-ecosystem" class="slide level2">
 <h2>The epiverse ecosystem</h2>
@@ -1764,27 +1761,11 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="revision-pattern-visualization" class="slide level2">
 <h2>Revision pattern visualization</h2>
 <p>This shows the finalized rates in comparison to <span class="primary"><strong>multiple revisions</strong></span> to see how the data changes over time:</p>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="day1-afternoon_files/figure-revealjs/final-vs-revisions-plot-1.svg" class="quarto-figure quarto-figure-center" height="500"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
+
+<img data-src="day1-afternoon_files/figure-revealjs/final-vs-revisions-plot-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="revision-pattern-visualization-1" class="slide level2">
 <h2>Revision pattern visualization</h2>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="day1-afternoon_files/figure-revealjs/nchs-plot-val-different-ver-1.svg" class="quarto-figure quarto-figure-center" height="500"></p>
-</figure>
-</div>
-</div>
-</div>
+
 <!--
 ## Aside: Do we need a burn-in/training set? 
 
@@ -1797,7 +1778,7 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 * However, for a [**psuedo-prospective analysis**]{.primary}, the best practise is to do a train/test split.
   + In such analysis, one would be fitting and validating many models, a train/test split provides a more rigorous control on overfitting to test set. 
 -->
-</section>
+<img data-src="day1-afternoon_files/figure-revealjs/nchs-plot-val-different-ver-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="ratio-nowcaster-jumping-from-provisional-to-finalized-value" class="slide level2">
 <h2>Ratio nowcaster: jumping from provisional to finalized value</h2>
 <ul>
@@ -1962,39 +1943,29 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <h2>Nowcasting for multiple dates via <code>epix_slide()</code></h2>
 <p>We begin by templatizing our previous operations.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a>nowcaster <span class="ot">=</span> <span class="cf">function</span>(x, g, t, <span class="at">wl=</span><span class="dv">180</span>, <span class="at">appx=</span>approx_final_lag) {</span>
-<span id="cb81-2"><a></a>  </span>
-<span id="cb81-3"><a></a></span>
-<span id="cb81-4"><a></a>  initial_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
-<span id="cb81-5"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
-<span id="cb81-6"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">min</span>(version)) <span class="sc">|&gt;</span></span>
-<span id="cb81-7"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
-<span id="cb81-8"><a></a>    <span class="fu">rename</span>(<span class="at">initial_val =</span> mortality) <span class="sc">|&gt;</span></span>
-<span id="cb81-9"><a></a>    <span class="fu">select</span>(geo_value, time_value, initial_val)</span>
-<span id="cb81-10"><a></a></span>
-<span id="cb81-11"><a></a>  finalized_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
-<span id="cb81-12"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
-<span id="cb81-13"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">max</span>(version)) <span class="sc">|&gt;</span></span>
-<span id="cb81-14"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
-<span id="cb81-15"><a></a>    <span class="fu">rename</span>(<span class="at">finalized_val =</span> mortality) <span class="sc">|&gt;</span></span>
-<span id="cb81-16"><a></a>    <span class="fu">select</span>(geo_value, time_value, finalized_val)</span>
-<span id="cb81-17"><a></a>  </span>
-<span id="cb81-18"><a></a>  ratio <span class="ot">=</span> finalized_data <span class="sc">|&gt;</span></span>
-<span id="cb81-19"><a></a>    <span class="fu">inner_join</span>(initial_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb81-20"><a></a>    <span class="fu">mutate</span>(<span class="at">ratio =</span> finalized_val <span class="sc">/</span> initial_val) <span class="sc">|&gt;</span></span>
-<span id="cb81-21"><a></a>    <span class="fu">pull</span>(ratio) <span class="sc">|&gt;</span></span>
-<span id="cb81-22"><a></a>    <span class="fu">median</span>(<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span>
-<span id="cb81-23"><a></a></span>
-<span id="cb81-24"><a></a>  last_avail <span class="ot">=</span> <span class="fu">epix_as_of</span>(x, t) <span class="sc">|&gt;</span></span>
-<span id="cb81-25"><a></a>    <span class="fu">slice_max</span>(time_value) <span class="sc">|&gt;</span></span>
-<span id="cb81-26"><a></a>    <span class="fu">pull</span>(mortality) </span>
-<span id="cb81-27"><a></a></span>
-<span id="cb81-28"><a></a></span>
-<span id="cb81-29"><a></a>  res <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">geo_value =</span> x<span class="sc">$</span>geo_value, <span class="at">target_date =</span> t, <span class="at">nowcast =</span> last_avail <span class="sc">*</span> ratio)</span>
-<span id="cb81-30"><a></a>  </span>
-<span id="cb81-31"><a></a>  <span class="fu">return</span>(res)</span>
-<span id="cb81-32"><a></a>  </span>
-<span id="cb81-33"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a>nowcaster <span class="ot">&lt;-</span> <span class="cf">function</span>(x, g, t, <span class="at">wl=</span><span class="dv">180</span>, <span class="at">appx=</span>approx_final_lag) {</span>
+<span id="cb81-2"><a></a>  initial_data <span class="ot">&lt;-</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb81-3"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb81-4"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">min</span>(version)) <span class="sc">|&gt;</span></span>
+<span id="cb81-5"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
+<span id="cb81-6"><a></a>    <span class="fu">rename</span>(<span class="at">initial_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb81-7"><a></a>    <span class="fu">select</span>(geo_value, time_value, initial_val)</span>
+<span id="cb81-8"><a></a>  finalized_data <span class="ot">&lt;-</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb81-9"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb81-10"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">max</span>(version)) <span class="sc">|&gt;</span></span>
+<span id="cb81-11"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
+<span id="cb81-12"><a></a>    <span class="fu">rename</span>(<span class="at">finalized_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb81-13"><a></a>    <span class="fu">select</span>(geo_value, time_value, finalized_val)</span>
+<span id="cb81-14"><a></a>  ratio <span class="ot">&lt;-</span> finalized_data <span class="sc">|&gt;</span></span>
+<span id="cb81-15"><a></a>    <span class="fu">inner_join</span>(initial_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb81-16"><a></a>    <span class="fu">mutate</span>(<span class="at">ratio =</span> finalized_val <span class="sc">/</span> initial_val) <span class="sc">|&gt;</span></span>
+<span id="cb81-17"><a></a>    <span class="fu">pull</span>(ratio) <span class="sc">|&gt;</span></span>
+<span id="cb81-18"><a></a>    <span class="fu">median</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb81-19"><a></a>  last_avail <span class="ot">&lt;-</span>  <span class="fu">epix_as_of</span>(x, t) <span class="sc">|&gt;</span></span>
+<span id="cb81-20"><a></a>    <span class="fu">slice_max</span>(time_value) <span class="sc">|&gt;</span></span>
+<span id="cb81-21"><a></a>    <span class="fu">pull</span>(mortality) </span>
+<span id="cb81-22"><a></a>  <span class="fu">tibble</span>(<span class="at">geo_value =</span> x<span class="sc">$</span>geo_value, <span class="at">target_date =</span> t, <span class="at">nowcast =</span> last_avail <span class="sc">*</span> ratio)</span>
+<span id="cb81-23"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="sanity-check-of-epix_slide" class="slide level2">
@@ -2143,37 +2114,29 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="details-of-epix_slide-4" class="slide level2">
 <h2>Details of <code>epix_slide()</code></h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb89" data-code-line-numbers="|4,11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a></a>nowcaster <span class="ot">=</span> <span class="cf">function</span>(x, g, t, <span class="at">wl=</span><span class="dv">180</span>, <span class="at">appx=</span>approx_final_lag) {</span>
-<span id="cb89-2"><a></a></span>
-<span id="cb89-3"><a></a>  initial_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
-<span id="cb89-4"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
-<span id="cb89-5"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">min</span>(version)) <span class="sc">|&gt;</span></span>
-<span id="cb89-6"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
-<span id="cb89-7"><a></a>    <span class="fu">rename</span>(<span class="at">initial_val =</span> mortality) <span class="sc">|&gt;</span></span>
-<span id="cb89-8"><a></a>    <span class="fu">select</span>(geo_value, time_value, initial_val)</span>
-<span id="cb89-9"><a></a></span>
-<span id="cb89-10"><a></a>  finalized_data <span class="ot">=</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
-<span id="cb89-11"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
-<span id="cb89-12"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">max</span>(version)) <span class="sc">|&gt;</span></span>
-<span id="cb89-13"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
-<span id="cb89-14"><a></a>    <span class="fu">rename</span>(<span class="at">finalized_val =</span> mortality) <span class="sc">|&gt;</span></span>
-<span id="cb89-15"><a></a>    <span class="fu">select</span>(geo_value, time_value, finalized_val)</span>
-<span id="cb89-16"><a></a>  </span>
-<span id="cb89-17"><a></a>  ratio <span class="ot">=</span> finalized_data <span class="sc">|&gt;</span></span>
-<span id="cb89-18"><a></a>    <span class="fu">inner_join</span>(initial_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb89-19"><a></a>    <span class="fu">mutate</span>(<span class="at">ratio =</span> finalized_val <span class="sc">/</span> initial_val) <span class="sc">|&gt;</span></span>
-<span id="cb89-20"><a></a>    <span class="fu">pull</span>(ratio) <span class="sc">|&gt;</span></span>
-<span id="cb89-21"><a></a>    <span class="fu">median</span>(<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span>
-<span id="cb89-22"><a></a></span>
-<span id="cb89-23"><a></a>  last_avail <span class="ot">=</span> <span class="fu">epix_as_of</span>(x, t) <span class="sc">|&gt;</span></span>
-<span id="cb89-24"><a></a>    <span class="fu">slice_max</span>(time_value) <span class="sc">|&gt;</span></span>
-<span id="cb89-25"><a></a>    <span class="fu">pull</span>(mortality) </span>
-<span id="cb89-26"><a></a>  </span>
-<span id="cb89-27"><a></a>  res <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">geo_value =</span> x<span class="sc">$</span>geo_value, <span class="at">target_date =</span> t, <span class="at">nowcast =</span> last_avail <span class="sc">*</span> ratio)</span>
-<span id="cb89-28"><a></a>  </span>
-<span id="cb89-29"><a></a>  <span class="fu">return</span>(res)</span>
-<span id="cb89-30"><a></a>  </span>
-<span id="cb89-31"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89" data-code-line-numbers="|3,9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a></a>nowcaster <span class="ot">&lt;-</span> <span class="cf">function</span>(x, g, t, <span class="at">wl=</span><span class="dv">180</span>, <span class="at">appx=</span>approx_final_lag) {</span>
+<span id="cb89-2"><a></a>  initial_data <span class="ot">&lt;-</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb89-3"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb89-4"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">min</span>(version)) <span class="sc">|&gt;</span></span>
+<span id="cb89-5"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
+<span id="cb89-6"><a></a>    <span class="fu">rename</span>(<span class="at">initial_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb89-7"><a></a>    <span class="fu">select</span>(geo_value, time_value, initial_val)</span>
+<span id="cb89-8"><a></a>  finalized_data <span class="ot">&lt;-</span> x<span class="sc">$</span>DT <span class="sc">|&gt;</span></span>
+<span id="cb89-9"><a></a>    <span class="fu">group_by</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb89-10"><a></a>    <span class="fu">filter</span>(version <span class="sc">==</span>  <span class="fu">max</span>(version)) <span class="sc">|&gt;</span></span>
+<span id="cb89-11"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&gt;=</span> t <span class="sc">-</span> wl <span class="sc">-</span> appx <span class="sc">&amp;</span> time_value <span class="sc">&lt;=</span> t <span class="sc">-</span> appx) <span class="sc">|&gt;</span></span>
+<span id="cb89-12"><a></a>    <span class="fu">rename</span>(<span class="at">finalized_val =</span> mortality) <span class="sc">|&gt;</span></span>
+<span id="cb89-13"><a></a>    <span class="fu">select</span>(geo_value, time_value, finalized_val)</span>
+<span id="cb89-14"><a></a>  ratio <span class="ot">&lt;-</span> finalized_data <span class="sc">|&gt;</span></span>
+<span id="cb89-15"><a></a>    <span class="fu">inner_join</span>(initial_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb89-16"><a></a>    <span class="fu">mutate</span>(<span class="at">ratio =</span> finalized_val <span class="sc">/</span> initial_val) <span class="sc">|&gt;</span></span>
+<span id="cb89-17"><a></a>    <span class="fu">pull</span>(ratio) <span class="sc">|&gt;</span></span>
+<span id="cb89-18"><a></a>    <span class="fu">median</span>(<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span>
+<span id="cb89-19"><a></a>  last_avail <span class="ot">&lt;-</span> <span class="fu">epix_as_of</span>(x, t) <span class="sc">|&gt;</span></span>
+<span id="cb89-20"><a></a>    <span class="fu">slice_max</span>(time_value) <span class="sc">|&gt;</span></span>
+<span id="cb89-21"><a></a>    <span class="fu">pull</span>(mortality) </span>
+<span id="cb89-22"><a></a>  <span class="fu">tibble</span>(<span class="at">geo_value =</span> x<span class="sc">$</span>geo_value, <span class="at">target_date =</span> t, <span class="at">nowcast =</span> last_avail <span class="sc">*</span> ratio)</span>
+<span id="cb89-23"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="visualize-nowcasts" class="slide level2">
@@ -2623,6 +2586,9 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li>one that also uses hospitalizations as a predictor</li>
 <li>and two that use quantile reg instead of linear reg</li>
 </ul>
+</section>
+<section id="model-settings-1" class="slide level2">
+<h2>Model settings</h2>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb108"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a></a>reg1_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb108-2"><a></a>  <span class="at">predictors =</span> <span class="fu">tribble</span>(</span>
