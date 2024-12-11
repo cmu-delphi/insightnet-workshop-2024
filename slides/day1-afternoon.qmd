@@ -217,12 +217,6 @@ cases_df |>
   head()
 ```
 
-## Key practices in `dplyr`
-
-* Use `head()` and `tail()` for quick data inspection.
-* Use `select()` and `filter()` for data manipulation.
-* Chain functions with `|>` for cleaner code.
-
 ## Grouping data with `group_by()`
 
 * Use `group_by()` to group data by one or more columns.
@@ -337,12 +331,28 @@ cases_count # Let's see what the counts are.
 
 -->
 
-## Key practices in `dplyr`: Round 2
+## Key practices learned
 
+* Use `head()` and `tail()` for quick data inspection.
+* Use `select()` and `filter()` for data manipulation.
+* Chain functions with `|>`.
 * Use `group_by()` to group data by one or more variables before applying functions.
 * Use `mutate` to create new columns or modify existing ones by applying functions to existing data.
 * Use `summarise` to reduce data to summary statistics (e.g., mean, median).
-* `count()` is a convenient shortcut for counting rows by group without needing `group_by()` and `summarise()`.
+
+## 1 to 2 word summaries of the `dplyr` functions
+
+Here are 1 to 2 word summaries of the key `dplyr` functions:
+
+1. `select()`: Choose columns
+
+1. `filter()`: Subset rows
+
+1. `mutate()`: Create columns
+
+1. `group_by()`: Group by
+
+1. `summarise()`: Numerical summary
 
 ## Tidy data and Tolstoy
 

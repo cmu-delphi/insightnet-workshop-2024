@@ -228,12 +228,10 @@ verify_setup()
 
 * In table form, panel data is a time index + one or more locations/keys.
 
-* **Ex**: The % of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 ([docs](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html)):
-```{r panel-wa-ex}
-head(epix_as_of(dv_wa, max_version = max(dv_wa$DT$version)))
+* **Ex**: The % of outpatient doctor visits that are COVID-related in CA from June 2020 to Dec. 2021 ([docs](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html)):
+```{r panel-ca-ex}
+dv_versioned_panel_final |> filter(geo_value == "ca") |> select(-version)
 ```
-
-<!-- Example: The estimated % of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 -->
 
 ## Examples of panel data - COVID-19 cases
 
@@ -427,7 +425,7 @@ ggplot(ca |>
 
 * This is because individual-level data has delayed availability:
     
-[Person comes to ER → Has some tests → Admitted → Tests come back → Entered into the system → ...]{.fourth-colour}
+[Person comes to ER → Admitted → Has some tests → Tests come back → Entered into the system → ...]{.fourth-colour}
 
 * So, a "Hospital admission" may not attributable to a particular condition
 until a few days have passed (the patient may even have been released)
@@ -1164,8 +1162,6 @@ Change `geo_type` and `geo_values` in the previous example
 ```{r state-jhu-pub-covidcast}
 #| echo: true
 #| eval: false
-# Obtain the most up-to-date version of the smoothed covid-like illness (CLI)
-# signal from the COVID-19 Trends and Impact survey for all states
 jhu_state_cases <- pub_covidcast(
   source = "jhu-csse",
   signals = "confirmed_7dav_incidence_prop",
