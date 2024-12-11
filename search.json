@@ -1789,14 +1789,14 @@
     "href": "slides/day1-afternoon.html#versioning-analysis-latency",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioning analysis – latency",
-    "text": "Versioning analysis – latency\n\nQuestion: What is the latency of NCHS data?\n\n\nrevision_data |&gt; select(geo_value, time_value, min_lag) |&gt; slice_sample(n = 10)\n\n# A tibble: 10 × 3\n   geo_value time_value min_lag\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt; \n 1 ut        2022-02-20  7 days\n 2 ut        2022-12-11 14 days\n 3 ut        2023-11-05  7 days\n 4 ca        2020-10-04 63 days\n 5 ca        2021-02-07 14 days\n 6 ut        2021-04-18  7 days\n 7 ca        2024-06-16  7 days\n 8 ca        2022-05-08 14 days\n 9 ca        2021-12-05  7 days\n10 ut        2024-05-12  7 days\n\n\n\nWe randomly sampled some dates to check if there is a consistent latency pattern.\nUnderstanding latency prevents us from using data that we shouldn’t have access to."
+    "text": "Versioning analysis – latency\n\nQuestion: What is the latency of NCHS data?\n\n\nrevision_data |&gt; select(geo_value, time_value, min_lag) |&gt; slice_sample(n = 10)\n\n# A tibble: 10 × 3\n   geo_value time_value min_lag \n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;  \n 1 ca        2020-07-12 147 days\n 2 ca        2021-08-29  14 days\n 3 ut        2020-09-27  70 days\n 4 ut        2022-01-30   7 days\n 5 ca        2023-07-09   7 days\n 6 ut        2022-01-02   7 days\n 7 ca        2023-02-12   7 days\n 8 ca        2022-01-02   7 days\n 9 ut        2024-04-07   7 days\n10 ca        2024-09-22   7 days\n\n\n\nWe randomly sampled some dates to check if there is a consistent latency pattern.\nUnderstanding latency prevents us from using data that we shouldn’t have access to."
   },
   {
     "objectID": "slides/day1-afternoon.html#versioning-analysis-backfill",
     "href": "slides/day1-afternoon.html#versioning-analysis-backfill",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Versioning analysis – backfill",
-    "text": "Versioning analysis – backfill\n\nQuestion: How long does it take for the reported value to be close to the finalized value?\n\n\nrevision_data |&gt; select(geo_value, time_value, time_near_latest) |&gt; slice_sample(n = 10)\n\n# A tibble: 10 × 3\n   geo_value time_value time_near_latest\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n 1 ut        2021-11-07  28 days        \n 2 ut        2020-12-20  56 days        \n 3 ca        2022-01-02  42 days        \n 4 ca        2022-02-27  49 days        \n 5 ca        2023-11-26  21 days        \n 6 ut        2020-06-21 168 days        \n 7 ca        2020-07-05 154 days        \n 8 ca        2021-03-21  35 days        \n 9 ca        2021-08-15  28 days        \n10 ca        2020-12-13  63 days        \n\n\n\nIt generally takes at least 4 weeks for reported value to be within 20% (default in revision_summary()) of the finalized value.\nWe can change the threshold of percentage difference by specifying the within_latest argument of revision_summary()."
+    "text": "Versioning analysis – backfill\n\nQuestion: How long does it take for the reported value to be close to the finalized value?\n\n\nrevision_data |&gt; select(geo_value, time_value, time_near_latest) |&gt; slice_sample(n = 10)\n\n# A tibble: 10 × 3\n   geo_value time_value time_near_latest\n   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n 1 ut        2023-05-28   7 days        \n 2 ca        2021-08-15  28 days        \n 3 ut        2020-03-08 273 days        \n 4 ut        2021-07-25  28 days        \n 5 ca        2020-05-24 196 days        \n 6 ca        2020-06-21 168 days        \n 7 ca        2020-01-26 315 days        \n 8 ca        2020-07-19 140 days        \n 9 ca        2023-10-15  21 days        \n10 ca        2020-11-01  35 days        \n\n\n\nIt generally takes at least 4 weeks for reported value to be within 20% (default in revision_summary()) of the finalized value.\nWe can change the threshold of percentage difference by specifying the within_latest argument of revision_summary()."
   },
   {
     "objectID": "slides/day1-afternoon.html#versioning-analysis---backfill",
@@ -1845,7 +1845,7 @@
     "href": "slides/day1-afternoon.html#revisiting-revision_summary",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Revisiting revision_summary()",
-    "text": "Revisiting revision_summary()\nRecall, revision_summary() reports the number of days to be within 20% (default value) of finalized value\n\n\n# A tibble: 5 × 3\n  geo_value time_value time_near_latest\n  &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n1 ut        2020-10-25  42 days        \n2 ca        2022-10-16  28 days        \n3 ut        2021-06-13  21 days        \n4 ca        2022-07-17  28 days        \n5 ut        2020-02-02 308 days        \n\n\nTime differences in days\n  0%  25%  50%  75% 100% \n   7   21   28   49  315 \n\n\n\nLet’s say data reported 49 days after reference date is good enough to be considered finalized."
+    "text": "Revisiting revision_summary()\nRecall, revision_summary() reports the number of days to be within 20% (default value) of finalized value\n\n\n# A tibble: 5 × 3\n  geo_value time_value time_near_latest\n  &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          \n1 ut        2023-04-09  7 days         \n2 ut        2022-03-06 49 days         \n3 ca        2021-01-24 49 days         \n4 ut        2020-09-20 77 days         \n5 ca        2021-01-17 49 days         \n\n\nTime differences in days\n  0%  25%  50%  75% 100% \n   7   21   28   49  315 \n\n\n\nLet’s say data reported 49 days after reference date is good enough to be considered finalized."
   },
   {
     "objectID": "slides/day1-afternoon.html#ratio-nowcaster-test-time-feature",
@@ -2058,13 +2058,6 @@
     "text": "Model settings\n\nreg1_settings &lt;- list(\n  predictors = tribble(\n    ~varname,    ~max_abs_shift_days, ~max_n_shifts,\n    \"mortality\",                  35,             3,\n    ),\n  min_n_training_per_predictor = 30, # or else exclude predictor\n  days_until_target_semistable = 7 * 7, # filter out unstable when training (and evaluating)\n  min_n_training_intersection = 20, # or else raise error\n  max_n_training_intersection = Inf # or else filter down rows\n)\n\nreg2_settings &lt;- list(\n  predictors = tribble(\n    ~varname,     ~max_abs_shift_days, ~max_n_shifts,\n    \"admissions\",                  35,             3,\n    \"mortality\",                   35,             3,\n    ),\n  min_n_training_per_predictor = 30, # or else exclude predictor\n  days_until_target_semistable = 7 * 7, # filter out unstable when training (and evaluating)\n  min_n_training_intersection = 20, # or else raise error\n  max_n_training_intersection = Inf # or else filter down rows\n)\n\nreg3_settings &lt;- c(reg1_settings, median = TRUE)\nreg4_settings &lt;- c(reg2_settings, median = TRUE)"
   },
   {
-    "objectID": "slides/day1-afternoon.html#data-wrangling",
-    "href": "slides/day1-afternoon.html#data-wrangling",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Data wrangling",
-    "text": "Data wrangling"
-  },
-  {
     "objectID": "slides/day1-afternoon.html#comparison-linear-regression",
     "href": "slides/day1-afternoon.html#comparison-linear-regression",
     "title": "InsightNet EpiData Workshop 2024",
@@ -2083,7 +2076,7 @@
     "href": "slides/day1-afternoon.html#evaluations",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Evaluations",
-    "text": "Evaluations\n\nn_models &lt;- length(unique(nowcast_comparison$Nowcaster))\nnowcast_comparison |&gt;\n  # Filter evaluation based on target stability\n  filter(target_date &lt;= nchs_ca_archive$versions_end - 49) |&gt;\n  # Filter evaluated tasks to those with all models available\n  group_by(target_date) |&gt;\n  filter(sum(!is.na(prediction)) == n_models) |&gt;\n  ungroup() |&gt;\n  summarize(.by = Nowcaster,\n            MAE = mean(abs(mortality - prediction)),\n            MAPE = 100*mean(abs(mortality - prediction)/abs(mortality)))\n\n# A tibble: 6 × 3\n  Nowcaster          MAE  MAPE\n  &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt;\n1 LOCF             210.   77.7\n2 LOCF ratio model 177.   62.6\n3 LinReg model     168.   94.2\n4 LinReg + hosp     99.9  52.5\n5 QuantReg model   108.   47.7\n6 QuantReg + hosp   92.0  43.8"
+    "text": "Evaluations\n\nn_models &lt;- length(unique(nowcast_comparison$Nowcaster))\nnowcast_comparison |&gt;\n  # Filter evaluation based on target stability\n  filter(target_date &lt;= nchs_ca_archive$versions_end - 49) |&gt;\n  # Filter evaluated tasks to those with all models available\n  group_by(target_date) |&gt;\n  filter(sum(!is.na(prediction)) == n_models) |&gt;\n  ungroup() |&gt;\n  summarize(.by = Nowcaster,\n            MAE = mean(abs(mortality - prediction)),\n            MAPE = 100*mean(abs(mortality - prediction)/abs(mortality)))\n\n# A tibble: 6 × 3\n  Nowcaster           MAE  MAPE\n  &lt;chr&gt;             &lt;dbl&gt; &lt;dbl&gt;\n1 LOCF              210.   77.7\n2 LOCF ratio model  177.   62.6\n3 Regression model  168.   94.2\n4 Regression + hosp  99.9  52.5\n5 QuantReg model    108.   47.7\n6 QuantReg + hosp    92.0  43.8"
   },
   {
     "objectID": "slides/day1-afternoon.html#mea-culpa",
