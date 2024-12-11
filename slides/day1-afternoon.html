@@ -1665,18 +1665,18 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a></a>revision_data <span class="sc">|&gt;</span> <span class="fu">select</span>(geo_value, time_value, min_lag) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10 × 3
-   geo_value time_value min_lag 
-   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;  
- 1 ca        2022-10-09   7 days
- 2 ca        2023-08-20   7 days
- 3 ut        2021-08-29  14 days
- 4 ut        2022-12-18  35 days
- 5 ca        2023-07-16   7 days
- 6 ut        2023-11-26  21 days
- 7 ca        2020-11-22  14 days
- 8 ca        2022-04-10  14 days
- 9 ut        2021-12-19  42 days
-10 ca        2020-04-26 224 days</code></pre>
+   geo_value time_value min_lag
+   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt; 
+ 1 ut        2022-02-20  7 days
+ 2 ut        2022-12-11 14 days
+ 3 ut        2023-11-05  7 days
+ 4 ca        2020-10-04 63 days
+ 5 ca        2021-02-07 14 days
+ 6 ut        2021-04-18  7 days
+ 7 ca        2024-06-16  7 days
+ 8 ca        2022-05-08 14 days
+ 9 ca        2021-12-05  7 days
+10 ut        2024-05-12  7 days</code></pre>
 </div>
 </div>
 <ul>
@@ -1695,16 +1695,16 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <pre><code># A tibble: 10 × 3
    geo_value time_value time_near_latest
    &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          
- 1 ut        2023-10-01  14 days        
- 2 ca        2020-10-04  63 days        
- 3 ut        2023-10-15   7 days        
- 4 ut        2023-05-28   7 days        
- 5 ut        2021-04-11  35 days        
- 6 ca        2022-04-17  35 days        
- 7 ca        2020-11-08  28 days        
- 8 ca        2023-05-28  28 days        
- 9 ut        2020-07-26 133 days        
-10 ca        2024-06-16  28 days        </code></pre>
+ 1 ut        2021-11-07  28 days        
+ 2 ut        2020-12-20  56 days        
+ 3 ca        2022-01-02  42 days        
+ 4 ca        2022-02-27  49 days        
+ 5 ca        2023-11-26  21 days        
+ 6 ut        2020-06-21 168 days        
+ 7 ca        2020-07-05 154 days        
+ 8 ca        2021-03-21  35 days        
+ 9 ca        2021-08-15  28 days        
+10 ca        2020-12-13  63 days        </code></pre>
 </div>
 </div>
 <ul>
@@ -1822,11 +1822,11 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <pre><code># A tibble: 5 × 3
   geo_value time_value time_near_latest
   &lt;chr&gt;     &lt;date&gt;     &lt;drtn&gt;          
-1 ut        2020-04-26 224 days        
-2 ca        2022-08-07  21 days        
-3 ca        2022-04-17  35 days        
-4 ca        2020-05-24 196 days        
-5 ca        2021-09-26  35 days        </code></pre>
+1 ut        2020-10-25  42 days        
+2 ca        2022-10-16  28 days        
+3 ut        2021-06-13  21 days        
+4 ca        2022-07-17  28 days        
+5 ut        2020-02-02 308 days        </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Time differences in days
@@ -2201,9 +2201,9 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">290.1111</td>
-<td style="text-align: right;">320.5913</td>
-<td style="text-align: right;">312.2967</td>
+<td style="text-align: right;">161.6591</td>
+<td style="text-align: right;">172.4131</td>
+<td style="text-align: right;">199.6061</td>
 </tr>
 </tbody>
 </table>
@@ -2278,8 +2278,11 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb101-12"><a></a>  )</span>
 <span id="cb101-13"><a></a>predictor_descriptions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 0 × 3
-# ℹ 3 variables: varname &lt;chr&gt;, lag_days &lt;int&gt;, predictor_name &lt;chr&gt;</code></pre>
+<pre><code># A tibble: 2 × 3
+  varname   lag_days predictor_name          
+  &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;                   
+1 mortality       14 mortality_lag14_realtime
+2 mortality        7 mortality_lag7_realtime </code></pre>
 </div>
 </div>
 </section>
@@ -2324,10 +2327,20 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a></a><span class="fu">get_predictor_training_data</span>(nchs_ca_past_archive, <span class="st">"mortality"</span>, <span class="dv">7</span>, <span class="st">"mortality_lag7_realtime"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 3
-  geo_value time_value mortality_lag7_realtime
-  &lt;chr&gt;     &lt;date&gt;                       &lt;dbl&gt;
-1 ca        2020-12-06                      13</code></pre>
+<pre><code># A tibble: 36 × 3
+   geo_value time_value mortality_lag7_realtime
+   &lt;chr&gt;     &lt;date&gt;                       &lt;dbl&gt;
+ 1 ca        2020-12-06                      13
+ 2 ca        2021-02-28                      78
+ 3 ca        2021-03-07                      54
+ 4 ca        2021-03-14                      43
+ 5 ca        2021-03-21                      19
+ 6 ca        2021-03-28                      21
+ 7 ca        2021-04-04                      23
+ 8 ca        2021-04-11                      20
+ 9 ca        2021-04-18                      18
+10 ca        2021-04-25                      20
+# ℹ 26 more rows</code></pre>
 </div>
 </div>
 <p>The first value here is a version of <span class="math inline">\(Y_{\text{2020-11-30}}\)</span> as it was reported in version 2020-12-06. We expect it to have similar characteristics as <span class="math inline">\(Y_{t - 7\text{ days}}\)</span> as reported in version <span class="math inline">\(t\)</span> for other values of <span class="math inline">\(t\)</span>.</p>
@@ -2341,6 +2354,22 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <span id="cb107-4"><a></a>  }) <span class="sc">|&gt;</span></span>
 <span id="cb107-5"><a></a>  <span class="fu">reduce</span>(full_join, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
 <span id="cb107-6"><a></a>predictors</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 50 × 4
+   geo_value time_value mortality_lag14_realtime mortality_lag7_realtime
+   &lt;chr&gt;     &lt;date&gt;                        &lt;dbl&gt;                   &lt;dbl&gt;
+ 1 ca        2020-12-06                       66                      13
+ 2 ca        2020-12-13                       13                      NA
+ 3 ca        2021-02-14                      557                      NA
+ 4 ca        2021-02-21                      474                      NA
+ 5 ca        2021-02-28                      478                      78
+ 6 ca        2021-03-07                      415                      54
+ 7 ca        2021-03-14                      282                      43
+ 8 ca        2021-03-21                      176                      19
+ 9 ca        2021-03-28                      164                      21
+10 ca        2021-04-04                      117                      23
+# ℹ 40 more rows</code></pre>
+</div>
 </div>
 <ul>
 <li>A full join is nice to show differences in missingness</li>
@@ -2350,37 +2379,49 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <section id="combine-with-target-data" class="slide level2">
 <h2>Combine with target data</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a></a>target <span class="ot">&lt;-</span> nchs_ca_past_latest <span class="sc">|&gt;</span></span>
-<span id="cb108-2"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">&lt;=</span> <span class="fu">max</span>(time_value) <span class="sc">-</span> <span class="dv">49</span>) <span class="sc">|&gt;</span></span>
-<span id="cb108-3"><a></a>  <span class="fu">rename</span>(<span class="at">mortality_semistable =</span> mortality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a></a>target <span class="ot">&lt;-</span> nchs_ca_past_latest <span class="sc">|&gt;</span></span>
+<span id="cb109-2"><a></a>  <span class="fu">filter</span>(time_value <span class="sc">&lt;=</span> <span class="fu">max</span>(time_value) <span class="sc">-</span> <span class="dv">49</span>) <span class="sc">|&gt;</span></span>
+<span id="cb109-3"><a></a>  <span class="fu">rename</span>(<span class="at">mortality_semistable =</span> mortality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For each training time <span class="math inline">\(t'\)</span>, approximate finalized <span class="math inline">\(Y_{t'}\)</span> with <span class="math inline">\(Y_{t'}\)</span> as reported at our trial nowcast date <span class="math inline">\(t\)</span>. * Based on earlier analysis, we shouldn’t really trust this for <span class="math inline">\(t'\)</span> within 49 days of <span class="math inline">\(t\)</span>, so filter those training times out.</p>
 </section>
 <section id="fit-the-regression-model" class="slide level2">
 <h2>Fit the regression model</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a></a>training_test <span class="ot">&lt;-</span> <span class="fu">full_join</span>(predictors, target, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
-<span id="cb109-2"><a></a></span>
-<span id="cb109-3"><a></a>training <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span> <span class="fu">drop_na</span>()</span>
-<span id="cb109-4"><a></a>test <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> trial_nowcast_date)</span>
-<span id="cb109-5"><a></a></span>
-<span id="cb109-6"><a></a>fit <span class="ot">&lt;-</span> training <span class="sc">|&gt;</span></span>
-<span id="cb109-7"><a></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(predictor_descriptions<span class="sc">$</span>predictor_name), mortality_semistable) <span class="sc">|&gt;</span></span>
-<span id="cb109-8"><a></a>  <span class="fu">lm</span>(<span class="at">formula =</span> mortality_semistable <span class="sc">~</span> .)</span>
-<span id="cb109-9"><a></a></span>
-<span id="cb109-10"><a></a>pred <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb109-11"><a></a>  <span class="at">nowcast_date =</span> trial_nowcast_date,</span>
-<span id="cb109-12"><a></a>  <span class="at">target_date =</span> target_time_value,</span>
-<span id="cb109-13"><a></a>  <span class="at">prediction =</span> <span class="fu">unname</span>(<span class="fu">predict</span>(fit, test))</span>
-<span id="cb109-14"><a></a>)</span>
-<span id="cb109-15"><a></a></span>
-<span id="cb109-16"><a></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a></a>training_test <span class="ot">&lt;-</span> <span class="fu">full_join</span>(predictors, target, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
+<span id="cb110-2"><a></a></span>
+<span id="cb110-3"><a></a>training <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span> <span class="fu">drop_na</span>()</span>
+<span id="cb110-4"><a></a>test <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span> <span class="fu">filter</span>(time_value <span class="sc">==</span> trial_nowcast_date)</span>
+<span id="cb110-5"><a></a></span>
+<span id="cb110-6"><a></a>fit <span class="ot">&lt;-</span> training <span class="sc">|&gt;</span></span>
+<span id="cb110-7"><a></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(predictor_descriptions<span class="sc">$</span>predictor_name), mortality_semistable) <span class="sc">|&gt;</span></span>
+<span id="cb110-8"><a></a>  <span class="fu">lm</span>(<span class="at">formula =</span> mortality_semistable <span class="sc">~</span> .)</span>
+<span id="cb110-9"><a></a></span>
+<span id="cb110-10"><a></a>pred <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb110-11"><a></a>  <span class="at">nowcast_date =</span> trial_nowcast_date,</span>
+<span id="cb110-12"><a></a>  <span class="at">target_date =</span> target_time_value,</span>
+<span id="cb110-13"><a></a>  <span class="at">prediction =</span> <span class="fu">unname</span>(<span class="fu">predict</span>(fit, test))</span>
+<span id="cb110-14"><a></a>)</span>
+<span id="cb110-15"><a></a></span>
+<span id="cb110-16"><a></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  nowcast_date target_date prediction
+  &lt;date&gt;       &lt;date&gt;           &lt;dbl&gt;
+1 2022-01-02   2022-01-02        483.</code></pre>
+</div>
 </div>
 </section>
 <section id="our-prediction" class="slide level2">
 <h2>Our prediction</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  nowcast_date target_date prediction
+  &lt;date&gt;       &lt;date&gt;           &lt;dbl&gt;
+1 2022-01-02   2022-01-02        483.</code></pre>
+</div>
 </div>
 </section>
 <section id="backtesting-our-nowcaster" class="slide level2">
@@ -2414,137 +2455,137 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a></a>regression_nowcaster <span class="ot">&lt;-</span> <span class="cf">function</span>(archive, settings, <span class="at">return_info =</span> <span class="cn">FALSE</span>) {</span>
-<span id="cb111-2"><a></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">inherits</span>(archive, <span class="st">"epi_archive"</span>)) {</span>
-<span id="cb111-3"><a></a>    <span class="fu">stop</span>(<span class="st">"`archive` isn't an `epi_archive`"</span>)</span>
-<span id="cb111-4"><a></a>  }</span>
-<span id="cb111-5"><a></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>geo_value)) <span class="sc">!=</span> <span class="dv">1</span>L) {</span>
-<span id="cb111-6"><a></a>    <span class="fu">stop</span>(<span class="st">"Expected exactly one unique `geo_value`"</span>)</span>
-<span id="cb111-7"><a></a>  }</span>
-<span id="cb111-8"><a></a>  <span class="cf">if</span> (archive<span class="sc">$</span>time_type <span class="sc">==</span> <span class="st">"day"</span>) {</span>
-<span id="cb111-9"><a></a>    archive <span class="ot">&lt;-</span> <span class="fu">thin_daily_to_weekly_archive</span>(archive)</span>
-<span id="cb111-10"><a></a>  }</span>
-<span id="cb111-11"><a></a></span>
-<span id="cb111-12"><a></a>  nowcast_date <span class="ot">&lt;-</span> archive<span class="sc">$</span>versions_end</span>
-<span id="cb111-13"><a></a>  target_time_value <span class="ot">&lt;-</span> nowcast_date</span>
-<span id="cb111-14"><a></a>  latest_edf <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span> <span class="fu">epix_as_of</span>(nowcast_date)</span>
-<span id="cb111-15"><a></a>  <span class="co"># print(nowcast_date)</span></span>
-<span id="cb111-16"><a></a></span>
-<span id="cb111-17"><a></a>  predictor_descriptions <span class="ot">&lt;-</span></span>
-<span id="cb111-18"><a></a>    latest_edf <span class="sc">|&gt;</span></span>
-<span id="cb111-19"><a></a>    <span class="fu">mutate</span>(<span class="at">lag_days =</span> <span class="fu">as.integer</span>(nowcast_date <span class="sc">-</span> time_value)) <span class="sc">|&gt;</span></span>
-<span id="cb111-20"><a></a>    <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(geo_value, time_value)) <span class="sc">|&gt;</span></span>
-<span id="cb111-21"><a></a>    <span class="fu">pivot_longer</span>(<span class="sc">-</span>lag_days, <span class="at">names_to =</span> <span class="st">"varname"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb111-22"><a></a>    <span class="fu">drop_na</span>(value) <span class="sc">|&gt;</span></span>
-<span id="cb111-23"><a></a>    <span class="fu">inner_join</span>(settings<span class="sc">$</span>predictors, <span class="at">by =</span> <span class="st">"varname"</span>, <span class="at">unmatched =</span> <span class="st">"error"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb111-24"><a></a>    <span class="fu">filter</span>(<span class="fu">abs</span>(lag_days) <span class="sc">&lt;=</span> max_abs_shift_days) <span class="sc">|&gt;</span></span>
-<span id="cb111-25"><a></a>    <span class="fu">arrange</span>(varname, <span class="fu">abs</span>(lag_days)) <span class="sc">|&gt;</span></span>
-<span id="cb111-26"><a></a>    <span class="fu">group_by</span>(varname) <span class="sc">|&gt;</span></span>
-<span id="cb111-27"><a></a>    <span class="fu">filter</span>(<span class="fu">seq_len</span>(<span class="fu">n</span>()) <span class="sc">&lt;=</span> max_n_shifts[[<span class="dv">1</span>]]) <span class="sc">|&gt;</span></span>
-<span id="cb111-28"><a></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb111-29"><a></a>    <span class="fu">mutate</span>(<span class="at">predictor_name =</span> <span class="fu">paste0</span>(varname, <span class="st">"_lag"</span>, lag_days, <span class="st">"_realtime"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb111-30"><a></a>    <span class="fu">select</span>(varname, lag_days, predictor_name)</span>
-<span id="cb111-31"><a></a></span>
-<span id="cb111-32"><a></a>  predictor_edfs <span class="ot">&lt;-</span> predictor_descriptions <span class="sc">|&gt;</span></span>
-<span id="cb111-33"><a></a>    <span class="fu">pmap</span>(<span class="cf">function</span>(varname, lag_days, predictor_name) {</span>
-<span id="cb111-34"><a></a>      <span class="fu">get_predictor_training_data</span>(archive, varname, lag_days, predictor_name)</span>
-<span id="cb111-35"><a></a>    }) <span class="sc">|&gt;</span></span>
-<span id="cb111-36"><a></a>    <span class="fu">lapply</span>(na.omit) <span class="sc">|&gt;</span></span>
-<span id="cb111-37"><a></a>    <span class="fu">keep</span>(<span class="sc">~</span> <span class="fu">nrow</span>(.x) <span class="sc">&gt;=</span> settings<span class="sc">$</span>min_n_training_per_predictor)</span>
-<span id="cb111-38"><a></a></span>
-<span id="cb111-39"><a></a>  <span class="cf">if</span> (<span class="fu">length</span>(predictor_edfs) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb111-40"><a></a>    <span class="fu">stop</span>(<span class="st">"Couldn't find acceptable predictors in the latest data."</span>)</span>
-<span id="cb111-41"><a></a>  }</span>
-<span id="cb111-42"><a></a></span>
-<span id="cb111-43"><a></a>  predictors <span class="ot">&lt;-</span> predictor_edfs <span class="sc">|&gt;</span></span>
-<span id="cb111-44"><a></a>    <span class="fu">reduce</span>(full_join, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
-<span id="cb111-45"><a></a></span>
-<span id="cb111-46"><a></a>  target <span class="ot">&lt;-</span> latest_edf <span class="sc">|&gt;</span></span>
-<span id="cb111-47"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&lt;=</span> <span class="fu">max</span>(time_value) <span class="sc">-</span> settings<span class="sc">$</span>days_until_target_semistable) <span class="sc">|&gt;</span></span>
-<span id="cb111-48"><a></a>    <span class="fu">select</span>(geo_value, time_value, <span class="at">mortality_semistable =</span> mortality)</span>
-<span id="cb111-49"><a></a></span>
-<span id="cb111-50"><a></a>  training_test <span class="ot">&lt;-</span> <span class="fu">full_join</span>(predictors, target, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
-<span id="cb111-51"><a></a></span>
-<span id="cb111-52"><a></a>  training <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span></span>
-<span id="cb111-53"><a></a>    <span class="fu">drop_na</span>() <span class="sc">|&gt;</span></span>
-<span id="cb111-54"><a></a>    <span class="fu">slice_max</span>(time_value, <span class="at">n =</span> settings<span class="sc">$</span>max_n_training_intersection)</span>
-<span id="cb111-55"><a></a></span>
-<span id="cb111-56"><a></a>  test <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span></span>
-<span id="cb111-57"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> nowcast_date)</span>
-<span id="cb111-58"><a></a></span>
-<span id="cb111-59"><a></a>  <span class="cf">if</span> (<span class="fu">isTRUE</span>(settings<span class="sc">$</span>median)) {</span>
-<span id="cb111-60"><a></a>    fit <span class="ot">&lt;-</span> training <span class="sc">|&gt;</span></span>
-<span id="cb111-61"><a></a>      <span class="fu">select</span>(<span class="fu">any_of</span>(predictor_descriptions<span class="sc">$</span>predictor_name), mortality_semistable) <span class="sc">|&gt;</span></span>
-<span id="cb111-62"><a></a>      quantreg<span class="sc">::</span><span class="fu">rq</span>(<span class="at">formula =</span> mortality_semistable <span class="sc">~</span> ., <span class="at">tau =</span> <span class="fl">0.5</span>)</span>
-<span id="cb111-63"><a></a>  } <span class="cf">else</span> {</span>
-<span id="cb111-64"><a></a>    fit <span class="ot">&lt;-</span> training <span class="sc">|&gt;</span></span>
-<span id="cb111-65"><a></a>      <span class="fu">select</span>(<span class="fu">any_of</span>(predictor_descriptions<span class="sc">$</span>predictor_name), mortality_semistable) <span class="sc">|&gt;</span></span>
-<span id="cb111-66"><a></a>      <span class="fu">lm</span>(<span class="at">formula =</span> mortality_semistable <span class="sc">~</span> .)</span>
-<span id="cb111-67"><a></a>  }  </span>
-<span id="cb111-68"><a></a></span>
-<span id="cb111-69"><a></a>  pred <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb111-70"><a></a>    <span class="at">geo_value =</span> <span class="st">"ca"</span>,</span>
-<span id="cb111-71"><a></a>    <span class="at">nowcast_date =</span> nowcast_date,</span>
-<span id="cb111-72"><a></a>    <span class="at">target_date =</span> target_time_value,</span>
-<span id="cb111-73"><a></a>    <span class="at">prediction =</span> <span class="fu">unname</span>(<span class="fu">predict</span>(fit, test))</span>
-<span id="cb111-74"><a></a>  )</span>
-<span id="cb111-75"><a></a></span>
-<span id="cb111-76"><a></a>  <span class="cf">if</span> (return_info) {</span>
-<span id="cb111-77"><a></a>    <span class="fu">return</span>(<span class="fu">tibble</span>(</span>
-<span id="cb111-78"><a></a>      <span class="at">coefficients =</span> <span class="fu">list</span>(<span class="fu">coef</span>(fit)),</span>
-<span id="cb111-79"><a></a>      <span class="at">predictions =</span> <span class="fu">list</span>(pred)</span>
-<span id="cb111-80"><a></a>    ))</span>
-<span id="cb111-81"><a></a>  } <span class="cf">else</span> {</span>
-<span id="cb111-82"><a></a>    <span class="fu">return</span>(pred)</span>
-<span id="cb111-83"><a></a>  }</span>
-<span id="cb111-84"><a></a>}</span>
-<span id="cb111-85"><a></a></span>
-<span id="cb111-86"><a></a><span class="co"># We can apply this separately for each nowcast_date to ensure that we consider</span></span>
-<span id="cb111-87"><a></a><span class="co"># the latest possible value for every signal, though whether that is advisable</span></span>
-<span id="cb111-88"><a></a><span class="co"># or not may depend on revision characteristics of the signals.</span></span>
-<span id="cb111-89"><a></a>thin_daily_to_weekly_archive <span class="ot">&lt;-</span> <span class="cf">function</span>(archive) {</span>
-<span id="cb111-90"><a></a>  key_nms <span class="ot">&lt;-</span> <span class="fu">key</span>(archive<span class="sc">$</span>DT)</span>
-<span id="cb111-91"><a></a>  val_nms <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">names</span>(archive<span class="sc">$</span>DT), key_nms)</span>
-<span id="cb111-92"><a></a>  update_tbl <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(archive<span class="sc">$</span>DT)</span>
-<span id="cb111-93"><a></a>  val_nms <span class="sc">|&gt;</span></span>
-<span id="cb111-94"><a></a>    <span class="fu">lapply</span>(<span class="cf">function</span>(val_nm) {</span>
-<span id="cb111-95"><a></a>      update_tbl[<span class="fu">c</span>(key_nms, val_nm)] <span class="sc">|&gt;</span></span>
-<span id="cb111-96"><a></a>        <span class="co"># thin out to weekly, making sure that we keep the max time_value with non-NA value:</span></span>
-<span id="cb111-97"><a></a>        <span class="fu">filter</span>(<span class="fu">as.POSIXlt</span>(time_value)<span class="sc">$</span>wday <span class="sc">==</span> <span class="fu">as.POSIXlt</span>(<span class="fu">max</span>(time_value[<span class="sc">!</span><span class="fu">is.na</span>(.data[[val_nm]])]))<span class="sc">$</span>wday) <span class="sc">|&gt;</span></span>
-<span id="cb111-98"><a></a>        <span class="co"># re-align:</span></span>
-<span id="cb111-99"><a></a>        <span class="fu">mutate</span>(</span>
-<span id="cb111-100"><a></a>          <span class="at">time_value =</span> time_value <span class="sc">-</span> <span class="fu">as.POSIXlt</span>(time_value)<span class="sc">$</span>wday, <span class="co"># Sunday of same epiweek</span></span>
-<span id="cb111-101"><a></a>          <span class="at">old_version =</span> version,</span>
-<span id="cb111-102"><a></a>          <span class="at">version =</span> version <span class="sc">-</span> <span class="fu">as.POSIXlt</span>(version)<span class="sc">$</span>wday <span class="co"># Sunday of same epiweek</span></span>
-<span id="cb111-103"><a></a>        ) <span class="sc">|&gt;</span></span>
-<span id="cb111-104"><a></a>        <span class="fu">slice_max</span>(old_version, <span class="at">by =</span> <span class="fu">all_of</span>(key_nms)) <span class="sc">|&gt;</span></span>
-<span id="cb111-105"><a></a>        <span class="fu">select</span>(<span class="sc">-</span>old_version) <span class="sc">|&gt;</span></span>
-<span id="cb111-106"><a></a>        <span class="fu">as_epi_archive</span>(<span class="at">other_keys =</span> <span class="fu">setdiff</span>(key_nms, <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>, <span class="st">"version"</span>)),</span>
-<span id="cb111-107"><a></a>                       <span class="at">compactify =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb111-108"><a></a>    }) <span class="sc">|&gt;</span></span>
-<span id="cb111-109"><a></a>    <span class="fu">reduce</span>(epix_merge, <span class="at">sync =</span> <span class="st">"locf"</span>)</span>
-<span id="cb111-110"><a></a>}</span>
-<span id="cb111-111"><a></a></span>
-<span id="cb111-112"><a></a><span class="co"># Baseline model:</span></span>
-<span id="cb111-113"><a></a>locf_nowcaster <span class="ot">&lt;-</span> <span class="cf">function</span>(archive) {</span>
-<span id="cb111-114"><a></a>  nowcast_date <span class="ot">&lt;-</span> archive<span class="sc">$</span>versions_end</span>
-<span id="cb111-115"><a></a>  target_time_value <span class="ot">&lt;-</span> nowcast_date</span>
-<span id="cb111-116"><a></a>  latest_edf <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span> <span class="fu">epix_as_of</span>(nowcast_date)</span>
-<span id="cb111-117"><a></a></span>
-<span id="cb111-118"><a></a>  latest_edf <span class="sc">|&gt;</span></span>
-<span id="cb111-119"><a></a>    <span class="fu">complete</span>(geo_value, <span class="at">time_value =</span> target_time_value) <span class="sc">|&gt;</span></span>
-<span id="cb111-120"><a></a>    <span class="fu">arrange</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
-<span id="cb111-121"><a></a>    <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
-<span id="cb111-122"><a></a>    <span class="fu">fill</span>(mortality) <span class="sc">|&gt;</span></span>
-<span id="cb111-123"><a></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb111-124"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> target_time_value) <span class="sc">|&gt;</span></span>
-<span id="cb111-125"><a></a>    <span class="fu">transmute</span>(</span>
-<span id="cb111-126"><a></a>      geo_value,</span>
-<span id="cb111-127"><a></a>      <span class="at">nowcast_date =</span> nowcast_date,</span>
-<span id="cb111-128"><a></a>      <span class="at">target_date =</span> time_value,</span>
-<span id="cb111-129"><a></a>      <span class="at">prediction =</span> mortality</span>
-<span id="cb111-130"><a></a>    )</span>
-<span id="cb111-131"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a></a>regression_nowcaster <span class="ot">&lt;-</span> <span class="cf">function</span>(archive, settings, <span class="at">return_info =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb114-2"><a></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">inherits</span>(archive, <span class="st">"epi_archive"</span>)) {</span>
+<span id="cb114-3"><a></a>    <span class="fu">stop</span>(<span class="st">"`archive` isn't an `epi_archive`"</span>)</span>
+<span id="cb114-4"><a></a>  }</span>
+<span id="cb114-5"><a></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(archive<span class="sc">$</span>DT<span class="sc">$</span>geo_value)) <span class="sc">!=</span> <span class="dv">1</span>L) {</span>
+<span id="cb114-6"><a></a>    <span class="fu">stop</span>(<span class="st">"Expected exactly one unique `geo_value`"</span>)</span>
+<span id="cb114-7"><a></a>  }</span>
+<span id="cb114-8"><a></a>  <span class="cf">if</span> (archive<span class="sc">$</span>time_type <span class="sc">==</span> <span class="st">"day"</span>) {</span>
+<span id="cb114-9"><a></a>    archive <span class="ot">&lt;-</span> <span class="fu">thin_daily_to_weekly_archive</span>(archive)</span>
+<span id="cb114-10"><a></a>  }</span>
+<span id="cb114-11"><a></a></span>
+<span id="cb114-12"><a></a>  nowcast_date <span class="ot">&lt;-</span> archive<span class="sc">$</span>versions_end</span>
+<span id="cb114-13"><a></a>  target_time_value <span class="ot">&lt;-</span> nowcast_date</span>
+<span id="cb114-14"><a></a>  latest_edf <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span> <span class="fu">epix_as_of</span>(nowcast_date)</span>
+<span id="cb114-15"><a></a>  <span class="co"># print(nowcast_date)</span></span>
+<span id="cb114-16"><a></a></span>
+<span id="cb114-17"><a></a>  predictor_descriptions <span class="ot">&lt;-</span></span>
+<span id="cb114-18"><a></a>    latest_edf <span class="sc">|&gt;</span></span>
+<span id="cb114-19"><a></a>    <span class="fu">mutate</span>(<span class="at">lag_days =</span> <span class="fu">as.integer</span>(nowcast_date <span class="sc">-</span> time_value)) <span class="sc">|&gt;</span></span>
+<span id="cb114-20"><a></a>    <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(geo_value, time_value)) <span class="sc">|&gt;</span></span>
+<span id="cb114-21"><a></a>    <span class="fu">pivot_longer</span>(<span class="sc">-</span>lag_days, <span class="at">names_to =</span> <span class="st">"varname"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb114-22"><a></a>    <span class="fu">drop_na</span>(value) <span class="sc">|&gt;</span></span>
+<span id="cb114-23"><a></a>    <span class="fu">inner_join</span>(settings<span class="sc">$</span>predictors, <span class="at">by =</span> <span class="st">"varname"</span>, <span class="at">unmatched =</span> <span class="st">"error"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb114-24"><a></a>    <span class="fu">filter</span>(<span class="fu">abs</span>(lag_days) <span class="sc">&lt;=</span> max_abs_shift_days) <span class="sc">|&gt;</span></span>
+<span id="cb114-25"><a></a>    <span class="fu">arrange</span>(varname, <span class="fu">abs</span>(lag_days)) <span class="sc">|&gt;</span></span>
+<span id="cb114-26"><a></a>    <span class="fu">group_by</span>(varname) <span class="sc">|&gt;</span></span>
+<span id="cb114-27"><a></a>    <span class="fu">filter</span>(<span class="fu">seq_len</span>(<span class="fu">n</span>()) <span class="sc">&lt;=</span> max_n_shifts[[<span class="dv">1</span>]]) <span class="sc">|&gt;</span></span>
+<span id="cb114-28"><a></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb114-29"><a></a>    <span class="fu">mutate</span>(<span class="at">predictor_name =</span> <span class="fu">paste0</span>(varname, <span class="st">"_lag"</span>, lag_days, <span class="st">"_realtime"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb114-30"><a></a>    <span class="fu">select</span>(varname, lag_days, predictor_name)</span>
+<span id="cb114-31"><a></a></span>
+<span id="cb114-32"><a></a>  predictor_edfs <span class="ot">&lt;-</span> predictor_descriptions <span class="sc">|&gt;</span></span>
+<span id="cb114-33"><a></a>    <span class="fu">pmap</span>(<span class="cf">function</span>(varname, lag_days, predictor_name) {</span>
+<span id="cb114-34"><a></a>      <span class="fu">get_predictor_training_data</span>(archive, varname, lag_days, predictor_name)</span>
+<span id="cb114-35"><a></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb114-36"><a></a>    <span class="fu">lapply</span>(na.omit) <span class="sc">|&gt;</span></span>
+<span id="cb114-37"><a></a>    <span class="fu">keep</span>(<span class="sc">~</span> <span class="fu">nrow</span>(.x) <span class="sc">&gt;=</span> settings<span class="sc">$</span>min_n_training_per_predictor)</span>
+<span id="cb114-38"><a></a></span>
+<span id="cb114-39"><a></a>  <span class="cf">if</span> (<span class="fu">length</span>(predictor_edfs) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb114-40"><a></a>    <span class="fu">stop</span>(<span class="st">"Couldn't find acceptable predictors in the latest data."</span>)</span>
+<span id="cb114-41"><a></a>  }</span>
+<span id="cb114-42"><a></a></span>
+<span id="cb114-43"><a></a>  predictors <span class="ot">&lt;-</span> predictor_edfs <span class="sc">|&gt;</span></span>
+<span id="cb114-44"><a></a>    <span class="fu">reduce</span>(full_join, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
+<span id="cb114-45"><a></a></span>
+<span id="cb114-46"><a></a>  target <span class="ot">&lt;-</span> latest_edf <span class="sc">|&gt;</span></span>
+<span id="cb114-47"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">&lt;=</span> <span class="fu">max</span>(time_value) <span class="sc">-</span> settings<span class="sc">$</span>days_until_target_semistable) <span class="sc">|&gt;</span></span>
+<span id="cb114-48"><a></a>    <span class="fu">select</span>(geo_value, time_value, <span class="at">mortality_semistable =</span> mortality)</span>
+<span id="cb114-49"><a></a></span>
+<span id="cb114-50"><a></a>  training_test <span class="ot">&lt;-</span> <span class="fu">full_join</span>(predictors, target, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>))</span>
+<span id="cb114-51"><a></a></span>
+<span id="cb114-52"><a></a>  training <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span></span>
+<span id="cb114-53"><a></a>    <span class="fu">drop_na</span>() <span class="sc">|&gt;</span></span>
+<span id="cb114-54"><a></a>    <span class="fu">slice_max</span>(time_value, <span class="at">n =</span> settings<span class="sc">$</span>max_n_training_intersection)</span>
+<span id="cb114-55"><a></a></span>
+<span id="cb114-56"><a></a>  test <span class="ot">&lt;-</span> training_test <span class="sc">|&gt;</span></span>
+<span id="cb114-57"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> nowcast_date)</span>
+<span id="cb114-58"><a></a></span>
+<span id="cb114-59"><a></a>  <span class="cf">if</span> (<span class="fu">isTRUE</span>(settings<span class="sc">$</span>median)) {</span>
+<span id="cb114-60"><a></a>    fit <span class="ot">&lt;-</span> training <span class="sc">|&gt;</span></span>
+<span id="cb114-61"><a></a>      <span class="fu">select</span>(<span class="fu">any_of</span>(predictor_descriptions<span class="sc">$</span>predictor_name), mortality_semistable) <span class="sc">|&gt;</span></span>
+<span id="cb114-62"><a></a>      quantreg<span class="sc">::</span><span class="fu">rq</span>(<span class="at">formula =</span> mortality_semistable <span class="sc">~</span> ., <span class="at">tau =</span> <span class="fl">0.5</span>)</span>
+<span id="cb114-63"><a></a>  } <span class="cf">else</span> {</span>
+<span id="cb114-64"><a></a>    fit <span class="ot">&lt;-</span> training <span class="sc">|&gt;</span></span>
+<span id="cb114-65"><a></a>      <span class="fu">select</span>(<span class="fu">any_of</span>(predictor_descriptions<span class="sc">$</span>predictor_name), mortality_semistable) <span class="sc">|&gt;</span></span>
+<span id="cb114-66"><a></a>      <span class="fu">lm</span>(<span class="at">formula =</span> mortality_semistable <span class="sc">~</span> .)</span>
+<span id="cb114-67"><a></a>  }  </span>
+<span id="cb114-68"><a></a></span>
+<span id="cb114-69"><a></a>  pred <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb114-70"><a></a>    <span class="at">geo_value =</span> <span class="st">"ca"</span>,</span>
+<span id="cb114-71"><a></a>    <span class="at">nowcast_date =</span> nowcast_date,</span>
+<span id="cb114-72"><a></a>    <span class="at">target_date =</span> target_time_value,</span>
+<span id="cb114-73"><a></a>    <span class="at">prediction =</span> <span class="fu">unname</span>(<span class="fu">predict</span>(fit, test))</span>
+<span id="cb114-74"><a></a>  )</span>
+<span id="cb114-75"><a></a></span>
+<span id="cb114-76"><a></a>  <span class="cf">if</span> (return_info) {</span>
+<span id="cb114-77"><a></a>    <span class="fu">return</span>(<span class="fu">tibble</span>(</span>
+<span id="cb114-78"><a></a>      <span class="at">coefficients =</span> <span class="fu">list</span>(<span class="fu">coef</span>(fit)),</span>
+<span id="cb114-79"><a></a>      <span class="at">predictions =</span> <span class="fu">list</span>(pred)</span>
+<span id="cb114-80"><a></a>    ))</span>
+<span id="cb114-81"><a></a>  } <span class="cf">else</span> {</span>
+<span id="cb114-82"><a></a>    <span class="fu">return</span>(pred)</span>
+<span id="cb114-83"><a></a>  }</span>
+<span id="cb114-84"><a></a>}</span>
+<span id="cb114-85"><a></a></span>
+<span id="cb114-86"><a></a><span class="co"># We can apply this separately for each nowcast_date to ensure that we consider</span></span>
+<span id="cb114-87"><a></a><span class="co"># the latest possible value for every signal, though whether that is advisable</span></span>
+<span id="cb114-88"><a></a><span class="co"># or not may depend on revision characteristics of the signals.</span></span>
+<span id="cb114-89"><a></a>thin_daily_to_weekly_archive <span class="ot">&lt;-</span> <span class="cf">function</span>(archive) {</span>
+<span id="cb114-90"><a></a>  key_nms <span class="ot">&lt;-</span> <span class="fu">key</span>(archive<span class="sc">$</span>DT)</span>
+<span id="cb114-91"><a></a>  val_nms <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">names</span>(archive<span class="sc">$</span>DT), key_nms)</span>
+<span id="cb114-92"><a></a>  update_tbl <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(archive<span class="sc">$</span>DT)</span>
+<span id="cb114-93"><a></a>  val_nms <span class="sc">|&gt;</span></span>
+<span id="cb114-94"><a></a>    <span class="fu">lapply</span>(<span class="cf">function</span>(val_nm) {</span>
+<span id="cb114-95"><a></a>      update_tbl[<span class="fu">c</span>(key_nms, val_nm)] <span class="sc">|&gt;</span></span>
+<span id="cb114-96"><a></a>        <span class="co"># thin out to weekly, making sure that we keep the max time_value with non-NA value:</span></span>
+<span id="cb114-97"><a></a>        <span class="fu">filter</span>(<span class="fu">as.POSIXlt</span>(time_value)<span class="sc">$</span>wday <span class="sc">==</span> <span class="fu">as.POSIXlt</span>(<span class="fu">max</span>(time_value[<span class="sc">!</span><span class="fu">is.na</span>(.data[[val_nm]])]))<span class="sc">$</span>wday) <span class="sc">|&gt;</span></span>
+<span id="cb114-98"><a></a>        <span class="co"># re-align:</span></span>
+<span id="cb114-99"><a></a>        <span class="fu">mutate</span>(</span>
+<span id="cb114-100"><a></a>          <span class="at">time_value =</span> time_value <span class="sc">-</span> <span class="fu">as.POSIXlt</span>(time_value)<span class="sc">$</span>wday, <span class="co"># Sunday of same epiweek</span></span>
+<span id="cb114-101"><a></a>          <span class="at">old_version =</span> version,</span>
+<span id="cb114-102"><a></a>          <span class="at">version =</span> version <span class="sc">-</span> <span class="fu">as.POSIXlt</span>(version)<span class="sc">$</span>wday <span class="co"># Sunday of same epiweek</span></span>
+<span id="cb114-103"><a></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb114-104"><a></a>        <span class="fu">slice_max</span>(old_version, <span class="at">by =</span> <span class="fu">all_of</span>(key_nms)) <span class="sc">|&gt;</span></span>
+<span id="cb114-105"><a></a>        <span class="fu">select</span>(<span class="sc">-</span>old_version) <span class="sc">|&gt;</span></span>
+<span id="cb114-106"><a></a>        <span class="fu">as_epi_archive</span>(<span class="at">other_keys =</span> <span class="fu">setdiff</span>(key_nms, <span class="fu">c</span>(<span class="st">"geo_value"</span>, <span class="st">"time_value"</span>, <span class="st">"version"</span>)),</span>
+<span id="cb114-107"><a></a>                       <span class="at">compactify =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb114-108"><a></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb114-109"><a></a>    <span class="fu">reduce</span>(epix_merge, <span class="at">sync =</span> <span class="st">"locf"</span>)</span>
+<span id="cb114-110"><a></a>}</span>
+<span id="cb114-111"><a></a></span>
+<span id="cb114-112"><a></a><span class="co"># Baseline model:</span></span>
+<span id="cb114-113"><a></a>locf_nowcaster <span class="ot">&lt;-</span> <span class="cf">function</span>(archive) {</span>
+<span id="cb114-114"><a></a>  nowcast_date <span class="ot">&lt;-</span> archive<span class="sc">$</span>versions_end</span>
+<span id="cb114-115"><a></a>  target_time_value <span class="ot">&lt;-</span> nowcast_date</span>
+<span id="cb114-116"><a></a>  latest_edf <span class="ot">&lt;-</span> archive <span class="sc">|&gt;</span> <span class="fu">epix_as_of</span>(nowcast_date)</span>
+<span id="cb114-117"><a></a></span>
+<span id="cb114-118"><a></a>  latest_edf <span class="sc">|&gt;</span></span>
+<span id="cb114-119"><a></a>    <span class="fu">complete</span>(geo_value, <span class="at">time_value =</span> target_time_value) <span class="sc">|&gt;</span></span>
+<span id="cb114-120"><a></a>    <span class="fu">arrange</span>(geo_value, time_value) <span class="sc">|&gt;</span></span>
+<span id="cb114-121"><a></a>    <span class="fu">group_by</span>(geo_value) <span class="sc">|&gt;</span></span>
+<span id="cb114-122"><a></a>    <span class="fu">fill</span>(mortality) <span class="sc">|&gt;</span></span>
+<span id="cb114-123"><a></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb114-124"><a></a>    <span class="fu">filter</span>(time_value <span class="sc">==</span> target_time_value) <span class="sc">|&gt;</span></span>
+<span id="cb114-125"><a></a>    <span class="fu">transmute</span>(</span>
+<span id="cb114-126"><a></a>      geo_value,</span>
+<span id="cb114-127"><a></a>      <span class="at">nowcast_date =</span> nowcast_date,</span>
+<span id="cb114-128"><a></a>      <span class="at">target_date =</span> time_value,</span>
+<span id="cb114-129"><a></a>      <span class="at">prediction =</span> mortality</span>
+<span id="cb114-130"><a></a>    )</span>
+<span id="cb114-131"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -2557,31 +2598,31 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 <li>and two that use quantile reg instead of linear reg</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a></a>reg1_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb112-2"><a></a>  <span class="at">predictors =</span> <span class="fu">tribble</span>(</span>
-<span id="cb112-3"><a></a>    <span class="sc">~</span>varname,    <span class="sc">~</span>max_abs_shift_days, <span class="sc">~</span>max_n_shifts,</span>
-<span id="cb112-4"><a></a>    <span class="st">"mortality"</span>,                  <span class="dv">35</span>,             <span class="dv">3</span>,</span>
-<span id="cb112-5"><a></a>    ),</span>
-<span id="cb112-6"><a></a>  <span class="at">min_n_training_per_predictor =</span> <span class="dv">30</span>, <span class="co"># or else exclude predictor</span></span>
-<span id="cb112-7"><a></a>  <span class="at">days_until_target_semistable =</span> <span class="dv">7</span> <span class="sc">*</span> <span class="dv">7</span>, <span class="co"># filter out unstable when training (and evaluating)</span></span>
-<span id="cb112-8"><a></a>  <span class="at">min_n_training_intersection =</span> <span class="dv">20</span>, <span class="co"># or else raise error</span></span>
-<span id="cb112-9"><a></a>  <span class="at">max_n_training_intersection =</span> <span class="cn">Inf</span> <span class="co"># or else filter down rows</span></span>
-<span id="cb112-10"><a></a>)</span>
-<span id="cb112-11"><a></a></span>
-<span id="cb112-12"><a></a>reg2_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb112-13"><a></a>  <span class="at">predictors =</span> <span class="fu">tribble</span>(</span>
-<span id="cb112-14"><a></a>    <span class="sc">~</span>varname,     <span class="sc">~</span>max_abs_shift_days, <span class="sc">~</span>max_n_shifts,</span>
-<span id="cb112-15"><a></a>    <span class="st">"admissions"</span>,                  <span class="dv">35</span>,             <span class="dv">3</span>,</span>
-<span id="cb112-16"><a></a>    <span class="st">"mortality"</span>,                   <span class="dv">35</span>,             <span class="dv">3</span>,</span>
-<span id="cb112-17"><a></a>    ),</span>
-<span id="cb112-18"><a></a>  <span class="at">min_n_training_per_predictor =</span> <span class="dv">30</span>, <span class="co"># or else exclude predictor</span></span>
-<span id="cb112-19"><a></a>  <span class="at">days_until_target_semistable =</span> <span class="dv">7</span> <span class="sc">*</span> <span class="dv">7</span>, <span class="co"># filter out unstable when training (and evaluating)</span></span>
-<span id="cb112-20"><a></a>  <span class="at">min_n_training_intersection =</span> <span class="dv">20</span>, <span class="co"># or else raise error</span></span>
-<span id="cb112-21"><a></a>  <span class="at">max_n_training_intersection =</span> <span class="cn">Inf</span> <span class="co"># or else filter down rows</span></span>
-<span id="cb112-22"><a></a>)</span>
-<span id="cb112-23"><a></a></span>
-<span id="cb112-24"><a></a>reg3_settings <span class="ot">&lt;-</span> <span class="fu">c</span>(reg1_settings, <span class="at">median =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb112-25"><a></a>reg4_settings <span class="ot">&lt;-</span> <span class="fu">c</span>(reg2_settings, <span class="at">median =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a></a>reg1_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb115-2"><a></a>  <span class="at">predictors =</span> <span class="fu">tribble</span>(</span>
+<span id="cb115-3"><a></a>    <span class="sc">~</span>varname,    <span class="sc">~</span>max_abs_shift_days, <span class="sc">~</span>max_n_shifts,</span>
+<span id="cb115-4"><a></a>    <span class="st">"mortality"</span>,                  <span class="dv">35</span>,             <span class="dv">3</span>,</span>
+<span id="cb115-5"><a></a>    ),</span>
+<span id="cb115-6"><a></a>  <span class="at">min_n_training_per_predictor =</span> <span class="dv">30</span>, <span class="co"># or else exclude predictor</span></span>
+<span id="cb115-7"><a></a>  <span class="at">days_until_target_semistable =</span> <span class="dv">7</span> <span class="sc">*</span> <span class="dv">7</span>, <span class="co"># filter out unstable when training (and evaluating)</span></span>
+<span id="cb115-8"><a></a>  <span class="at">min_n_training_intersection =</span> <span class="dv">20</span>, <span class="co"># or else raise error</span></span>
+<span id="cb115-9"><a></a>  <span class="at">max_n_training_intersection =</span> <span class="cn">Inf</span> <span class="co"># or else filter down rows</span></span>
+<span id="cb115-10"><a></a>)</span>
+<span id="cb115-11"><a></a></span>
+<span id="cb115-12"><a></a>reg2_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb115-13"><a></a>  <span class="at">predictors =</span> <span class="fu">tribble</span>(</span>
+<span id="cb115-14"><a></a>    <span class="sc">~</span>varname,     <span class="sc">~</span>max_abs_shift_days, <span class="sc">~</span>max_n_shifts,</span>
+<span id="cb115-15"><a></a>    <span class="st">"admissions"</span>,                  <span class="dv">35</span>,             <span class="dv">3</span>,</span>
+<span id="cb115-16"><a></a>    <span class="st">"mortality"</span>,                   <span class="dv">35</span>,             <span class="dv">3</span>,</span>
+<span id="cb115-17"><a></a>    ),</span>
+<span id="cb115-18"><a></a>  <span class="at">min_n_training_per_predictor =</span> <span class="dv">30</span>, <span class="co"># or else exclude predictor</span></span>
+<span id="cb115-19"><a></a>  <span class="at">days_until_target_semistable =</span> <span class="dv">7</span> <span class="sc">*</span> <span class="dv">7</span>, <span class="co"># filter out unstable when training (and evaluating)</span></span>
+<span id="cb115-20"><a></a>  <span class="at">min_n_training_intersection =</span> <span class="dv">20</span>, <span class="co"># or else raise error</span></span>
+<span id="cb115-21"><a></a>  <span class="at">max_n_training_intersection =</span> <span class="cn">Inf</span> <span class="co"># or else filter down rows</span></span>
+<span id="cb115-22"><a></a>)</span>
+<span id="cb115-23"><a></a></span>
+<span id="cb115-24"><a></a>reg3_settings <span class="ot">&lt;-</span> <span class="fu">c</span>(reg1_settings, <span class="at">median =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb115-25"><a></a>reg4_settings <span class="ot">&lt;-</span> <span class="fu">c</span>(reg2_settings, <span class="at">median =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="data-wrangling" class="slide level2">
@@ -2589,24 +2630,37 @@ At time <span class="math inline">\(t\)</span>, predict the final value for time
 </section>
 <section id="comparison-linear-regression" class="slide level2">
 <h2>Comparison: linear regression</h2>
-</section>
+
+<img data-src="day1-afternoon_files/figure-revealjs/regression-nowcast-plot-linreg-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="comparison-quantile-regression" class="slide level2">
 <h2>Comparison: quantile regression</h2>
-</section>
+
+<img data-src="day1-afternoon_files/figure-revealjs/regression-nowcast-plot-quantreg-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="evaluations" class="slide level2">
 <h2>Evaluations</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a></a>n_models <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(nowcast_comparison<span class="sc">$</span>Nowcaster))</span>
-<span id="cb113-2"><a></a>nowcast_comparison <span class="sc">|&gt;</span></span>
-<span id="cb113-3"><a></a>  <span class="co"># Filter evaluation based on target stability</span></span>
-<span id="cb113-4"><a></a>  <span class="fu">filter</span>(target_date <span class="sc">&lt;=</span> nchs_ca_archive<span class="sc">$</span>versions_end <span class="sc">-</span> <span class="dv">49</span>) <span class="sc">|&gt;</span></span>
-<span id="cb113-5"><a></a>  <span class="co"># Filter evaluated tasks to those with all models available</span></span>
-<span id="cb113-6"><a></a>  <span class="fu">group_by</span>(target_date) <span class="sc">|&gt;</span></span>
-<span id="cb113-7"><a></a>  <span class="fu">filter</span>(<span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(prediction)) <span class="sc">==</span> n_models) <span class="sc">|&gt;</span></span>
-<span id="cb113-8"><a></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb113-9"><a></a>  <span class="fu">summarize</span>(<span class="at">.by =</span> Nowcaster,</span>
-<span id="cb113-10"><a></a>            <span class="at">MAE =</span> <span class="fu">mean</span>(<span class="fu">abs</span>(mortality <span class="sc">-</span> prediction)),</span>
-<span id="cb113-11"><a></a>            <span class="at">MAPE =</span> <span class="dv">100</span><span class="sc">*</span><span class="fu">mean</span>(<span class="fu">abs</span>(mortality <span class="sc">-</span> prediction)<span class="sc">/</span><span class="fu">abs</span>(mortality)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a></a>n_models <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(nowcast_comparison<span class="sc">$</span>Nowcaster))</span>
+<span id="cb116-2"><a></a>nowcast_comparison <span class="sc">|&gt;</span></span>
+<span id="cb116-3"><a></a>  <span class="co"># Filter evaluation based on target stability</span></span>
+<span id="cb116-4"><a></a>  <span class="fu">filter</span>(target_date <span class="sc">&lt;=</span> nchs_ca_archive<span class="sc">$</span>versions_end <span class="sc">-</span> <span class="dv">49</span>) <span class="sc">|&gt;</span></span>
+<span id="cb116-5"><a></a>  <span class="co"># Filter evaluated tasks to those with all models available</span></span>
+<span id="cb116-6"><a></a>  <span class="fu">group_by</span>(target_date) <span class="sc">|&gt;</span></span>
+<span id="cb116-7"><a></a>  <span class="fu">filter</span>(<span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(prediction)) <span class="sc">==</span> n_models) <span class="sc">|&gt;</span></span>
+<span id="cb116-8"><a></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb116-9"><a></a>  <span class="fu">summarize</span>(<span class="at">.by =</span> Nowcaster,</span>
+<span id="cb116-10"><a></a>            <span class="at">MAE =</span> <span class="fu">mean</span>(<span class="fu">abs</span>(mortality <span class="sc">-</span> prediction)),</span>
+<span id="cb116-11"><a></a>            <span class="at">MAPE =</span> <span class="dv">100</span><span class="sc">*</span><span class="fu">mean</span>(<span class="fu">abs</span>(mortality <span class="sc">-</span> prediction)<span class="sc">/</span><span class="fu">abs</span>(mortality)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  Nowcaster          MAE  MAPE
+  &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt;
+1 LOCF             210.   77.7
+2 LOCF ratio model 177.   62.6
+3 LinReg model     168.   94.2
+4 LinReg + hosp     99.9  52.5
+5 QuantReg model   108.   47.7
+6 QuantReg + hosp   92.0  43.8</code></pre>
+</div>
 </div>
 </section>
 <section id="mea-culpa" class="slide level2">
