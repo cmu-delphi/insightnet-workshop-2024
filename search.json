@@ -613,7 +613,7 @@
     "href": "slides/day1-morning.html#panel-data-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Panel data",
-    "text": "Panel data\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nSince we’re working with aggregated data, the subjects are geographic units (e.g. counties, states).\n\n\n\nIn table form, panel data is a time index + one or more locations/keys.\nEx: The % of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 (docs):\n\n\n\nAn `epi_df` object, 6 x 3 with metadata:\n* geo_type  = state\n* time_type = day\n* as_of     = 2022-02-01\n\n# A tibble: 6 × 3\n  geo_value time_value percent_cli\n* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;\n1 wa        2021-12-01        4.70\n2 wa        2021-12-02        4.60\n3 wa        2021-12-03        4.56\n4 wa        2021-12-04        4.93\n5 wa        2021-12-05        4.17\n6 wa        2021-12-06        4.12"
+    "text": "Panel data\n\nPanel data or longitudinal data, contain cross-sectional measurements of subjects over time.\nSince we’re working with aggregated data, the subjects are geographic units (e.g. counties, states).\n\n\n\nIn table form, panel data is a time index + one or more locations/keys.\nEx: The % of outpatient doctor visits that are COVID-related in CA from June 2020 to Dec. 2021 (docs):\n\n\n\n# A tibble: 549 × 3\n   time_value geo_value percent_cli\n   &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt;\n 1 2020-06-01 ca               2.75\n 2 2020-06-02 ca               2.57\n 3 2020-06-03 ca               2.48\n 4 2020-06-04 ca               2.41\n 5 2020-06-05 ca               2.57\n 6 2020-06-06 ca               2.63\n 7 2020-06-07 ca               2.73\n 8 2020-06-08 ca               3.04\n 9 2020-06-09 ca               2.97\n10 2020-06-10 ca               2.99\n# ℹ 539 more rows"
   },
   {
     "objectID": "slides/day1-morning.html#examples-of-panel-data---covid-19-cases",
@@ -634,7 +634,7 @@
     "href": "slides/day1-morning.html#intro-to-versioned-data",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Intro to versioned data",
-    "text": "Intro to versioned data\n\nMany epidemic aggregates are subject to reporting delays and revisions\nThis is because individual-level data has delayed availability:\n\nPerson comes to ER → Has some tests → Admitted → Tests come back → Entered into the system → …\n\nSo, a “Hospital admission” may not attributable to a particular condition until a few days have passed (the patient may even have been released)\nAggregated data have a longer pipeline from the incident to the report.\nSo we have to track both: when the event occurred and when it was reported\nAdditionally, various mistakes lead to revisions\nThis means there can be many different values for the same date"
+    "text": "Intro to versioned data\n\nMany epidemic aggregates are subject to reporting delays and revisions\nThis is because individual-level data has delayed availability:\n\nPerson comes to ER → Admitted → Has some tests → Tests come back → Entered into the system → …\n\nSo, a “Hospital admission” may not attributable to a particular condition until a few days have passed (the patient may even have been released)\nAggregated data have a longer pipeline from the incident to the report.\nSo we have to track both: when the event occurred and when it was reported\nAdditionally, various mistakes lead to revisions\nThis means there can be many different values for the same date"
   },
   {
     "objectID": "slides/day1-morning.html#versioned-data-1",
@@ -802,7 +802,7 @@
     "href": "slides/day1-morning.html#api-keys",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "API keys",
-    "text": "API keys\n\nAnyone may access the Epidata API anonymously without providing any personal data!!\nAnonymous API access is subject to some restrictions: public datasets only; 60 requests per hour; only two parameters may have multiple selections\nAPI key grants priviledged access; can be obtained by registering with us\nPrivileges of registration: no rate limit; no limit on multiple selections\nWe just want to know which signals people care about and ensure we’re providing benefit\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe {epidatr} client automatically searches for the key in the DELPHI_EPIDATA_KEY environment variable.\nWe recommend storing it in your .Renviron file, which R reads by default.\nMore on setting your API key here."
+    "text": "API keys\n\nAnyone may access the Epidata API anonymously without providing any personal data!!\nAnonymous API access is subject to some restrictions: public datasets only; 60 requests per hour; only two parameters may have multiple selections\nAPI key grants privileged access; can be obtained by registering with us\nPrivileges of registration: no rate limit; no limit on multiple selections\nWe just want to know which signals people care about and ensure we’re providing benefit\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe {epidatr} client automatically searches for the key in the DELPHI_EPIDATA_KEY environment variable.\nWe recommend storing it in your .Renviron file, which R reads by default.\nMore on setting your API key here."
   },
   {
     "objectID": "slides/day1-morning.html#interactive-tooling-in-r",
@@ -851,7 +851,7 @@
     "href": "slides/day1-morning.html#geographic-levels",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Geographic levels",
-    "text": "Geographic levels\nSignals are available at different geographic levels, depending on the endpoint\nconfirmed_7dav_incidence_prop is available by state\nChange geo_type and geo_values in the previous example\n\n# Obtain the most up-to-date version of the smoothed covid-like illness (CLI)\n# signal from the COVID-19 Trends and Impact survey for all states\njhu_state_cases &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"*\",\n  time_values = epirange(20210101, 20210401)\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 ak        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  35.9\n2 al        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  67.7\n3 ar        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  76.2\n4 as        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791   0  \n5 az        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  83.4\n6 ca        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-10   798 104."
+    "text": "Geographic levels\nSignals are available at different geographic levels, depending on the endpoint\nconfirmed_7dav_incidence_prop is available by state\nChange geo_type and geo_values in the previous example\n\njhu_state_cases &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_7dav_incidence_prop\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"*\",\n  time_values = epirange(20210101, 20210401)\n)\n\n\n\n# A tibble: 6 × 8\n  geo_value signal             source geo_type time_value issue        lag value\n  &lt;chr&gt;     &lt;chr&gt;              &lt;chr&gt;  &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 ak        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  35.9\n2 al        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  67.7\n3 ar        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  76.2\n4 as        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791   0  \n5 az        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-03   791  83.4\n6 ca        confirmed_7dav_in… jhu-c… state    2021-01-01 2023-03-10   798 104."
   },
   {
     "objectID": "slides/day1-morning.html#covidcast-main-endpoint---example-query",
@@ -1376,7 +1376,7 @@
     "href": "slides/day1-afternoon.html#downloading-jhu-csse-covid-19-case-data-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Downloading JHU CSSE COVID-19 case data",
-    "text": "Downloading JHU CSSE COVID-19 case data\n\n\nCode\nlibrary(epidatr)\n\ncases_df_api &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_incidence_num\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ca,nc,ny\",\n  time_values = epirange(20220301, 20220331),\n  as_of = as.Date(\"2024-01-01\")\n)\n\n\nNow we only really need a few columns here…\n\ncases_df &lt;- cases_df_api |&gt;\n  select(geo_value, time_value, raw_cases = value) # We'll talk more about this soon :)"
+    "text": "Downloading JHU CSSE COVID-19 case data\n\n\nCode\nlibrary(epidatr)\n\ncases_df_api &lt;- pub_covidcast(\n  source = \"jhu-csse\",\n  signals = \"confirmed_incidence_num\",\n  geo_type = \"state\",\n  time_type = \"day\",\n  geo_values = \"ca,nc,ny\",\n  time_values = epirange(20220301, 20220331),\n  as_of = as.Date(\"2024-01-01\")\n)\n\n\nNow we only really need a few columns here…\n\n# Base R way for now...\ncases_df &lt;- cases_df_api[,c(\"geo_value\", \"time_value\", \"value\")] \nnames(cases_df)[names(cases_df) == \"value\"] &lt;- \"raw_cases\""
   },
   {
     "objectID": "slides/day1-afternoon.html#ways-to-inspect-the-dataset",
@@ -1386,25 +1386,18 @@
     "text": "Ways to inspect the dataset\nUse head() to view the first six row of the data\n\nhead(cases_df)  # First 6 rows\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 nc        2022-03-01      1231\n3 ny        2022-03-01      1487\n4 ca        2022-03-02      7044\n5 nc        2022-03-02      2243\n6 ny        2022-03-02      1889\n\n\nand tail to view the last six\n\n\n# A tibble: 6 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;date&gt;         &lt;dbl&gt;\n1 ca        2022-03-30      3785\n2 nc        2022-03-30      1067\n3 ny        2022-03-30      3127\n4 ca        2022-03-31      4533\n5 nc        2022-03-31      1075\n6 ny        2022-03-31      4763"
   },
   {
-    "objectID": "slides/day1-afternoon.html#ways-to-inspect-the-dataset-1",
-    "href": "slides/day1-afternoon.html#ways-to-inspect-the-dataset-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Ways to inspect the dataset",
-    "text": "Ways to inspect the dataset\nNow, for our first foray into the tidyverse…\nUse glimpse() to get a compact overview of the dataset.\n\nglimpse(cases_df)\n\nRows: 93\nColumns: 3\n$ geo_value  &lt;chr&gt; \"ca\", \"nc\", \"ny\", \"ca\", \"nc\", \"ny\", \"ca\", \"nc\", \"ny\", \"ca\",…\n$ time_value &lt;date&gt; 2022-03-01, 2022-03-01, 2022-03-01, 2022-03-02, 2022-03-02…\n$ raw_cases  &lt;dbl&gt; 4310, 1231, 1487, 7044, 2243, 1889, 7509, 2377, 2390, 3586,…"
-  },
-  {
     "objectID": "slides/day1-afternoon.html#selecting-columns-with-select",
     "href": "slides/day1-afternoon.html#selecting-columns-with-select",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Selecting columns with select()",
-    "text": "Selecting columns with select()\nThe select() function is used to pick specific columns from your dataset.\n\nselect(cases_df, geo_value, time_value)  # Select the 'geo_value' and 'time_value' columns\n\n# A tibble: 93 × 2\n   geo_value time_value\n   &lt;chr&gt;     &lt;date&gt;    \n 1 ca        2022-03-01\n 2 nc        2022-03-01\n 3 ny        2022-03-01\n 4 ca        2022-03-02\n 5 nc        2022-03-02\n 6 ny        2022-03-02\n 7 ca        2022-03-03\n 8 nc        2022-03-03\n 9 ny        2022-03-03\n10 ca        2022-03-04\n# ℹ 83 more rows"
+    "text": "Selecting columns with select()\nThe select() function is used to pick specific columns from your dataset.\n\nselect(cases_df, time_value, raw_cases)  # Select the 'time_value' and 'raw_cases' columns\n\n# A tibble: 93 × 2\n   time_value raw_cases\n   &lt;date&gt;         &lt;dbl&gt;\n 1 2022-03-01      4310\n 2 2022-03-01      1231\n 3 2022-03-01      1487\n 4 2022-03-02      7044\n 5 2022-03-02      2243\n 6 2022-03-02      1889\n 7 2022-03-03      7509\n 8 2022-03-03      2377\n 9 2022-03-03      2390\n10 2022-03-04      3586\n# ℹ 83 more rows"
   },
   {
     "objectID": "slides/day1-afternoon.html#selecting-columns-with-select-1",
     "href": "slides/day1-afternoon.html#selecting-columns-with-select-1",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Selecting columns with select()",
-    "text": "Selecting columns with select()\nYou can exclude columns by prefixing the column names with a minus sign -.\n\nselect(cases_df, -raw_cases)  # Exclude the 'raw_cases' column from the dataset\n\n# A tibble: 93 × 2\n   geo_value time_value\n   &lt;chr&gt;     &lt;date&gt;    \n 1 ca        2022-03-01\n 2 nc        2022-03-01\n 3 ny        2022-03-01\n 4 ca        2022-03-02\n 5 nc        2022-03-02\n 6 ny        2022-03-02\n 7 ca        2022-03-03\n 8 nc        2022-03-03\n 9 ny        2022-03-03\n10 ca        2022-03-04\n# ℹ 83 more rows"
+    "text": "Selecting columns with select()\nYou can exclude columns by prefixing the column names with a minus sign -.\n\nselect(cases_df, -geo_value)  # Exclude the 'geo_value' column from the dataset\n\n# A tibble: 93 × 2\n   time_value raw_cases\n   &lt;date&gt;         &lt;dbl&gt;\n 1 2022-03-01      4310\n 2 2022-03-01      1231\n 3 2022-03-01      1487\n 4 2022-03-02      7044\n 5 2022-03-02      2243\n 6 2022-03-02      1889\n 7 2022-03-03      7509\n 8 2022-03-03      2377\n 9 2022-03-03      2390\n10 2022-03-04      3586\n# ℹ 83 more rows"
   },
   {
     "objectID": "slides/day1-afternoon.html#subsetting-rows-with-filter",
@@ -1425,21 +1418,14 @@
     "href": "slides/day1-afternoon.html#combining-select-and-filter-functions",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Combining select() and filter() functions",
-    "text": "Combining select() and filter() functions\n\nYou can further combine select() and filter() to further refine the dataset.\nUse select() to choose columns and filter() to narrow down rows.\nThis helps in extracting the exact data needed for analysis.\n\n\nselect(filter(cases_df, geo_value == \"nc\", raw_cases &gt; 1000), time_value, raw_cases) |&gt; \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-09      1833"
+    "text": "Combining select() and filter() functions\n\nYou can further combine select() and filter() to further refine the dataset.\nUse select() to choose columns and filter() to narrow down rows.\nThis helps in extracting the exact data needed for analysis.\n\n\nselect(filter(cases_df, geo_value == \"nc\", raw_cases &gt; 500), time_value, raw_cases) |&gt; \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-08       894"
   },
   {
     "objectID": "slides/day1-afternoon.html#using-the-pipe-operator",
     "href": "slides/day1-afternoon.html#using-the-pipe-operator",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Using the pipe operator |>",
-    "text": "Using the pipe operator |&gt;\n\nThe pipe operator (|&gt;) makes code more readable by chaining multiple operations together.\nThe output of one function is automatically passed to the next function.\nThis allows you to perform multiple steps (e.g., filter() followed by select()) in a clear and concise manner.\n\n\n# This code reads more like poetry!\ncases_df |&gt; \n  filter(geo_value == \"nc\", raw_cases &gt; 1000) |&gt; \n  select(time_value, raw_cases) |&gt; \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-09      1833"
-  },
-  {
-    "objectID": "slides/day1-afternoon.html#key-practices-in-dplyr",
-    "href": "slides/day1-afternoon.html#key-practices-in-dplyr",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Key practices in dplyr",
-    "text": "Key practices in dplyr\n\nUse tibbles for easier data handling.\nUse head(), tail(), and glimpse() for quick data inspection.\nUse select() and filter() for data manipulation.\nChain functions with |&gt; for cleaner code."
+    "text": "Using the pipe operator |&gt;\n\nThe pipe operator (|&gt;) makes code more readable by chaining multiple operations together.\nThe output of one function is automatically passed to the next function.\nThis allows you to perform multiple steps (e.g., filter() followed by select()) in a clear and concise manner.\n\n\n# This code reads more like poetry!\ncases_df |&gt; \n  filter(geo_value == \"nc\", raw_cases &gt; 500) |&gt; \n  select(time_value, raw_cases) |&gt; \n  head()\n\n# A tibble: 6 × 2\n  time_value raw_cases\n  &lt;date&gt;         &lt;dbl&gt;\n1 2022-03-01      1231\n2 2022-03-02      2243\n3 2022-03-03      2377\n4 2022-03-04      2646\n5 2022-03-07      4230\n6 2022-03-08       894"
   },
   {
     "objectID": "slides/day1-afternoon.html#grouping-data-with-group_by",
@@ -1477,32 +1463,25 @@
     "text": "Summarizing data with summarise()\n\nsummarise() reduces data to summary statistics (e.g., mean, median).\nTypically used after group_by() to summarize each group.\n\n\ncases_df |&gt;\n  group_by(geo_value) |&gt;\n  summarise(median_cases = median(raw_cases))\n\n# A tibble: 3 × 2\n  geo_value median_cases\n  &lt;chr&gt;            &lt;dbl&gt;\n1 ca                3785\n2 nc                1224\n3 ny                2188"
   },
   {
-    "objectID": "slides/day1-afternoon.html#using-count-to-aggregate-data",
-    "href": "slides/day1-afternoon.html#using-count-to-aggregate-data",
+    "objectID": "slides/day1-afternoon.html#key-practices-learned",
+    "href": "slides/day1-afternoon.html#key-practices-learned",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Using count() to aggregate data",
-    "text": "Using count() to aggregate data\ncount() is a shortcut for grouping and summarizing the data.\nFor example, if we want to get the total number of complete rows for each state, then\n\ncases_count &lt;- cases_df |&gt;\n  drop_na() |&gt; # Removes rows where any value is missing (from tidyr)\n  group_by(geo_value) |&gt;\n  summarize(count = n())\n\n is equivalent to\n\ncases_count &lt;- cases_df |&gt;\n  drop_na() |&gt; \n  count(geo_value)\n\ncases_count # Let's see what the counts are.\n\n# A tibble: 3 × 2\n  geo_value     n\n  &lt;chr&gt;     &lt;int&gt;\n1 ca           31\n2 nc           31\n3 ny           31"
+    "section": "Key practices learned",
+    "text": "Key practices learned\n\nUse head() and tail() for quick data inspection.\nUse select() and filter() for data manipulation.\nChain functions with |&gt;.\nUse group_by() to group data by one or more variables before applying functions.\nUse mutate to create new columns or modify existing ones by applying functions to existing data.\nUse summarise to reduce data to summary statistics (e.g., mean, median)."
   },
   {
-    "objectID": "slides/day1-afternoon.html#key-practices-in-dplyr-round-2",
-    "href": "slides/day1-afternoon.html#key-practices-in-dplyr-round-2",
+    "objectID": "slides/day1-afternoon.html#to-2-word-summaries-of-the-dplyr-functions",
+    "href": "slides/day1-afternoon.html#to-2-word-summaries-of-the-dplyr-functions",
     "title": "InsightNet EpiData Workshop 2024",
-    "section": "Key practices in dplyr: Round 2",
-    "text": "Key practices in dplyr: Round 2\n\nUse group_by() to group data by one or more variables before applying functions.\nUse mutate to create new columns or modify existing ones by applying functions to existing data.\nUse summarise to reduce data to summary statistics (e.g., mean, median).\ncount() is a convenient shortcut for counting rows by group without needing group_by() and summarise()."
+    "section": "1 to 2 word summaries of the dplyr functions",
+    "text": "1 to 2 word summaries of the dplyr functions\nHere are 1 to 2 word summaries of the key dplyr functions:\n\nselect(): Choose columns\nfilter(): Subset rows\nmutate(): Create columns\ngroup_by(): Group by\nsummarise(): Numerical summary"
   },
   {
     "objectID": "slides/day1-afternoon.html#tidy-data-and-tolstoy",
     "href": "slides/day1-afternoon.html#tidy-data-and-tolstoy",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Tidy data and Tolstoy",
-    "text": "Tidy data and Tolstoy\n\n“Happy families are all alike; every unhappy family is unhappy in its own way.” — Leo Tolstoy\n\n\nTidy datasets are like happy families: consistent, standardized, and easy to work with.\n\nMessy datasets are like unhappy families: each one messy in its own unique way.\nIn this section:\nWe’ll define what makes data tidy and how to transform between the tidy and messy formats."
-  },
-  {
-    "objectID": "slides/day1-afternoon.html#tidy-data-and-tolstoy-1",
-    "href": "slides/day1-afternoon.html#tidy-data-and-tolstoy-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Tidy data and Tolstoy",
-    "text": "Tidy data and Tolstoy\n\nArtwork by @allison_horst"
+    "text": "Tidy data and Tolstoy\n\n“Happy families are all alike; every unhappy family is unhappy in its own way.” — Leo Tolstoy\n\n\nArtwork by @allison_horst"
   },
   {
     "objectID": "slides/day1-afternoon.html#what-is-tidy-data",
@@ -1523,7 +1502,7 @@
     "href": "slides/day1-afternoon.html#making-data-wider-with-pivot_wider",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Making data wider with pivot_wider()",
-    "text": "Making data wider with pivot_wider()\n\nTo convert data from long format to wide/messy format use pivot_wider().\nFor example, let’s try creating a column for each time value in cases_df:\n\n\n\nmessy_cases_df &lt;- cases_df |&gt;\n  pivot_wider(\n    names_from = time_value,   # Create new columns for each unique date\n    values_from = raw_cases    # Fill those columns with the raw_case values\n  )\n\n# View the result\nmessy_cases_df\n\n# A tibble: 3 × 32\n  geo_value `2022-03-01` `2022-03-02` `2022-03-03` `2022-03-04` `2022-03-05`\n  &lt;chr&gt;            &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;\n1 ca                4310         7044         7509         3586         1438\n2 nc                1231         2243         2377         2646            0\n3 ny                1487         1889         2390          350         3372\n# ℹ 26 more variables: `2022-03-06` &lt;dbl&gt;, `2022-03-07` &lt;dbl&gt;,\n#   `2022-03-08` &lt;dbl&gt;, `2022-03-09` &lt;dbl&gt;, `2022-03-10` &lt;dbl&gt;,\n#   `2022-03-11` &lt;dbl&gt;, `2022-03-12` &lt;dbl&gt;, `2022-03-13` &lt;dbl&gt;,\n#   `2022-03-14` &lt;dbl&gt;, `2022-03-15` &lt;dbl&gt;, `2022-03-16` &lt;dbl&gt;,\n#   `2022-03-17` &lt;dbl&gt;, `2022-03-18` &lt;dbl&gt;, `2022-03-19` &lt;dbl&gt;,\n#   `2022-03-20` &lt;dbl&gt;, `2022-03-21` &lt;dbl&gt;, `2022-03-22` &lt;dbl&gt;,\n#   `2022-03-23` &lt;dbl&gt;, `2022-03-24` &lt;dbl&gt;, `2022-03-25` &lt;dbl&gt;, …"
+    "text": "Making data wider with pivot_wider()\n\nTo convert data from long format to wide/messy format use pivot_wider().\nFor example, let’s try creating a column for each time value in cases_df:\n\n\nmessy_cases_df &lt;- cases_df |&gt;\n  pivot_wider(\n    names_from = time_value,   # Create new columns for each unique date\n    values_from = raw_cases    # Fill those columns with the raw_case values\n  )\n\n# View the result\nmessy_cases_df\n\n# A tibble: 3 × 32\n  geo_value `2022-03-01` `2022-03-02` `2022-03-03` `2022-03-04` `2022-03-05`\n  &lt;chr&gt;            &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;\n1 ca                4310         7044         7509         3586         1438\n2 nc                1231         2243         2377         2646            0\n3 ny                1487         1889         2390          350         3372\n# ℹ 26 more variables: `2022-03-06` &lt;dbl&gt;, `2022-03-07` &lt;dbl&gt;,\n#   `2022-03-08` &lt;dbl&gt;, `2022-03-09` &lt;dbl&gt;, `2022-03-10` &lt;dbl&gt;,\n#   `2022-03-11` &lt;dbl&gt;, `2022-03-12` &lt;dbl&gt;, `2022-03-13` &lt;dbl&gt;,\n#   `2022-03-14` &lt;dbl&gt;, `2022-03-15` &lt;dbl&gt;, `2022-03-16` &lt;dbl&gt;,\n#   `2022-03-17` &lt;dbl&gt;, `2022-03-18` &lt;dbl&gt;, `2022-03-19` &lt;dbl&gt;,\n#   `2022-03-20` &lt;dbl&gt;, `2022-03-21` &lt;dbl&gt;, `2022-03-22` &lt;dbl&gt;,\n#   `2022-03-23` &lt;dbl&gt;, `2022-03-24` &lt;dbl&gt;, `2022-03-25` &lt;dbl&gt;, …"
   },
   {
     "objectID": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer",
@@ -1531,13 +1510,6 @@
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Tidying messy data with pivot_longer()",
     "text": "Tidying messy data with pivot_longer()\n\nUse pivot_longer() to convert data from wide format (multiple columns for the same variable) to long format (one column per variable).\nLet’s try turning messy_cases_df back into the original tidy cases_df!\n\n\ntidy_cases_df &lt;- messy_cases_df |&gt;\n  pivot_longer(\n    cols = -geo_value,          # Keep the 'geo_value' column as it is\n    names_to = \"time_value\",    # Create a new 'time_value' column from the column names\n    values_to = \"raw_cases\"     # Values from the wide columns should go into 'raw_cases'\n  )\n\n# View the result\nhead(tidy_cases_df, n = 3) # Notice the class of time_value here\n\n# A tibble: 3 × 3\n  geo_value time_value raw_cases\n  &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;\n1 ca        2022-03-01      4310\n2 ca        2022-03-02      7044\n3 ca        2022-03-03      7509"
-  },
-  {
-    "objectID": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer-1",
-    "href": "slides/day1-afternoon.html#tidying-messy-data-with-pivot_longer-1",
-    "title": "InsightNet EpiData Workshop 2024",
-    "section": "Tidying messy data with pivot_longer()",
-    "text": "Tidying messy data with pivot_longer()\n\nWhen we used pivot_longer(), the time_value column is converted to a character class because the column names are treated as strings.\nSo, to truly get the original cases_df we need to convert time_value back to the Date class.\nThen, we can use identical() to check if the two data frames are exactly the same.\n\n\ntidy_cases_df = tidy_cases_df |&gt; mutate(time_value = as.Date(time_value))\n\nidentical(tidy_cases_df |&gt; arrange(time_value), cases_df)\n\n[1] TRUE\n\n\nGreat. That was a success!"
   },
   {
     "objectID": "slides/day1-afternoon.html#introduction-to-joins-in-dplyr",
@@ -2524,7 +2496,7 @@
     "href": "slides/day2-afternoon.html#predicting-influenza-hospitalizations",
     "title": "InsightNet EpiData Workshop 2024",
     "section": "Predicting influenza hospitalizations",
-    "text": "Predicting influenza hospitalizations\n\nCurrent task: predict influenza hospitalizations for all states + DC + PR.\nForecasts submitted to CDC Flusight Forecast Hub\n\nSpecifically:\n\nFrom November 20, 2024 until May 31, 2025\nEvery Wednesday at 11pm EDT\nPredict 0, 1, 2, 3 epiweeks ahead\nPoint forecast + 23 quantiles\nResponse is NHSN Weekly Hospitalizations"
+    "text": "Predicting influenza hospitalizations\n\nCurrent task: predict influenza hospitalizations for all states + DC + PR.\nForecasts submitted to CDC Flusight Forecast Hub\n\nSpecifically:\n\nFrom November 20, 2024 until May 31, 2025\nEvery Wednesday at 11pm EDT\nPredict 0, 1, 2, 3 epiweeks ahead\nPoint forecast + 23 quantiles\nResponse is NHSN Weekly Hospitalizations\n\nFrom here on, the emphasis is “how” to make these adjustments. Ran out of time to evaluate!"
   },
   {
     "objectID": "slides/day2-afternoon.html#aside-data-issues",

@@ -394,27 +394,26 @@
 <!-- and not individuals.-->
 <ul>
 <li><p>In table form, panel data is a time index + one or more locations/keys.</p></li>
-<li><p><strong>Ex</strong>: The % of outpatient doctor visits that are COVID-related in WA from Dec.&nbsp;2021 to Feb.&nbsp;2022 (<a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">docs</a>):</p></li>
+<li><p><strong>Ex</strong>: The % of outpatient doctor visits that are COVID-related in CA from June 2020 to Dec.&nbsp;2021 (<a href="https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/doctor-visits.html">docs</a>):</p></li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
-<pre><code>An `epi_df` object, 6 x 3 with metadata:
-* geo_type  = state
-* time_type = day
-* as_of     = 2022-02-01
-
-# A tibble: 6 × 3
-  geo_value time_value percent_cli
-* &lt;chr&gt;     &lt;date&gt;           &lt;dbl&gt;
-1 wa        2021-12-01        4.70
-2 wa        2021-12-02        4.60
-3 wa        2021-12-03        4.56
-4 wa        2021-12-04        4.93
-5 wa        2021-12-05        4.17
-6 wa        2021-12-06        4.12</code></pre>
+<pre><code># A tibble: 549 × 3
+   time_value geo_value percent_cli
+   &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt;
+ 1 2020-06-01 ca               2.75
+ 2 2020-06-02 ca               2.57
+ 3 2020-06-03 ca               2.48
+ 4 2020-06-04 ca               2.41
+ 5 2020-06-05 ca               2.57
+ 6 2020-06-06 ca               2.63
+ 7 2020-06-07 ca               2.73
+ 8 2020-06-08 ca               3.04
+ 9 2020-06-09 ca               2.97
+10 2020-06-10 ca               2.99
+# ℹ 539 more rows</code></pre>
 </div>
 </div>
-<!-- Example: The estimated % of outpatient doctor visits that are COVID-related in WA from Dec. 2021 to Feb. 2022 -->
 </section>
 <section id="examples-of-panel-data---covid-19-cases" class="slide level2">
 <h2>Examples of panel data - COVID-19 cases</h2>
@@ -446,11 +445,13 @@
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/examples-chng-cli-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -460,11 +461,13 @@
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/examples-chng-covid-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -481,9 +484,11 @@ Example: gathering different signals + visualizing panel data
 
 
 
+
 ::: {.cell layout-align="center"}
 
 :::
+
 
 
 
@@ -492,13 +497,15 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 <div style="text-align: center;">
@@ -514,11 +521,13 @@ Example: gathering different signals + **scaling** + visualizing panel data
 
 
 
+
 ::: {.cell layout-align="center"}
 ::: {.cell-output-display}
 ![](day1-morning_files/figure-revealjs/plot-ca-cases-deaths-1.svg){fig-align='center'}
 :::
 :::
+
 
 
 
@@ -535,7 +544,7 @@ Example: gathering different signals + **scaling** + visualizing panel data
 <li><p>Many epidemic aggregates are subject to <span class="primary">reporting delays and revisions</span></p></li>
 <li><p>This is because individual-level data has delayed availability:</p></li>
 </ul>
-<p><span class="fourth-colour">Person comes to ER → Has some tests → Admitted → Tests come back → Entered into the system → …</span></p>
+<p><span class="fourth-colour">Person comes to ER → Admitted → Has some tests → Tests come back → Entered into the system → …</span></p>
 <ul>
 <li><p>So, a “Hospital admission” may not attributable to a particular condition until a few days have passed (the patient may even have been released)</p></li>
 <li><p>Aggregated data have a longer pipeline from the incident to the report.</p></li>
@@ -622,9 +631,6 @@ with updates and revisions to past data as new issue dates are released:
 6 2020-06-01 ca               2.23 2020-06-12 11 days          </code></pre>
 </div>
 </div>
-<!-- min_lag: the minimum time to any value min(as.integer(version) - as.integer(time_value)  -->
-<!-- max_lag: the amount of time until the final (new) version -->
-<!-- revision_summary computes some basic statistics about the revision behavior of an archive, returning a tibble summarizing the revisions per time_value+epi_key features. -->
 </section>
 <section id="revision-triangle-outpatient-visits-in-wa-2022" class="slide level2">
 <h2>Revision triangle, Outpatient visits in WA 2022</h2>
@@ -989,7 +995,7 @@ misc measures by <code>{county x day, county x week}</code>
 <ul>
 <li><p>Anyone may access the Epidata API anonymously without providing any personal data!!</p></li>
 <li><p>Anonymous API access is subject to some restrictions: <small>public datasets only; 60 requests per hour; only two parameters may have multiple selections</small></p></li>
-<li><p>API key grants priviledged access; can be obtained by <a href="https://api.delphi.cmu.edu/epidata/admin/registration_form">registering with us</a></p></li>
+<li><p>API key grants privileged access; can be obtained by <a href="https://api.delphi.cmu.edu/epidata/admin/registration_form">registering with us</a></p></li>
 <li><p>Privileges of registration: no rate limit; no limit on multiple selections</p></li>
 <li><p>We just want to know which signals people care about and ensure we’re providing benefit</p></li>
 </ul>
@@ -1167,16 +1173,14 @@ Signals are prefixed with their source for easier navigation
 <p><code>confirmed_7dav_incidence_prop</code> is available by state</p>
 <p>Change <code>geo_type</code> and <code>geo_values</code> in the previous example</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="co"># Obtain the most up-to-date version of the smoothed covid-like illness (CLI)</span></span>
-<span id="cb21-2"><a></a><span class="co"># signal from the COVID-19 Trends and Impact survey for all states</span></span>
-<span id="cb21-3"><a></a>jhu_state_cases <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
-<span id="cb21-4"><a></a>  <span class="at">source =</span> <span class="st">"jhu-csse"</span>,</span>
-<span id="cb21-5"><a></a>  <span class="at">signals =</span> <span class="st">"confirmed_7dav_incidence_prop"</span>,</span>
-<span id="cb21-6"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
-<span id="cb21-7"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
-<span id="cb21-8"><a></a>  <span class="at">geo_values =</span> <span class="st">"*"</span>,</span>
-<span id="cb21-9"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20210101</span>, <span class="dv">20210401</span>)</span>
-<span id="cb21-10"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>jhu_state_cases <span class="ot">&lt;-</span> <span class="fu">pub_covidcast</span>(</span>
+<span id="cb21-2"><a></a>  <span class="at">source =</span> <span class="st">"jhu-csse"</span>,</span>
+<span id="cb21-3"><a></a>  <span class="at">signals =</span> <span class="st">"confirmed_7dav_incidence_prop"</span>,</span>
+<span id="cb21-4"><a></a>  <span class="at">geo_type =</span> <span class="st">"state"</span>,</span>
+<span id="cb21-5"><a></a>  <span class="at">time_type =</span> <span class="st">"day"</span>,</span>
+<span id="cb21-6"><a></a>  <span class="at">geo_values =</span> <span class="st">"*"</span>,</span>
+<span id="cb21-7"><a></a>  <span class="at">time_values =</span> <span class="fu">epirange</span>(<span class="dv">20210101</span>, <span class="dv">20210401</span>)</span>
+<span id="cb21-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
@@ -1608,6 +1612,7 @@ See [Private methods](https://cmu-delphi.github.io/epidatr/articles/signal-disco
 
 
 
+
 ::: {.cell layout-align="center"}
 
 ```{.r .cell-code}
@@ -1620,6 +1625,7 @@ dv_state_default <- pub_covidcast(
 )
 ```
 :::
+
 
 
 
@@ -1668,13 +1674,15 @@ dv_state_default <- pub_covidcast(
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 </div>
@@ -1687,13 +1695,15 @@ dv_state_default <- pub_covidcast(
 
 
 
-::: {.cell layout-align="center"}
-
-:::
 
 ::: {.cell layout-align="center"}
 
 :::
+
+::: {.cell layout-align="center"}
+
+:::
+
 
 
 </div>
